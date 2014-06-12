@@ -1,0 +1,7 @@
+CSTransactionItem.id;CSStoring.date_day;CSStoring.date_month;CSStoring.date_year;CSProduct.id;CSTransactionItem.c_s_product_name;CSProduct.vzp_code;CSProduct.group_code;CSTransactionItem.quantity;CSTransactionItem.price;Unit.shortcut;User.id;User.last_name
+272;21;11;2013;9;MOLICARE Mobile Super Medium;123;123;40;300,00;bal.;1;Polák
+269;21;11;2013;6;MOLIMED Air Active Mini (premium) ;123;123;50;50,15;bal.;1;Polák
+273;21;11;2013;10;MOLICARE Mobile Medium;123;123;50;100,00;bal.;1;Polák
+270;21;11;2013;7;MOLIMED Air Active Midi (premium) ;123;123;50;80,00;bal.;1;Polák
+271;21;11;2013;8;MOLICARE Premium Soft Super Medium;123;123;20;350,00;bal.;1;Polák
+268;21;11;2013;5;MOLIMED Air Active Micro (premium) ;123;123;50;40,12;bal.;1;Polák

@@ -1,0 +1,669 @@
+PayOut.date;Customer.number;Customer.last_name;Customer.first_name;Customer.degree_before;Customer.degree_after;Customer.salutation;Customer.sex;Customer.street;Customer.zip;Customer.city;Customer.birth_certificate_number;RecommendingCustomer.name;Tariff.name;PayOut.amount;Customer.account;User.last_name
+2014-02-28;101609;Fukaèová;Jitka;;;;ena;Milenova  128/4;63800;Brno Lesná;365112/444;;A (standard);65,00;0,79;Doskoèilová
+2014-02-27;100032;Mareèková;Lucie;;;;ena;Vaculíkova 5;63800;Brno;8857094224;;A (standard);48,00;0,48;Doskoèilová
+2014-02-27;101729;Cvancigerová;Jolana;;;;ena;Fillova 11;63800;Brno ;285210711;;A (standard);86,00;17,19;Doskoèilová
+2014-02-26;101595;Süss;Miroslav;;;;mu;Brechtova 9;63800;Brno;381113434;;A (standard);79,00;4,10;Doskoèilová
+2014-02-25;101880;Moráèková;Jaroslava;;;;ena;Bieblova 20;63800;Brno;435314418;;A (standard);41,00;0,68;Kramáø
+2014-02-25;101589;Krejèí;Ivo;;;;mu;Vaculíkova 5;63800;Brno;6303160479;;A (standard);67,00;32,39;Kramáø
+2014-02-25;101413;Brettfeldová;Andrea;;;;ena;Vaculíkova 1;63800;Brno;68dafd1212;;A (standard);16,00;0,14;Kramáø
+2014-02-24;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);106,00;14,05;Doskoèilová
+2014-02-24;101120;Toman;Ladislav;;;;mu;Fillova 13;63800;Brno;380607439;;A (standard);100,00;33,49;Doskoèilová
+2014-02-24;100031;Lukáèová;Zuzana;;;;ena;Divišova 11;61200;Brno;9161274188;;A (standard);11,00;0,82;Doskoèilová
+2014-02-24;100411;Jahn;Jiøí;;;;mu;Ibsenova 9;63800;Brno;5164631sa31;;A (standard);66,00;110,89;Doskoèilová
+2014-02-21;101435;Humpolík;Richard;;;;mu;Broíkova 19a;63800;Brno;3213safd;;A (standard);77,00;0,53;Doskoèilová
+2014-02-21;100029;Marešová;Zdeòka;;;;ena;Jurkovièova 8;63800;Brno;45613a;;A (standard);47,00;0,25;Doskoèilová
+2014-02-21;101731;Floriánová;Jana;;;;ena;125;67922;Svinošice;x12346678;;A (standard);89,00;17,95;Doskoèilová
+2014-02-20;101222;Hojaè;Zdenìk;;;;mu;Slavíèkova ;63800;Brno;xx3126454yy;;A (standard);142,00;0,92;Doskoèilová
+2014-02-20;100476;Støíbrnı;František;;;;mu;Jurkovièova 13;63800;Brno;46sadf3213;;A (standard);121,00;7,17;Doskoèilová
+2014-02-20;101965;Karabelová;Jaroslava;;;;ena;Broíkova 12;63800;Brno;445711434;;A (standard);125,00;0,29;Doskoèilová
+2014-02-20;100465;Staòková;Helena;;;;ena;Fillova11;63800;Brno;4161as3df21;;A (standard);38,00;17,01;Doskoèilová
+2014-02-19;100276;Hausvater;Karel;Ing.;;;mu;Broíkova 14;63800;Brno;350805059;;A (standard);20,00;0,73;Doskoèilová
+2014-02-19;100276;Hausvater;Karel;Ing.;;;mu;Broíkova 14;63800;Brno;350805059;;A (standard);84,00;0,73;Doskoèilová
+2014-02-19;101482;Menzlová;Monika;;;;ena;Jiráskova;82863;Zlín;9155134483;;A (standard);6,00;0,15;Doskoèilová
+2014-02-19;101937;Koudelnı;Rostislav;;;;mu;Tomeèkova 3;;63800;Brno;8810254420;;A (standard);21,00;206,91;Doskoèilová
+2014-02-18;101215;Mikšík;Jiøí;;;;ena;Vaculíkova 12;63800;Brno;520102055;;A (standard);46,00;22,37;Doskoèilová
+2014-02-18;101090;Køíová;Olga;;;;ena;Haškova 10;63800;Brno;340923456;;A (standard);4,00;295,91;Doskoèilová
+2014-02-18;100026;Gricová;Martina;;;;ena;Loosova 13;63800;Brno;543a12sf;;A (standard);11,00;0,82;Doskoèilová
+2014-02-18;101738;Seitl;Ladislav;;;;mu;Fillova 2;63800;Brno;310117456;;A (standard);104,00;31,39;Doskoèilová
+2014-02-18;101029;Šlesinger;Jaroslav;;;;mu;Broíkova 22;63800;Brno;401216051;;A (standard);60,00;45,44;Doskoèilová
+2014-02-18;100259;Kubová;Jana;;;;ena;Fillova 10;63800;Brno;Xz78952154;;A (standard);27,00;5,88;Doskoèilová
+2014-02-17;101510;Køesala;Vojtìch;;;;mu;Ibsenova  3;63800;Brno;0409168056;;A (standard);187,00;13,43;Doskoèilová
+2014-02-17;101514;Paulíková;Zdenka;;;;ena;Ibsenova  10;63800;Brno;5456303171;;A (standard);168,00;6,24;Doskoèilová
+2014-02-17;101622;Pelikánová;Kvìtoslava;;;;ena;Fillova 10;63800;Brno;376215450;;A (standard);5,00;0,18;Doskoèilová
+2014-02-17;100419;Smetanová;Eva;;;;ena;Fillova 12;63800;Brno;465s4f6;;A (standard);17,00;11,20;Doskoèilová
+2014-02-14;101073;Ledererová;Zdeòka;;;;ena;Vaculíkova 9;63800;Brno;xxxxxxxxx10;;A (standard);200,00;6,45;Doskoèilová
+2014-02-14;101990;Hrubá;Nadìda;;;;ena;Molákova 9;62800;Brno;5652022277;;A (standard);39,00;58,68;Doskoèilová
+2014-02-14;101704;Strejèek;Milan;;;;mu;Fillova 8;63800;Brno;380612/417;;A (standard);209,00;0,24;Doskoèilová
+2014-02-14;101544;Králová ;Františka;;;;ena;Broíkova 23;63800;Brno;316230405;;A (standard);80,00;5,38;Doskoèilová
+2014-02-14;101101;Tesaøová;Gabriela;;;;ena;Broíkova 19;63800;Brno;1974;;A (standard);49,00;5,08;Doskoèilová
+2014-02-14;101707;Benedìlová;Anna;;;;ena;Tøískalova 12;63800;Brno;xxx1234567;;A (standard);9,00;87,08;Doskoèilová
+2014-02-14;101618;Kunešová;Mária;;;;ena;Fillova 7;63800;Brno;475817734;;A (standard);48,00;65,55;Doskoèilová
+2014-02-13;101623;Gritzová;Monika;;;;ena;Fillova 3;63800;Brno;425308104;;A (standard);57,00;236,19;Kramáø
+2014-02-13;101026;Macková ;Anna;;;;ena;Jurkovièova 15;63800;Brno;435705460;;A (standard);30,00;6,80;Kramáø
+2014-02-13;100005;Juránková;Jana;;;;ena;Malhostovice 125;66603;Malhostovice;7955063798;;A (standard);20,00;0,55;Kramáø
+2014-02-12;100283;Vomelová;Jiøina;;;;ena;Vaculíkova 10;638000;Brno;xy569795302;;A (standard);89,00;0,79;Kramáø
+2014-02-12;100477;Novotná ;Jana;;;;ena;Vaculíkova ;63800;Brno;445119409;;A (standard);140,00;14,98;Kramáø
+2014-02-12;100008;Nosková;Zdenka;;;;ena;Fillova 4;63800;Brno;100110000;;A (standard);28,00;0,08;Kramáø
+2014-02-12;101447;Marková;Vìra;;;;ena;Vaculíkova 1;63800;Brno;654s3df21;;A (standard);10,00;0,09;Kramáø
+2014-02-12;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);165,00;36,80;Kramáø
+2014-02-12;101464;Krejèí ;Anna;;;;ena;Vaculíkova 11;63800;Brno;659832a,0;;A (standard);34,00;0,50;Kramáø
+2014-02-12;101192;Hradílková;Ludmila;;;;ena;Fillova 12;63800;Brno;440503429;;A (standard);62,00;4,66;Kramáø
+2014-02-12;101998;Patloková ;Kvìtuše;;;;ena;Vèelaøská 5;64400;Brno;535522055;;A (standard);144,00;7,44;Kramáø
+2014-02-11;101223;Opluštil;Tomáš;;;;mu;Vaculíkova ;63800;Brno;xxx32154yyy;;A (standard);19,00;0,05;Kramáø
+2014-02-10;101528;Stehlíková;Eva;;;;ena;Vaculíkova 10;63800;Brno;405423405;;A (standard);94,00;10,50;Kramáø
+2014-02-10;101542;Kuchaøík;Jan;;;;mu;Broíkova 16;63800;Brno;400822/428;;A (standard);33,00;234,03;Kramáø
+2014-02-07;101434;Knoblochová;Alena;;;;ena;Vaculíkova 1;63800;Brno;54321fa,213;;A (standard);17,00;22,69;Doskoèilová
+2014-02-07;100349;Sedláèková;Dana;;;;ena;Vaculíkova 5;63800;Brno;52654sfd546;;A (standard);60,00;17,79;Doskoèilová
+2014-02-07;101674;Fleková;Marta;;;;ena;Broíkova 20a;63800;Brno;415120444;;A (standard);25,00;5,01;Doskoèilová
+2014-02-07;100419;Smetanová;Eva;;;;ena;Fillova 12;63800;Brno;465s4f6;;A (standard);63,00;11,20;Doskoèilová
+2014-02-05;101597;Vrzalová;Marcela;;;;ena;Kupkova 40;63800;Brno;6059230419;;A (standard);30,00;1,77;Doskoèilová
+2014-02-05;101008;Miklošík;František;Prof. Ing.;;;mu;Fillova 12;63800;Brno;321118/806;;A (standard);62,00;77,09;Doskoèilová
+2014-02-05;101638;ovincová;Sylva;;;;ena;Kupkova 37;63800;Brno;7655053923;;A (standard);40,00;0,71;Doskoèilová
+2014-02-05;101182;Hanáková ;Jitka;;;;ena;Broíkova 19;63800;Brno;410731451;;A (standard);50,00;50,75;Doskoèilová
+2014-02-05;101644;Kartousová;Vladimíra;;;;ena;Milenova 2;63800;Brno Lesná;6553020210;;A (standard);129,00;4,74;Doskoèilová
+2014-02-04;100311;Dubišarová;Iva;;;;ena;Vaculíkova 9;63800;Brno;xxx824152yy;;A (standard);51,00;0,66;Doskoèilová
+2014-02-04;101558;Jureèková;Rùena;MUDr.;;;ena;Broíkova 15;63800;Brno;445619424;;A (standard);19,00;29,59;Doskoèilová
+2014-02-04;101937;Koudelnı;Rostislav;;;;mu;Tomeèkova 3;;63800;Brno;8810254420;;A (standard);51,00;206,91;Doskoèilová
+2014-02-04;101912;Èechalová ;Zdeòka;;;;ena;Hlohova;63800;Brno;xxx3216454y;;A (standard);114,00;11,84;Doskoèilová
+2014-02-03;101542;Kuchaøík;Jan;;;;mu;Broíkova 16;63800;Brno;400822/428;;A (standard);72,00;234,03;Doskoèilová
+2014-02-03;101059;Hornı;Bedøich;;;;mu;Broíkova 19a;63800;Brno;440522413;;A (standard);75,00;14,20;Doskoèilová
+2014-02-03;101545;Doèkal;Radovan;;;;mu;Tøískalova 3;63800;Brno;400327459;;A (standard);99,00;4,27;Doskoèilová
+2014-02-03;100425;Muller;Bohuslav;;;;mu;Fillova 6;63800;Brno;8007013839;;A (standard);17,00;42,02;Doskoèilová
+2014-02-03;101427;Petrela;Oldøich;;;;mu;Loosova 6;63800;Brno;291209410;;A (standard);37,00;9,36;Doskoèilová
+2014-02-03;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);104,00;78,45;Doskoèilová
+2014-01-31;101478;Klièka;Jaromír;;;;mu;Broíkova 58/18;63800;Brno;7303134564;;A (standard);20,00;13,53;Kramáø
+2014-01-31;101135;Alexová;Jitka;;;;ena;Ibsenova 11;63800;Brno;65465;;A (standard);4,00;0,74;Kramáø
+2014-01-31;101684;Bednáøová;Miluše;;;;ena;Broíkova 15;63800;Brno;495213052;;A (standard);100,00;8,51;Kramáø
+2014-01-31;100255;Sehnal;Jiøí;;;;mu;Kosatcova 31;63800;Brno;asklj54;;A (standard);75,00;0,55;Kramáø
+2014-01-30;101486;Sobolová;Vojtìška;;;;ena;Merhautova 170;61400;Brno;656e4f3;;A (standard);280,00;173,72;Kramáø
+2014-01-30;101094;Procházková;Yvetta;;;;ena;Fillova 9;63800;Brno;6252221932;;A (standard);31,00;8,89;Kramáø
+2014-01-30;101112;Sochorová;Ludmila;;;;ena;Šrámkova 4;638000;Brno;405419119;;A (standard);115,00;3,13;Kramáø
+2014-01-30;100256;Filipi;Ivana;;;;ena;Broíkova 24;63800;Brno;6056071637;;A (standard);21,00;60,27;Kramáø
+2014-01-29;100352;Veselá;Ivana;;;;ena;Úhledná 24;62100;Brno ;465gsdgf546;;A (standard);23,00;0,94;Doskoèilová
+2014-01-28;101450;Vyklická ;Štìpánka;;;;ena;Broíkova 18;63800;Brno;456118412;;A (standard);3,00;3,88;Kramáø
+2014-01-28;101926;Hornychová;Eva;;;;ena;Fillova 9;63800;Brno;566011822;;A (standard);10,00;11,17;Kramáø
+2014-01-28;100453;Zajíèková ;Miroslava;;;;ena;Fillova 3;63800;Brno;yy74415285x;;A (standard);79,00;10,13;Kramáø
+2014-01-28;101481;Musilová ;Blanka;;;;ena;Milenova 1;63800;Brno;406205420;;A (standard);55,00;0,17;Kramáø
+2014-01-28;100271;Cicvárek;Jiøí;PhDr;;;mu;Slavíèkova 8;63800;Brno;470414020;;A (standard);17,00;37,42;Kramáø
+2014-01-28;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);118,00;99,89;Kramáø
+2014-01-28;101004;Luzarová;Hana;Mgr.;;;ena;Fillova 5;63800;Brno;376208428;;A (standard);53,00;13,37;Kramáø
+2014-01-28;101482;Menzlová;Monika;;;;ena;Jiráskova;82863;Zlín;9155134483;;A (standard);18,00;0,15;Kramáø
+2014-01-28;101413;Brettfeldová;Andrea;;;;ena;Vaculíkova 1;63800;Brno;68dafd1212;;A (standard);8,00;0,14;Kramáø
+2014-01-27;100302;Vítková;Andrea;;;;ena;Fillova 12;63800;Brno;7852113951;;A (standard);31,00;37,38;Doskoèilová
+2014-01-27;101418;Jursíková;Simona;;;;ena;Fillova 13;63800;Brno;98asdf23;;A (standard);59,00;14,98;Doskoèilová
+2014-01-27;100379;Slanina;Miloslav;;;;mu;Doubí 13;64400;Útìchov;asdf4646sfd;;A (standard);72,00;12,09;Doskoèilová
+2014-01-24;101450;Vyklická ;Štìpánka;;;;ena;Broíkova 18;63800;Brno;456118412;;A (standard);8,00;3,88;Doskoèilová
+2014-01-24;101053;Dvoøáková;Zdeòka;;;;ena;Vaculíkova 2;63800;Brno;455528464;;A (standard);81,00;2,40;Doskoèilová
+2014-01-24;101162;Hausvaterová;Marie;;;;ena;Broíkova 14;63800;Brno;365719001;;A (standard);116,00;0,07;Doskoèilová
+2014-01-24;101479;Šalplachtová;Jana;;;;ena;Broíkova 12;63800;Brno;5413as2f;;A (standard);45,00;1,35;Doskoèilová
+2014-01-24;101480;Sotoláøová;Zuzana;;;;ena;Jurkovièova 13;63800;Brno;8460303885;;A (standard);14,00;2,59;Doskoèilová
+2014-01-24;101745;Stojanová;Libuše;PaedDr.;;;ena;Fillova 8;63800;Brno;455710451;;A (standard);106,00;49,28;Doskoèilová
+2014-01-24;101622;Pelikánová;Kvìtoslava;;;;ena;Fillova 10;63800;Brno;376215450;;A (standard);15,00;0,18;Doskoèilová
+2014-01-23;101083;Sedláèková;Lucie;MUDr.;;;ena;Tomeèkova 5;63800;Brno;7952273967;;A (standard);14,00;0,59;Doskoèilová
+2014-01-23;101420;Charvát ;František;;;;mu;Mokrohorská 22;644;Brno;440305424;;A (standard);7,00;39,97;Doskoèilová
+2014-01-23;101165;Sova;Libor;;;;mu;Milenova 1;63800;Brno;6103271328;;A (standard);41,00;8,43;Doskoèilová
+2014-01-22;101478;Klièka;Jaromír;;;;mu;Broíkova 58/18;63800;Brno;7303134564;;A (standard);15,00;13,53;Doskoèilová
+2014-01-22;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);22,00;0,62;Doskoèilová
+2014-01-22;101674;Fleková;Marta;;;;ena;Broíkova 20a;63800;Brno;415120444;;A (standard);28,00;5,01;Doskoèilová
+2014-01-22;101135;Alexová;Jitka;;;;ena;Ibsenova 11;63800;Brno;65465;;A (standard);21,00;0,74;Doskoèilová
+2014-01-21;101475;Adlerová;Alena;;;;ena;Okruní 13;63800;Brno;315204431;;A (standard);190,00;9,80;Kramáø
+2014-01-21;101593;Staòková;Ludmila;;;;ena;Fillova 9;63800;Brno;5554151086;;A (standard);105,00;15,90;Kramáø
+2014-01-21;100427;Dobiášová ;Michaela;;;;ena;Broíkova 21;63800;Brno;xx52417485y;;A (standard);73,00;0,50;Kramáø
+2014-01-21;101742;Havlíková;Eva;;;;ena;Fillova 3;63800;Brno;396018417;;A (standard);104,00;59,38;Doskoèilová
+2014-01-21;101725;Vítová;Jitka;;;;ena;Fillova 8;63800;Brno;285617411;;A (standard);75,00;9,53;Doskoèilová
+2014-01-21;101202;Hájková;Marie;;;;mu;Broíkova 20;63800;Brno;xx5421784yy;;A (standard);36,00;0,75;Doskoèilová
+2014-01-21;101681;Benáèková;Zdenka;;;;ena;Loosova 6;63800;Brno;385611440;;A (standard);29,00;0,28;Doskoèilová
+2014-01-20;102000;Korèeková;Jiøina;;;;ena;Vaculíkova 2;63800;Brno;336251;;A (standard);16,00;6,45;Doskoèilová
+2014-01-20;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);114,00;78,45;Doskoèilová
+2014-01-20;101473;Havelková ;Olga;;;;ena;Vaculíkova 3;63800;Brno;3654164151;;A (standard);24,00;3,81;Doskoèilová
+2014-01-20;101624;Širobokova;Tatiana;;;;ena;Fillova 9;63800;Brno;8152239920;;A (standard);273,00;119,64;Doskoèilová
+2014-01-20;101004;Luzarová;Hana;Mgr.;;;ena;Fillova 5;63800;Brno;376208428;;A (standard);32,00;13,37;Doskoèilová
+2014-01-20;100299;Vesselá;Miroslava;;;;ena;Alešova 53;61300;Brno;7652103833;;A (standard);84,00;26,07;Doskoèilová
+2014-01-17;101605;Procházková;Eva;;;;ena;Broíkova 25;63800;Brno;385906427;;A (standard);100,00;63,63;Kramáø
+2014-01-17;101471;Zemánková;Eva;;;;ena;Benešov 72;67953;Benešov;9159184881;;A (standard);11,00;0,73;Kramáø
+2014-01-17;101468;Chrudinová;Aneka;;;;ena;Fillova 8;63800;Brno;9251274186;;A (standard);12,00;0,60;Kramáø
+2014-01-17;100288;Tomková;Jiøina;;;;ena;Melatín 14;64400;Sobìšice;3456897651;;A (standard);100,00;57,14;Kramáø
+2014-01-17;101116;Malachtová;Jana;;;;ena;Fillova 8;63800;Brno;4654320ddd;;A (standard);37,00;0,17;Kramáø
+2014-01-16;100330;Janda;Arnold;;;;mu;Milenova 1;63800;Brno;xxxxxxx;;A (standard);111,00;93,63;Kramáø
+2014-01-16;100325;alkovská;Marie;;;;ena;Loosova 12;63800;Brno;xy56791329;;A (standard);90,00;50,70;Kramáø
+2014-01-16;101466;Musilová;Radan;;;;ena;Synkova 2;63800;Brno;8355233832;;A (standard);119,00;0,70;Kramáø
+2014-01-16;101467;Janíková;Drahomíra;;;;ena;346230451;60200;Brno;346230451;;A (standard);16,00;0,05;Kramáø
+2014-01-15;100483;Sobotková;Josefa;;;;ena;Loosova 5;63800;Brno;46546a3213;;A (standard);73,00;42,01;Kramáø
+2014-01-14;101216;Uhrova;Marie;;;;ena;Broíkova 23;63800;Brno;405309441;;A (standard);100,00;163,50;Doskoèilová
+2014-01-14;101880;Moráèková;Jaroslava;;;;ena;Bieblova 20;63800;Brno;435314418;;A (standard);4,00;0,68;Doskoèilová
+2014-01-14;101644;Kartousová;Vladimíra;;;;ena;Milenova 2;63800;Brno Lesná;6553020210;;A (standard);17,00;4,74;Doskoèilová
+2014-01-14;101617;Kejík;Otakar;;;;mu;Fillova 7;63800;Brno;300424/470;;A (standard);28,00;19,05;Doskoèilová
+2014-01-14;101049;Sadílková;Petra;;;;ena;Ibsenova 8;63800;Brno;75000000;;A (standard);20,00;8,17;Doskoèilová
+2014-01-14;101104;Polášková;Kateøina;;;;ena;Broíkova 18;63800;Brno;8252224002;;A (standard);14,00;55,36;Doskoèilová
+2014-01-13;101691;Hynková;Jiøina;;;;ena;Vaculíkova 11;63800;Brno;346112460;;A (standard);156,00;0,63;Kramáø
+2014-01-13;101084;Tomanová;Alena;;;;ena;Fillova 4;63800;Brno;415514421;;A (standard);65,00;2,22;Kramáø
+2014-01-13;101060;Kšír;Dušan;;;;mu;Broíkova 0;63800;Brno;540000;;A (standard);96,00;4,62;Kramáø
+2014-01-13;101674;Fleková;Marta;;;;ena;Broíkova 20a;63800;Brno;415120444;;A (standard);10,00;5,01;Kramáø
+2014-01-13;101215;Mikšík;Jiøí;;;;ena;Vaculíkova 12;63800;Brno;520102055;;A (standard);5,00;22,37;Kramáø
+2014-01-13;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);33,00;14,05;Kramáø
+2014-01-13;101564;Doèkalová;Jarmila;;;;ena;Fillova 5;63800;Brno;475217438;;A (standard);73,00;35,93;Kramáø
+2014-01-10;101535;Janda;Jan;;;;mu;Fillova 5;63800;Brno;440724052;;A (standard);217,00;63,27;Doskoèilová
+2014-01-10;101242;Stejskalová ;Anna;;;;ena;Fillova 11;63800;Brno;xx123654yyx;;A (standard);175,00;57,60;Doskoèilová
+2014-01-10;101554;Babiakova;Vìra;;;;ena;Broíkova 20;63800;Brno;7462313793;;A (standard);100,00;37,98;Doskoèilová
+2014-01-09;101995;Tkadlecová;Lenka;;;;mu;Fillova 10;63800;Brno;515109222;;A (standard);270,00;61,42;Doskoèilová
+2014-01-09;101154;Pøidalová;Dagmar;;;;ena;Milenova 7;63800;Brno;425710464;;A (standard);75,00;55,38;Doskoèilová
+2014-01-09;101880;Moráèková;Jaroslava;;;;ena;Bieblova 20;63800;Brno;435314418;;A (standard);5,00;0,68;Doskoèilová
+2014-01-09;101459;Lorenzová;Iveta;;;;ena;Heleny Malíøové 1;63800;Brno;9260204151;;A (standard);12,00;0,60;Doskoèilová
+2014-01-08;101604;Mareèek;Pavel;;;;mu;Vaculíkova 2;63800;Brno;410414422;;A (standard);63,00;19,98;Doskoèilová
+2014-01-08;101523;Appel;Robert;Bc.;;;mu;Vaculíkova 10;63800;Brno;7307293785;;A (standard);24,00;112,29;Doskoèilová
+2014-01-08;101523;Appel;Robert;Bc.;;;mu;Vaculíkova 10;63800;Brno;7307293785;;A (standard);24,00;112,29;Doskoèilová
+2014-01-08;101880;Moráèková;Jaroslava;;;;ena;Bieblova 20;63800;Brno;435314418;;A (standard);44,00;0,68;Doskoèilová
+2014-01-07;101455;Svobodová;Lenka;;;;ena;Fillova 11;63800;Brno;9451014089;;A (standard);21,00;0,42;Doskoèilová
+2014-01-07;101722;Reháková;Petra;;;;ena;Drustevní 8;60000;Brno;78;;A (standard);8,00;4,82;Doskoèilová
+2014-01-07;101062;Veselı;Ludvík;;;;mu;Zeiberlichova 41;64400;Brno;470310427;;A (standard);44,00;0,76;Doskoèilová
+2014-01-07;100351;Drábek;Jan;;;;mu;Broíkova19;63800;Brno;420530417;;A (standard);47,00;43,21;Doskoèilová
+2014-01-06;100415;Dvoøáková ;Anna;;;;ena;Vaculíkova 2;63800;Brno;415210448;;A (standard);759,00;77,72;Doskoèilová
+2014-01-06;101434;Knoblochová;Alena;;;;ena;Vaculíkova 1;63800;Brno;54321fa,213;;A (standard);59,00;22,69;Kramáø
+2014-01-02;101628;Jílková;Zdena;;;;ena;Broíkova 19;63800;Brno;56;;A (standard);22,00;0,98;Doskoèilová
+2014-01-02;100271;Cicvárek;Jiøí;PhDr;;;mu;Slavíèkova 8;63800;Brno;470414020;;A (standard);71,00;37,42;Doskoèilová
+2014-01-02;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);136,00;78,45;Doskoèilová
+2014-01-02;100353;Vocílková;Vìra;;;;ena;Fillova 13;63800;Brno;335805469;;A (standard);74,00;4,03;Doskoèilová
+2014-01-02;101174;Pokorná;Ivana;;;;ena;U Hrušek 807;66401;Bílovice nad Svitavou;xxxx123456x;;A (standard);19,00;21,98;Doskoèilová
+2013-12-23;101452;Èech;Pavel;;;;mu;Broíkova 58;63800;Brno;7702221516;;A (standard);17,00;10,15;Doskoèilová
+2013-12-23;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);78,00;136,48;Doskoèilová
+2013-12-23;101668;Valíèková;Kateøina;;;;ena;Vaculíkova 6;63800;Brno;7456013950;;A (standard);34,00;28,08;Doskoèilová
+2013-12-23;101417;Vavris;Zdenìk;;;;mu;Haškova 1;63800;Brno;416asdf132;;A (standard);35,00;3,10;Doskoèilová
+2013-12-20;101038;Strmisková ;Romana ;;;;ena;Broíkova 17;638000;brno;xxxxxxxxxx3;;A (standard);95,00;29,74;Doskoèilová
+2013-12-20;101537;Truneèka;Karel;;;;mu;Fillova 7;63800;Brno;470224481;;A (standard);18,00;0,87;Doskoèilová
+2013-12-20;100415;Dvoøáková ;Anna;;;;ena;Vaculíkova 2;63800;Brno;415210448;;A (standard);204,00;77,72;Doskoèilová
+2013-12-20;101738;Seitl;Ladislav;;;;mu;Fillova 2;63800;Brno;310117456;;A (standard);49,00;31,39;Doskoèilová
+2013-12-19;100275;Koneèná;Ludmila;;;;ena;Jurkovièova 4;63800;Brno;465531485;;A (standard);17,00;41,83;Doskoèilová
+2013-12-19;101516;Slezák;Zdenìk;;;;mu;Fillova 4;63800;Brno;300410/420;;A (standard);88,00;119,42;Doskoèilová
+2013-12-19;101926;Hornychová;Eva;;;;ena;Fillova 9;63800;Brno;566011822;;A (standard);142,00;11,17;Doskoèilová
+2013-12-19;100411;Jahn;Jiøí;;;;mu;Ibsenova 9;63800;Brno;5164631sa31;;A (standard);116,00;110,89;Doskoèilová
+2013-12-18;101240;Hoøínek;Jan;;;;mu;Vaculíkova 9;63800;Brno;390323470;;A (standard);144,00;102,41;Kramáø
+2013-12-18;101097;Flimmelová;Dita;;;;ena;Tøískalova 350/4;63800;Brno;7754224467;;A (standard);81,00;47,75;Doskoèilová
+2013-12-18;101165;Sova;Libor;;;;mu;Milenova 1;63800;Brno;6103271328;;A (standard);230,00;8,43;Doskoèilová
+2013-12-18;100469;Procházka;Miroslav;;;;mu;Broíkova 25;63800;Brno;350111408;;A (standard);113,00;37,94;Doskoèilová
+2013-12-17;101239;Sedlák ;Jiøí;;;;mu;Fillova 7;63800;Brno;xx321545yyy;;A (standard);20,00;0,16;Doskoèilová
+2013-12-17;101081;Rodanová;Hana;;;;ena;Vaculíkova 12;63800;Brno;5457241592;;A (standard);117,00;73,89;Doskoèilová
+2013-12-17;101617;Kejík;Otakar;;;;mu;Fillova 7;63800;Brno;300424/470;;A (standard);90,00;19,05;Doskoèilová
+2013-12-17;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);60,00;136,48;Doskoèilová
+2013-12-17;101559;Jelínková;Lucie;;;;ena;Fillova 7;63800;Brno;7055183854;;A (standard);60,00;32,55;Doskoèilová
+2013-12-16;101558;Jureèková;Rùena;MUDr.;;;ena;Broíkova 15;63800;Brno;445619424;;A (standard);77,00;29,59;Doskoèilová
+2013-12-16;101215;Mikšík;Jiøí;;;;ena;Vaculíkova 12;63800;Brno;520102055;;A (standard);13,00;22,37;Doskoèilová
+2013-12-16;101032;Zamazalová;Marie;;;;ena;Sobìšická 119;63800;Brno;335627433;;A (standard);12,00;7,34;Doskoèilová
+2013-12-16;101449;Mazalová;Martina;;;;ena;U Cihelny 657;56943;Jevíèko;925263065;;A (standard);12,00;0,60;Doskoèilová
+2013-12-16;101413;Brettfeldová;Andrea;;;;ena;Vaculíkova 1;63800;Brno;68dafd1212;;A (standard);55,00;0,14;Doskoèilová
+2013-12-13;100477;Novotná ;Jana;;;;ena;Vaculíkova ;63800;Brno;445119409;;A (standard);20,00;14,98;Doskoèilová
+2013-12-13;101108;Olejníèková;Ema;;;;ena;Vaculíkova 11;63800;Brno;1154271206;;A (standard);12,00;99,08;Doskoèilová
+2013-12-13;101575;Veselá;Jaroslava;;;;ena;Broíkova 18;63800;Brno;445409074;;A (standard);16,00;36,65;Doskoèilová
+2013-12-13;101124;Pavesková;Vìra;;;;ena;Milénova 12;63800;Brno;475555;;A (standard);86,00;4,45;Doskoèilová
+2013-12-13;101448;Babák;Zdenìk;;;;mu;Milénova 7;63800;Brno;300208503;;A (standard);17,00;7,36;Doskoèilová
+2013-12-13;101223;Opluštil;Tomáš;;;;mu;Vaculíkova ;63800;Brno;xxx32154yyy;;A (standard);15,00;0,05;Doskoèilová
+2013-12-12;101447;Marková;Vìra;;;;ena;Vaculíkova 1;63800;Brno;654s3df21;;A (standard);11,00;0,09;Kramáø
+2013-12-12;100435;Slavièková;Vera;;;;ena;Broíkova 15;63800;Brno;325119409;;A (standard);28,00;3,14;Kramáø
+2013-12-11;101445;Oplatková ;Helena;;;;ena;Velká Bíteš 67;59501;Velká Bíteš;405304405;;A (standard);28,00;5,30;Kramáø
+2013-12-11;101084;Tomanová;Alena;;;;ena;Fillova 4;63800;Brno;415514421;;A (standard);75,00;2,22;Kramáø
+2013-12-11;101004;Luzarová;Hana;Mgr.;;;ena;Fillova 5;63800;Brno;376208428;;A (standard);32,00;13,37;Kramáø
+2013-12-10;101021;Bøezina;Ondøej;;;;mu;Oleksovice 89;67162;Oleksovice;7000;;A (standard);116,00;38,95;Kramáø
+2013-12-10;100430;Øehùøková ;Nicole;;;;ena;Vaculíkova 8;63800;Brno;9361284196;;A (standard);22,00;72,35;Kramáø
+2013-12-10;100256;Filipi;Ivana;;;;ena;Broíkova 24;63800;Brno;6056071637;;A (standard);30,00;60,27;Kramáø
+2013-12-10;101096;Krejèí;Kateøina;;;;ena;Vaculíkova 4;63800;Brno;7533333;;A (standard);26,00;4,64;Kramáø
+2013-12-10;100460;Nováková;Anna;;;;ena;Milénova 1;63800;Brno;46as543;;A (standard);61,00;16,34;Kramáø
+2013-12-09;101659;Babièková ;Hana;;;;ena;Broíkova 14;63800;Brno Lesná;385531447;;A (standard);50,00;19,82;Kramáø
+2013-12-09;101020;Kobylková;Andìla;;;;ena;Milénova 4;63800;Brno;465325470;;A (standard);160,00;52,74;Kramáø
+2013-12-09;100403;Kolesa;František;;;;mu;Broíkova 19a;63800;Brno;000000003;;A (standard);25,00;0,53;Kramáø
+2013-12-09;101444;Drobníèková;Riana;;;;ena;Haškova 6;63800;Brno;56469sdf3a2;;A (standard);25,00;26,90;Kramáø
+2013-12-06;101157;Pecháèková ;Miroslava;;;;ena;Broíkova 25;63800;Brno;396028443;;A (standard);150,00;42,09;Doskoèilová
+2013-12-06;101427;Petrela;Oldøich;;;;mu;Loosova 6;63800;Brno;291209410;;A (standard);141,00;9,36;Doskoèilová
+2013-12-06;100476;Støíbrnı;František;;;;mu;Jurkovièova 13;63800;Brno;46sadf3213;;A (standard);108,00;7,17;Doskoèilová
+2013-12-05;100259;Kubová;Jana;;;;ena;Fillova 10;63800;Brno;Xz78952154;;A (standard);13,00;5,88;Doskoèilová
+2013-12-05;101080;Bulvová;Jaruše;;;;ena;Vaculíkova 4;63800;Brno;265404424;;A (standard);76,00;8,26;Doskoèilová
+2013-12-05;101560;Havel;Jaroslav;;;;mu;Šrámkova 9;63800;Brno;530130094;;A (standard);45,00;23,17;Doskoèilová
+2013-12-05;101738;Seitl;Ladislav;;;;mu;Fillova 2;63800;Brno;310117456;;A (standard);115,00;31,39;Doskoèilová
+2013-12-05;101210;Kuela;David;;;;mu;Broíkova 10;63800;Brno;7109033822;;A (standard);84,00;113,21;Doskoèilová
+2013-12-05;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);90,00;0,62;Doskoèilová
+2013-12-04;101186;Boèková  ;Dagmar;;;;ena;Vaculíkova 11;63800;Brno;325318401;;A (standard);74,00;63,44;Doskoèilová
+2013-12-04;100312;Krupicová ;Eva;;;;ena;Tøískalova 8;63800;Brno;xx642185yyy;;A (standard);55,00;6,02;Doskoèilová
+2013-12-03;101529;Hromadová;Jarmila;;;;ena;Fillova 11;63800;Brno;365502410;;A (standard);62,00;65,25;Doskoèilová
+2013-12-02;101201;Mitáèková;Františka;;;;ena;Broíkova 21;63800;Brno;336123405;;A (standard);17,00;24,65;Doskoèilová
+2013-12-02;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);138,00;14,05;Doskoèilová
+2013-12-02;101207;Pochmanová;Bohuslava;;;;ena;Jamolice;67201;Jamolice;xx123654yyy;;A (standard);165,00;78,60;Doskoèilová
+2013-12-02;101440;Ondrová;Justın;;;;ena;Slavíèkova 10;63800;Brno;5643as2,3;;A (standard);2,00;0,58;Doskoèilová
+2013-12-02;101414;Procházka;Jan;;;;mu;Vaculíkova 5;63800;Brno;82;;A (standard);17,00;119,83;Doskoèilová
+2013-11-29;101428;Ibl;František;;;;mu;Tøískalova 24;63800;Brno;465a4s3f213;;A (standard);14,00;0,90;Kramáø
+2013-11-29;100326;Suzovièová;Andrea;;;;ena;Broíkova 24;63800;Brno;xzisudojfal;;A (standard);10,00;31,79;Kramáø
+2013-11-29;101734;Trna;Josef;;;;mu;Mokrohorská 40;64400;Brno;6233333;;A (standard);12,00;0,99;Kramáø
+2013-11-29;101595;Süss;Miroslav;;;;mu;Brechtova 9;63800;Brno;381113434;;A (standard);66,00;4,10;Kramáø
+2013-11-29;101087;Blaha;Zdenìk;;;;mu;Fillova 8;63800;Brno;410803117;;A (standard);65,00;9,01;Kramáø
+2013-11-27;101437;Zychová ;Libuše;;;;ena;Broíkova 25;63800;Brno;396118003;;A (standard);6,00;10,14;Kramáø
+2013-11-26;101746;Sedláková;Klára;;;;ena;Milénova 4;63800;Brno;xxxxxxxxx12;;A (standard);100,00;56,47;Kramáø
+2013-11-26;101609;Fukaèová;Jitka;;;;ena;Milenova  128/4;63800;Brno Lesná;365112/444;;A (standard);51,00;0,79;Kramáø
+2013-11-26;101097;Flimmelová;Dita;;;;ena;Tøískalova 350/4;63800;Brno;7754224467;;A (standard);70,00;47,75;Kramáø
+2013-11-26;101212;Indráèková;Marie;;;;ena;Fillova 4;63800;Brno;495823194;;A (standard);1,00;6,46;Kramáø
+2013-11-25;101570;Petrù;Vìra;;;;ena;Fillova 13;63800;Brno;286211424;;A (standard);88,00;35,27;Kramáø
+2013-11-22;101502;Odehnal ;Jaroslav;Ing.;;;mu;Malhostovice 221;66424;Malhostovice;530201053;;A (standard);98,00;72,11;Doskoèilová
+2013-11-22;101435;Humpolík;Richard;;;;mu;Broíkova 19a;63800;Brno;3213safd;;A (standard);57,00;0,53;Doskoèilová
+2013-11-22;101524;Bagarová;Dana;;;;ena;Fillova 4;63800;Brno;455209458;;A (standard);81,00;35,04;Doskoèilová
+2013-11-22;101554;Babiakova;Vìra;;;;ena;Broíkova 20;63800;Brno;7462313793;;A (standard);51,00;37,98;Doskoèilová
+2013-11-22;101568;Hajková;Peta;;;;ena;Fillova 8;63800;Brno Lesná;765427/4001;;A (standard);100,00;80,39;Doskoèilová
+2013-11-21;101026;Macková ;Anna;;;;ena;Jurkovièova 15;63800;Brno;435705460;;A (standard);188,00;6,80;Kramáø
+2013-11-21;101953;Holubová;Alena;;;;ena;Broíkova 11;63800;Brno;543132asf3;;A (standard);2,00;1,45;Kramáø
+2013-11-21;101118;Škrabal;Jiøí;;;;mu;Fiilova 7;63800;Brno;xxxxxxx1234;;A (standard);59,00;0,46;Kramáø
+2013-11-20;101707;Benedìlová;Anna;;;;ena;Tøískalova 12;63800;Brno;xxx1234567;;A (standard);109,00;87,08;Kramáø
+2013-11-20;100419;Smetanová;Eva;;;;ena;Fillova 12;63800;Brno;465s4f6;;A (standard);26,00;11,20;Kramáø
+2013-11-19;100425;Muller;Bohuslav;;;;mu;Fillova 6;63800;Brno;8007013839;;A (standard);20,00;42,02;Doskoèilová
+2013-11-18;101637;Franc;Ivan;;;;mu;Slavíèkova 11;63800;Brno;390617409;;A (standard);57,00;49,66;Doskoèilová
+2013-11-18;101546;Klepáè;Miroslav;;;;mu;Fillova 4;63800;Brno;250108443;;A (standard);59,00;17,88;Doskoèilová
+2013-11-18;101414;Procházka;Jan;;;;mu;Vaculíkova 5;63800;Brno;82;;A (standard);200,00;119,83;Doskoèilová
+2013-11-18;101524;Bagarová;Dana;;;;ena;Fillova 4;63800;Brno;455209458;;A (standard);64,00;35,04;Doskoèilová
+2013-11-15;101165;Sova;Libor;;;;mu;Milenova 1;63800;Brno;6103271328;;A (standard);71,00;8,43;Kramáø
+2013-11-15;101634;Mayerová;Eva;;;;ena;Fillova 4;63800;Brno;246217403;;A (standard);50,00;62,77;Kramáø
+2013-11-15;101624;Širobokova;Tatiana;;;;ena;Fillova 9;63800;Brno;8152239920;;A (standard);665,00;119,64;Kramáø
+2013-11-14;101493;Kadleèíková;Galina;;;;ena;Šrámkova 5;63800;Brno;335315137;;A (standard);54,00;0,54;Kramáø
+2013-11-14;101432;Trnìná ;Iva;;;;ena;Kokory 147;75105;Kokory;9260296078;;A (standard);11,00;0,67;Kramáø
+2013-11-14;101729;Cvancigerová;Jolana;;;;ena;Fillova 11;63800;Brno ;285210711;;A (standard);54,00;17,19;Kramáø
+2013-11-14;101542;Kuchaøík;Jan;;;;mu;Broíkova 16;63800;Brno;400822/428;;A (standard);22,00;234,03;Kramáø
+2013-11-13;101273;Krejèíøová;Blanka;;;;ena;Kupkova 98;63800;Brno;564as321;;A (standard);120,00;0,00;Kramáø
+2013-11-12;101085;Davidová;Helena;;;;ena;Broíkova 14;63800;Brno;5859201205;;A (standard);12,00;22,11;Kramáø
+2013-11-12;100475;Balhar;Miloslav;;;;mu;Tøískalova 20;63800;Brno;270724481;;A (standard);11,00;0,04;Kramáø
+2013-11-11;101532;Zálešák;Antonín;;;;mu;Kupkova 15;63800;Brno;480611152;;A (standard);193,00;0,05;Kramáø
+2013-11-11;100304;Ceral;Ladislav;;;;mu;Slavíèkova 13;63800;Brno;xx1233654yy;;A (standard);126,00;21,24;Kramáø
+2013-11-11;101428;Ibl;František;;;;mu;Tøískalova 24;63800;Brno;465a4s3f213;;A (standard);13,00;0,90;Kramáø
+2013-11-08;101425;Machálková;Vìra;;;;ena;Broíkova 7;63800;Brno;5461fc32;;A (standard);4,00;0,35;Doskoèilová
+2013-11-08;101486;Sobolová;Vojtìška;;;;ena;Merhautova 170;61400;Brno;656e4f3;;A (standard);169,00;173,72;Doskoèilová
+2013-11-08;101024;Švadlenková;Emilie;;;;ena;Štìpánská 1888;75501;Vsetín;55126;;A (standard);56,00;3,31;Doskoèilová
+2013-11-08;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);19,00;0,62;Doskoèilová
+2013-11-08;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);69,00;36,80;Doskoèilová
+2013-11-08;101083;Sedláèková;Lucie;MUDr.;;;ena;Tomeèkova 5;63800;Brno;7952273967;;A (standard);14,00;0,59;Doskoèilová
+2013-11-07;100349;Sedláèková;Dana;;;;ena;Vaculíkova 5;63800;Brno;52654sfd546;;A (standard);93,00;17,79;Doskoèilová
+2013-11-06;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);87,00;99,89;Doskoèilová
+2013-11-06;101737;Petrùjová;Marie;;;;ena;Broíkova 18;63800;Brno 38 -Lesná;425504470;;A (standard);19,00;0,38;Doskoèilová
+2013-11-06;101611;Novotnı;Zdenìk;;;;mu;Fillova 7;63800;Brno;431223454;;A (standard);20,00;0,85;Doskoèilová
+2013-11-05;100302;Vítková;Andrea;;;;ena;Fillova 12;63800;Brno;7852113951;;A (standard);60,00;37,38;Doskoèilová
+2013-11-05;100379;Slanina;Miloslav;;;;mu;Doubí 13;64400;Útìchov;asdf4646sfd;;A (standard);30,00;12,09;Doskoèilová
+2013-11-05;101516;Slezák;Zdenìk;;;;mu;Fillova 4;63800;Brno;300410/420;;A (standard);126,00;119,42;Doskoèilová
+2013-11-04;101605;Procházková;Eva;;;;ena;Broíkova 25;63800;Brno;385906427;;A (standard);113,00;63,63;Doskoèilová
+2013-11-04;101549;Procházková;Marie;;;;ena;Broíkova 13;63800;Brno;475826447;;A (standard);56,00;54,46;Doskoèilová
+2013-11-01;101120;Toman;Ladislav;;;;mu;Fillova 13;63800;Brno;380607439;;A (standard);41,00;33,49;Kramáø
+2013-11-01;100425;Muller;Bohuslav;;;;mu;Fillova 6;63800;Brno;8007013839;;A (standard);9,00;42,02;Kramáø
+2013-11-01;101725;Vítová;Jitka;;;;ena;Fillova 8;63800;Brno;285617411;;A (standard);25,00;9,53;Kramáø
+2013-10-31;101045;Vrtílková;Julie;;;;ena;Fillova 3;63800;Brno;1932;;A (standard);33,00;33,68;Kramáø
+2013-10-31;101215;Mikšík;Jiøí;;;;ena;Vaculíkova 12;63800;Brno;520102055;;A (standard);22,00;22,37;Kramáø
+2013-10-31;101094;Procházková;Yvetta;;;;ena;Fillova 9;63800;Brno;6252221932;;A (standard);49,00;8,89;Kramáø
+2013-10-30;101420;Charvát ;František;;;;mu;Mokrohorská 22;644;Brno;440305424;;A (standard);22,00;39,97;Kramáø
+2013-10-29;101722;Reháková;Petra;;;;ena;Drustevní 8;60000;Brno;78;;A (standard);29,00;4,82;Kramáø
+2013-10-29;101420;Charvát ;František;;;;mu;Mokrohorská 22;644;Brno;440305424;;A (standard);21,00;39,97;Kramáø
+2013-10-24;101053;Dvoøáková;Zdeòka;;;;ena;Vaculíkova 2;63800;Brno;455528464;;A (standard);78,00;2,40;Doskoèilová
+2013-10-24;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);25,00;14,05;Doskoèilová
+2013-10-24;100302;Vítková;Andrea;;;;ena;Fillova 12;63800;Brno;7852113951;;A (standard);37,00;37,38;Doskoèilová
+2013-10-23;101554;Babiakova;Vìra;;;;ena;Broíkova 20;63800;Brno;7462313793;;A (standard);39,00;37,98;Kramáø
+2013-10-23;100430;Øehùøková ;Nicole;;;;ena;Vaculíkova 8;63800;Brno;9361284196;;A (standard);64,00;72,35;Kramáø
+2013-10-23;100358;áèek;Vojtìch;;;;mu;Moutnice 17;66455;Moutnice ;9304207280;;A (standard);54,00;54,57;Kramáø
+2013-10-22;101530;Pivoòka;Zdenìk;MUDr.;;;mu;Broíkova 10;63800;Brno;270318481;;A (standard);200,00;335,24;Kramáø
+2013-10-22;101674;Fleková;Marta;;;;ena;Broíkova 20a;63800;Brno;415120444;;A (standard);83,00;5,01;Kramáø
+2013-10-21;101216;Uhrova;Marie;;;;ena;Broíkova 23;63800;Brno;405309441;;A (standard);146,00;163,50;Kramáø
+2013-10-21;101178;Haluza;Petr;;;;mu;Vaculíkova 10;63800;Brno;xx1236547xx;;A (standard);25,00;15,30;Kramáø
+2013-10-21;101822;Francová;Pavla;;;;ena;Fillova 5;63800;Brno;xxx512644yy;;A (standard);45,00;112,64;Kramáø
+2013-10-21;101684;Bednáøová;Miluše;;;;ena;Broíkova 15;63800;Brno;495213052;;A (standard);186,00;8,51;Kramáø
+2013-10-21;101737;Petrùjová;Marie;;;;ena;Broíkova 18;63800;Brno 38 -Lesná;425504470;;A (standard);6,00;0,38;Kramáø
+2013-10-21;101665;Picka;Karel;;;;mu;Fillova 2;63800;Brno;451224469;;A (standard);6,00;102,75;Kramáø
+2013-10-18;101004;Luzarová;Hana;Mgr.;;;ena;Fillova 5;63800;Brno;376208428;;A (standard);83,00;13,37;Doskoèilová
+2013-10-18;101092;Bartošová;Andrea;;;;ena;Vaculíkova  9;63800;Brno Lesná;7558253802;;A (standard);49,00;0,77;Doskoèilová
+2013-10-18;100491;Tomášek;Jan;Ing.;;;mu;Fillova 4;63800;Brno;330125440;;A (standard);22,00;21,75;Doskoèilová
+2013-10-18;101171;Rouèková ;Barbora;;;;ena;Dudíkova 13;62100;Brno;xxx123654xx;;A (standard);38,00;0,67;Doskoèilová
+2013-10-17;101012;Pelánová;Martina;;;;ena;Vaculíkova 11;63800;Brno Lesná;xxx;;A (standard);12,00;15,90;Doskoèilová
+2013-10-17;101622;Pelikánová;Kvìtoslava;;;;ena;Fillova 10;63800;Brno;376215450;;A (standard);23,00;0,18;Doskoèilová
+2013-10-17;101182;Hanáková ;Jitka;;;;ena;Broíkova 19;63800;Brno;410731451;;A (standard);84,00;50,75;Doskoèilová
+2013-10-17;101203;Macková;Marie;;;;ena;Malı Rùenec;64400;Sobìšice;xx31154678y;;A (standard);47,00;73,85;Doskoèilová
+2013-10-17;101566;Špaková;Helena;;;;ena;Kosatcová 38;63800;Brno;405817458;;A (standard);19,00;12,44;Doskoèilová
+2013-10-16;100404;Stupková;Eva;;;;ena;Majdalenky 7;63800;Brno;456sdf65;;A (standard);25,00;0,11;Doskoèilová
+2013-10-16;100425;Muller;Bohuslav;;;;mu;Fillova 6;63800;Brno;8007013839;;A (standard);31,00;42,02;Doskoèilová
+2013-10-14;101518;Doleal;Ludvík;Ing.;;;mu;Broíkova 10;63800;Brno;440810/433;;A (standard);36,00;54,93;Kramáø
+2013-10-14;101223;Opluštil;Tomáš;;;;mu;Vaculíkova ;63800;Brno;xxx32154yyy;;A (standard);18,00;0,05;Kramáø
+2013-10-14;100444;Polouèková;Jana;;;;ena;Broíkova 21;63800;Brno;5754231527;;A (standard);100,00;26,18;Kramáø
+2013-10-11;100415;Dvoøáková ;Anna;;;;ena;Vaculíkova 2;63800;Brno;415210448;;A (standard);47,00;77,72;Kramáø
+2013-10-11;100378;Šovíèková;Dagmar;;;;ena;Jugoslávská 44;63500;Brno;245808056;;A (standard);44,00;17,56;Kramáø
+2013-10-11;100450;Indruchová ;Nadìda;;;;ena;Broíkova 21;63800;Brno;x41741522yy;;A (standard);100,00;91,40;Kramáø
+2013-10-11;100301;Velenová ;Emma;;;;ena;Studená 9;63800;Brno;205618426;;A (standard);48,00;45,38;Kramáø
+2013-10-11;101167;Haluzová ;Danuše;;;;ena;Vaculíkova 1;63800;Brno;xxxxxx12378;;A (standard);17,00;78,25;Doskoèilová
+2013-10-10;101226;Krestynová;Zdenka;;;;ena;Milenova 9;63800;Brno;xxx3216547y;;A (standard);32,00;65,98;Kramáø
+2013-10-10;101123;Klumpar;Josef;;;;mu;Broíkova 18;63800;Brno;320830453;;A (standard);113,00;133,76;Kramáø
+2013-10-10;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);165,00;136,48;Kramáø
+2013-10-10;101725;Vítová;Jitka;;;;ena;Fillova 8;63800;Brno;285617411;;A (standard);61,00;9,53;Kramáø
+2013-10-10;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);86,00;36,80;Kramáø
+2013-10-10;100429;Hanušová;Miloslava;;;;ena;Plachtova 28;638 00;Brno;325208104;;A (standard);12,00;80,31;Kramáø
+2013-10-10;101499;Pagarusha;Hilmi;;;;mu;28. dubna;63500;Brno;5009594084;;A (standard);60,00;0,00;Kramáø
+2013-10-10;100318;Zelenková;Marcela;;;;ena;Fillova 11;63800;Brno;425928435;;A (standard);23,00;10,90;Kramáø
+2013-10-10;101040;ateèka;Bohuslav;;;;mu;Kobylín 9;64400;Brno;311015060;;A (standard);72,00;0,43;Doskoèilová
+2013-10-10;101108;Olejníèková;Ema;;;;ena;Vaculíkova 11;63800;Brno;1154271206;;A (standard);68,00;99,08;Kramáø
+2013-10-09;100256;Filipi;Ivana;;;;ena;Broíkova 24;63800;Brno;6056071637;;A (standard);76,00;60,27;Doskoèilová
+2013-10-09;101043;Polák;Jiøí;;;;mu;Haškova 10;63800;Brno;xxx32165yyy;;A (standard);42,00;87,93;Doskoèilová
+2013-10-09;101671;Boèek;Jiøí;;;;mu;Zemìdìlská 48;61300;Brno;xxxxxxxxx;;A (standard);40,00;14,09;Doskoèilová
+2013-10-09;100298;Novák;Arnold;;;;mu;Brechtova 14;63800;Brno;450704450;;A (standard);56,00;0,34;Doskoèilová
+2013-10-09;100441;Otrubová;Olga;;;;ena;Botanická 29;60200;Brno;xxx748541yy;;A (standard);34,00;8,69;Doskoèilová
+2013-10-08;101490;Svoboda;Jan;;;;mu;Milénova 11;63800;Brno;65421a32;;A (standard);17,00;5,68;Doskoèilová
+2013-10-08;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);44,00;78,45;Doskoèilová
+2013-10-07;101554;Babiakova;Vìra;;;;ena;Broíkova 20;63800;Brno;7462313793;;A (standard);113,00;37,98;Doskoèilová
+2013-10-07;101247;Tìšíková;Jitka;;;;ena;Vaculíkova 5;63800;Brno;386013423;;A (standard);65,00;72,82;Doskoèilová
+2013-10-07;101671;Boèek;Jiøí;;;;mu;Zemìdìlská 48;61300;Brno;xxxxxxxxx;;A (standard);16,00;14,09;Doskoèilová
+2013-10-07;101032;Zamazalová;Marie;;;;ena;Sobìšická 119;63800;Brno;335627433;;A (standard);76,00;7,34;Doskoèilová
+2013-10-07;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);116,00;78,45;Doskoèilová
+2013-10-07;100426;Hejda;Karel;;;;mu;Tomeèkova 1;63800;Brno;430330405;;A (standard);367,00;197,21;Doskoèilová
+2013-10-07;100476;Støíbrnı;František;;;;mu;Jurkovièova 13;63800;Brno;46sadf3213;;A (standard);89,00;7,17;Doskoèilová
+2013-10-04;101160;Ševèíková ;Josefa ;;;;ena;Milenova 2;63800;Brno;425524413;;A (standard);72,00;24,15;Doskoèilová
+2013-10-03;101634;Mayerová;Eva;;;;ena;Fillova 4;63800;Brno;246217403;;A (standard);140,00;62,77;Doskoèilová
+2013-10-03;100483;Sobotková;Josefa;;;;ena;Loosova 5;63800;Brno;46546a3213;;A (standard);30,00;42,01;Doskoèilová
+2013-10-03;101561;Novotná;Ludmila;;;;ena;Broíkova 20a;63800;Brno;445922441;;A (standard);50,00;32,34;Doskoèilová
+2013-10-02;101095;áková;Renata;;;;ena;Bieblova 21;63800;Brno;6261221395;;A (standard);55,00;28,51;Doskoèilová
+2013-10-02;101642;Baranèicová;Marie;;;;ena;Fillova 6;63800;Brno;395528422;;A (standard);52,00;36,84;Doskoèilová
+2013-10-01;100469;Procházka;Miroslav;;;;mu;Broíkova 25;63800;Brno;350111408;;A (standard);50,00;37,94;Doskoèilová
+2013-10-01;101120;Toman;Ladislav;;;;mu;Fillova 13;63800;Brno;380607439;;A (standard);43,00;33,49;Doskoèilová
+2013-10-01;101174;Pokorná;Ivana;;;;ena;U Hrušek 807;66401;Bílovice nad Svitavou;xxxx123456x;;A (standard);87,00;21,98;Doskoèilová
+2013-10-01;101544;Králová ;Františka;;;;ena;Broíkova 23;63800;Brno;316230405;;A (standard);80,00;5,38;Doskoèilová
+2013-10-01;101544;Králová ;Františka;;;;ena;Broíkova 23;63800;Brno;316230405;;A (standard);20,00;5,38;Doskoèilová
+2013-09-27;101632;Køivá;Olga;;;;ena;Kupkova 73;63800;Brno;506215099;;A (standard);220,00;130,25;Doskoèilová
+2013-09-27;101641;Matoušek;Vlastimil;;;;mu;Fillova 13;63800;Brno;310920/419;;A (standard);32,00;70,37;Doskoèilová
+2013-09-27;100337;Ševèíková ;Eva;;;;ena;Fillova 6;63800;Brno;466113426;;A (standard);125,00;58,01;Doskoèilová
+2013-09-27;100255;Sehnal;Jiøí;;;;mu;Kosatcova 31;63800;Brno;asklj54;;A (standard);44,00;0,55;Doskoèilová
+2013-09-27;101556;Kolouchová;Sandra;;;;ena;Fillova 2;63800;Brno;8453013811;;A (standard);120,00;75,69;Doskoèilová
+2013-09-26;101085;Davidová;Helena;;;;ena;Broíkova 14;63800;Brno;5859201205;;A (standard);129,00;22,11;Doskoèilová
+2013-09-26;102000;Korèeková;Jiøina;;;;ena;Vaculíkova 2;63800;Brno;336251;;A (standard);20,00;6,45;Doskoèilová
+2013-09-26;100399;Nedoma;Josef;;;;mu;Milénova 2;63800;Brno;351116406;;A (standard);44,00;37,68;Doskoèilová
+2013-09-26;101240;Hoøínek;Jan;;;;mu;Vaculíkova 9;63800;Brno;390323470;;A (standard);66,00;102,41;Doskoèilová
+2013-09-25;101193;Buchtová ;Markéta;;;;ena;Broíkova 23;63800;Brno;325618401;;A (standard);35,00;128,73;Doskoèilová
+2013-09-25;100411;Jahn;Jiøí;;;;mu;Ibsenova 9;63800;Brno;5164631sa31;;A (standard);30,00;110,89;Doskoèilová
+2013-09-25;101489;Štìpánová;Eva;;;;ena;Broíkova 15;63800;Brno;8758051812;;A (standard);195,00;0,00;Doskoèilová
+2013-09-25;100269;ák;Karel;Prof.;;;mu;Broíkova 4;63800;Brno;240520459;;A (standard);17,00;27,88;Doskoèilová
+2013-09-25;101595;Süss;Miroslav;;;;mu;Brechtova 9;63800;Brno;381113434;;A (standard);35,00;4,10;Doskoèilová
+2013-09-24;101112;Sochorová;Ludmila;;;;ena;Šrámkova 4;638000;Brno;405419119;;A (standard);100,00;3,13;Doskoèilová
+2013-09-24;101059;Hornı;Bedøich;;;;mu;Broíkova 19a;63800;Brno;440522413;;A (standard);77,00;14,20;Doskoèilová
+2013-09-23;101604;Mareèek;Pavel;;;;mu;Vaculíkova 2;63800;Brno;410414422;;A (standard);100,00;19,98;Doskoèilová
+2013-09-23;100472;Andonov;Jaroslav;;;;mu;Schwaigrova 17;61700;Brno;500513123;;A (standard);153,00;195,01;Doskoèilová
+2013-09-23;100495;Kintrová;Daniela;;;;ena;Provazníkova 49;63200;Brno;325702473;;A (standard);10,00;0,23;Doskoèilová
+2013-09-23;101554;Babiakova;Vìra;;;;ena;Broíkova 20;63800;Brno;7462313793;;A (standard);68,00;37,98;Doskoèilová
+2013-09-20;101526;Janíèek;Pøemysl;;;;mu;Milenova 7;63800;Brno;351201707;;A (standard);38,00;0,19;Doskoèilová
+2013-09-20;100399;Nedoma;Josef;;;;mu;Milénova 2;63800;Brno;351116406;;A (standard);100,00;37,68;Doskoèilová
+2013-09-20;101217;mátlová;Vlasta;Ing.;;;ena;Fillova 3;63800;Brno;425401449;;A (standard);226,00;0,11;Doskoèilová
+2013-09-20;101559;Jelínková;Lucie;;;;ena;Fillova 7;63800;Brno;7055183854;;A (standard);75,00;32,55;Doskoèilová
+2013-09-20;101712;Bundálek ;Martin;;;;mu;Jurkovièova 10;63800;Brno;7506073784;;A (standard);142,00;50,06;Doskoèilová
+2013-09-20;101607;Kuèerová;Stanislava;;;;ena;Milénova 12;63800;Brno;276031738;;A (standard);68,00;90,55;Doskoèilová
+2013-09-19;101626;Vaøejková;Vìra;Doc.;PhDr.;;ena;Fillova 5;63800;Brno;315307500;;A (standard);75,00;28,92;Doskoèilová
+2013-09-19;101680;Pustinová;Zdenka;;;;ena;Fillova 11;63800;Brno;326017408;;A (standard);42,00;306,08;Doskoèilová
+2013-09-19;101623;Gritzová;Monika;;;;ena;Fillova 3;63800;Brno;425308104;;A (standard);72,00;236,19;Doskoèilová
+2013-09-19;101623;Gritzová;Monika;;;;ena;Fillova 3;63800;Brno;425308104;;A (standard);200,00;236,19;Doskoèilová
+2013-09-19;100411;Jahn;Jiøí;;;;mu;Ibsenova 9;63800;Brno;5164631sa31;;A (standard);194,00;110,89;Doskoèilová
+2013-09-19;100472;Andonov;Jaroslav;;;;mu;Schwaigrova 17;61700;Brno;500513123;;A (standard);50,00;195,01;Doskoèilová
+2013-09-19;101186;Boèková  ;Dagmar;;;;ena;Vaculíkova 11;63800;Brno;325318401;;A (standard);26,00;63,44;Doskoèilová
+2013-09-18;101702;Šebková;Iva;;;;ena;Jekova 6;63800;Brno;445523411;;A (standard);29,00;0,01;Doskoèilová
+2013-09-18;100330;Janda;Arnold;;;;mu;Milenova 1;63800;Brno;xxxxxxx;;A (standard);109,00;93,63;Doskoèilová
+2013-09-18;101056;Tesaøová;Barbora;;;;ena;Fillova 5;63800;Brno;9262114092;;A (standard);73,00;23,92;Doskoèilová
+2013-09-18;101551;Musil;Josef;Ing.;;;mu;Milenova 4;63800;Brno;420907/425;;A (standard);85,00;95,72;Doskoèilová
+2013-09-18;101403;Zeman;Josef;;;;mu;Jurkovièova 2;63800;Brno;5705162309;;A (standard);35,00;18,16;Doskoèilová
+2013-09-18;101038;Strmisková ;Romana ;;;;ena;Broíkova 17;638000;brno;xxxxxxxxxx3;;A (standard);125,00;29,74;Doskoèilová
+2013-09-17;101519;Kotolová;Rùena;;;;ena;Na rychtì 20;64400;Brno;7558203862;;A (standard);60,00;16,56;Doskoèilová
+2013-09-17;101654;Ambroová ;Anna;;;;ena;Fillova 13;63800;Brno;446005427;;A (standard);32,00;115,97;Doskoèilová
+2013-09-17;101995;Tkadlecová;Lenka;;;;mu;Fillova 10;63800;Brno;515109222;;A (standard);25,00;61,42;Doskoèilová
+2013-09-17;101401;Vochiánová;Jiøina;;;;ena;Milénova 12;63800;Brno;456465sdfa;;A (standard);5,00;0,85;Doskoèilová
+2013-09-16;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);134,00;36,80;Doskoèilová
+2013-09-16;101995;Tkadlecová;Lenka;;;;mu;Fillova 10;63800;Brno;515109222;;A (standard);50,00;61,42;Doskoèilová
+2013-09-16;101709;Zavøelová;Irena;;;;mu;Slavíèkova 10;63800;Brno;322701/424;;A (standard);55,00;169,20;Doskoèilová
+2013-09-16;101691;Hynková;Jiøina;;;;ena;Vaculíkova 11;63800;Brno;346112460;;A (standard);47,00;0,63;Doskoèilová
+2013-09-16;101244;Pospíšilová ;Jana;;;;ena;Haškova 2;63800;Brno;xx321654yyy;;A (standard);24,00;27,03;Doskoèilová
+2013-09-13;100259;Kubová;Jana;;;;ena;Fillova 10;63800;Brno;Xz78952154;;A (standard);33,00;5,88;Kramáø
+2013-09-13;100340;Budín;Miroslav;;;;mu;Kupkova 100;63800;Brno;330913424;;A (standard);138,00;29,91;Kramáø
+2013-09-13;100340;Budín;Miroslav;;;;mu;Kupkova 100;63800;Brno;330913424;;A (standard);36,00;29,91;Kramáø
+2013-09-13;101698;Pospíchalová;Zdenka;;;;ena;Fillova 3;63800;Brno Lesná;51;;A (standard);240,00;40,95;Kramáø
+2013-09-13;101609;Fukaèová;Jitka;;;;ena;Milenova  128/4;63800;Brno Lesná;365112/444;;A (standard);6,00;0,79;Kramáø
+2013-09-13;100495;Kintrová;Daniela;;;;ena;Provazníkova 49;63200;Brno;325702473;;A (standard);45,00;0,23;Doskoèilová
+2013-09-13;100353;Vocílková;Vìra;;;;ena;Fillova 13;63800;Brno;335805469;;A (standard);40,00;4,03;Doskoèilová
+2013-09-12;101114;Lanèíková;Vlasta;;;;ena;Vaculíkova 9;63800;Brno;446029433;;A (standard);50,00;109,98;Doskoèilová
+2013-09-12;101020;Kobylková;Andìla;;;;ena;Milénova 4;63800;Brno;465325470;;A (standard);68,00;52,74;Kramáø
+2013-09-12;101076;Straka;Josef;;;;mu;Vaculíkova 6;63800;Brno;300617422;;A (standard);64,00;43,67;Doskoèilová
+2013-09-12;101056;Tesaøová;Barbora;;;;ena;Fillova 5;63800;Brno;9262114092;;A (standard);28,00;23,92;Doskoèilová
+2013-09-12;101123;Klumpar;Josef;;;;mu;Broíkova 18;63800;Brno;320830453;;A (standard);57,00;133,76;Doskoèilová
+2013-09-11;101248;Jelínek;Otto;;;;mu;Fillova 12;63800;Brno;xxx321654yy;;A (standard);24,00;26,79;Kramáø
+2013-09-11;100458;Margoldová;Hana;;;;ena;Útìchovská;64400;Brno;x41527485yy;;A (standard);37,00;13,67;Kramáø
+2013-09-11;100489;Pazour;Jiøí;;;;mu;Vaculíkova 528/5;63800;Brno;400715437;;A (standard);75,00;2,85;Kramáø
+2013-09-11;101148;Kukletová;Eva;;;;ena;Fillova 10;63800;Brno;395713/410;;A (standard);27,00;92,45;Kramáø
+2013-09-11;101212;Indráèková;Marie;;;;ena;Fillova 4;63800;Brno;495823194;;A (standard);7,00;6,46;Kramáø
+2013-09-11;100254;Hudec;Oldøich;;;;mu;Halasovo nám.2;63800;Brno;x123654789x;;A (standard);44,00;26,32;Kramáø
+2013-09-10;101063;Neuil;Dobroslav;;;;mu;Broíkova 6;63800;Brno;6310220840;;A (standard);46,00;7,16;Kramáø
+2013-09-10;101003;Stiaø;Stanislav;;;;mu;Vaculíkova 5;63800;Brno;490315046;;A (standard);50,00;0,73;Kramáø
+2013-09-10;100340;Budín;Miroslav;;;;mu;Kupkova 100;63800;Brno;330913424;;A (standard);30,00;29,91;Kramáø
+2013-09-10;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);27,00;0,62;Kramáø
+2013-09-09;100379;Slanina;Miloslav;;;;mu;Doubí 13;64400;Útìchov;asdf4646sfd;;A (standard);45,00;12,09;Kramáø
+2013-09-09;101607;Kuèerová;Stanislava;;;;ena;Milénova 12;63800;Brno;276031738;;A (standard);20,00;90,55;Kramáø
+2013-09-09;101630;Viktorová;Radka;;;;ena;Okrouhlá 12;62500;Brno;91;;A (standard);13,00;0,36;Kramáø
+2013-09-09;100384;Procházková;Emilíe;;;;ena;Broíkova 11;63800;Brno;xx52417412y;;A (standard);7,00;0,23;Kramáø
+2013-09-09;101302;Nerudová;Jiøina;;;;ena;Vaculíkova 1;63800;Brno;546as132;;A (standard);31,00;10,68;Kramáø
+2013-09-09;101516;Slezák;Zdenìk;;;;mu;Fillova 4;63800;Brno;300410/420;;A (standard);12,00;119,42;Kramáø
+2013-09-09;100271;Cicvárek;Jiøí;PhDr;;;mu;Slavíèkova 8;63800;Brno;470414020;;A (standard);47,00;37,42;Kramáø
+2013-09-09;101588;Hansgutová;Marie;;;;mu;Fillova 5;63800;Brno;445704462;;A (standard);19,00;10,32;Kramáø
+2013-09-09;101535;Janda;Jan;;;;mu;Fillova 5;63800;Brno;440724052;;A (standard);150,00;63,27;Kramáø
+2013-09-09;101596;Ruberová;Anna;;;;ena;Slavíèkova 2;63800;Brno;425427442;;A (standard);50,00;5,50;Kramáø
+2013-09-06;101637;Franc;Ivan;;;;mu;Slavíèkova 11;63800;Brno;390617409;;A (standard);77,00;49,66;Doskoèilová
+2013-09-06;100487;Sobolová;Vojtìška;;;;ena;Merhautova 170;61400;Brno;465208457;Škopová Bohdana;A (standard);520,00;-480,00;Doskoèilová
+2013-09-06;101965;Karabelová;Jaroslava;;;;ena;Broíkova 12;63800;Brno;445711434;;A (standard);47,00;0,29;Doskoèilová
+2013-09-06;101624;Širobokova;Tatiana;;;;ena;Fillova 9;63800;Brno;8152239920;;A (standard);350,00;119,64;Doskoèilová
+2013-09-06;100488;Procházka;Pavel;;;;mu;Bohatcova 26a;63800;Brno;510529192;;A (standard);25,00;0,56;Doskoèilová
+2013-09-06;100330;Janda;Arnold;;;;mu;Milenova 1;63800;Brno;xxxxxxx;;A (standard);50,00;93,63;Doskoèilová
+2013-09-06;101725;Vítová;Jitka;;;;ena;Fillova 8;63800;Brno;285617411;;A (standard);15,00;9,53;Doskoèilová
+2013-09-06;101737;Petrùjová;Marie;;;;ena;Broíkova 18;63800;Brno 38 -Lesná;425504470;;A (standard);24,00;0,38;Doskoèilová
+2013-09-05;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);86,00;14,05;Doskoèilová
+2013-09-05;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);20,00;14,05;Doskoèilová
+2013-09-05;100330;Janda;Arnold;;;;mu;Milenova 1;63800;Brno;xxxxxxx;;A (standard);49,00;93,63;Doskoèilová
+2013-09-05;101912;Èechalová ;Zdeòka;;;;ena;Hlohova;63800;Brno;xxx3216454y;;A (standard);85,00;11,84;Doskoèilová
+2013-09-05;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);48,00;99,89;Doskoèilová
+2013-09-04;101730;Fajt;Jaromír;;;;mu;Stojanova 9;60200;Brno;555;;A (standard);42,00;108,58;Doskoèilová
+2013-09-04;101624;Širobokova;Tatiana;;;;ena;Fillova 9;63800;Brno;8152239920;;A (standard);15,00;119,64;Doskoèilová
+2013-09-04;101216;Uhrova;Marie;;;;ena;Broíkova 23;63800;Brno;405309441;;A (standard);15,00;163,50;Doskoèilová
+2013-09-03;101071;Mackù;Marie;;;;ena;Broíkova 19a;63800;Brno;350000;;A (standard);51,00;25,85;Doskoèilová
+2013-09-03;100482;Hanzlová;Petra;;;;ena;Vaculíkova 5;63800;Brno;543a132;;A (standard);36,00;11,25;Doskoèilová
+2013-09-03;101207;Pochmanová;Bohuslava;;;;ena;Jamolice;67201;Jamolice;xx123654yyy;;A (standard);36,00;78,60;Doskoèilová
+2013-09-02;101529;Hromadová;Jarmila;;;;ena;Fillova 11;63800;Brno;365502410;;A (standard);80,00;65,25;Doskoèilová
+2013-09-02;101209;Frièová;Ludmila;;;;ena;Fillova 13;63800;Brno;246222428;;A (standard);22,00;101,09;Doskoèilová
+2013-08-30;100217;Menšíková;Danuše;;;;mu;Marie Majerové 10;63800;Brno;455724/421;;A (standard);5,00;0,46;Kramáø
+2013-08-30;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);91,00;0,62;Kramáø
+2013-08-30;101547;Chadimová;Jana;;;;ena;Broíkova 20a;63800;Brno;47;;A (standard);79,00;22,58;Kramáø
+2013-08-29;101215;Mikšík;Jiøí;;;;ena;Vaculíkova 12;63800;Brno;520102055;;A (standard);77,00;22,37;Doskoèilová
+2013-08-29;100477;Novotná ;Jana;;;;ena;Vaculíkova ;63800;Brno;445119409;;A (standard);126,00;14,98;Doskoèilová
+2013-08-29;101596;Ruberová;Anna;;;;ena;Slavíèkova 2;63800;Brno;425427442;;A (standard);63,00;5,50;Doskoèilová
+2013-08-29;100478;Štìpánková;Milada;;;;ena;Broíkova 49/11;63800;Brno;326015451;;A (standard);160,00;0,20;Doskoèilová
+2013-08-28;101609;Fukaèová;Jitka;;;;ena;Milenova  128/4;63800;Brno Lesná;365112/444;;A (standard);76,00;0,79;Kramáø
+2013-08-28;101241;Drábek;Vladimír;;;;mu;Broíkova 19;63800;Brno;xxxx321654y;;A (standard);31,00;118,05;Kramáø
+2013-08-28;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);223,00;0,62;Kramáø
+2013-08-28;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);28,00;0,62;Kramáø
+2013-08-28;101004;Luzarová;Hana;Mgr.;;;ena;Fillova 5;63800;Brno;376208428;;A (standard);86,00;13,37;Kramáø
+2013-08-28;101634;Mayerová;Eva;;;;ena;Fillova 4;63800;Brno;246217403;;A (standard);35,00;62,77;Kramáø
+2013-08-27;101704;Strejèek;Milan;;;;mu;Fillova 8;63800;Brno;380612/417;;A (standard);250,00;0,24;Kramáø
+2013-08-26;101247;Tìšíková;Jitka;;;;ena;Vaculíkova 5;63800;Brno;386013423;;A (standard);12,00;72,82;Kramáø
+2013-08-26;101544;Králová ;Františka;;;;ena;Broíkova 23;63800;Brno;316230405;;A (standard);60,00;5,38;Kramáø
+2013-08-23;101226;Krestynová;Zdenka;;;;ena;Milenova 9;63800;Brno;xxx3216547y;;A (standard);6,00;65,98;Doskoèilová
+2013-08-23;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);10,00;136,48;Doskoèilová
+2013-08-23;100440;Hauserová;Boena;;;;ena;Slavíèkova 10;63800;Brno;56+asfd22;;A (standard);27,00;19,56;Doskoèilová
+2013-08-23;101514;Paulíková;Zdenka;;;;ena;Ibsenova  10;63800;Brno;5456303171;;A (standard);97,00;6,24;Doskoèilová
+2013-08-22;101073;Ledererová;Zdeòka;;;;ena;Vaculíkova 9;63800;Brno;xxxxxxxxx10;;A (standard);100,00;6,45;Doskoèilová
+2013-08-22;101171;Rouèková ;Barbora;;;;ena;Dudíkova 13;62100;Brno;xxx123654xx;;A (standard);60,00;0,67;Doskoèilová
+2013-08-22;101226;Krestynová;Zdenka;;;;ena;Milenova 9;63800;Brno;xxx3216547y;;A (standard);9,00;65,98;Doskoèilová
+2013-08-22;100310;Procházková ;Zdenka;;;;ena;Jurkovièova 7;63800;Brno;xxxx6521yyy;;A (standard);116,00;188,00;Doskoèilová
+2013-08-22;101148;Kukletová;Eva;;;;ena;Fillova 10;63800;Brno;395713/410;;A (standard);36,00;92,45;Doskoèilová
+2013-08-22;101713;Martináková;Ludmila;;;;ena;Vaculíkova 11;63800;Brno;28.3.1930;;A (standard);41,00;53,01;Doskoèilová
+2013-08-21;101560;Havel;Jaroslav;;;;mu;Šrámkova 9;63800;Brno;530130094;;A (standard);16,00;23,17;Doskoèilová
+2013-08-21;100016;Bartoòová;Eva;;;;ena;Slavíèkova 8;63800;Brno;39hhh;;A (standard);138,00;76,29;Doskoèilová
+2013-08-19;101043;Polák;Jiøí;;;;mu;Haškova 10;63800;Brno;xxx32165yyy;;A (standard);72,00;87,93;Doskoèilová
+2013-08-19;101738;Seitl;Ladislav;;;;mu;Fillova 2;63800;Brno;310117456;;A (standard);160,00;31,39;Doskoèilová
+2013-08-19;100419;Smetanová;Eva;;;;ena;Fillova 12;63800;Brno;465s4f6;;A (standard);55,00;11,20;Doskoèilová
+2013-08-19;101302;Nerudová;Jiøina;;;;ena;Vaculíkova 1;63800;Brno;546as132;;A (standard);50,00;10,68;Doskoèilová
+2013-08-16;101045;Vrtílková;Julie;;;;ena;Fillova 3;63800;Brno;1932;;A (standard);63,00;33,68;Doskoèilová
+2013-08-16;101536;Vrchotová;Alena;;;;ena;Fillova 7;63800;Brno;365626442;;A (standard);69,00;116,46;Doskoèilová
+2013-08-16;101535;Janda;Jan;;;;mu;Fillova 5;63800;Brno;440724052;;A (standard);170,00;63,27;Kramáø
+2013-08-16;101186;Boèková  ;Dagmar;;;;ena;Vaculíkova 11;63800;Brno;325318401;;A (standard);70,00;63,44;Kramáø
+2013-08-15;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);200,00;78,45;Kramáø
+2013-08-15;101201;Mitáèková;Františka;;;;ena;Broíkova 21;63800;Brno;336123405;;A (standard);47,00;24,65;Kramáø
+2013-08-15;101168;Andonová;Anna;;;;ena;Milenova 2;63800;Brno;xxxx1648742;;A (standard);181,00;7,01;Kramáø
+2013-08-15;101544;Králová ;Františka;;;;ena;Broíkova 23;63800;Brno;316230405;;A (standard);83,00;5,38;Kramáø
+2013-08-14;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);79,00;136,48;Kramáø
+2013-08-14;101040;ateèka;Bohuslav;;;;mu;Kobylín 9;64400;Brno;311015060;;A (standard);25,00;0,43;Kramáø
+2013-08-14;100353;Vocílková;Vìra;;;;ena;Fillova 13;63800;Brno;335805469;;A (standard);35,00;4,03;Kramáø
+2013-08-13;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);272,00;36,80;Doskoèilová
+2013-08-13;101558;Jureèková;Rùena;MUDr.;;;ena;Broíkova 15;63800;Brno;445619424;;A (standard);74,00;29,59;Doskoèilová
+2013-08-13;101155;Doubravová;Ludmila;;;;ena;Broíkova 14;63800;Brno;405809408;;A (standard);19,00;12,05;Doskoèilová
+2013-08-12;101165;Sova;Libor;;;;mu;Milenova 1;63800;Brno;6103271328;;A (standard);273,00;8,43;Kramáø
+2013-08-12;100337;Ševèíková ;Eva;;;;ena;Fillova 6;63800;Brno;466113426;;A (standard);63,00;58,01;Kramáø
+2013-08-12;101658;Smolíková;Vìra;MUDr.;;;ena;Vaculíkova 4;63800;Brno;355829708;;A (standard);52,00;27,41;Kramáø
+2013-08-12;100349;Sedláèková;Dana;;;;ena;Vaculíkova 5;63800;Brno;52654sfd546;;A (standard);70,00;17,79;Kramáø
+2013-08-12;101048;Korèák;Stanislav;;;;mu;Vaculíkova 10;63800;Brno;300217424;;A (standard);35,00;54,40;Kramáø
+2013-08-12;100425;Muller;Bohuslav;;;;mu;Fillova 6;63800;Brno;8007013839;;A (standard);20,00;42,02;Kramáø
+2013-08-09;101532;Zálešák;Antonín;;;;mu;Kupkova 15;63800;Brno;480611152;;A (standard);253,00;0,05;Doskoèilová
+2013-08-09;100438;Walterová;Marie;;;;ena;Milénova 3;63800;Brno;654sf516;;A (standard);50,00;83,49;Doskoèilová
+2013-08-08;101518;Doleal;Ludvík;Ing.;;;mu;Broíkova 10;63800;Brno;440810/433;;A (standard);77,00;54,93;Kramáø
+2013-08-08;101600;Šaršonová;Zdeòka;;;;ena;Slavíèkova 12;63800;Brno;455409451;;A (standard);149,00;330,19;Kramáø
+2013-08-07;101729;Cvancigerová;Jolana;;;;ena;Fillova 11;63800;Brno ;285210711;;A (standard);27,00;17,19;Doskoèilová
+2013-08-07;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);90,00;14,05;Doskoèilová
+2013-08-06;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);123,00;99,89;Doskoèilová
+2013-08-05;101216;Uhrova;Marie;;;;ena;Broíkova 23;63800;Brno;405309441;;A (standard);146,00;163,50;Kramáø
+2013-08-05;101745;Stojanová;Libuše;PaedDr.;;;ena;Fillova 8;63800;Brno;455710451;;A (standard);125,00;49,28;Kramáø
+2013-08-02;101730;Fajt;Jaromír;;;;mu;Stojanova 9;60200;Brno;555;;A (standard);86,00;108,58;Kramáø
+2013-08-02;101528;Stehlíková;Eva;;;;ena;Vaculíkova 10;63800;Brno;405423405;;A (standard);78,00;10,50;Kramáø
+2013-08-02;100415;Dvoøáková ;Anna;;;;ena;Vaculíkova 2;63800;Brno;415210448;;A (standard);125,00;77,72;Kramáø
+2013-07-31;101654;Ambroová ;Anna;;;;ena;Fillova 13;63800;Brno;446005427;;A (standard);41,00;115,97;Kramáø
+2013-07-30;101047;Krèál;Jiøí;;;;mu;Vaculíkova 2;63800;Brno;1979;;A (standard);103,00;66,17;Kramáø
+2013-07-26;101522;Blahynková;Eva;;;;ena;Milenova 4;63800;Brno;376214409;;A (standard);157,00;119,15;Kramáø
+2013-07-26;101543;Svoboda;Oldøich;;;;mu;Vaculíkova 10;63800;Brno;5505302682;;A (standard);165,00;33,15;Kramáø
+2013-07-25;101441;Tomanová;Ivanka;;;;ena;Fillova 13;63800;Brno;425223458;;A (standard);80,00;36,70;Kramáø
+2013-07-25;101674;Fleková;Marta;;;;ena;Broíkova 20a;63800;Brno;415120444;;A (standard);70,00;5,01;Kramáø
+2013-07-24;101516;Slezák;Zdenìk;;;;mu;Fillova 4;63800;Brno;300410/420;;A (standard);125,00;119,42;Kramáø
+2013-07-24;101622;Pelikánová;Kvìtoslava;;;;ena;Fillova 10;63800;Brno;376215450;;A (standard);5,00;0,18;Kramáø
+2013-07-23;101026;Macková ;Anna;;;;ena;Jurkovièova 15;63800;Brno;435705460;;A (standard);100,00;6,80;Kramáø
+2013-07-23;101108;Olejníèková;Ema;;;;ena;Vaculíkova 11;63800;Brno;1154271206;;A (standard);185,00;99,08;Kramáø
+2013-07-23;101641;Matoušek;Vlastimil;;;;mu;Fillova 13;63800;Brno;310920/419;;A (standard);60,00;70,37;Kramáø
+2013-07-22;101729;Cvancigerová;Jolana;;;;ena;Fillova 11;63800;Brno ;285210711;;A (standard);22,00;17,19;Kramáø
+2013-07-19;101549;Procházková;Marie;;;;ena;Broíkova 13;63800;Brno;475826447;;A (standard);80,00;54,46;Doskoèilová
+2013-07-19;101182;Hanáková ;Jitka;;;;ena;Broíkova 19;63800;Brno;410731451;;A (standard);98,00;50,75;Doskoèilová
+2013-07-18;100256;Filipi;Ivana;;;;ena;Broíkova 24;63800;Brno;6056071637;;A (standard);62,00;60,27;Kramáø
+2013-07-18;101691;Hynková;Jiøina;;;;ena;Vaculíkova 11;63800;Brno;346112460;;A (standard);90,00;0,63;Kramáø
+2013-07-17;101595;Süss;Miroslav;;;;mu;Brechtova 9;63800;Brno;381113434;;A (standard);33,00;4,10;Kramáø
+2013-07-16;101032;Zamazalová;Marie;;;;ena;Sobìšická 119;63800;Brno;335627433;;A (standard);54,00;7,34;Doskoèilová
+2013-07-16;100409;Tulcová;Zuzana;;;;ena;Tøískalova 2;63800;Brno;465as3;;A (standard);5,00;6,85;Doskoèilová
+2013-07-16;101622;Pelikánová;Kvìtoslava;;;;ena;Fillova 10;63800;Brno;376215450;;A (standard);39,00;0,18;Doskoèilová
+2013-07-16;101700;Herùdková;Barbora;;;;ena;Broíkova 13;63800;Brno Lesná;9862154093;;A (standard);126,00;86,91;Doskoèilová
+2013-07-15;101061;Pospíšilová;Eva;;;;ena;Vaculíkova 1;63800;Brno;455916141;;A (standard);50,00;61,98;Doskoèilová
+2013-07-15;101131;Sedláková;Nadìda;;;;ena;Bieblova 23;63800;Brno;435620406;;A (standard);10,00;7,04;Doskoèilová
+2013-07-12;101709;Zavøelová;Irena;;;;mu;Slavíèkova 10;63800;Brno;322701/424;;A (standard);89,00;169,20;Doskoèilová
+2013-07-12;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);102,00;136,48;Doskoèilová
+2013-07-12;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);49,00;136,48;Doskoèilová
+2013-07-12;101613;Vítolová;Radmila;;;;ena;Loosova 8;63800;Brno;7355213921;;A (standard);89,00;136,48;Doskoèilová
+2013-07-12;101720;Drdlová;Jana;;;;ena;Stojanova 9;60200;Brno;8162294789;;A (standard);95,00;28,36;Doskoèilová
+2013-07-11;100301;Velenová ;Emma;;;;ena;Studená 9;63800;Brno;205618426;;A (standard);175,00;45,38;Kramáø
+2013-07-10;101727;Selnerová;Mária;;;;ena;Broíkova 11;63800;Brno;39;;A (standard);17,00;20,60;Doskoèilová
+2013-07-10;100436;Pošváøová;Katarina;;;;ena;Haškova 8;63800;Brno;54as656;;A (standard);6,00;0,75;Kramáø
+2013-07-10;101040;ateèka;Bohuslav;;;;mu;Kobylín 9;64400;Brno;311015060;;A (standard);166,00;0,43;Kramáø
+2013-07-10;101649;Jeøábková;Daniela;RNDr.;;;ena;Milénova 130/6;63800;Brno;315831820;;A (standard);50,00;38,29;Doskoèilová
+2013-07-10;101630;Viktorová;Radka;;;;ena;Okrouhlá 12;62500;Brno;91;;A (standard);26,00;0,36;Doskoèilová
+2013-07-08;100433;Kotlanová;Jarmila;;;;ena;Loosova 12;63800;Brno;fjkp546asf;;A (standard);2,00;0,85;Kramáø
+2013-07-08;101595;Süss;Miroslav;;;;mu;Brechtova 9;63800;Brno;381113434;;A (standard);132,00;4,10;Doskoèilová
+2013-07-04;101524;Bagarová;Dana;;;;ena;Fillova 4;63800;Brno;455209458;;A (standard);101,00;35,04;Doskoèilová
+2013-07-03;101178;Haluza;Petr;;;;mu;Vaculíkova 10;63800;Brno;xx1236547xx;;A (standard);10,00;15,30;Doskoèilová
+2013-07-01;101530;Pivoòka;Zdenìk;MUDr.;;;mu;Broíkova 10;63800;Brno;270318481;;A (standard);485,00;335,24;Doskoèilová
+2013-07-01;101120;Toman;Ladislav;;;;mu;Fillova 13;63800;Brno;380607439;;A (standard);103,00;33,49;Doskoèilová
+2013-06-28;101726;Adámek ;Leopold;;;;mu;Fillova 7;63800;Brno;320519462;;A (standard);86,00;21,09;Doskoèilová
+2013-06-28;101545;Doèkal;Radovan;;;;mu;Tøískalova 3;63800;Brno;400327459;;A (standard);112,00;4,27;Doskoèilová
+2013-06-28;101617;Kejík;Otakar;;;;mu;Fillova 7;63800;Brno;300424/470;;A (standard);35,00;19,05;Doskoèilová
+2013-06-28;101518;Doleal;Ludvík;Ing.;;;mu;Broíkova 10;63800;Brno;440810/433;;A (standard);46,00;54,93;Doskoèilová
+2013-06-28;101746;Sedláková;Klára;;;;ena;Milénova 4;63800;Brno;xxxxxxxxx12;;A (standard);54,00;56,47;Doskoèilová
+2013-06-26;101199;Kovaøíková;Darja;;;;ena;Tøískalova 4;63800;Brno;9061084164;;A (standard);34,00;69,11;Doskoèilová
+2013-06-26;100416;Vyhnálková;Marie;;;;ena;Broíkova 5;63800;Brno;405326436;;A (standard);5,00;0,22;Kramáø
+2013-06-25;101690;Šmerdová;Sylvia;;;;ena;Fillova 3;63800;Brno;000023;;A (standard);23,00;13,36;Kramáø
+2013-06-25;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);133,00;36,80;Doskoèilová
+2013-06-25;100259;Kubová;Jana;;;;ena;Fillova 10;63800;Brno;Xz78952154;;A (standard);20,00;5,88;Doskoèilová
+2013-06-25;101634;Mayerová;Eva;;;;ena;Fillova 4;63800;Brno;246217403;;A (standard);36,00;62,77;Doskoèilová
+2013-06-24;101094;Procházková;Yvetta;;;;ena;Fillova 9;63800;Brno;6252221932;;A (standard);33,00;8,89;Doskoèilová
+2013-06-24;101745;Stojanová;Libuše;PaedDr.;;;ena;Fillova 8;63800;Brno;455710451;;A (standard);70,00;49,28;Doskoèilová
+2013-06-24;101091;Grunda;Blahomil;;;;mu;Milénova 9;63800;Brno;260115422;;A (standard);118,00;1,61;Doskoèilová
+2013-06-24;101186;Boèková  ;Dagmar;;;;ena;Vaculíkova 11;63800;Brno;325318401;;A (standard);44,00;63,44;Kramáø
+2013-06-21;101046;Stefanidisová;Dimitrula;;;;ena;Fillova 4;63800;Brno;515314192;;A (standard);67,00;110,54;Doskoèilová
+2013-06-21;100379;Slanina;Miloslav;;;;mu;Doubí 13;64400;Útìchov;asdf4646sfd;;A (standard);31,00;12,09;Doskoèilová
+2013-06-21;100401;Slámová;Jana;;;;ena;Slavíèkova 5;63800;Brno;65+asdf+65+;;A (standard);8,00;6,64;Doskoèilová
+2013-06-21;101178;Haluza;Petr;;;;mu;Vaculíkova 10;63800;Brno;xx1236547xx;;A (standard);15,00;15,30;Doskoèilová
+2013-06-20;101932;Procházka;Bohuslav;;;;mu;Merhautova 162;61400;Brno;5703192693;;A (standard);95,00;0,62;Kramáø
+2013-06-19;101994;Lanšperk;Radim;;;;mu;Pavlovská 2;62300;Brno;7803253975;;A (standard);73,00;0,23;Doskoèilová
+2013-06-18;101531;Králová;Marie;;;;ena;Fillova 6;63800;Brno;415912046;;A (standard);107,00;111,52;Doskoèilová
+2013-06-18;101579;Šimáková;Vìra;;;;ena;Libušino údolí 126;62300;Brno;485428458;;A (standard);61,00;172,80;Doskoèilová
+2013-06-18;101102;Escherová;Jarmila;;;;ena;Milénova 9;63800;Brno;425907435;;A (standard);41,00;44,59;Doskoèilová
+2013-06-18;101617;Kejík;Otakar;;;;mu;Fillova 7;63800;Brno;300424/470;;A (standard);72,00;19,05;Doskoèilová
+2013-06-18;101183;Stehlík;Miloš;;;;mu;Broíkova 19a;63800;Brno;23;;A (standard);278,00;121,06;Doskoèilová
+2013-06-18;100379;Slanina;Miloslav;;;;mu;Doubí 13;64400;Útìchov;asdf4646sfd;;A (standard);23,00;12,09;Doskoèilová
+2013-06-18;101644;Kartousová;Vladimíra;;;;ena;Milenova 2;63800;Brno Lesná;6553020210;;A (standard);152,00;4,74;Doskoèilová
+2013-06-17;101084;Tomanová;Alena;;;;ena;Fillova 4;63800;Brno;415514421;;A (standard);67,00;2,22;Kramáø
+2013-06-14;101112;Sochorová;Ludmila;;;;ena;Šrámkova 4;638000;Brno;405419119;;A (standard);69,00;3,13;Kramáø
+2013-06-14;100327;Hubenı;Jan;;;;mu;U Sıpky 25;66461;Rajhradice;380915730;;A (standard);53,00;0,43;Doskoèilová
+2013-06-14;101004;Luzarová;Hana;Mgr.;;;ena;Fillova 5;63800;Brno;376208428;;A (standard);60,00;13,37;Doskoèilová
+2013-06-12;101595;Süss;Miroslav;;;;mu;Brechtova 9;63800;Brno;381113434;;A (standard);70,00;4,10;Doskoèilová
+2013-06-12;101588;Hansgutová;Marie;;;;mu;Fillova 5;63800;Brno;445704462;;A (standard);20,00;10,32;Kramáø
+2013-06-10;101193;Buchtová ;Markéta;;;;ena;Broíkova 23;63800;Brno;325618401;;A (standard);31,00;128,73;Kramáø
+2013-06-10;101659;Babièková ;Hana;;;;ena;Broíkova 14;63800;Brno Lesná;385531447;;A (standard);71,00;19,82;Kramáø
+2013-06-10;101011;Šínová;Veronika;;;;ena;Tomeèkova 2;63800;Brno;8754194185;;A (standard);188,00;14,05;Kramáø
+2013-06-10;101691;Hynková;Jiøina;;;;ena;Vaculíkova 11;63800;Brno;346112460;;A (standard);85,00;0,63;Kramáø
+2013-06-10;101822;Francová;Pavla;;;;ena;Fillova 5;63800;Brno;xxx512644yy;;A (standard);54,00;112,64;Doskoèilová
+2013-06-10;101747;Paourková;Jana;;;;ena;Haškova 1;63800;Brno;446108463;;A (standard);72,00;20,62;Doskoèilová
+2013-06-10;101559;Jelínková;Lucie;;;;ena;Fillova 7;63800;Brno;7055183854;;A (standard);90,00;32,55;Doskoèilová
+2013-06-07;101607;Kuèerová;Stanislava;;;;ena;Milénova 12;63800;Brno;276031738;;A (standard);89,00;90,55;Doskoèilová
+2013-06-07;101737;Petrùjová;Marie;;;;ena;Broíkova 18;63800;Brno 38 -Lesná;425504470;;A (standard);15,00;0,38;Doskoèilová
+2013-06-07;101623;Gritzová;Monika;;;;ena;Fillova 3;63800;Brno;425308104;;A (standard);123,00;236,19;Doskoèilová
+2013-06-07;100337;Ševèíková ;Eva;;;;ena;Fillova 6;63800;Brno;466113426;;A (standard);26,00;58,01;Doskoèilová
+2013-06-06;101196;Kuèerová ;Vìra;;;;ena;Milenova 6;63800;Brno;xxx12346yy1;;A (standard);25,00;0,26;Doskoèilová
+2013-06-06;101240;Hoøínek;Jan;;;;mu;Vaculíkova 9;63800;Brno;390323470;;A (standard);100,00;102,41;Doskoèilová
+2013-06-04;101148;Kukletová;Eva;;;;ena;Fillova 10;63800;Brno;395713/410;;A (standard);126,00;92,45;Doskoèilová
+2013-06-04;100271;Cicvárek;Jiøí;PhDr;;;mu;Slavíèkova 8;63800;Brno;470414020;;A (standard);55,00;37,42;Kramáø
+2013-06-03;101056;Tesaøová;Barbora;;;;ena;Fillova 5;63800;Brno;9262114092;;A (standard);66,00;23,92;Kramáø
+2013-05-31;101098;Skøepek;Ivan;;;;mu;Foltınova 20;63500;Brno;410207423;;A (standard);10,00;0,05;Doskoèilová
+2013-05-31;101575;Veselá;Jaroslava;;;;ena;Broíkova 18;63800;Brno;445409074;;A (standard);43,00;36,65;Doskoèilová
+2013-05-29;101514;Paulíková;Zdenka;;;;ena;Ibsenova  10;63800;Brno;5456303171;;A (standard);100,00;6,24;Doskoèilová
+2013-05-29;101096;Krejèí;Kateøina;;;;ena;Vaculíkova 4;63800;Brno;7533333;;A (standard);29,00;4,64;Kramáø
+2013-05-28;100277;Procházková ;Magdalena;;;;ena;Brechtova 35;63800;Brno;356015954;;A (standard);21,00;0,72;Doskoèilová
+2013-05-27;101516;Slezák;Zdenìk;;;;mu;Fillova 4;63800;Brno;300410/420;;A (standard);77,00;119,42;Kramáø
+2013-05-24;101032;Zamazalová;Marie;;;;ena;Sobìšická 119;63800;Brno;335627433;;A (standard);45,00;7,34;Doskoèilová
+2013-05-22;101720;Drdlová;Jana;;;;ena;Stojanova 9;60200;Brno;8162294789;;A (standard);63,00;28,36;Doskoèilová
+2013-05-22;101099;Dupalová ;Ludmila;;;;ena;Vaculíkova 5;63800;Brno;355823714;;A (standard);20,00;7,06;Doskoèilová
+2013-05-21;100323;Hanušová;Vìra;;;;ena;Broíkova 20a;63800;Brno;255306405;;A (standard);158,00;36,80;Doskoèilová
+2013-05-21;102000;Korèeková;Jiøina;;;;ena;Vaculíkova 2;63800;Brno;336251;;A (standard);18,00;6,45;Doskoèilová
+2013-05-20;101091;Grunda;Blahomil;;;;mu;Milénova 9;63800;Brno;260115422;;A (standard);45,00;1,61;Doskoèilová
+2013-05-17;101582;Dvoøáková;Anna;;;;ena;Vaculíkova 2;63800;Brno;415210447;;A (standard);160,00;9899999978,25;Kramáø
+2013-05-16;101672;Jurková ;Hana;;;;ena;Na honech 1870;66101;Tišnov;xxxxxxxxxxx;;A (standard);10,00;10,34;Kramáø
+2013-05-10;101407;Tomková;Alena;;;;ena;Jurkovièova 8;63800;Brno;445121/4200;;A (standard);43,00;3,20;Kramáø
+2013-05-10;101549;Procházková;Marie;;;;ena;Broíkova 13;63800;Brno;475826447;;A (standard);84,00;54,46;Kramáø
+2013-05-10;101113;Franìk;J;;;;mu;Tøískalova 11;63800;Brno;7204043913;;A (standard);36,00;0,21;Kramáø
+2013-05-09;101991;Adamcová;Eva;;;;ena;Vaculíkova 8;63800;Brno;266229404;;A (standard);35,00;2,29;Kramáø
+2013-05-09;101654;Ambroová ;Anna;;;;ena;Fillova 13;63800;Brno;446005427;;A (standard);45,00;115,97;Kramáø
+2013-05-06;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);85,00;99,89;Kramáø
+2013-05-06;101516;Slezák;Zdenìk;;;;mu;Fillova 4;63800;Brno;300410/420;;A (standard);150,00;119,42;Kramáø
+2013-05-06;101609;Fukaèová;Jitka;;;;ena;Milenova  128/4;63800;Brno Lesná;365112/444;;A (standard);35,00;0,79;Kramáø
+2013-04-29;101178;Haluza;Petr;;;;mu;Vaculíkova 10;63800;Brno;xx1236547xx;;A (standard);52,00;15,30;Kramáø
+2013-04-26;101674;Fleková;Marta;;;;ena;Broíkova 20a;63800;Brno;415120444;;A (standard);28,00;5,01;Kramáø
+2013-04-25;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);46,00;99,89;Kramáø
+2013-04-25;101210;Kuela;David;;;;mu;Broíkova 10;63800;Brno;7109033822;;A (standard);83,00;113,21;Kramáø
+2013-04-23;101729;Cvancigerová;Jolana;;;;ena;Fillova 11;63800;Brno ;285210711;;A (standard);88,00;17,19;Kramáø
+2013-04-19;101642;Baranèicová;Marie;;;;ena;Fillova 6;63800;Brno;395528422;;A (standard);35,00;36,84;Kramáø
+2013-04-19;101582;Dvoøáková;Anna;;;;ena;Vaculíkova 2;63800;Brno;415210447;;A (standard);193,00;9899999978,25;Kramáø
+2013-04-19;101193;Buchtová ;Markéta;;;;ena;Broíkova 23;63800;Brno;325618401;;A (standard);35,00;128,73;Kramáø
+2013-04-18;101623;Gritzová;Monika;;;;ena;Fillova 3;63800;Brno;425308104;;A (standard);64,00;236,19;Kramáø
+2013-04-17;101641;Matoušek;Vlastimil;;;;mu;Fillova 13;63800;Brno;310920/419;;A (standard);69,00;70,37;Kramáø
+2013-04-17;101133;Kuelová;Zdena;;;;ena;Vaculíkova 8;63800;Brno;426121435;;A (standard);83,00;78,45;Kramáø
+2013-04-08;101528;Stehlíková;Eva;;;;ena;Vaculíkova 10;63800;Brno;405423405;;A (standard);80,00;10,50;Kramáø
+2013-04-08;101504;Barák;Jiøí;;;;mu;Broikova 25;63800;Brno;360223052;;A (standard);125,00;1,18;Kramáø
+2013-04-08;101111;Holenová;Marta;;;;ena;Haškova 9;63800;Brno;395625406;;A (standard);80,00;9,79;Kramáø
+2013-04-05;101126;Roèková;Šárka;;;;ena;Polanka 588;66401;Bílovice nad Svitavou;801129;;A (standard);63,00;0,24;Kramáø
+2013-04-05;101554;Babiakova;Vìra;;;;ena;Broíkova 20;63800;Brno;7462313793;;A (standard);10,00;37,98;Køivánková
+2013-04-05;101825;Hudecová;Ludmila;;;;ena;Tøískalova 7;63800;Brno;335924431;;A (standard);127,00;0,11;Køivánková
+2013-04-04;101629;Roèková;Ywetta;;;;ena;Svatopluka Èecha 101b;61200;Brno;600502;;A (standard);66,00;0,27;Køivánková
+2013-04-04;101729;Cvancigerová;Jolana;;;;ena;Fillova 11;63800;Brno ;285210711;;A (standard);50,00;17,19;Kramáø
+2013-03-29;101535;Janda;Jan;;;;mu;Fillova 5;63800;Brno;440724052;;A (standard);84,00;63,27;Køivánková
+2013-03-28;101114;Lanèíková;Vlasta;;;;ena;Vaculíkova 9;63800;Brno;446029433;;A (standard);250,00;109,98;Køivánková
+2013-03-28;101045;Vrtílková;Julie;;;;ena;Fillova 3;63800;Brno;1932;;A (standard);21,00;33,68;Køivánková
+2013-03-27;101132;Fiala;Milan;;;;mu;Popovice 29;66461;Rajhrad;658411;;A (standard);26,00;0,76;Kramáø
+2013-03-21;101552;Diky;Andrej;;;;mu;Fillova 12;63800;Brno;000000000;;A (standard);39,00;26,16;Kramáø
+2013-03-21;101079;Šandrovic;Michal;;;;mu;Broikova 23;63800;Brno;38071/778;;A (standard);32,00;99,89;Kramáø
+2013-03-20;101514;Paulíková;Zdenka;;;;ena;Ibsenova  10;63800;Brno;5456303171;;A (standard);34,00;6,24;Kramáø
+2013-03-15;101052;Hrudièková;Marta;;;;ena;Loosova 13;63800;Brno;4133333;;A (standard);39,00;5,34;Køivánková
+2013-03-15;101148;Kukletová;Eva;;;;ena;Fillova 10;63800;Brno;395713/410;;A (standard);70,00;92,45;Køivánková
+2013-03-15;101560;Havel;Jaroslav;;;;mu;Šrámkova 9;63800;Brno;530130094;;A (standard);25,00;23,17;Køivánková
+2013-03-14;101041;Fojtíková ;Vlasta;;;;ena;Bieblova 22;63800;Brno;xxxxxxxxxx6;;A (standard);6,00;0,84;Køivánková
+2013-03-07;101532;Zálešák;Antonín;;;;mu;Kupkova 15;63800;Brno;480611152;;A (standard);29,00;0,05;admin
+2013-03-06;101575;Veselá;Jaroslava;;;;ena;Broíkova 18;63800;Brno;445409074;;A (standard);100,00;36,65;Køivánková

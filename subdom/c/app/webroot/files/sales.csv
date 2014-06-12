@@ -1,0 +1,13 @@
+ProductsTransaction.id;Sale.date_day;Sale.date_month;Sale.date_year;Sale.code;TransactionType.name;BusinessPartner.id;BusinessPartner.name;BusinessPartner.ico;Address.street;Address.number;Address.city;Address.zip;Address.region;Product.id;Product.name;Product.vzp_code;Product.group_code;ProductsTransaction.abs_quantity;ProductsTransaction.unit_price;ProductsTransaction.product_margin;ProductsTransaction.abs_total_price;Transaction.abs_margin;Unit.shortcut;User.id;TransactionType.id;TransactionType.name;User.last_name
+2805;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;30;Tolura tbl.28x80mg;167673;HVLP;15;134,00;37,00;2010,00;743,70;bal.;11;3;prodej;Kramáø
+2800;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;81;Cezera tbl.90x5mg;124346;HVLP;10;413,00;33,00;4130,00;1362,90;bal.;11;3;prodej;Kramáø
+2802;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;91;Emanera cps.30x40mg;147929;HVLP;6;209,00;35,00;1254,00;438,90;bal.;11;3;prodej;Kramáø
+2804;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;29;Tolura tbl.84x80mg;167676;HVLP;25;402,00;33,00;10050,00;3316,50;bal.;11;3;prodej;Kramáø
+2799;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;71;Cezera tbl.30x5mg;124343;HVLP;5;118,00;37,00;590,00;218,30;bal.;11;3;prodej;Kramáø
+2801;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;63;Azibiot tbl.3x500mg;142164;HVLP;70;124,00;30,00;8680,00;2604,00;bal.;11;3;prodej;Kramáø
+2803;15;01;2014;p815;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;144;Emanera cps 90x40mg;0147933;HVLP;22;629,00;24,00;13838,00;3321,12;bal.;11;3;prodej;Kramáø
+2467;02;12;2013;p752;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;63;Azibiot tbl.3x500mg;142164;HVLP;10;135,00;30,00;1350,00;405,00;bal.;11;3;prodej;Kramáø
+2466;02;12;2013;p752;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;172;Emanera tbl 30x20mg;0147917;HVLP;15;132,55;37,00;1988,25;735,65;bal.;11;3;prodej;Kramáø
+2145;05;11;2013;d684;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;33;Sorvasta tbl.28x10mg;184408;HVLP;5;222,00;37,00;1110,00;410,70;bal.;11;3;prodej;Kramáø
+1022;22;07;2013;p450;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;59;Sorvasta tbl.28x15mg;184397;HVLP;15;286,00;33,00;4290,00;1415,70;bal.;11;3;prodej;Kramáø
+1021;22;07;2013;p450;prodej;158;Horká KRKA;00000000;;Sokolovská;Praha;18600;;33;Sorvasta tbl.28x10mg;184408;HVLP;50;222,00;37,00;11100,00;4107,00;bal.;11;3;prodej;Kramáø
