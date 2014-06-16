@@ -81,9 +81,19 @@
 					<a class="top_cat" href="/<?php echo  $category["Category"]['url']?>"><?php echo $category['Category']['name']?></a>
 					<?php if (!empty($category['children'])) { ?>
 					<p class="<?php echo $class?>">
-						<?php foreach ($category['children'] as $category_child) { ?>
-						<a href="/<?php echo $category_child['Category']['url']?>"><?php echo $category_child['Category']['name']?></a>
-						<?php } ?>
+<?php
+							// zobrazim max. 10 deti aby se mi na HP nerozhazovalo menu
+							$mcat = 0;
+							foreach ($category['children'] as $category_child) {
+								$mcat = $mcat + 1;
+								if ( $mcat > 9 ){
+									continue;
+								}
+?>
+								<a href="/<?php echo $category_child['Category']['url']?>"><?php echo $category_child['Category']['name']?></a>
+<?php
+							}
+?>
 					</p>
 					<?php } ?>
 				</div>
