@@ -71,7 +71,7 @@
 					Popis:
 				</th>
 				<td>
-					<?=$form->textarea('description', array('style' => 'width:600px;height:350px;'))?>
+					<?=$form->textarea('description', array('style' => 'width:600px;height:350px;', 'class' => 'ProductDescription'))?>
 					<?=$form->error('Product.description')?>
 				</td>
 			</tr>
