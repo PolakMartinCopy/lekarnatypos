@@ -60,10 +60,9 @@ class ContentsController extends AppController{
 			}
 		} else {
 			$this->data = $this->Content->read(null, $id);
-			$this->set('tinyMce', true);
-			$this->set('tinyMceElement', 'ContentContent');
 		}
-		
+		$this->set('tinyMce', true);
+		$this->set('tinyMceElement', 'ContentContent');		
 	}
 	
 	function admin_add(){

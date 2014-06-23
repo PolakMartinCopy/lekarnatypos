@@ -2,14 +2,14 @@
 	echo $form->Create('Content');
 ?>
 	<fieldset>
- 		<legend>Obsah pro: <strong><?=$this->data['Content']['heading']?></strong></legend>
+ 		<legend>Obsah pro: <strong><?=$this->data['Content']['title']?></strong></legend>
 		<table class="leftHeading" cellpadding="5" cellspacing="3">
 			<tr>
 				<th>
 					Cesta obsahu:
 				</th>
 				<td>
-					<?=$form->text('Content.path', array('size' => '60'));?>
+					<?php echo $form->input('Content.path', array('size' => '60', 'label' => false)); ?>
 				</td>
 			</tr>
 			<tr>

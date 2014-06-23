@@ -128,3 +128,9 @@ div#flashMessage{
 	padding:15px;
 	margin:15px;
 }
+
+.error-message{
+	font-size:11px;
+	color:red;
+	font-weight:bold;
+}
