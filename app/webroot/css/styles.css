@@ -284,6 +284,7 @@ input.search_submit{ /*e*/
     margin-left:15px;
     margin-top:15px;
     width:184px;
+    height: 140px;
 }
 
 #categories_wrapper .first{
@@ -299,30 +300,30 @@ input.search_submit{ /*e*/
     font-family: Segoe UI;
 }
 
-.main_category p a{
+.main_category p a, .main_category li a{
     font-size:10px;
 	font-family: Segoe UI;
     color:#3F3F3F;
 }
 
-.main_category p{
+.main_category p, .main_category li{
     padding-left:35px;
     min-height:90px;
     line-height:14px;
 }
 
-.main_category p.vanoce{ background:url(../images/vanoce_icon_1.png) no-repeat; }
-.main_category p.vitaminy{ background:url(../images/vitaminy_icon.gif) no-repeat; }
-.main_category p.deti_maminky{ background:url(../images/deti_maminky_icon.gif) no-repeat; }
-.main_category p.zdravotnicky_material{ background:url(../images/zdravotnicky_material.gif) no-repeat; }
-.main_category p.caje_diety{ background:url(../images/caje_diety.gif) no-repeat; }
-.main_category p.kosmetika{ background:url(../images/kosmetika.gif) no-repeat; }
-.main_category p.chripka_kasel{ background:url(../images/chripka_kasel.gif) no-repeat; }
-.main_category p.sportovni_vyziva{ background:url(../images/sportovni_vyziva.gif) no-repeat; }
-.main_category p.homeopatika{ background:url(../images/homeopatika.gif) no-repeat; }
-.main_category p.veterinarni{ background:url(../images/veterinarni.gif) no-repeat; }
-.main_category p.klouby_svaly{ background:url(../images/klouby_svaly.gif) no-repeat; }
-.main_category p.bolest{ background:url(../images/bolest.gif) no-repeat; }
+.main_category p.vanoce, .main_category ul.vanoce{ background:url(../images/vanoce_icon_1.png) no-repeat; }
+.main_category p.vitaminy, .main_category ul.vitaminy{ background:url(../images/vitaminy_icon.gif) no-repeat; }
+.main_category p.deti_maminky, .main_category ul.deti_maminky{ background:url(../images/deti_maminky_icon.gif) no-repeat; }
+.main_category p.zdravotnicky_material, .main_category ul.zdravotnicky_material{ background:url(../images/zdravotnicky_material.gif) no-repeat; }
+.main_category p.caje_diety, .main_category ul.caje_diety{ background:url(../images/caje_diety.gif) no-repeat; }
+.main_category p.kosmetika, .main_category ul.kosmetika{ background:url(../images/kosmetika.gif) no-repeat; }
+.main_category p.chripka_kasel, .main_category ul.chripka_kasel{ background:url(../images/chripka_kasel.gif) no-repeat; }
+.main_category p.sportovni_vyziva, .main_category ul.sportovni_vyziva{ background:url(../images/sportovni_vyziva.gif) no-repeat; }
+.main_category p.homeopatika, .main_category ul.homeopatika{ background:url(../images/homeopatika.gif) no-repeat; }
+.main_category p.veterinarni, .main_category ul.veterinarni{ background:url(../images/veterinarni.gif) no-repeat; }
+.main_category p.klouby_svaly, .main_category ul.klouby_svaly{ background:url(../images/klouby_svaly.gif) no-repeat; }
+.main_category p.bolest, .main_category ul.bolest{ background:url(../images/bolest.gif) no-repeat; }
 
 
 

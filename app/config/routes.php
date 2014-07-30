@@ -39,12 +39,12 @@ if ($_SERVER['REQUEST_URI'] == '/admin' || $_SERVER['REQUEST_URI'] == '/admin/')
 	exit();
 }
 
-// kontrola, jestli jedeme pres spravny host name
+/* // kontrola, jestli jedeme pres spravny host name
 if ( $_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz'){
 	header("HTTP/1.1 301 Moved Permanently");
 	header("Location: http://www.lekarnatypos.cz" . $_SERVER['REQUEST_URI']);
 	exit();
-}
+} */
 
 	Router::connect('/', array('controller' => 'contents', 'action' => 'view', 1));
 	Router::connect('/kosik', array('controller' => 'carts_products', 'action' => 'index'));
