@@ -77,16 +77,15 @@ if ( $_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz'){
 	App::import('Model', 'Content');
 	$this->Content = &new Content;
 	
+	$contents = $this->Content->find('all', array(
+		'fields' => array('id', 'path'),
+		'contain' => array()
+	));
+
 	// obsahove stranky
-	Router::connect('/osobni-odber', array('controller' => 'contents', 'action' => 'view', 21));
-	Router::connect('/obchodni-podminky', array('controller' => 'contents', 'action' => 'view', 22));
-	Router::connect('/o-provozovateli', array('controller' => 'contents', 'action' => 'view', 23));
-	Router::connect('/jak-nakupovat', array('controller' => 'contents', 'action' => 'view', 24));
-	Router::connect('/kontakty', array('controller' => 'contents', 'action' => 'view', 19));
-	Router::connect('/cenik-dopravy', array('controller' => 'contents', 'action' => 'view', 20));
-	Router::connect('/novinky', array('controller' => 'contents', 'action' => 'view', 25));
-	Router::connect('/vse-o-nakupu', array('controller' => 'contents', 'action' => 'view', 16));
-	Router::connect('/prodejna', array('controller' => 'contents', 'action' => 'view', 18));
+	foreach ($contents as $content) {
+		Router::connect('/' . $content['Content']['path'], array('controller' => 'contents', 'action' => 'view', $content['Content']['id']));
+	}
 
 /**
  * Then we connect url '/test' to our test controller. This is helpfull in
