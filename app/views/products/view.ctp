@@ -153,7 +153,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
 			<?php 
 				echo $this->Form->hidden('Recommendation.request_uri', array('value' => $_SERVER['REQUEST_URI'], 'id' => 'RecommendationRequestUriProduct'));
 				require_once 'recaptchalib.php';
-			  	$publickey = "6LdMatsSAAAAAIq9qS9oC_fOWb7hCwFcyoYQcYSc"; // you got this from the signup page
+			  	$publickey = "6Le4B_oSAAAAAANtlNhA6j_p0kFyWBItvS31U7Q5"; // you got this from the signup page
 			  	echo recaptcha_get_html($publickey);
 			?>
 			<div id="RecommendationRecaptchaErrorProduct" class="formErrors"></div>

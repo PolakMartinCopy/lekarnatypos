@@ -19,7 +19,7 @@
 <?php 
 	echo $this->Form->hidden('Recommendation.request_uri', array('id' => 'RecommendationRequestUriProduct'));
 	require_once 'recaptchalib.php';
-  	$publickey = "6LdMatsSAAAAAIq9qS9oC_fOWb7hCwFcyoYQcYSc"; // you got this from the signup page
+  	$publickey = "6Le4B_oSAAAAAANtlNhA6j_p0kFyWBItvS31U7Q5"; // you got this from the signup page
   	echo recaptcha_get_html($publickey);
 	echo $this->Form->submit('ODESLAT', array('class' => 'btn btn-success btn-lg'));
 	echo $this->Form->end();

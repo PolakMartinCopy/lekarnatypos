@@ -11,7 +11,7 @@ class RecommendationsController extends AppController {
 		$this->layout = 'content';
 		
 		require_once('recaptchalib.php');
-		$privatekey = "6LdMatsSAAAAAB1mZf1rxm_qbwBF88DkmCiqkkv3";
+		$privatekey = "6Le4B_oSAAAAAMeYJk1TmYaMUyCZgRLDWvvUARL8";
 		
 		$challenge = (isset($_POST['recaptcha_challenge_field']) ? $_POST['recaptcha_challenge_field'] : '');
 		$response = (isset($_POST['recaptcha_response_field']) ? $_POST['recaptcha_response_field'] : '');
