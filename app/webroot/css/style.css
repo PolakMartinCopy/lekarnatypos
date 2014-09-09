@@ -699,6 +699,7 @@ h1 {
 .product-list ul li {
 	float: left;
 	width: 31%;
+	height: 355px;
 	text-align: center
 }
 .product-list ul li a {
