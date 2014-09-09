@@ -46,12 +46,16 @@
             </p>
         </div>
         <div class="col-3">
-            <div class="footer-headline">
+            <div class="footer-headline" id="subscription">
                 Novinky e-mailem
             </div>
             <p>
                 Odebírejte naše novinky e-mailem:
             </p>
+		<?php echo $this->Form->create('Subscriber', array('url' => array('controller' => 'subscribers', 'action' => 'add'), 'encoding' => false, 'class' => 'form-inline')); ?>
+		<div class="input-group">
+		
+		</div>
             <form id="SubscriberViewForm" method="post" action="/subscribers/add" class="form-inline">
                 <input type="hidden" name="_method" value="POST" />
                 <div class="input-group">
@@ -61,6 +65,7 @@
                         <input class="btn btn-primary" type="submit" value="ODEBÍRAT" />
                     </span>
                 </div>
+                <?php echo $this->Form->error('Subscriber.email');?>
             </form>
         </div>
     </div>

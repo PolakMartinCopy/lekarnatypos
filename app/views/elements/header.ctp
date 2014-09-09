@@ -1,5 +1,5 @@
 <div class="header">
-    <a class="logo" href="#">
+    <a class="logo" href="/">
         <img src="/img/lekarnatypos-logo.png" alt="Lékárna Typos" />
     </a>
     <div class="slogan">Vaše oblíbená lékárna na dosah.</div>
