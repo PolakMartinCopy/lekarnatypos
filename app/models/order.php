@@ -536,7 +536,8 @@ class Order extends AppModel {
 
 		$mail->AddReplyTo(CUST_MAIL, CUST_ROOT);
 
-		$mail->AddAddress('bretislav.strnad@medicalcorp.cz', CUST_NAME);
+//		$mail->AddAddress('bretislav.strnad@medicalcorp.cz', CUST_NAME);
+		$mail->AddAddress('info@lekarnatypos.cz');
 		$mail->AddBCC('vlado@tovarnak.com');
 		
 		$mail->Subject = 'E-SHOP OBJEDNÁVKA (č. ' . $this->id . ')';
