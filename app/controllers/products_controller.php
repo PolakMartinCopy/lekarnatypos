@@ -158,7 +158,7 @@ class ProductsController extends AppController {
 		}
 
 		// navolim si layout stranky
-		$this->layout = 'product_detail';
+		$this->layout = 'content';
 
 		// vyhledam si jestli neni produkt zlevnen
 		$product['Product']['discount_price'] = $this->Product->assign_discount_price($product);
@@ -1165,13 +1165,14 @@ class ProductsController extends AppController {
 	}
 	
 	function admin_most_sold_add() {
+		$count = 9;
 		if (isset($this->data)) {
-			// nejprodavanejsich produktu muze byt nejvic 3, pokud je jich 3, nemuzu pridat novy
+			// nejprodavanejsich produktu muze byt nejvic $count, pokud je jich $count, nemuzu pridat novy
 			$most_sold_count = $this->Product->find('count', array(
 				'conditions' => array('Product.most_sold' => true)
 			));
 			
-			if ($most_sold_count < 3) {
+			if ($most_sold_count < $count) {
 				$this->data['Product']['most_sold'] = true;
 				if ($this->Product->save($this->data, false)) {
 					$this->Session->setFlash('Produkt ' . $this->data['Product']['name'] . ' byl označen jako nejprodávanější');
@@ -1179,7 +1180,7 @@ class ProductsController extends AppController {
 					$this->Session->setFlash('Produkt ' . $this->data['Product']['name'] . ' se nepodařilo označit jako nejprodávanější, opakujte prosím akci');
 				}
 			} else {
-				$this->Session->setFlash('nejprodávanějších produktů může být nejvíce 9, před vložením dalšího prosím některý ze stávajících odstraňte.');
+				$this->Session->setFlash('nejprodávanějších produktů může být nejvíce ' . $count . ', před vložením dalšího prosím některý ze stávajících odstraňte.');
 			}
 		}
 		$this->redirect(array('controller' => 'products', 'action' => 'most_sold'));
@@ -1262,13 +1263,14 @@ class ProductsController extends AppController {
 	}
 	
 	function admin_newest_add() {
+		$count = 9;
 		if (isset($this->data)) {
-			// nejnovějších produktu muze byt nejvic 3, pokud je jich 3, nemuzu pridat novy
+			// nejnovějších produktu muze byt nejvic $count, pokud je jich $count, nemuzu pridat novy
 			$newest_count = $this->Product->find('count', array(
 				'conditions' => array('Product.newest' => true)
 			));
 			
-			if ($newest_count < 3) {
+			if ($newest_count < $count) {
 				$this->data['Product']['newest'] = true;
 				if ($this->Product->save($this->data, false)) {
 					$this->Session->setFlash('Produkt ' . $this->data['Product']['name'] . ' byl označen jako nejnovější');
@@ -1276,7 +1278,7 @@ class ProductsController extends AppController {
 					$this->Session->setFlash('Produkt ' . $this->data['Product']['name'] . ' se nepodařilo označit jako nejnovější, opakujte prosím akci');
 				}
 			} else {
-				$this->Session->setFlash('nejnovějších produktů může být nejvíce 9, před vložením dalšího prosím některý ze stávajících odstraňte.');
+				$this->Session->setFlash('nejnovějších produktů může být nejvíce ' . $count . ', před vložením dalšího prosím některý ze stávajících odstraňte.');
 			}
 		}
 		$this->redirect(array('controller' => 'products', 'action' => 'newest'));

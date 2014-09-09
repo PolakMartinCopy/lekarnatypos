@@ -92,12 +92,13 @@ class AppController extends Controller {
 			// nejnovejsi produkt
 			if ($this->layout == 'homepage') {
 				// nejnovejsi produkty
-				$this->set('hp_categories_list', $this->Product->CategoriesProduct->Category->get_homepage_list());
+//				$this->set('hp_categories_list', $this->Product->CategoriesProduct->Category->get_homepage_list());
 				$this->set('newest', $this->Product->get_list('newest'));
+				$this->set('favourite', $this->Product->get_list('most_sold'));
 			} 
-			if ($this->layout != 'product_detail') {
-				$this->set('most_sold', $this->Product->get_list('most_sold'));
-			}
+//			if ($this->layout != 'product_detail') {
+//				$this->set('most_sold', $this->Product->get_list('most_sold'));
+//			}
 		}
 		$this->disableCache();
 	}

@@ -1,127 +1,62 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+﻿<!DOCTYPE html>
+
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<?php echo $this->element('default_head')?>
-
-	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
-    <script type="text/javascript">
-	var map;
-    function initialize() {
-		var point = new google.maps.LatLng(49.197390, 16.608747)
-          
-        var mapOptions = {
-			zoom: 16,
-			center: point,
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-		var marker = new google.maps.Marker({
-			position: point,
-			map: map,
-			title: 'Lékárna Typos'
-        });
-	}
-
-    google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
 </head>
-
 <body>
-	<div id="total_wrapper">
-		<div id="header_wrapper">
-			<div id="header_left"></div>
-			<?php echo $this->element('login_box')?>
-		</div>
-		<div class="menu_spacer"></div>
-		<?php echo $this->element('horizontal_menu')?>
-		<div class="menu_spacer"></div>
-		<div id="content" class="left">
-			<?php echo $this->element('search_box')?>
-			<div class="menu_spacer"></div>
-			<?php
-			if ($this->Session->check('Message.flash')) {
-				echo $this->Session->flash();
-			}
-			?>
-			<?php if (!empty($content_for_layout)) { ?>
-			<div id="hp_content">
-				<?php echo $content_for_layout; ?>
-			</div>
-			<?php } ?>
-			<div id="slides"></div>
-			<div class="menu_spacer"></div>
-			<div id="button_categories">KATEGORIE</div>
-			<div id="categories_wrapper">
-				<?php
-				$i = 0;
-				// pole s nazvem css tridy pro ikonu
-				// @todo - preonacit do databaze a administrace...
-				$icons_class = array(
-					109 => 'vanoce',
-					8 => 'chripka_kasel',
-					9 => 'bolest',
-					10 => 'klouby_svaly',
-					11 => 'deti_maminky',
-					12 => 'zdravotnicky_material',
-					13 => 'kosmetika',
-					14 => 'caje_diety',
-					72 => 'veterinarni',
-					78 => 'sportovni_vyziva',
-					89 => 'homeopatika',
-					93 => 'deti_maminky'
-				);
-				foreach ($hp_categories_list as $category) {
-					$class = 'vitaminy';
-					if ( isset( $icons_class[$category['Category']['id']] ) ){
-						$class = $icons_class[$category['Category']['id']];
-					}
-				?>
-				<div class="main_category<?php echo ($i % 3 == 0) ? ' first' : ''?><?php echo ($i < 3) ? ' top' : ''?>">
-					<a class="top_cat" href="/<?php echo  $category["Category"]['url']?>"><?php echo $category['Category']['name']?></a>
-					<p class="<?php echo $class?>">
-<?php				if (!empty($category['children'])) {
-						// zobrazim max. 10 deti aby se mi na HP nerozhazovalo menu
-						$mcat = 0;
-						foreach ($category['children'] as $category_child) {
-							$mcat = $mcat + 1;
-							if ( $mcat > 9 ){
-								continue;
-							}
-?>
-						<a href="/<?php echo $category_child['Category']['url']?>"><?php echo $category_child['Category']['name']?></a>
-<?php 					}
-					} ?>
-					</p>
-				</div>
-				<?php $i++; 
-				} ?>
-				<div style="clear:both"></div>
-			</div>
-			<div class="menu_spacer"></div>
-			<div id="navi_hours_wrapper">
-				<div id="navigation">
-					<div id="navi_header">KDE NÁS NAJDETE</div>
-					<div id="map"></div>
-				</div>
-				<?php echo $this->element('opening_hours')?>
-			</div>
-		</div>
-		<div id="sidebar">
-			<?php echo $this->element('advantages')?>
-			<div class="menu_spacer"></div>
-			<?php echo $this->element('sukl')?>
-			<div class="menu_spacer"></div<
-			<?php echo $this->element('facebook')?>
-			<div class="menu_spacer"></div>
-			<?php echo $this->element('most_sold')?>
-			<div class="menu_spacer"></div>
-			<?php echo $this->element('newest')?>
-		</div>
-		<div class="menu_spacer"></div>
-		<?php echo $this->element('footer')?>
-	</div>
+    <div class="container">
+		<?php
+			echo $this->element('header');
+			echo $this->element('nav');
+		?>
+
+        <div class="main-content clearfix">
+			<?php echo $this->element('left_sidebar')?>
+            <div class="col-right nopadding">
+            	<?php 
+            	if ($this->Session->check('Message.flash')) {
+            		echo $this->Session->flash();
+            	}
+            	?>
+                <div class="intro-video">
+                    <div class="video-headline">Vaše oblíbená <strong>lékárna na dosah</strong>.</div>
+                    <a href="#" class="video-play-btn">Spustit prohlídku &nbsp;&nbsp;<i class="fa fa-play"></i></a>
+                    <iframe src="http://player.vimeo.com/video/105547617?title=0&amp;byline=0&amp;portrait=0&amp;color=c9ff23&amp;autoplay=1" width="840" height="440" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                </div>
+                
+                <div class="product-list new-products">
+                	<?php 
+                		$carousel_id = 'carousel-example-generic';
+                		$header = 'Nové produkty';
+                		$options = array(
+							'carousel_id' => $carousel_id,
+							'header' => $header,
+							'products' => $newest
+						);
+                		echo $this->element('products_carousel', $options);
+                	?>
+                </div>
+
+                <div class="product-list favorite-products">
+                   <?php 
+                		$carousel_id = 'carousel-example-generic2';
+                		$header = 'Oblíbené produkty';
+                		$options = array(
+							'carousel_id' => $carousel_id,
+							'header' => $header,
+							'products' => $favourite
+						);
+                		echo $this->element('products_carousel', $options);
+                	?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+    	echo $this->element('footer');
+    	echo $this->element('default_js');
+    ?>
 </body>
-<?php echo $this->element('heureka_overeno_zakazniky')?>
 </html>
 <?php echo $this->element('sql_dump')?>

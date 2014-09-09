@@ -7,7 +7,7 @@ class RecommendationsController extends AppController {
 			$this->Session->setFlash('Nejsou nastavena data pro odeslání doporučujícího formuláře.');
 			$this->redirect(HP_URI);
 		}
-		
+
 		$this->layout = 'content';
 		
 		require_once('recaptchalib.php');

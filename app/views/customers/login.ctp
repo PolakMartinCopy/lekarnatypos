@@ -2,31 +2,18 @@
 	<?=$form->Create('Customer', array('url' => array('action' => 'login'), 'id' => 'orderForm'));?>
 	<fieldset>
 		<legend>Přihlašovací údaje</legend>
-		<table id="orderForm">
-			<tr>
-				<th>
-					Login:
-				</th>
-				<td>
-					<?=$form->text('Customer.login')?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					Heslo:
-				</th>
-				<td>
-					<?=$form->password('Customer.password')?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					&nbsp;
-				</th>
-				<td>
-					<?=$html->link('zapomněl(a) jsem heslo', array('controller' => 'customers', 'action' => 'password')) ?>
-				</td>
-		</table>
+		<div class="form-group">
+			<label>Login:</label>
+			<?=$form->text('Customer.login', array('class' => 'form-control'))?>
+		</div>
+		<div class="form-group">
+			<label>Heslo:</label>
+			<?=$form->password('Customer.password', array('class' => 'form-control'))?>
+		</div>
 	</fieldset>
-	<?=$form->end('přihlásit');?>
+<?php 
+	echo $html->link('zapomněl(a) jsem heslo', array('controller' => 'customers', 'action' => 'password'));
+	echo $this->Form->submit('přihlásit', array('class' => 'btn btn-success'));
+	echo $this->Form->end()
+?>
 </div>

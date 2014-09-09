@@ -1,27 +1,13 @@
 <div class="mainContentWrapper">
-	<table id="recapWrapper" border="0" cellpadding="5" cellspacing="0">
+	<h1>Rekapitulace objednávky</h1>
+
+	<table id="recapWrapper">
 		<tr>
-			<td valign="top">
-				<h3>Adresa doručení</h3>
-				<? echo $address['name']?><br />
-				<? echo $address['street'] . ' ' . $address['street_no']?><br />
-				<? echo $address['zip'] . ' ' . $address['city'];?><br />
-				<? echo $address['state']?><br />
-				<?=$html->link('upravit', array('controller' => 'orders', 'action' => 'address_edit', 'type' => 'd'), array('class' => 'smallLinkEdit')) ?>
-				<h3>Fakturační adresa</h3>
-				<? echo $address_payment['name']?><br />
-				<? echo $address_payment['street'] . ' ' . $address_payment['street_no']?><br />
-				<? echo $address_payment['zip'] . ' ' . $address_payment['city']?><br />
-				<? echo $address_payment['state']?><br />
-				<?=$html->link('upravit', array('controller' => 'orders', 'action' => 'address_edit', 'type' => 'f'), array('class' => 'smallLinkEdit')) ?>
-			</td>
-			<td class="leftBorder" valign="top">
-				<h3>Objednané zboží</h3>
-				<a class="smallLinkEdit" href="/kosik">upravit</a>
+			<td colspan="2" valign="top">
 				<table id="recapProducts" cellpadding="5" cellspacing="0">
 					<tr>
-						<th style="width:50%">Název produktu</th>
-						<th style="width:30%">Množství</th>
+						<th style="width:70%">Název produktu</th>
+						<th style="width:10%">Množství</th>
 						<th>Cena za kus</th>
 						<th>Cena celkem</th>
 					</tr>
@@ -41,7 +27,7 @@
 							echo '
 								<tr' . $border . '>
 									<td>
-										<strong>' . $cart_product['Product']['name'] . '</strong>';
+										<strong>' . $this->Html->link($cart_product['Product']['name'], '/' . $cart_product['Product']['url']) . '</strong>';
 
 										if ( !empty($cart_product['CartsProduct']['product_attributes']) ){
 											echo '<br /><div style="font-size:11px;padding-left:20px;">';
@@ -67,8 +53,8 @@
 						}
 					
 						echo '<tr>
-							<th colspan="2" align="right">cena za zboží celkem:</td>
-							<td colspan="2" align="right"><strong>' . intval($final_price) . ' Kč</strong><br /><span style="font-size:10px">(' . round($final_price_wout, 2) . ' Kč<br />bez DPH)</span></td>
+							<td align="left" style="padding-top:10px">cena za zboží celkem:</td>
+							<td colspan="3" align="right" style="padding-top:10px"><strong>' . intval($final_price) . ' Kč</strong><br/><span style="font-size:10px">(' . round($final_price_wout, 2) . ' Kč bez DPH)</span></td>
 						</tr>';
 						
 						// pokud cena objednavky neprekroci dopravu zdarma
@@ -79,24 +65,38 @@
 					?>
 					<tr>
 						<td>
-							způsob doručení: <strong><?=$shipping['Shipping']['name']?></strong><br />
-							<?=$html->link('upravit', array('controller' => 'orders', 'action' => 'shipping_edit'), array('class' => 'smallLinkEdit')) ?>
+							způsob doručení: <strong><?=$shipping['Shipping']['name']?></strong> - <?=$html->link('upravit', array('controller' => 'orders', 'action' => 'shipping_edit'), array('class' => 'smallLinkEdit')) ?>
 						</td>
 						<td>&nbsp;</td>
-						<td align="right"><?=$shipping_price?>&nbsp;Kč</td>
-						<td align="right"><?=$shipping_price?>&nbsp;Kč</td>
+						<td align="right"><?=number_format($shipping_price, 0, ',', ' ')?>&nbsp;Kč</td>
+						<td align="right"><?=number_format($shipping_price, 0, ',', ' ')?>&nbsp;Kč</td>
 					</tr>
 					<?echo '<tr>
-							<th colspan="2" class="totalPrice">celková cena objednávky:</td>
-							<td colspan="2" class="totalPrice">' . intval($final_price + $shipping_price) . ' Kč</td>
+							<td colspan="2" align="left">celková cena objednávky:</td>
+							<td colspan="2" class="totalPrice" align="right">' . intval($final_price + $shipping_price) . ' Kč</td>
 						</tr>';?>
-						<tr>
-							<td colspan="4" align="right">
-								<a id="finalLink" href="/orders/finalize">dokončit objednávku &raquo;</a>
-							</td>
-						</tr>
 				</table>
 			</td>
 		</tr>
+		<tr>
+			<td style="padding-top:20px">
+				<h3>Adresa doručení</h3>
+				<? echo $address['name']?><br />
+				<? echo $address['street'] . ' ' . $address['street_no']?><br />
+				<? echo $address['zip'] . ' ' . $address['city'];?><br />
+				<? echo $address['state']?><br />
+				<?=$html->link('upravit', array('controller' => 'orders', 'action' => 'address_edit', 'type' => 'd'), array('class' => 'smallLinkEdit')) ?>
+			</td>
+			<td style="padding-top:20px">
+				<h3>Fakturační adresa</h3>
+				<? echo $address_payment['name']?><br />
+				<? echo $address_payment['street'] . ' ' . $address_payment['street_no']?><br />
+				<? echo $address_payment['zip'] . ' ' . $address_payment['city']?><br />
+				<? echo $address_payment['state']?><br />
+				<?=$html->link('upravit', array('controller' => 'orders', 'action' => 'address_edit', 'type' => 'f'), array('class' => 'smallLinkEdit')) ?>
+			</td>
+		</tr>
 	</table>
+	
+	<a class="finalLink" href="/orders/finalize" style="float:right">dokončit objednávku &raquo;</a>
 </div>

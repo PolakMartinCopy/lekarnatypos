@@ -1,55 +1,67 @@
-<div id="footer_wrapper">
-	<div class="footer_area narrow">
-		<div class="header">INFORMACE</div>
-		<ul>
-			<li><a href="/jak-nakupovat">Jak nakupovat?</a></li>
-			<li><a href="/kontakty">Kontaktní a reklamační údaje</a></li>
-			<li><a href="/cenik-dopravy">Ceník dopravy</a></li>
-		</ul>
-	</div>
-	<div class="footer_area wide">
-		<div class="header" id="recommendation">DOPORUČTE ZNÁMÉMU</div>
-		<p>Zadejte emailovou adresu,<br />kam máme poslat odkaz:</p>
-		<?php echo $this->Form->create('Recommendation', array('url' => array('controller' => 'recommendations', 'action' => 'send'), 'encoding' => false)); ?>
-		<table cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td><?php
-				echo $this->Form->input('Recommendation.target_email', array('label' => false, 'div' => false, 'class' => 'text_box_suggest', 'value' => 'emailová adresa', 'after' => '&nbsp;', 'error' => false));
-				echo $this->Form->hidden('Recommendation.request_uri', array('value' => $_SERVER['REQUEST_URI']));
-				echo $this->Form->submit('ODESLAT', array('class' => 'submit_suggest', 'div' => false));
-				?></td>
-			</tr>
-		</table>
-		<?php echo $this->Form->end();?>
-	</div>
-	<div class="footer_area narrow">
-		<div class="header">PROVOZOVATEL</div>
-		<ul>
-			<li>Meavita s.r.o.</li>
-			<li>IČ: 29248400</li>
-			<li>DIČ: CZ29248400</li>
-			<li>tel.: 778 437 811</li>
-			<li>&nbsp;</li>
-		</ul>
-	</div>
-	<div class="footer_area wide">
-		<div class="header" id="subscription">NEWSLETTER</div>
-		<p>Odebírejte naše novinky emailem:<br />&nbsp;</p>
-		<?php echo $this->Form->create('Subscriber', array('url' => array('controller' => 'subscribers', 'action' => 'add'), 'encoding' => false)); ?>
-		<table cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td><?php
-				echo $this->Form->input('Subscriber.email', array('label' => false, 'div' => false, 'class' => 'text_box_newsletter', 'value' => 'emailová adresa', 'after' => '&nbsp;', 'error' => false));
-				echo $this->Form->hidden('Subscriber.request_uri', array('value' => $_SERVER['REQUEST_URI']));
-				echo $this->Form->submit('ODEBÍRAT', array('class' => 'submit_newsletter', 'div' => false));
-				echo $this->Form->error('Subscriber.email');
-				?></td>
-			</tr>
-		</table>
-		<?php echo $this->Form->end();?>
-	</div>
-	<div class="menu_spacer"></div>
-<?php if ($this->params['controller'] != 'orders' && $this->params['action'] != 'finished') { ?>
- 		<script type="text/javascript" src="/js/ga-add.js"></script>
-<?php } ?>
+<div class="footer">
+    <div class="container clearfix">
+        <div class="col-3">
+            <div class="footer-headline">
+                Informace o nákupu
+            </div>
+            <ul class="links">
+                <li><a href="/jak-nakupovat">Jak nakupovat</a></li>
+                <li><a href="/cenik-dopravy">Způsoby a ceny dopravy</a></li>
+                <li><a href="/osobni-odber">Osobní odběr</a></li>
+                <li><a href="/obchodni-podminky">Obchodní podmínky</a></li>
+                <li><a href="/o-provozovateli">Informace o provozovateli</a></li>
+                <li><a href="/prodejna">Naše prodejna</a></li>
+                <li><a href="/kontakty">Jak nás kontaktovat</a></li>
+            </ul>
+        </div>
+        <div class="col-3">
+            <div class="footer-headline">
+                Doporučte známému
+            </div>
+            <p>
+                Zadejte emailovou adresu,<br />
+                kam máme poslat odkaz:
+            </p>
+
+            <form id="RecommendationViewForm" method="post" action="/recommendations/send" class="form-inline">
+                <input type="hidden" name="_method" value="POST" />
+                <div class="input-group">
+                    <input name="data[Recommendation][target_email]" type="text" class="form-control" placeholder="emailová adresa" id="RecommendationTargetEmail" />
+                    <input type="hidden" name="data[Recommendation][request_uri]" id="RecommendationRequestUri" value="<?php echo $_SERVER['REQUEST_URI']?>"/>
+                    <span class="input-group-btn">
+                        <input class="btn btn-primary" type="submit" value="ODESLAT" />
+                    </span>
+                </div>
+            </form>
+        </div>
+        <div class="col-3">
+            <div class="footer-headline">
+                Provozovatel
+            </div>
+            <p>
+                <strong>Meavita s.r.o.</strong><br />
+                IČ: 29248400<br />
+                DIČ: CZ29248400<br />
+                tel.: 778 437 811
+            </p>
+        </div>
+        <div class="col-3">
+            <div class="footer-headline">
+                Novinky e-mailem
+            </div>
+            <p>
+                Odebírejte naše novinky e-mailem:
+            </p>
+            <form id="SubscriberViewForm" method="post" action="/subscribers/add" class="form-inline">
+                <input type="hidden" name="_method" value="POST" />
+                <div class="input-group">
+                    <input name="data[Subscriber][email]" type="text" class="form-control" placeholder="emailová adresa" maxlength="150" id="SubscriberEmail" />
+                    <input type="hidden" name="data[Subscriber][request_uri]" value="/" id="SubscriberRequestUri" />
+                    <span class="input-group-btn">
+                        <input class="btn btn-primary" type="submit" value="ODEBÍRAT" />
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

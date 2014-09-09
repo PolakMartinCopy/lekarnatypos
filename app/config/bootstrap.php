@@ -145,4 +145,5 @@ function resize($filename, $max_x = 100, $max_y = 100) {
 define('CUST_MAIL', 'info@lekarnatypos.cz');
 define('CUST_ROOT', 'lekarnatypos.cz');
 define('CUST_NAME', 'Lékarna Typos CZ');
+define('CUST_PHONE', '778 437 811')
 ?>

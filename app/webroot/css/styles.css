@@ -1,8 +1,13 @@
 body{
 	background-color:#F5F5F5;
-	/*background:url(/images/back20.gif) fixed 0 0 #999;*/
+/*	background:url(/images/tobolky.jpg) fixed 0 0 #999; */ 
 	margin:0px;
 	padding:0px;
+}
+
+table th {
+	color:#008A00;
+	text-align: left;
 }
 
 .clearer{
@@ -50,7 +55,7 @@ body{
 }
 
 #header_right .button.active {
-    background-color:#55B1FF;
+    background-color:#A5CF4E;	
 }
 
 #header_right .prihlaseni{
@@ -76,7 +81,7 @@ body{
 #header_right #menu_login, #header_right #menu_cart, #header_right #menu_about {
     clear:both;
     height:111px;
-    background-color:#55B1FF;
+    background-color:#A5CF4E;
     font-family: Segoe UI;
 }
 
@@ -105,13 +110,13 @@ body{
 	margin-left:5px;
 }
 
-#menu_cart #cart_links a.dump{ background:#63B8FF;border:1px solid #333; }
-#menu_cart #cart_links a.to_cart{ background:#555555;border:1px solid #555555; }
-#menu_cart #cart_links a.to_order{ background:#004B8B;border:1px solid #004B8B; }
+#menu_cart #cart_links a.dump{ background:#82A734; }
+#menu_cart #cart_links a.to_cart{ background:#555555; }
+#menu_cart #cart_links a.to_order{ background:#008A00; }
 
 
 input.text_box{
-    border:1px solid #004B8B;
+    border:1px solid #7DA42E;
     width:123px;
     height:27px;
     padding:5px;
@@ -122,8 +127,8 @@ input.submit{
     border:none;
     width:43px;
     height:37px;
-    background:#004B8B;
-    border:6px solid #004B8B;
+    background:#008A00;
+    border:6px solid #008A00;
     color:#FFF;
 }
 
@@ -141,7 +146,7 @@ form#login_form_top {
 }
 
 .text_links, .text_links a{
-    color:#004B8B;
+    color:#008A00;
     font-size:12px;
     font-weight:bold;
 }
@@ -177,7 +182,7 @@ ul.text_links{
 }
 
 #horizontal_menu a:hover{
-    color:#55B1FF;
+    color:#A5CF4E;
 }
 
 #horizontal_menu #right_side{
@@ -188,7 +193,7 @@ ul.text_links{
     float:left;
     padding:15px 0px;
     margin:0px;
-    color:#55B1FF;
+    color:#A5CF4E;
     font-weight:bold;
     margin-right:25px;
 }
@@ -209,13 +214,13 @@ ul.text_links{
 #content.left{ float:left;padding-right:28px; }
 
 #search_box{
-    background:#55B1FF;
+    background:#A5CF4E;
     height:38px;
     padding:5px 5px;
 }
 
 input.search_query{
-    border:1px solid #004B8B;
+    border:1px solid #7DA42E;
     width:566px;
     height:26px;
     padding:5px;
@@ -232,8 +237,8 @@ input.search_submit{ /*e*/
 	border:none;
     width:78px;
     height:38px;
-    background:#004B8B;
-    border:6px solid #004B8B;
+    background:#008A00;
+    border:6px solid #008A00;
     color:#FFF;
 }
 
@@ -246,7 +251,7 @@ input.search_submit{ /*e*/
 	border:1px solid #F3F3F3;
 	border-bottom: none;
 	width:126px; height:16px; /* 126 x 52 */
-	color:#2682B2;
+	color:#90BB38;
 	font-weight:bold;
 	font-family: Segoe UI;
 	text-align:center;
@@ -284,7 +289,6 @@ input.search_submit{ /*e*/
     margin-left:15px;
     margin-top:15px;
     width:184px;
-    height: 140px;
 }
 
 #categories_wrapper .first{
@@ -296,34 +300,34 @@ input.search_submit{ /*e*/
 }
 
 .main_category a.top_cat{
-    color:#2682B2;
+    color:#84B226;
     font-family: Segoe UI;
 }
 
-.main_category p a, .main_category li a{
+.main_category p a{
     font-size:10px;
 	font-family: Segoe UI;
     color:#3F3F3F;
 }
 
-.main_category p, .main_category li{
+.main_category p{
     padding-left:35px;
     min-height:90px;
     line-height:14px;
 }
 
-.main_category p.vanoce, .main_category ul.vanoce{ background:url(../images/vanoce_icon_1.png) no-repeat; }
-.main_category p.vitaminy, .main_category ul.vitaminy{ background:url(../images/vitaminy_icon.gif) no-repeat; }
-.main_category p.deti_maminky, .main_category ul.deti_maminky{ background:url(../images/deti_maminky_icon.gif) no-repeat; }
-.main_category p.zdravotnicky_material, .main_category ul.zdravotnicky_material{ background:url(../images/zdravotnicky_material.gif) no-repeat; }
-.main_category p.caje_diety, .main_category ul.caje_diety{ background:url(../images/caje_diety.gif) no-repeat; }
-.main_category p.kosmetika, .main_category ul.kosmetika{ background:url(../images/kosmetika.gif) no-repeat; }
-.main_category p.chripka_kasel, .main_category ul.chripka_kasel{ background:url(../images/chripka_kasel.gif) no-repeat; }
-.main_category p.sportovni_vyziva, .main_category ul.sportovni_vyziva{ background:url(../images/sportovni_vyziva.gif) no-repeat; }
-.main_category p.homeopatika, .main_category ul.homeopatika{ background:url(../images/homeopatika.gif) no-repeat; }
-.main_category p.veterinarni, .main_category ul.veterinarni{ background:url(../images/veterinarni.gif) no-repeat; }
-.main_category p.klouby_svaly, .main_category ul.klouby_svaly{ background:url(../images/klouby_svaly.gif) no-repeat; }
-.main_category p.bolest, .main_category ul.bolest{ background:url(../images/bolest.gif) no-repeat; }
+.main_category p.vanoce{ background:url(../images/vanoce_icon_1.png) no-repeat; }
+.main_category p.vitaminy{ background:url(../images/vitaminy_icon.gif) no-repeat; }
+.main_category p.deti_maminky{ background:url(../images/deti_maminky_icon.gif) no-repeat; }
+.main_category p.zdravotnicky_material{ background:url(../images/zdravotnicky_material.gif) no-repeat; }
+.main_category p.caje_diety{ background:url(../images/caje_diety.gif) no-repeat; }
+.main_category p.kosmetika{ background:url(../images/kosmetika.gif) no-repeat; }
+.main_category p.chripka_kasel{ background:url(../images/chripka_kasel.gif) no-repeat; }
+.main_category p.sportovni_vyziva{ background:url(../images/sportovni_vyziva.gif) no-repeat; }
+.main_category p.homeopatika{ background:url(../images/homeopatika.gif) no-repeat; }
+.main_category p.veterinarni{ background:url(../images/veterinarni.gif) no-repeat; }
+.main_category p.klouby_svaly{ background:url(../images/klouby_svaly.gif) no-repeat; }
+.main_category p.bolest{ background:url(../images/bolest.gif) no-repeat; }
 
 
 
@@ -351,7 +355,7 @@ a img{
 }
 
 #hours #navi_hours{
-    background:#004B8B;
+    background:#008A00;
     color:#FFF;
     font-weight:bold;
     font-family: Segoe UI;
@@ -373,11 +377,11 @@ a img{
 }
 
 #sidebar .vyhody{
-    background:#004B8B;
+    background:#008A00;
 }
 
 #sidebar .nejprodavanejsi{
-    background:#004B8B;
+    background:#60A917;
 }
 
 #sidebar .nejnovejsi{
@@ -415,7 +419,7 @@ a img{
 }
 
 .product_listing_narrow .nejprodavanejsi a{
-    background:#004B8B;
+    background:#60A917;
 }
 
 .product_listing_narrow .nejnovejsi a{
@@ -435,13 +439,13 @@ a img{
 }
 
 #footer_wrapper{
-    background:#55B1FF;
+    background:#A5CF4E;
     padding:25px;
     font-family: Segoe UI;
 }
 
 #footer_wrapper .header{
-    color:#002D64;
+    color:#284908;
     font-weight:bold;
 }
 
@@ -459,7 +463,7 @@ a img{
 }
 
 input.text_box_suggest{ /*e*/
-    border:1px solid #004B8B;
+    border:1px solid #7DA42E;
     width:123px;
     height:27px;
     padding:5px;
@@ -470,13 +474,13 @@ input.submit_suggest{ /*e*/
 	border:none;
     width:88px;
     height:37px;
-    background:#004B8B;
-    border:6px solid #004B8B;
+    background:#425911;
+    border:6px solid #425911;
     color:#FFF;
 }
 
 input.text_box_newsletter{ /*e*/
-    border:1px solid #004B8B;
+    border:1px solid #7DA42E;
     width:123px;
     height:27px;
     padding:5px;
@@ -487,8 +491,8 @@ input.submit_newsletter{
 	border:none;
     width:88px;
     height:37px;
-    background:#004B8B;
-	border:6px solid #004B8B;
+    background:#425911;
+	border:6px solid #425911;
     color:#FFF;
 }
 
@@ -504,14 +508,14 @@ input.submit_newsletter{
 }
 
 .footer_area ul li a{
-    color:#002D64;
+    color:#284908;
 }
 
 .footer_area p{
 	margin:0px;
 	margin-top:15px;
     padding:0px;
-    color:#002D64;
+    color:#284908;
 }
 
 /**********************************/
@@ -536,25 +540,25 @@ ul#nav, ul#nav ul {
 ul#nav li a{
     color:#FFF;
     text-decoration:none;
-    border-bottom:1px solid #002D64;
+    border-bottom:1px solid #007000;
 }
 
 ul#nav > li > a{
     display:block;
-	background:#004B8B;
+	background:#008A00;
     padding:10px;
 }
 
 ul#nav > li > a.actual{
-    color:#55B1FF;
-	background-color:#002D64;
+    color:#A5CF4E;
+	background-color:#007000;
 }
 
 ul#nav > li > ul > li > a{
     display:block;
     padding:10px;
 	background:url(../images/menu_arrow.gif) no-repeat 10px center;
-	background-color:#55B1FF;
+	background-color:#A5CF4E;
     padding-left:25px;
 	color:#002400;
 }
@@ -563,19 +567,19 @@ ul#nav > li > ul > li > ul > li > a{
     display:block;
 	padding:10px;
 	background:url(../images/menu_arrow.gif) no-repeat 25px center;
-	background-color:#55B1FF;
+	background-color:#A5CF4E;
     padding-left:40px;
     color:#002400;
 }
 
 h1{
-    color:#004B8B;
+    color:#008A00;
     font-size:21px;
     font-family: Segoe UI;
 }
 
 h2{
-    color:#004B8B;
+    color:#008A00;
     font-size:16px;
     font-family: Segoe UI;
     font-weight:lighter;
@@ -587,7 +591,7 @@ h2.product_listing{
 }
 
 h3{
-    color:#004B8B;
+    color:#008A00;
     font-size:12px;
 }
 
@@ -628,7 +632,7 @@ div#sort_options a{
 }
 
 div#sort_options a.active{
-    color:#004B8B;
+    color:#008A00;
     font-weight:bold;
 }
 
@@ -645,7 +649,7 @@ div.product_listing h3 {
 }
 
 div.product_listing h3 a, div.product_listing_featured h3 a {
-    color:#004B8B;
+    color:#008A00;
     text-decoration: none;
 }
 
@@ -670,7 +674,7 @@ div.product_listing p.availability{
 }
 
 div.product_listing a.buy_now{
-    background:#004B8B;
+    background:#008A00;
     color:#FFFFFF;
     font-weight:bold;
     padding:5px 10px;
@@ -707,7 +711,7 @@ div#basic_info p{
 }
 
 div#basic_info p span.header{
-	color:#004B8B;
+	color:#008A00;
 }
 
 div#basic_info p.manufacturer{
@@ -745,7 +749,7 @@ form#cart{
 }
 
 input.text_box_quantity{
-    border:1px solid #004B8B;
+    border:1px solid #7DA42E;
     width:20px;
     height:27px;
     padding:5px;
@@ -757,8 +761,8 @@ input.submit_cart{
     width:130px;
     height:37px;
     background:url(../images/cart_icon.gif) no-repeat left center;
-    background-color:#004B8B;
-    border:6px solid #004B8B;
+    background-color:#008A00;
+    border:6px solid #008A00;
     color:#FFF;
     font-weight:bold;
     padding-left:20px;
@@ -775,7 +779,7 @@ div#contact_info p{
 }
 
 div#contact_info p span.bolder{
-	color:#004B8B;
+	color:#008A00;
 	font-size:17px;
 	font-weight:bold;
 }
@@ -785,7 +789,7 @@ div#contact_info ul li a{
 }
 
 div#contact_info ul li a:hover{
-	color:#004B8B;
+	color:#008A00;
 }
 
 div#contact_info ul{
@@ -819,7 +823,7 @@ div#contact_info ul{
 .button_active {
 	border:1px solid #F3F3F3;
 	border-bottom: none;
-	color:#2682B2;
+	color:#90BB38;
 	font-weight:bold;
 	font-family: Segoe UI;
 	text-align:center;

@@ -6,6 +6,8 @@ class CategoriesMostSoldProduct extends AppModel {
 	
 	var $belongsTo = array('Category', 'Product');
 	
+	var $count = 9;
+	
 	// vyprazdni tabulku
 	function truncate() {
 		// prepnu na admin db config

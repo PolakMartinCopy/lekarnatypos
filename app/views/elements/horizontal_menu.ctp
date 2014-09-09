@@ -1,10 +1,7 @@
-<div id="horizontal_menu">
-	<a href="<?php echo HP_URI?>">Úvodní stránka</a>
-	<a href="/novinky">Novinky</a>
-	<a href="/prodejna">Lékárna - prodejna</a>
-	<a href="/kontakty">Kontakty</a>
-	<div id="right_side">
-		<p id="phone">778 437 811</p>
-		<p id="mail">info@lekarnatypos.cz</p>
-	</div>
-</div>
+<ul>
+    <li<?php echo ($_SERVER['REQUEST_URI'] == '/' ? ' class="selected"' : '') ?>><a href="/">Domů</a></li>
+    <li<?php echo ($_SERVER['REQUEST_URI'] == '/novinky' ? ' class="selected"' : '') ?>><a href="/novinky">Novinky</a></li>
+    <li<?php echo ($_SERVER['REQUEST_URI'] == '/prodejna' ? ' class="selected"' : '') ?>><a href="/prodejna">Kammená prodejna</a></li>
+    <li<?php echo ($_SERVER['REQUEST_URI'] == '/vse-o-nakupu' ? ' class="selected"' : '') ?>><a href="/vse-o-nakupu">Vše o nákupu</a></li>
+    <li<?php echo ($_SERVER['REQUEST_URI'] == '/kontakty' ? ' class="selected"' : '') ?>><a href="/kontakty">Kontakty</a></li>
+</ul>

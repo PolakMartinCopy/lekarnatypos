@@ -165,7 +165,7 @@ class Category extends AppModel {
 	function set_most_sold($id) {
 		// zjistim idcka daneho podstromu kategorii
 		$subtree_categories = $this->get_subcategories_ids($id);
-		//	najdu 3 nevice prodavane aktivni produkty
+		//	najdu nevice prodavane aktivni produkty
 		$products = $this->CategoriesProduct->find('all', array(
 			'conditions' => array(
 				'CategoriesProduct.category_id' => $subtree_categories,
@@ -183,7 +183,7 @@ class Category extends AppModel {
 			),
 			'fields' => array('CategoriesProduct.product_id', 'CategoriesProduct.quantity'),
 			'group' => 'CategoriesProduct.id',
-			'limit' => 3,
+			'limit' => $this->CategoriesMostSoldProduct->count,
 			'order' => array('CategoriesProduct.quantity' => 'desc')
 		));
 
@@ -217,14 +217,21 @@ class Category extends AppModel {
 						'conditions' => array('Image.is_main' => '1'),
 						'fields' => array('Image.id', 'Image.name')
 					),
-					'fields' => array('Product.id', 'Product.name', 'Product.url')
+					'fields' => array(
+						'Product.id',
+						'Product.name',
+						'Product.url',
+						'Product.retail_price_with_dph',
+						'Product.discount_member',
+						'Product.discount_common'
+					)
 				)
 			)
 		));
 
 		// produkty maji byt 3 (vic se jich tam pri generovani neulozi
 		// ale muze jich byt min, proto nahodne vyberu zbytek z dane kategorie
-		if (count($products) < 3) {
+		if (count($products) < $this->CategoriesMostSoldProduct->count) {
 			$product_ids = Set::extract('/Product/id', $products);
 			$subtree_ids = $this->get_subcategories_ids($id);
 			// vyberu nahodne produkt z kategorie a vlozim ho do pole nejprodavanejsich
@@ -240,15 +247,31 @@ class Category extends AppModel {
 							'conditions' => array('Image.is_main' => '1'),
 							'fields' => array('Image.id', 'Image.name')
 						),
-						'fields' => array('Product.id', 'Product.name', 'Product.url')
+						'fields' => array(
+							'Product.id',
+							'Product.name',
+							'Product.url',
+							'Product.retail_price_with_dph',
+							'Product.discount_member',
+							'Product.discount_common'
+						)
 					)
 				),
-				'limit' => 3-count($products),
+				'limit' => $this->CategoriesMostSoldProduct->count - count($products),
 				'order' => 'Rand()'
 			));
 			$products = array_merge($products, $complement_products);
 		}
+		
+		// preskladam produkty, aby bylo pole serazeno ve spravnem tvaru
+		foreach ($products as &$product) {
+			$product['Image'] = $product['Product']['Image'];
+			unset($product['Product']['Image']);
+			$product['Product']['discount_price'] = $this->CategoriesProduct->Product->assign_discount_price($product);
+		}
+		
 		return $products;
 	}
+	
 }
 ?>

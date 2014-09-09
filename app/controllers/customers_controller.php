@@ -396,6 +396,7 @@ class CustomersController extends AppController {
 				'belongsTo' => array('Payment', 'Shipping', 'Customer'),
 			)
 		);
+
 		$customer = $this->Customer->read(null, $this->Session->read('Customer.id'));
 		$this->set('customer', $customer);
 	}

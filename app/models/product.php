@@ -325,17 +325,17 @@ class Product extends AppModel {
 				'Product.name',
 				'Product.url',
 //				'Product.description',
-//				'Product.retail_price_with_dph',
-//				'Product.discount_common',
-//				'Product.discount_member'
+				'Product.retail_price_with_dph',
+				'Product.discount_common',
+				'Product.discount_member'
 			)
 		));
 		
 		// priradim k nim zlevnene ceny, pokud nejake jsou
-//		$count = count($products);
-//		for ( $i = 0; $i < $count; $i++ ){
-//			$products[$i]['Product']['discount_price'] = $this->assign_discount_price($products[$i]);
-//		}
+		$count = count($products);
+		for ( $i = 0; $i < $count; $i++ ){
+			$products[$i]['Product']['discount_price'] = $this->assign_discount_price($products[$i]);
+		}
 		return $products;
 	}
 	
@@ -379,5 +379,6 @@ class Product extends AppModel {
 		
 		return $products;
 	}
+	
 }
 ?>

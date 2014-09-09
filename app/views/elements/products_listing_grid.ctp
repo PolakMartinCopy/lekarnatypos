@@ -1,4 +1,32 @@
+<div class="product-list favorite-products">
+    <div class="product-list-headline">Produkty</div>
+    <div class="item">
+        <ul class="clearfix">
+<?php		foreach ($products as $product) {
+				$image = '/img/na_250_250.jpg';
+				if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
+					$path = 'product-images/medium/' . $product['Image'][0]['name'];
+					//				if (file_exists($path) && is_file($path) && getimagesize($path)) {
+					$image = '/' . $path;
+					//				}
+				}   
+?>
+            <li><?php 
+            	$options = array(
+					'product_url' => $product['Product']['url'],
+            		'product_name' => $product['Product']['name'],
+					'product_price' => $product['Product']['discount_price'],
+					'image' => $image,
+					'product_description' => $product['Product']['short_description']	
+				);
+				echo $this->element('product_box', $options);
+            ?></li>
+		<?php } ?>
+		</ul>
+	</div>
+</div>
 <?
+if (false) {
 $i = 0;
 foreach ($products as $product) {
 	$main_image = array();
@@ -37,4 +65,5 @@ foreach ($products as $product) {
 	</div>
 <?php 
 	$i++;
-} ?>
+} 
+}?>

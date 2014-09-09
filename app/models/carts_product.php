@@ -92,7 +92,7 @@ class CartsProduct extends AppModel {
 				'Product' => array(
 					'Flag',
 					'TaxClass',
-					'fields' => array('id', 'name')
+					'fields' => array('id', 'name', 'url')
 				),
 				'Subproduct' => array(
 					'AttributesSubproduct' => array(
