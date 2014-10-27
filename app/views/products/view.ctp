@@ -27,6 +27,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
     	<p class="note"><span class="header">Poznámka: </span><?php echo $product['Product']['note']?></p>
     <?php } ?>
 	<p class="availability"><span class="header">Dostupnost:</span> <?php echo $product['Availability']['name']?><?php if ($product['Availability']['cart_allowed']) { ?> (<a href="/cenik-dopravy">kdy zboží dostanu</a>)<?php  } ?></p>
+	<div class="fb-like" data-href="http://www.<?php echo CUST_ROOT?>/<?php echo $product['Product']['url']?>" data-action="like" data-layout="button_count" data-width="450" data-show-faces="false"></div>
 	<p class="price"><span class="header">Cena:</span> <span class="nominal"><?php echo round($product['Product']['discount_price'])?>,-</span></p>
 	
 	<?php // form pro vlozeni do kosiku
@@ -42,7 +43,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
 		<?php echo $this->Form->end();
 		}
 	?>
-
+	
     <div class="product-shop-info">
         <div class="col-3">
             <strong>778 437 811</strong><br />
