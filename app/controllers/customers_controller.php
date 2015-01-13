@@ -115,6 +115,18 @@ class CustomersController extends AppController {
 		));
 		$this->set('customer', $customer);
 	}
+	
+	function admin_email_export() {
+		$customers = $this->Customer->find('all', array(
+			'conditions' => array('Customer.newsletter' => true),
+			'contain' => array(),
+			'fields' => array('first_name', 'last_name', 'email')
+		));
+	
+		$this->layout = 'csv_file';
+		$this->set('file_name', 'emaily.csv');
+		$this->set('customers', $customers);
+	}
 
 	/*
 	 * @description			Registrace noveho uzivatele do systemu.

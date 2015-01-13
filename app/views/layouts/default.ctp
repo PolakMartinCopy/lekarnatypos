@@ -124,6 +124,7 @@ if ( !isset( $opened_category_id ) ){
 				<a href="/admin/orders">Seznam objednávek</a><br />
 				&nbsp;&nbsp;<?=$html->link('kontrola doručených objednávek', array('controller' => 'orders', 'action' => 'track'), array('style' => 'font-size:9px;')) ?><br />
 				<?=$html->link('Seznam zákazníků', array('controller' => 'customers', 'action' => 'list')) ?><br />
+				&nbsp;&nbsp;<?=$html->link('emaily export', array('controller' => 'customers', 'action' => 'email_export'), array('style' => 'font-size:9px;')) ?><br />
 				<?=$html->link('Dotazy / komentáře', array('controller' => 'comments', 'action' => 'index')) ?><br />
 				<?=$html->link('Statistiky', array('controller' => 'statistics', 'action' => 'index'))?><br /><br />
 				<?
