@@ -66,7 +66,11 @@ class AdministratorsController extends AppController {
 					$this->Session->write('Administrator', $administrator['Administrator']);
 					
 					// presmeruju
-					$this->redirect(array('controller' => 'orders', 'action' => 'index'), null, true);
+					$redirect = array('controller' => 'orders', 'action' => 'index');
+					if (isset($this->params['named']['url'])) {
+						$redirect = '/' . base64_decode($this->params['named']['url']);
+					}
+					$this->redirect($redirect, null, true);
 				}
 			}
 		}

@@ -56,7 +56,7 @@ class AppController extends Controller {
 					}
 				} else {
 					// donutim uzivatele zalogovat se
-					$this->redirect('/admin/administrators/login', null, true);
+					$this->redirect('/admin/administrators/login/url:' . base64_encode($this->params['url']['url']), null, true);
 				}
 			}
 			
