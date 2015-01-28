@@ -665,6 +665,97 @@ h1 {
 .categories>li>ul>li>ul>li>a .fa {
 	padding: 0 10px 0 0
 }
+.categories>li>ul>li>ul>li>ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: relative
+}
+.categories>li>ul>li>ul>li>ul>li {
+	line-height: 48px;
+	position: relative;
+	font-size: 12.8px
+}
+.categories>li>ul>li>ul>li>ul>li:after {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: auto;
+	background-color: #fff;
+	-moz-opacity: .15;
+	opacity: .15;
+	content: "";
+	display: block;
+	height: 1px;
+	z-index: 100
+}
+.categories>li>ul>li>ul>li>ul>li>a {
+	line-height: 48px;
+	text-decoration: none;
+	text-transform: uppercase;
+	background-color: #477d1d;
+	color: #fff;
+	display: block;
+	padding: 0 20px 0 65px;
+	position: relative;
+	z-index: 1;
+	margin-top: -1px;
+	margin-bottom: -1px
+}
+.categories>li>ul>li>ul>li>ul>li>a:hover {
+	background-color: #6fc42e
+}
+.categories>li>ul>li>ul>li>ul>li>a .fa {
+	padding: 0 10px 0 0
+}
+
+.categories>li>ul>li>ul>li>ul>li>ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: relative
+}
+.categories>li>ul>li>ul>li>ul>li>ul>li {
+	line-height: 48px;
+	position: relative;
+	font-size: 12.8px
+}
+.categories>li>ul>li>ul>li>ul>li>ul>li:after {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: auto;
+	background-color: #fff;
+	-moz-opacity: .15;
+	opacity: .15;
+	content: "";
+	display: block;
+	height: 1px;
+	z-index: 100
+}
+.categories>li>ul>li>ul>li>ul>li>ul>li>a {
+	line-height: 48px;
+	text-decoration: none;
+	text-transform: uppercase;
+	background-color: #477d1d;
+	color: #fff;
+	display: block;
+	padding: 0 20px 0 85px;
+	position: relative;
+	z-index: 1;
+	margin-top: -1px;
+	margin-bottom: -1px
+}
+.categories>li>ul>li>ul>li>ul>li>ul>li>a:hover {
+	background-color: #6fc42e
+}
+.categories>li>ul>li>ul>li>ul>li>ul>li>a .fa {
+	padding: 0 10px 0 0
+}
+
+
 .categories>li:after {
 	position: absolute;
 	left: 0;

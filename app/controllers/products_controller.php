@@ -219,6 +219,9 @@ class ProductsController extends AppController {
 		$this->set('description_for_content', $product['Product']['short_description']);
 		// z infa o produktu si vytahnu ID otevrene kategorie
 		$opened_category_id = $product['CategoriesProduct'][0]['category_id'];
+		if ($opened_category_id == 0) {
+			$opened_category_id = 5;
+		}
 		$this->set('opened_category_id', $opened_category_id);
 		
 		// sestavim breadcrumbs

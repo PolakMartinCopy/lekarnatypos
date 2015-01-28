@@ -100,16 +100,17 @@ class Image extends AppModel {
 		}
 	}
 
-	function deleteAllImages($id = null){
-		if ( !$id ){
+	function deleteAllImages($conditions = null) {
+		if (!$conditions) {
 			return false;
 		} else {
+			if (is_numeric($conditions)) {
+				$conditions = array('product_id' => $id);
+			}
 			$images = $this->find('all', array(
-
-				'conditions' => array('product_id' => $id),
-
+				'conditions' => $conditions,
+				'contain' => array(),
 				'fields' => array('id')
-
 			));
 			foreach ( $images as $image ){
 				$this->deleteImage($image['Image']['id']);

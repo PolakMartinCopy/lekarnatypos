@@ -3,3 +3,5 @@ tmp
 /.project
 /.settings/org.eclipse.php.core.prefs
 /.settings
+/app/webroot/product-images
+/.externalToolBuilders

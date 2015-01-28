@@ -23,6 +23,10 @@ class Category extends AppModel {
 		)
 	);
 	
+	var $hasOne = array(
+		'SupplierCategory'	
+	);
+	
 	// id kategorii, ktere se nemaji zobrazovat v levem menu
 	var $unactive_categories_ids = array();
 	

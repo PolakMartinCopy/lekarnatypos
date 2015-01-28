@@ -60,6 +60,7 @@ function strip_diacritic($text, $strip_dot = true) {
 	$text = str_replace('"', '', $text); //uvozovky
 	$text = str_replace("/", "", $text); // lomitko
 	$text = str_replace("+", "-", $text);
+	$text = str_replace('™', '', $text); // trademark
 	
 	if ($strip_dot) {
 		$text = str_replace(".", "", $text); // tecka
@@ -75,7 +76,7 @@ function strip_diacritic($text, $strip_dot = true) {
         'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
         'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
         'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r', 'Ř'=>'R', 'ř'=>'r', 'Ť'=>'T', 'ť'=>'t', 'Ě'=>'E', 'ě'=>'e',
-    	'Ň'=>'N', 'ň'=>'n', 'ú'=>'u', 'Ú'=>'U', 'ů'=>'u', 'Ů'=>'U', 'ď'=>'d', 'Ď'=>'d', 'ü'=>'u'
+    	'Ň'=>'N', 'ň'=>'n', 'ú'=>'u', 'Ú'=>'U', 'ů'=>'u', 'Ů'=>'U', 'ď'=>'d', 'Ď'=>'d', 'ü'=>'u',
     );
     $text = strtr($text, $table);
 
@@ -140,6 +141,18 @@ function resize($filename, $max_x = 100, $max_y = 100) {
 	}
 	
 	return array($i[0], $i[1]);
+}
+
+function download_url($url = null) {
+	if ($url) {
+		$content = false;
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$content = curl_exec($ch);
+		curl_close($ch);
+		return $content;
+	}
+	return false;
 }
 
 define('CUST_MAIL', 'info@lekarnatypos.cz');

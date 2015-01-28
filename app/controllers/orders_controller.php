@@ -40,7 +40,7 @@ class OrdersController extends AppController {
 					)
 				),
 				'Product' => array(
-					'fields' => array('id', 'name', 'url', 'manufacturer_id')
+					'fields' => array('id', 'name', 'url', 'manufacturer_id', 'supplier_product_id')
 				),
 			),
 			'Shipping',

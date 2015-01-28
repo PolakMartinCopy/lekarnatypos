@@ -55,20 +55,11 @@ class Product extends AppModel {
 	);
 
 	var $belongsTo = array(
-			'Manufacturer' => array('className' => 'Manufacturer',
-								'foreignKey' => 'manufacturer_id',
-								'conditions' => '',
-								'fields' => '',
-								'order' => '',
-								'counterCache' => ''),
-			'TaxClass' => array('className' => 'TaxClass',
-								'foreignKey' => 'tax_class_id',
-								'conditions' => '',
-								'fields' => '',
-								'order' => '',
-								'counterCache' => ''),
-			'Availability',
-			'ProductType'
+		'Manufacturer',
+		'TaxClass',
+		'Availability',
+		'ProductType',
+		'Supplier'
 	);
 	
 	function beforeSave() {
@@ -80,7 +71,7 @@ class Product extends AppModel {
 				$this->data['Product'][$field] = null;
 			}
 			
-			if ($this->data['Product'][$field] == '') {
+			if (array_key_exists($field, $this->data['Product']) && $this->data['Product'][$field] == '') {
 				$this->data['Product'][$field] = null;
 			}
 		}
@@ -380,5 +371,22 @@ class Product extends AppModel {
 		return $products;
 	}
 	
+	function image_name($name, $suffix = 'jpg') {
+		if (is_numeric($name)) {
+			$product = $this->find('first', array(
+				'conditions' => array('Product.id' => $name),
+				'contain' => array(),
+				'fields' => array('Product.name')	
+			));
+			$name = $product['Product']['name'];
+		}
+		// vygeneruju nazev obrazku
+		$image_name = strip_diacritic($name . '.' . $suffix, false);
+		// zjistim, jestli nemusim obrazek cislovat
+		$image_name = $this->Image->checkName('product-images/' . $image_name);
+		$image_name = explode("/", $image_name);
+		$image_name = $image_name[count($image_name) -1];
+		return $image_name;
+	}
 }
 ?>

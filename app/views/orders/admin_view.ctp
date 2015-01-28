@@ -37,7 +37,6 @@
 				echo '	<tr>
 							<td>
 								' . (!empty($product['Product']) ? $html->link($product['Product']['name'], '/' . $product['Product']['url'], array('escape' => false), false) : '<em>Neznámý produkt</em>');
-				//debug($product);
 				// musim vyhodit atributy, pokud nejake produkt ma
 				if ( !empty( $product['OrderedProductsAttribute'] ) ){
 					echo '<div class="orderedProductsAttributes">';
@@ -45,6 +44,9 @@
 						echo '<span>- <strong>' . $attribute['Attribute']['Option']['name'] . '</strong>: ' . $attribute['Attribute']['value'] . '</span><br />';
 					}
 					echo '</div>';
+				}
+				if (!empty($product['Product']['supplier_product_id'])) {
+					echo '<div class="orderedProductsAttributes">- <strong>id produktu u dodavatele:</strong> ' . $product['Product']['supplier_product_id'] . '</div>';
 				}
 
 

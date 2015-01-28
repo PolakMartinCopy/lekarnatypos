@@ -64,33 +64,6 @@ if ( !isset( $opened_category_id ) ){
 				    	relative_urls: false
 					});
 				</script>';
-			
-			
-/*			echo '<script type="text/javascript">tinyMCE.init({
-				mode : "exact",
-				language : "cs",
-				width : 528,
-				elements : "' . $tinyMceElement . '",
-			    entity_encoding : "raw",
-			    relative_urls : false,
-				theme : "advanced",
-				plugins : "table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,zoom,flash,searchreplace,print,contextmenu",
-				theme_advanced_buttons1_add_before : "save,separator",
-				theme_advanced_buttons1_add : "fontselect,fontsizeselect",
-				theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,zoom,separator,forecolor,backcolor",
-				theme_advanced_buttons2_add_before: "cut,copy,paste,separator,search,replace,separator",
-				theme_advanced_buttons3_add_before : "tablecontrols,separator",
-				theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,separator,print",
-				theme_advanced_toolbar_location : "top",
-				theme_advanced_toolbar_align : "left",
-				theme_advanced_path_location : "bottom",
-				plugin_insertdate_dateFormat : "%Y-%m-%d",
-				plugin_insertdate_timeFormat : "%H:%M:%S",
-				extended_valid_elements : "a[name|href|target|title|onclick|class|rel],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
-				external_link_list_url : "example_data/example_link_list.js",
-				external_image_list_url : "example_data/example_image_list.js",
-				flash_external_list_url : "example_data/example_flash_list.js"
-			});</script>';*/
 		}
 		
 		if (isset($autocomplete)) {
@@ -107,7 +80,7 @@ if ( !isset( $opened_category_id ) ){
 		}
 
 	// prihodim si soubor s csskem
-	echo $html->css('admin');
+	echo $html->css('admin.css?v=1');
 	?>
 </head>
 
@@ -137,6 +110,8 @@ if ( !isset( $opened_category_id ) ){
 				&raquo;<a href="/admin/attributes/add">nový</a><br />';
 				echo '&nbsp;&nbsp;' . $html->link(__('Názvy atributů', true), array('controller' => 'options', 'action' => 'index')) . '
 				&raquo;<a href="/admin/options/add">nový</a><br />';
+				echo $html->link(__('Dodavatelé', true), array('controller' => 'suppliers', 'action' => 'index')) . '
+				&raquo;<a href="/admin/suppliers/add">nový</a><br />';
 				echo $html->link(__('Výrobci', true), array('controller' => 'manufacturers', 'action' => 'index')) . '
 				&raquo;<a href="/admin/manufacturers/add">nový</a><br />';
 				echo $html->link(__('DPH', true), array('controller' => 'tax_classes', 'action' => 'index')) . '

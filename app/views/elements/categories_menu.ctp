@@ -30,8 +30,38 @@
 						} ?>
 					<li<?php echo $lvl3_active?>><?php
 						$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($grandchild['Category']['name'], 'utf-8');
-						echo $this->Html->link($anchor, '/' . $grandchild['Category']['url'], $link_options)
-					?></li>
+						echo $this->Html->link($anchor, '/' . $grandchild['Category']['url'], $link_options);
+						if (!empty($grandchild['children'])) { ?>
+						<ul>
+<?php 						foreach ($grandchild['children'] as $g_grandchild) {
+								$link_options = array('title' => $g_grandchild['Category']['name'], 'escape' => false);
+								$lvl4_active = '';
+								if (in_array($g_grandchild['Category']['id'], $path_ids)) {
+									$lvl4_active = ' class="selected"';
+								} ?>
+							<li<?php echo $lvl4_active?>><?php
+								$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($g_grandchild['Category']['name'], 'utf-8');
+								echo $this->Html->link($anchor, '/' . $g_grandchild['Category']['url'], $link_options);
+								if (!empty($g_grandchild['children'])) { ?>
+								<ul>
+<?php		 						foreach ($g_grandchild['children'] as $gg_grandchild) {
+										$link_options = array('title' => $gg_grandchild['Category']['name'], 'escape' => false);
+										$lvl5_active = '';
+										if (in_array($gg_grandchild['Category']['id'], $path_ids)) {
+											$lvl5_active = ' class="selected"';
+										} ?>
+									<li<?php echo $lvl5_active?>><?php
+										$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($gg_grandchild['Category']['name'], 'utf-8');
+										echo $this->Html->link($anchor, '/' . $gg_grandchild['Category']['url'], $link_options);?>
+									</li>
+<?php 								} ?>
+								</ul>
+<?php 							} ?>
+							</li>
+<?php 						} ?>
+						</ul>
+						<?php } ?>
+					</li>
 	<?php 			}?>
 				</ul>
 	<?php		}?>	
