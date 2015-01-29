@@ -180,6 +180,16 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0
 }
+table.topHeading td, table.topHeading th {
+	border: 1px solid #BBB;
+	padding: 3px;
+}
+
+table.topHeading th {
+	background-color: #DDD;
+	color: #555;
+	font-weight: bold;
+}
 .clearfix {
 	*zoom: 1
 }
