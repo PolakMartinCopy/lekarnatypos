@@ -224,7 +224,7 @@ class Supplier extends AppModel {
 	function product_manufacturer_id($feed_product) {
 		if ($manufacturer = $feed_product->MANUFACTURER->__toString()) {
 			$db_manufacturer = $this->Product->Manufacturer->find('first', array(
-				'conditions' => array('Manufacturer.name' => $manufacturer),
+				'conditions' => array('Manufacturer.supplier_alias' => $manufacturer),
 				'contain' => array(),
 				'fields' => array('Manufacturer.id')
 			));
@@ -232,7 +232,8 @@ class Supplier extends AppModel {
 			if (empty($db_manufacturer)) {
 				$save_manufacturer = array(
 					'Manufacturer' => array(
-						'name' => $manufacturer
+						'name' => $manufacturer,
+						'supplier_alias'
 					)
 				);
 				$this->Product->Manufacturer->create();

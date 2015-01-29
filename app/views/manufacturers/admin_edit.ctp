@@ -9,16 +9,20 @@
 					Název výrobce
 				</th>
 				<td>
-					<?=$form->text('name')?>
+					<?=$form->text('name', array('size' => 70))?>
 					<?=$form->error('name')?>
 				</td>
+			</tr>
+			<tr>
+				<th><abbr title="">Alias dodavatele</abbr></th>
+				<td><?php echo $this->Form->input('Manufacturer.supplier_alias', array('label' => false, 'size' => 70))?></td>
 			</tr>
 			<tr>
 				<th>
 					adresa www stránek
 				</th>
 				<td>
-					<?=$form->text('www_address')?><br />
+					<?=$form->text('www_address', array('size' => 70))?><br />
 					<?=$form->error('www_address')?>
 					<span class="formNote">např. http://www.mte.cz/</span>
 				</td>
