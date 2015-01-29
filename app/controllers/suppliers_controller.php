@@ -225,7 +225,6 @@ class SuppliersController extends AppController {
 					$this->Supplier->Product->CategoriesProduct->create();
 					if ($this->Supplier->Product->CategoriesProduct->save($categories_product)) {
 						// smazu vsechny ostatni prirazeni produktu do kategorii
-						// TODO - produkt 
 						$this->Supplier->Product->CategoriesProduct->deleteAll(array(
 							'CategoriesProduct.product_id' => $product_id,
 							'CategoriesProduct.category_id !=' => $category_id	
@@ -252,7 +251,12 @@ class SuppliersController extends AppController {
 			trigger_error('Feed ' . $supplier['Supplier']['url'] . ' se od posledně nezměnil', E_USER_NOTICE);
 			die();
 		}
-		
-		die('Upload produktů ukončen.');
+		// pokud se jedna o vynuceny upload z administace
+		if (isset($this->params['named']['force'])) {
+			// presmeruju na index dodavatelu
+			$this->Session->setFlash('Upload produktů byl úspěšně dokončen');
+			$this->redirect(array('controller' => 'suppliers', 'action' => 'index', 'admin' => 'true'));
+		}
+		die();
 	}
 }
