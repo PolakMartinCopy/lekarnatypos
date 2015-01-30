@@ -13,6 +13,7 @@
 	<tr>
 		<th>Kategorie dodavatele</th>
 		<th>Kategorie u nás</th>
+		<th>Aktivní</th>
 	</tr>
 	<?php foreach ($this->data['SupplierCategory'] as $index => $supplier_category) { ?>
 	<tr>
@@ -22,6 +23,7 @@
 			echo $supplier_category['name'];
 		?></td>
 		<td><?php echo $this->Form->input('SupplierCategory.' . $index . '.category_id', array('label' => false, 'options' => $categories, 'empty' => true))?></td>
+		<td><?php echo $this->Form->input('SupplierCategory.' . $index . '.active', array('label' => false))?></td>
 	</tr>
 	<?php } ?>
 </table>

@@ -85,8 +85,28 @@ class SuppliersController extends AppController {
 				$old_supplier_category = $this->Supplier->SupplierCategory->find('first', array(
 					'conditions' => array('SupplierCategory.id' => $supplier_category['id']),
 					'contain' => array(),
-					'fields' => array('SupplierCategory.category_id')	
+					'fields' => array('SupplierCategory.category_id', 'SupplierCategory.active')	
 				));
+				
+				// pokud jsem zmenil active
+				if ($old_supplier_category['SupplierCategory']['active'] != $supplier_category['active']) {
+					$products = $this->Supplier->Product->find('all', array(
+						'conditions' => array(
+							'Product.supplier_category_id' => $supplier_category['id']
+						),
+						'contain' => array(),
+						'fields' => array('Product.id')
+					));
+					
+					// pokud jsem kategorii zakazal, deaktivuju vsechny produkty, ktere jsou z teto kategorie
+					// pokud jsem kategorii povolil, vsechny jeji produkty aktivuju
+					foreach ($products as $product) {
+						$product['Product']['active'] = $supplier_category['active'];
+						$this->Supplier->Product->save($product);
+					}
+				}
+
+				// pri uploadu se podivam, jestli je kategorie aktivni a pokud ne, produkt nenatahuju
 
 				// pokud jsem zmenil naparovani
 				if (empty($old_supplier_category) || ($supplier_category['category_id'] != $old_supplier_category['SupplierCategory']['category_id'])) {
@@ -364,6 +384,7 @@ class SuppliersController extends AppController {
 			trigger_error('Feed ' . $supplier['Supplier']['url'] . ' se od posledně nezměnil', E_USER_NOTICE);
 			die();
 		}
+
 		// pokud se jedna o vynuceny upload z administace
 		if (isset($this->params['named']['force'])) {
 			// presmeruju na index dodavatelu
