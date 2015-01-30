@@ -61,6 +61,7 @@ function strip_diacritic($text, $strip_dot = true) {
 	$text = str_replace("/", "", $text); // lomitko
 	$text = str_replace("+", "-", $text);
 	$text = str_replace('™', '', $text); // trademark
+	$text = str_replace('–', '-', $text); // dlouha pomlcka
 	
 	if ($strip_dot) {
 		$text = str_replace(".", "", $text); // tecka

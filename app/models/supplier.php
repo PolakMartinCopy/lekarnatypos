@@ -82,7 +82,7 @@ class Supplier extends AppModel {
 	 * vyparsuje z xml data o produktu k ulozeni
 	 * @param SimpleXMLElement $feed_product
 	 */
-	function product($feed_product, $discount, $price_field) {
+	function product($feed_product, $discount, $price_field, $supplier_id) {
 		$product = array();
 		// atributy produktu
 		try {
@@ -110,6 +110,8 @@ class Supplier extends AppModel {
 			$ean = $this->product_ean($feed_product);
 			//		- supplier product id - id produktu ve feedu dodavatele
 			$supplier_product_id = $this->product_supplier_product_id($feed_product);
+			//		- supplier_category_id - id kategorie dodavatele u nas v systemu
+			$supplier_category_id = $this->product_supplier_category_id($feed_product, $supplier_id);
 			// 		- dostupnost
 			$availability_id = $this->product_availability_id($feed_product);
 			// 		- vyrobce
@@ -136,6 +138,7 @@ class Supplier extends AppModel {
 				'discount_common' => $discount_common,
 				'ean' => $ean,
 				'supplier_product_id' => $supplier_product_id,
+				'supplier_category_id' => $supplier_category_id,
 				'availability_id' => $availability_id,
 				'manufacturer_id' => $manufacturer_id,
 				'tax_class_id' => $tax_class_id
@@ -205,6 +208,34 @@ class Supplier extends AppModel {
 	
 	function product_supplier_product_id($feed_product) {
 		return $feed_product->PRODUCTNO->__toString();
+	}
+	
+	function product_supplier_category_id($feed_product, $supplier_id) {
+		if ($supplier_category_name = $feed_product->CATEGORYTEXT->__toString()) {
+			// pokud nemam info o teto kategori v systemu, zalozim zaznam
+			$conditions = array(
+				'name' => $supplier_category_name,
+				'supplier_id' => $supplier_id
+			);
+			$supplier_category = $this->SupplierCategory->find('first', array(
+				'conditions' => $conditions,
+				'contain' => array(),
+				'fields' => array('SupplierCategory.id')					
+			));
+			if (empty($supplier_category)) {
+				$supplier_category['SupplierCategory'] = $conditions;
+				$supplier_category['SupplierCategory']['category_id'] = 0;
+				if ($this->SupplierCategory->save($supplier_category)) {
+					return $this->SupplierCategory->id;
+				} else {
+					trigger_error('Nepodarilo se ulozit kategorii dodavatele ' . $supplier_category_name . ' pro ucely parovani');
+					return false;
+				}
+			} else {
+				return $supplier_category['SupplierCategory']['id'];
+			}
+		}
+		return false;
 	}
 	
 	function product_availability_id($feed_product) {
@@ -321,128 +352,64 @@ class Supplier extends AppModel {
 	
 	function category_id($feed_product, $id) {
 		$category_id = 0;
-		if ($supplier_category_name = $feed_product->CATEGORYTEXT->__toString()) {
-			$db_category = $this->SupplierCategory->find('first', array(
-				'conditions' => array(
-					'SupplierCategory.name' => $supplier_category_name,
-					'SupplierCategory.supplier_id' => $id
-				),
-				'contain' => array(),
-				'fields' => array('SupplierCategory.category_id')
-			));
-
-			if (!empty($db_category) && $db_category['SupplierCategory']['category_id'] != 0) {
-				$category_id = $db_category['SupplierCategory']['category_id'];
-			} else {
-				// zalozim kategorii do stromu pro dany import
-				// rootova kategorie stromu
-				$root_category_id = $this->find('first', array(
-					'conditions' => array('Supplier.id' => $id),
+		// zjistim rootovou kategorii stromu
+		$root_category_id = $this->find('first', array(
+			'conditions' => array('Supplier.id' => $id),
+			'contain' => array(),
+			'fields' => array('Supplier.category_id')
+		));
+		$parent_id = $root_category_id['Supplier']['category_id'];
+		// pokud ma dodavatel definovanou kategorii, do ktere se ma vytvorit strom kategorii
+		// a vyparsuju popis vetve s kategorii v shopu dodavatele
+		if ($parent_id && $supplier_category_name = $feed_product->CATEGORYTEXT->__toString()) {
+			$category_names = explode('|', $supplier_category_name);
+			// prochazim vetev stromu, danou rodicovskym uzlem a jmenem ditete
+			foreach ($category_names as $category_name) {
+				$category_name = trim($category_name);
+				$db_category = $this->Category->find('first', array(
+					'conditions' => array(
+						'Category.name' => $category_name,
+						'Category.parent_id' => $parent_id
+					),
 					'contain' => array(),
-					'fields' => array('Supplier.category_id')	
+					'fields' => array('Category.id')
 				));
-				
-				$category_names = explode('|', $supplier_category_name);
-				$parent_id = $root_category_id['Supplier']['category_id'];
-				// prochazim vetev stromu, danou rodicovskym uzlem a jmenem ditete
-				foreach ($category_names as $category_name) {
-					$category_name = trim($category_name);
-					$db_category = $this->Category->find('first', array(
-						'conditions' => array(
-							'Category.name' => $category_name,
-							'Category.parent_id' => $parent_id
-						),
-						'contain' => array(),
-						'fields' => array('Category.id')
-					));
-					// pokud root nema dite s danym jmenem
-					if (empty($db_category)) {
-						// vytvorim ho a cyklim dal
-						$this->Category->create();
-						$category = array(
-							'Category' => array(
-								'name' => $category_name,
-								'heading' => $category_name,
-								'breadcrumb' => $category_name,
-								'title' => $category_name,
-								'description' => $category_name,
-								'parent_id' => $parent_id
-							)	
-						);
-						if ($this->Category->save($category)) {
-							$parent_id = $this->Category->id;
-							$url = strip_diacritic($category_name) . '-c' . $parent_id;
-							$category['Category']['id'] = $parent_id;
-							$category['Category']['url'] = $url;
-							if (!$this->Category->save($category)) {
-								debug($category);
-								trigger_error('Nepodarilo se ulozit url kategorie', E_USER_NOTICE);
-								return false;
-							}
-						} else {
+				// pokud root nema dite s danym jmenem
+				if (empty($db_category)) {
+					// vytvorim ho a cyklim dal
+					$this->Category->create();
+					$category = array(
+						'Category' => array(
+							'name' => $category_name,
+							'heading' => $category_name,
+							'breadcrumb' => $category_name,
+							'title' => $category_name,
+							'description' => $category_name,
+							'parent_id' => $parent_id,
+						)	
+					);
+					if ($this->Category->save($category)) {
+						$parent_id = $this->Category->id;
+						$url = strip_diacritic($category_name) . '-c' . $parent_id;
+						$category['Category']['id'] = $parent_id;
+						$category['Category']['url'] = $url;
+						if (!$this->Category->save($category)) {
 							debug($category);
-							trigger_error('Nepodarilo se ulozit kategorii do stromu', E_USER_NOTICE);
+							trigger_error('Nepodarilo se ulozit url kategorie', E_USER_NOTICE);
 							return false;
 						}
 					} else {
-						$parent_id = $db_category['Category']['id'];
+						debug($category);
+						trigger_error('Nepodarilo se ulozit kategorii do stromu', E_USER_NOTICE);
+						return false;
 					}
+				} else {
+					$parent_id = $db_category['Category']['id'];
 				}
-				$category_id = $parent_id;
 			}
+			$category_id = $parent_id;
 		}
 
 		return $category_id;
 	}
-	
-	function create_category_tree($parent_id, $category_string, $separator = '|') {
-		$category_names = explode($separator, $category_string);
-		$parent_id = false;
-		// prochazim vetev stromu, danou rodicovskym uzlem a jmenem ditete
-		foreach ($category_names as $category_name) {
-			$category_name = trim($category_name);
-			$db_category = $this->Category->find('first', array(
-				'conditions' => array(
-					'Category.name' => $category_name,
-					'Category.parent_id' => $parent_id
-				),
-				'contain' => array(),
-				'fields' => array('Category.id')
-			));
-			// pokud root nema dite s danym jmenem
-			if (empty($db_category)) {
-				// vytvorim ho a cyklim dal
-				$this->Category->create();
-				$category = array(
-					'Category' => array(
-						'name' => $category_name,
-						'heading' => $category_name,
-						'breadcrumb' => $category_name,
-						'title' => $category_name,
-						'description' => $category_name,
-						'parent_id' => $parent_id
-					)	
-				);
-				if ($this->Category->save($category)) {
-					$parent_id = $this->Category->id;
-					$url = strip_diacritic($category_name) . '-c' . $parent_id;
-					$category['Category']['id'] = $parent_id;
-					$category['Category']['url'] = $url;
-					if (!$this->Category->save($category)) {
-						debug($category);
-						trigger_error('Nepodarilo se ulozit url kategorie', E_USER_NOTICE);
-						return false;
-					}
-				} else {
-					debug($category);
-					trigger_error('Nepodarilo se ulozit kategorii do stromu', E_USER_NOTICE);
-					return false;
-				}
-			} else {
-				$parent_id = $db_category['Category']['id'];
-			}
-		}
-		return $parent_id;
-	}
-	
 }

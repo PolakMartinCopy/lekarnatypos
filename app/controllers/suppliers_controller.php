@@ -78,10 +78,61 @@ class SuppliersController extends AppController {
 		$this->set('supplier', $supplier);
 		
 		if (isset($this->data)) {
+			$data_source = $this->Supplier->getDataSource();
+			$data_source->begin($this->Supplier->SupplierCategory);
+
+			foreach ($this->data['SupplierCategory'] as $supplier_category) {
+				$old_supplier_category = $this->Supplier->SupplierCategory->find('first', array(
+					'conditions' => array('SupplierCategory.id' => $supplier_category['id']),
+					'contain' => array(),
+					'fields' => array('SupplierCategory.category_id')	
+				));
+
+				// pokud jsem zmenil naparovani
+				if (empty($old_supplier_category) || ($supplier_category['category_id'] != $old_supplier_category['SupplierCategory']['category_id'])) {
+					// pokud byla puvodni kategorie nenulova
+					if ($old_supplier_category['SupplierCategory']['category_id'] != 0) {
+						// smazu vsechny prirazeni podle stare naparovane kategorie
+						$this->Supplier->Product->CategoriesProduct->deleteAll(array(
+							'Product.supplier_id' => $id,
+							'Product.supplier_category_id' => $supplier_category['id'],
+							'CategoriesProduct.is_paired' => true
+						));
+					}
+					
+					if ($supplier_category['category_id'] != 0) {
+						// vlozim prirazeni podle nove naparovane kategori
+						$products = $this->Supplier->Product->find('all', array(
+							'conditions' => array(
+								'Product.supplier_id' => $id,
+								'Product.supplier_category_id' => $supplier_category['id']
+							),
+							'contain' => array(),
+							'fields' => array('Product.id')
+						));
+						// ke vsem produktum vlozim prirazeni do naparovane kategorie
+						foreach ($products as $product) {
+							$categories_product = array(
+								'CategoriesProduct' => array(
+									'product_id' => $product['Product']['id'],
+									'category_id' => $supplier_category['category_id'],
+									'is_paired' => true
+								)
+							);
+							$this->Supplier->Product->CategoriesProduct->create();
+							$this->Supplier->Product->CategoriesProduct->save($categories_product);
+						}
+					}
+				}
+			}
+			
+			// ulozim nove naparovani kategorii
 			if ($this->Supplier->SupplierCategory->saveAll($this->data['SupplierCategory'])) {
+				$data_source->commit($this->Supplier->SupplierCategory);
 				$this->Session->setFlash('Kategorie byly spárovány');
 				$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
 			} else {
+				$data_source->rollback($this->Supplier->SupplierCategory);
 				$this->Session->setFlash('Kategorie se nepodařilo spárovat');
 			}
 		} else {
@@ -140,10 +191,12 @@ class SuppliersController extends AppController {
 			$force = true;
 		}
 		if ($supplier['Supplier']['hash'] != $hash || $force) {
+			// chci si pamatovat produkty, ktere jsou v aktualnim feedu, abych pak mohl ostatni produkty vyrobce deaktivovat
+			$supplier_product_ids = array();
 			// prochazim produkty - poskladam si save produktu
 			foreach ($products->SHOPITEM as $feed_product) {
-				$product = $this->Supplier->product($feed_product, $supplier['Supplier']['discount'], $supplier['Supplier']['price_field']);
-				// produkt jsem v poradku vyparsovat
+				$product = $this->Supplier->product($feed_product, $supplier['Supplier']['discount'], $supplier['Supplier']['price_field'], $id);
+				// produkt jsem v poradku vyparsoval
 				if ($product) {
 					$product['Product']['supplier_id'] = $id;
 					// pokud mam v systemu produkt s danym id produktu ve feedu poskytovatele, budu hodnoty updatovat
@@ -154,8 +207,44 @@ class SuppliersController extends AppController {
 						),
 						'contain' => array(),
 					));
+					
+					$data_source = $this->Supplier->Product->getDataSource();
+					$data_source->begin($this->Supplier->Product);
+					
 					if (!empty($db_product)) {
 						$product['Product']['id'] = $db_product['Product']['id'];
+						// aktivuju produkt, kdyby byl nahodou predtim deaktivovany
+						$product['Product']['active'] = true;
+						// musim zkontrolovat, ze vyrobce nepresunul produkt do jine kategorie
+						if ($product['Product']['supplier_category_id'] != $db_product['Product']['supplier_category_id']) {
+//							debug($db_product);
+//							debug($product); die();
+							// smazu prirazeni do kategorii (ve stromu vyrobce i naparovane)
+							if (!$this->Supplier->Product->CategoriesProduct->deleteAll(array(
+								'product_id' => $db_product['Product']['id'],
+								'is_paired' => true	
+							))) {
+								trigger_error('Nepodarilo se odstranit stare prirazeni do naparovane kategorie', E_USER_NOTICE);
+								$data_source->rollback($this->Supplier->Product);
+								continue;
+							}
+							if (!$this->Supplier->Product->CategoriesProduct->deleteAll(array(
+									'product_id' => $db_product['Product']['id'],
+									'is_supplier' => true
+							))) {
+								trigger_error('Nepodarilo se odstranit stare prirazeni do kategorie ve stromu vyrobce', E_USER_NOTICE);
+								$data_source->rollback($this->Supplier->Product);
+								continue;
+							}
+							// ulozim prirazeni do kategorie podle naparovani kategorii (pokud to jde)
+							if ($product['Product']['supplier_category_id'] != $db_product['Product']['supplier_category_id']) {
+								if (!$this->Supplier->SupplierCategory->pair_product($product['Product']['supplier_category_id'], $product['Product']['id'])) {
+									trigger_error('nepodarilo se ulozit nove prirazeni produktu do kategorie podle naparovani kategorii', E_USER_NOTICE);
+									$data_source->rollback($this->Supplier->Product);
+									continue;
+								}
+							}
+						}
 					} else {
 						$this->Supplier->Product->create();
 					}
@@ -166,9 +255,7 @@ class SuppliersController extends AppController {
 					continue;
 				}
 
-				$data_source = $this->Supplier->Product->getDataSource();
-				$data_source->begin($this->Supplier->Product);
-				
+				// ulozim produkt
 				if (!$this->Supplier->Product->save($product)) {
 					debug($product);
 					trigger_error('Nepodarilo se ulozit produkt', E_USER_NOTICE);
@@ -176,7 +263,7 @@ class SuppliersController extends AppController {
 					continue;
 				}
 				$product_id = $this->Supplier->Product->id;
-				
+				// ulozim url produktu
 				$product_url_update = array(
 					'Product' => array(
 						'id' => $product_id,
@@ -204,14 +291,15 @@ class SuppliersController extends AppController {
 					$this->Supplier->Product->Image->deleteAllImages($del_images_conditions);
 				}
 				
-				// kategorie
-				// zjistim naparovanou kategorii pro produkt z feedu
+				// KATEGORIE
+				// zjistim kategorii pro produkt z feedu
 				$category_id = $this->Supplier->category_id($feed_product, $id);
 
 				$categories_product = array(
 					'CategoriesProduct' => array(
 						'category_id' => $category_id,
-						'product_id' => $product_id
+						'product_id' => $product_id,
+						'is_supplier' => true
 					)
 				);
 				// podivam se, jestli mam dany produkt pridelen do dane naparovane kategorie
@@ -224,19 +312,44 @@ class SuppliersController extends AppController {
 					// vlozim ho tam
 					$this->Supplier->Product->CategoriesProduct->create();
 					if ($this->Supplier->Product->CategoriesProduct->save($categories_product)) {
-						// smazu vsechny ostatni prirazeni produktu do kategorii
+						// smazu vsechny ostatni prirazeni produktu do kategorii vznikle importem do korenove kategorie
 						$this->Supplier->Product->CategoriesProduct->deleteAll(array(
 							'CategoriesProduct.product_id' => $product_id,
-							'CategoriesProduct.category_id !=' => $category_id	
+							'CategoriesProduct.is_supplier' => true,
+							'CategoriesProduct.category_id !=' => $category_id
 						));
 					} else {
 						debug($categories_product);
 						trigger_error('Nepodarilo se ulozit prirazeni produktu do kategorie: ' . $product_id . ' - ' . $category_id, E_USER_NOTICE);						
 					}
 				}
-				
 				$data_source->commit($this->Supplier->Product);
+
+				$supplier_product_ids[] = $product['Product']['id'];
 			}
+
+			// zjistim produkty dodavatele, ktere nejsou v danem feedu aktivni a deaktivuju je, aby mi v shopu nezustavaly produkty, ktere uz dodavatel
+			// nema v nabidce
+			if (!empty($supplier_product_ids)) {
+				$unactive_products = $this->Supplier->Product->find('all', array(
+					'conditions' => array(
+						'Product.supplier_id' => $id,
+						'Product.active' => true,
+						'Product.id NOT IN (' . implode(',', $supplier_product_ids) . ')'
+					),
+					'contain' => array(),
+					'fields' => array('Product.id')
+				));
+				
+				foreach ($unactive_products as $unactive_product) {
+					$unactive_product['Product']['active'] = false;
+					if (!$this->Supplier->Product->save($unactive_product)) {
+						debug($unactive_product);
+						trigger_error('Nepodarilo se deaktivovat produkty', E_USER_NOTICE);
+					}
+				}
+			}
+			
 			// updatuju hash feedu poskytovatele
 			$supplier_save = array(
 				'Supplier' => array(
@@ -258,5 +371,20 @@ class SuppliersController extends AppController {
 			$this->redirect(array('controller' => 'suppliers', 'action' => 'index', 'admin' => 'true'));
 		}
 		die();
+	}
+	
+	function admin_repair_categories_products($id) {
+		$categories_products = $this->Supplier->Product->CategoriesProduct->find('all', array(
+			'conditions' => array(
+				'Product.supplier_id' => $id,
+			),
+			'contain' => array('Product'),
+			'fields' => array('CategoriesProduct.id')
+		));
+		foreach ($categories_products as $categories_product) {
+			$categories_product['CategoriesProduct']['is_supplier'] = true;
+			$this->Supplier->Product->CategoriesProduct->save($categories_product);
+		}
+		die('konec');
 	}
 }

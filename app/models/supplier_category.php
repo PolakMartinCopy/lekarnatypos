@@ -15,4 +15,25 @@ class SupplierCategory extends AppModel {
 			'message' => 'Zadejte název kategorie'
 		)	
 	);
+	
+	function pair_product($supplier_category_id, $product_id) {
+		$supplier_category = $this->find('first', array(
+			'conditions' => array('SupplierCategory.id' => $supplier_category_id),
+			'contain' => array(),
+			'fields' => array('SupplierCategory.category_id')	
+		));
+		
+		if (!empty($supplier_category) && $supplier_category['SupplierCategory']['category_id'] != 0) {
+			$categories_product = array(
+				'CategoriesProduct' => array(
+					'product_id' => $product_id,
+					'category_id' => $supplier_category['SupplierCategory']['category_id'],
+					'is_paired' => true
+				)	
+			);
+			
+			return $this->Category->CategoriesProduct->save($categories_product);
+		}
+		return true;
+	}
 }
