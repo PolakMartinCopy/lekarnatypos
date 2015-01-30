@@ -212,6 +212,7 @@ class Supplier extends AppModel {
 	
 	function product_supplier_category_id($feed_product, $supplier_id) {
 		if ($supplier_category_name = $feed_product->CATEGORYTEXT->__toString()) {
+
 			// pokud nemam info o teto kategori v systemu, zalozim zaznam
 			$conditions = array(
 				'name' => $supplier_category_name,
@@ -220,8 +221,9 @@ class Supplier extends AppModel {
 			$supplier_category = $this->SupplierCategory->find('first', array(
 				'conditions' => $conditions,
 				'contain' => array(),
-				'fields' => array('SupplierCategory.id')					
+				'fields' => array('SupplierCategory.id', 'SupplierCategory.active')					
 			));
+
 			if (empty($supplier_category)) {
 				$supplier_category['SupplierCategory'] = $conditions;
 				$supplier_category['SupplierCategory']['category_id'] = 0;
@@ -234,7 +236,11 @@ class Supplier extends AppModel {
 					return false;
 				}
 			} else {
-				return $supplier_category['SupplierCategory']['id'];
+				if ($supplier_category['SupplierCategory']['active']) {
+					return $supplier_category['SupplierCategory']['id'];
+				} else {
+					return false;
+				}
 			}
 		}
 		return false;
