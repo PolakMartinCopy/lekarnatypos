@@ -226,6 +226,7 @@ class Supplier extends AppModel {
 				$supplier_category['SupplierCategory'] = $conditions;
 				$supplier_category['SupplierCategory']['category_id'] = 0;
 				$supplier_category['SupplierCategory']['active'] = true;
+				$this->SupplierCategory->create();
 				if ($this->SupplierCategory->save($supplier_category)) {
 					return $this->SupplierCategory->id;
 				} else {
