@@ -19,12 +19,15 @@
             		echo $this->Session->flash();
             	}
             	?>
+<?php
+// video chceme schovat
+if (false) {?>
                 <div class="intro-video">
                     <div class="video-headline">Vaše oblíbená <strong>lékárna na dosah</strong>.</div>
                     <a href="#" class="video-play-btn">Spustit prohlídku &nbsp;&nbsp;<i class="fa fa-play"></i></a>
                     <iframe src="http://player.vimeo.com/video/105547617?title=0&amp;byline=0&amp;portrait=0&amp;color=c9ff23&amp;autoplay=1" width="840" height="440" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                 </div>
-                
+<?php } ?>
                 <div class="product-list new-products">
                 	<?php 
                 		$carousel_id = 'carousel-example-generic';
