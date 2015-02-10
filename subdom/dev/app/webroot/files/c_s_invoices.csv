@@ -1,7 +1,0 @@
-CSTransactionItem.id;CSInvoice.code;BusinessPartner.name;CSInvoice.date_of_issue_day;CSInvoice.date_of_issue_month;CSInvoice.date_of_issue_year;CSInvoice.date_of_issue_time;CSInvoice.due_date_day;CSInvoice.due_date_month;CSInvoice.due_date_year;CSInvoice.code;CSInvoice.amount;CSProduct.id;CSTransactionItem.c_s_product_name;CSProduct.vzp_code;CSProduct.group_code;CSTransactionItem.quantity;CSTransactionItem.price;Unit.shortcut;User.id;User.last_name
-430;1201311001;MUDR. MARTIN SLAVÍK;21;11;2013;11:09:23;05;12;2013;1201311001;25900,47;8;MOLICARE Premium Soft Super Medium;123;123;8;391,11;bal.;1;Polák
-428;1201311001;MUDR. MARTIN SLAVÍK;21;11;2013;11:09:23;05;12;2013;1201311001;25900,47;6;MOLIMED Air Active Mini (premium) ;123;123;18;62,86;bal.;1;Polák
-431;1201311001;MUDR. MARTIN SLAVÍK;21;11;2013;11:09:23;05;12;2013;1201311001;25900,47;9;MOLICARE Mobile Super Medium;123;123;24;323,36;bal.;1;Polák
-429;1201311001;MUDR. MARTIN SLAVÍK;21;11;2013;11:09:23;05;12;2013;1201311001;25900,47;7;MOLIMED Air Active Midi (premium) ;123;123;10;89,75;bal.;1;Polák
-427;1201311001;MUDR. MARTIN SLAVÍK;21;11;2013;11:09:23;05;12;2013;1201311001;25900,47;5;MOLIMED Air Active Micro (premium) ;123;123;11;55,17;bal.;1;Polák
-432;1201311001;MUDR. MARTIN SLAVÍK;21;11;2013;11:09:23;05;12;2013;1201311001;25900,47;10;MOLICARE Mobile Medium;123;123;47;263,30;bal.;1;Polák
