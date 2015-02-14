@@ -341,6 +341,7 @@ class OrdersController extends AppController {
 			}
 			
 			// validace dat zakaznika
+			unset($this->Order->Customer->validate['email']['isUnique']);
 			$this->Order->Customer->set($this->data);
 			$valid_customer = $this->Order->Customer->validates();
 			
@@ -349,7 +350,24 @@ class OrdersController extends AppController {
 			$valid_address = $this->Order->Customer->Address->validates();
 			
 			// jsou-li data validni
-			if ( $valid_address && $valid_customer ){
+			if ($valid_address && $valid_customer) {
+				// jestli neni zakaznik prihlaseny a zaroven existuje zakaznik se zadanou emailovou adresou
+				if (!$this->Session->check('Customer.id')) {
+					$customer = $this->Order->Customer->find('first', array(
+						'conditions' => array('Customer.email' => $this->data['Customer']['email']),
+						'contain' => array(),
+						'fields' => array('Customer.id')
+					));
+					// pokud existuje, priradim k objednavce zakaznikovo idcko (at nezakladam noveho a nevznikaji mi ucty
+					// s duplicitnim emailem
+					if (!empty($customer)) {
+						$this->Session->setFlash('Váš email je již v systému zaregistrován. Chcete-li sledovat stav Vaší objednávky a neznáte heslo, nechte si jej zaslat <a href="/obnova-hesla" target="_blank">zde</a>.');
+						$this->data['Customer']['id'] = $customer['Customer']['id'];
+					}
+					// pamatuju si, ze zakaznik neni prihlaseny v objednavce (protoze to vsude testuju z historickych duvodu
+					// pres customer id v sesne a to je mi ted na nic
+					$this->data['Customer']['noreg'] = true;
+				}
 				// v prvnim kroku se vklada pouze dorucovaci adresa
 				$this->data['Address']['type'] = 'd';
 				
@@ -523,6 +541,7 @@ class OrdersController extends AppController {
 			// uvedl svou emailovou adresu
 			$this->Order->Customer->notify_account_created($customer['Customer']);
 			$customer['Customer']['id'] = $this->Order->Customer->id;
+			$this->Session->delete('Customer.noreg');
 		} else {
 			// zakaznik je zaregistrovany, takze jen nastavim
 			// jeho id podle session a updatenu, kdyby nahodou
@@ -578,7 +597,7 @@ class OrdersController extends AppController {
 			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'), null, true);
 		}
 		
-		if (!$this->Session->check('Customer.id')){
+		if (!$this->Session->check('Customer.id') || ($this->Session->check('Customer.id') && $this->Session->check('Customer.noreg'))) {
 			// tenhle zaznam mazu jen kdyz se jedna o neprihlaseneho
 			$this->Session->delete('Customer');
 		}

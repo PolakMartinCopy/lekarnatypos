@@ -13,7 +13,26 @@
         	<a class="btn btn-default btn-sm" href="/kosik">Do košíku</a>
         </div>
         <div class="tab-pane" id="loginform">
-<?php	if (!$this->Session->check('Customer')) { ?>
+<?php	
+		$is_logged_in = false;
+		if ($this->Session->check('Customer')) {
+			$customer = $this->Session->read('Customer');
+			if (isset($customer['id']) && !empty($customer['id']) && !isset($customer['noreg'])) {
+				$is_logged_in = true;
+			}
+		}
+		if ($is_logged_in) {
+			$customer = $this->Session->read('Customer'); ?>
+			Jste přihlášen jako <strong><?php echo $customer['first_name']?> <?php echo $customer['last_name']?></strong>.<br/>
+            <ul class="loginform-links">
+                <li>
+                    <a href="/customers">Zákaznická sekce</a>
+                </li>
+                <li>
+                    <a href="/customers/logout">Odhlásit se</a>
+                </li>
+            </ul>	
+<?php } else { ?> 
             <form id="login_form_top" method="post" action="/customers/login" class="form-inline">
                 <input type="hidden" name="_method" value="POST" />
                 <div class="form-group">
@@ -32,19 +51,6 @@
                 </li>
                 <li>
                     <a href="/registrace">Nová registrace</a>
-                </li>
-            </ul>	
-<?php } else { 
-			$customer = $this->Session->read('Customer'); ?>
-			
-			Jste přihlášen jako <strong><?php echo $customer['first_name']?> <?php echo $customer['last_name']?></strong>.<br/>
-
-            <ul class="loginform-links">
-                <li>
-                    <a href="/customers">Zákaznická sekce</a>
-                </li>
-                <li>
-                    <a href="/customers/logout">Odhlásit se</a>
                 </li>
             </ul>		
 <?php }?>

@@ -2,7 +2,7 @@
 <div class="mainContentWrapper">
 	<p>Vaše objednávka byla nyní <strong>přijata do našeho systému</strong>, již brzy Vás budeme informovat o stavu Vaší objednávky.</p>
 <?
-	if (!$session->check('Customer.id')){
+	if (!empty($order['Customer']['login']) && !empty($order['Customer']['password'])){
 	// jedna se o neprihlaseneho zakaznika
 ?>
 	<p>Pro Vaše větší pohodlí jsme pro Vás vytvořili zákaznický účet. Pokud jste uvedl(a) v objednávce Vaši emailovou adresu,
