@@ -33,6 +33,7 @@
                     </span>
                 </div>
             </form>
+            <?php echo $this->element('facebook')?>
         </div>
         <div class="col-3">
             <div class="footer-headline">
