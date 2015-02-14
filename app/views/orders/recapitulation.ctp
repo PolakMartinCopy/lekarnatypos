@@ -4,7 +4,7 @@
 	<table id="recapWrapper">
 		<tr>
 			<td colspan="2" valign="top">
-				<table id="recapProducts" cellpadding="5" cellspacing="0">
+				<table id="recapProducts" cellpadding="5" cellspacing="0" class="topHeading">
 					<tr>
 						<th style="width:70%">Název produktu</th>
 						<th style="width:10%">Množství</th>
@@ -67,13 +67,12 @@
 						<td>
 							způsob doručení: <strong><?=$shipping['Shipping']['name']?></strong> - <?=$html->link('upravit', array('controller' => 'orders', 'action' => 'shipping_edit'), array('class' => 'smallLinkEdit')) ?>
 						</td>
-						<td>&nbsp;</td>
-						<td align="right"><?=number_format($shipping_price, 0, ',', ' ')?>&nbsp;Kč</td>
+						<td colspan="2" align="right"><?=number_format($shipping_price, 0, ',', ' ')?>&nbsp;Kč</td>
 						<td align="right"><?=number_format($shipping_price, 0, ',', ' ')?>&nbsp;Kč</td>
 					</tr>
 					<?echo '<tr>
-							<td colspan="2" align="left">celková cena objednávky:</td>
-							<td colspan="2" class="totalPrice" align="right">' . intval($final_price + $shipping_price) . ' Kč</td>
+							<td align="left">celková cena objednávky:</td>
+							<td colspan="3" class="totalPrice" align="right">' . intval($final_price + $shipping_price) . ' Kč</td>
 						</tr>';?>
 				</table>
 			</td>
