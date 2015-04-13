@@ -83,11 +83,11 @@ class DATABASE_CONFIG {
 	var $default = array(
 		'driver' => 'mysql',
 		'persistent' => false,
-		'host' => 'mysql20.gigaserver.cz',
+		'host' => 'localhost',
 		'port' => '',
 		'login' => '29250_BD2CD8Ad',
 		'password' => '2SVQuJgT4l',
-		'database' => 'lekarnatypos_cz_shop',
+		'database' => 'lekarnatypos_cz_dev',
 		'schema' => '',
 		'prefix' => '',
 		'encoding' => 'utf8'
@@ -96,7 +96,7 @@ class DATABASE_CONFIG {
 	var $admin = array(
 		'driver' => 'mysql',
 		'persistent' => false,
-		'host' => 'mysql20.gigaserver.cz',
+		'host' => 'localhost',
 		'port' => '',
 		'login' => '29250_BD2CD8Ad',
 		'password' => '2SVQuJgT4l',
@@ -105,6 +105,5 @@ class DATABASE_CONFIG {
 		'prefix' => '',
 		'encoding' => 'utf8'
 	);
-
 }
 ?>

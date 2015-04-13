@@ -9,10 +9,6 @@ class Supplier extends AppModel {
 		'Product'
 	);
 	
-	var $belongsTo = array(
-		'Category'
-	);
-	
 	var $validate = array(
 		'name' => array(
 			'rule' => 'notEmpty',
@@ -236,11 +232,7 @@ class Supplier extends AppModel {
 					return false;
 				}
 			} else {
-				if ($supplier_category['SupplierCategory']['active']) {
-					return $supplier_category['SupplierCategory']['id'];
-				} else {
-					return false;
-				}
+				return $supplier_category['SupplierCategory']['id'];
 			}
 		}
 		return false;
@@ -253,7 +245,7 @@ class Supplier extends AppModel {
 		if ($availability == 0) {
 			$availability_id = 1;
 		} elseif ($availability >= 1 && $availability <= 7) {
-			$availability_id = 4;
+			$availability_id = 2;
 		} elseif ($availability >= 7) {
 			$availability_id = 5;
 		}
@@ -322,10 +314,12 @@ class Supplier extends AppModel {
 					'Image.supplier_url' => $image_url
 				)
 			));
+
 			// v systemu obrazek z dane url pro dany produkt nemam 
 			if (empty($db_image)) {
 				// nahraju obrazek
 				$image_name = $this->Product->image_name($product_id);
+
 				$save_image = array(
 					'Image' => array(
 						'name' => $image_name,
@@ -334,9 +328,9 @@ class Supplier extends AppModel {
 						'supplier_url' => $image_url
 					)
 				);
+
 				$this->Product->Image->create();
 				if (!$this->Product->Image->save($save_image)) {
-					debug($save_image);
 					trigger_error('Nepodarilo se ulozit obrazek', E_USER_NOTICE);
 					return false;
 				} else {
@@ -344,6 +338,28 @@ class Supplier extends AppModel {
 					if ($image_content = download_url($image_url)) {
 						// nahraju obrazek na disk
 						if (file_put_contents('product-images/' . $image_name, $image_content)) {
+							// pokud je obrazek typu PNG, musim mu udelat bile pozadi
+							$file_ext = explode('.', $image_url);
+							$file_ext = $file_ext[count($file_ext)-1];
+							if ($file_ext == 'png' || $file_ext == 'PNG') {
+								$file_path = 'product-images/' . $image_name;
+								$save_path = 'product-images/' . $image_name;
+								$color_rgb = array('red' => 255, 'green' => 255, 'blue' => 255);
+
+								$img = @imagecreatefrompng($file_path);
+								$width  = imagesx($img);
+								$height = imagesy($img);
+								//create new image and fill with background color
+								$background_img = @imagecreatetruecolor($width, $height);
+								$color = imagecolorallocate($background_img, $color_rgb['red'], $color_rgb['green'], $color_rgb['blue']);
+								imagefill($background_img, 0, 0, $color);
+								
+								//copy original image to background
+								imagecopy($background_img, $img, 0, 0, 0, 0, $width, $height);
+								
+								//save as png
+								imagepng($background_img, $save_path, 0);
+							}
 							$this->Product->Image->makeThumbnails('product-images/' . $image_name);
 							return true;
 						} else {
@@ -360,62 +376,16 @@ class Supplier extends AppModel {
 	
 	function category_id($feed_product, $id) {
 		$category_id = 0;
-		// zjistim rootovou kategorii stromu
-		$root_category_id = $this->find('first', array(
-			'conditions' => array('Supplier.id' => $id),
-			'contain' => array(),
-			'fields' => array('Supplier.category_id')
+		$supplier_category = $this->SupplierCategory->find('first', array(
+			'conditions' => array(
+				'SupplierCategory.name' => $feed_product->CATEGORYTEXT->__toString(),
+				'SupplierCategory.supplier_id' => $id
+			),
+			'contain' => array()
 		));
-		$parent_id = $root_category_id['Supplier']['category_id'];
-		// pokud ma dodavatel definovanou kategorii, do ktere se ma vytvorit strom kategorii
-		// a vyparsuju popis vetve s kategorii v shopu dodavatele
-		if ($parent_id && $supplier_category_name = $feed_product->CATEGORYTEXT->__toString()) {
-			$category_names = explode('|', $supplier_category_name);
-			// prochazim vetev stromu, danou rodicovskym uzlem a jmenem ditete
-			foreach ($category_names as $category_name) {
-				$category_name = trim($category_name);
-				$db_category = $this->Category->find('first', array(
-					'conditions' => array(
-						'Category.name' => $category_name,
-						'Category.parent_id' => $parent_id
-					),
-					'contain' => array(),
-					'fields' => array('Category.id')
-				));
-				// pokud root nema dite s danym jmenem
-				if (empty($db_category)) {
-					// vytvorim ho a cyklim dal
-					$this->Category->create();
-					$category = array(
-						'Category' => array(
-							'name' => $category_name,
-							'heading' => $category_name,
-							'breadcrumb' => $category_name,
-							'title' => $category_name,
-							'description' => $category_name,
-							'parent_id' => $parent_id,
-						)	
-					);
-					if ($this->Category->save($category)) {
-						$parent_id = $this->Category->id;
-						$url = strip_diacritic($category_name) . '-c' . $parent_id;
-						$category['Category']['id'] = $parent_id;
-						$category['Category']['url'] = $url;
-						if (!$this->Category->save($category)) {
-							debug($category);
-							trigger_error('Nepodarilo se ulozit url kategorie', E_USER_NOTICE);
-							return false;
-						}
-					} else {
-						debug($category);
-						trigger_error('Nepodarilo se ulozit kategorii do stromu', E_USER_NOTICE);
-						return false;
-					}
-				} else {
-					$parent_id = $db_category['Category']['id'];
-				}
-			}
-			$category_id = $parent_id;
+		
+		if (!empty($supplier_category)) {
+			$category_id = $supplier_category['SupplierCategory']['category_id'];
 		}
 
 		return $category_id;

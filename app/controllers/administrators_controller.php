@@ -49,7 +49,7 @@ class AdministratorsController extends AppController {
 				$this->Session->setFlash('Neplatné uživatelské jméno!');
 			} else {
 				if ( $administrator['Administrator']['password'] != md5($this->data['Administrator']['password']) ){
-					$this->Session->setFlash('Neplatné heslo!');
+					$this->Session->setFlash('Neplatné heslo!', REDESIGN_PATH . 'flash_failure');
 				} else {
 					// upravim si data, ktera si chci pamatovat pro cookies a session
 					unset($administrator['Administrator']['login']);
@@ -65,8 +65,11 @@ class AdministratorsController extends AppController {
 					// zapisu data do session
 					$this->Session->write('Administrator', $administrator['Administrator']);
 					
+					// flash
+					$this->Session->setFlash('Byl(a) jste úspěšně přihlášen(a). Vítejte!', REDESIGN_PATH . 'flash_success');
+					
 					// presmeruju
-					$redirect = array('controller' => 'orders', 'action' => 'index');
+					$redirect = array('controller' => 'orders', 'action' => 'index', 'status_id' => 1);
 					if (isset($this->params['named']['url'])) {
 						$redirect = '/' . base64_decode($this->params['named']['url']);
 					}
@@ -82,8 +85,13 @@ class AdministratorsController extends AppController {
 	function admin_logout() {
 		$this->Cookie->delete('Administrator');
 		$this->Session->delete('Administrator');
-		
+		$this->Session->setFlash('Byl jste úspěšně odhlášen ze systému.', REDESIGN_PATH . 'flash_success');
 		$this->redirect(array('controller' => 'administrators', 'action' => 'login'), null, true);
+	}
+	
+	function admin_import() {
+		$this->Administrator->import();
+		die('here');
 	}
 
 }

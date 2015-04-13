@@ -1,17 +1,12 @@
-<h2>Editace produktu</h2>
+﻿<h2>Editace produktu</h2>
 <div class="product">
-<?php echo $form->create('Product', array('url' => '/admin/products/edit/' . $this->data['Product']['id'] . '/' . $opened_category_id));?>
+<?php echo $form->create('Product', array('url' => array($opened_category_id)));?>
 	<fieldset>
  		<legend>Produkt</legend>
 		<table class="leftHeading" cellpadding="5" cellspacing="3">
 			<tr>
-				<th>
-					Název:
-				</th>
-				<td>
-					<?=$form->text('name', array('size' => 60))?>
-					<?=$form->error('Product.name')?>
-				</td>
+				<th>Název:</th>
+				<td><?php echo $this->Form->input('Product.name', array('label' => false, 'size' => 60))?></td>
 			</tr>
 			<tr>
 				<th>Nadpis:</th>
@@ -30,27 +25,17 @@
 				<td><?php echo $form->input('Product.zbozi_name', array('label' => false, 'size' => 60))?></td>
 			</tr>
 			<tr>
-				<th>
-					Výrobce:
-				</th>
-				<td>
-					<?=$form->input('manufacturer_id', array('label' => ''))?>
-				</td>
+				<th>Výrobce:</th>
+				<td><?=$form->input('Product.manufacturer_id', array('label' => false))?></td>
 			</tr>
 			<tr>
-				<th>
-					Dostupnost:
-				</th>
-				<td>
-					<?=$form->input('availability_id', array('label' => ''))?>
-				</td>
+				<th>Dostupnost:</th>
+				<td><?=$form->input('Product.availability_id', array('label' => false))?></td>
 			</tr>
 			<tr>
-				<th>
-					Poznámka
-				</th>
+				<th>Poznámka</th>
 				<td>
-					<?=$form->input('note', array(
+					<?=$form->input('Product.note', array(
 						'label' => '',
 						'after' => '<br /><span style="font-size:9px">Poznámka se zobrazí při objednávacím formuláři. Použít např. když produkt není skladem.</span>',
 						'style' => 'width:600px;height:40px;'
@@ -58,137 +43,66 @@
 				</td>
 			</tr>
 			<tr>
-				<th>
-					Krátký popis:
-				</th>
-				<td>
-					<?=$form->textarea('short_description', array('style' => 'width:600px;height:40px;'))?>
-					<?=$form->error('Product.short_description')?>
-				</td>
+				<th>Krátký popis:</th>
+				<td><?php echo $this->Form->input('Product.short_description', array('label' => false, 'style' => 'width:600px;height:40px;', 'type' => 'textarea'))?></td>
 			</tr>
 			<tr>
-				<th>
-					Popis:
-				</th>
-				<td>
-					<?=$form->textarea('description', array('style' => 'width:600px;height:350px;', 'class' => 'ProductDescription'))?>
-					<?=$form->error('Product.description')?>
-				</td>
+				<th>Popis:</th>
+				<td><?php echo $this->Form->input('Product.description', array('label' => false, 'style' => 'width:600px;height:350px;'))?></td>
 			</tr>
 			<tr>
-				<th>Skupina</th>
-				<td>
-					<?php echo $this->Form->input('Product.show_product_type_id', array('label' => false, 'type' => 'checkbox', 'div' => false))?>
-					<?php echo $this->Form->input('Product.product_type_id', array('label' => false, 'type' => 'select', 'options' => $product_types, 'div' => false))?>
-				</td>
+				<th>Typ produktu (doplněk &times; výživa)</th>
+				<td><?php echo $this->Form->input('Product.product_type', array('label' => false, 'type' => 'select', 'options' => $product_types))?></td>
 			</tr>
 			<tr>
-				<th>Kód zboží</th>
-				<td>
-					<?php echo $this->Form->input('Product.show_code', array('label' => false, 'type' => 'checkbox', 'div' => false))?>
-					<?php echo $this->Form->input('Product.code', array('label' => false, 'div' => false))?>
-				</td>
-			</tr>
-			<tr>
-				<th>EAN</th>
-				<td>
-					<?php echo $this->Form->input('Product.show_ean', array('label' => false, 'type' => 'checkbox', 'div' => false))?>
-					<?php echo $this->Form->input('Product.ean', array('label' => false, 'div' => false))?>
-				</td>
-			</tr>
-			<tr>
-				<th>Kód SÚKL</th>
-				<td>
-					<?php echo $this->Form->input('Product.show_sukl', array('label' => false, 'type' => 'checkbox', 'div' => false))?>
-					<?php echo $this->Form->input('Product.sukl', array('label' => false, 'div' => false))?>
-				</td>
-			</tr>
-			<tr>
-				<th>Farmakoterapeutická skupina</th>
-				<td>
-					<?php echo $this->Form->input('Product.show_group', array('label' => false, 'type' => 'checkbox', 'div' => false))?>
-					<?php echo $this->Form->input('Product.group', array('label' => false, 'size' => 70, 'div' => false))?>
-				</td>
-			</tr>
-			<tr>
-				<th>Max CPC zbozi.cz</th>
-				<td><?php echo $this->Form->input('Product.zbozi_cpc', array('label' => false))?></td>
-			</tr>
-			<tr>
-				<th>Max CPC heureka.cz</th>
-				<td><?php echo $this->Form->input('Product.heureka_cpc', array('label' => false))?></td>
-			</tr>
-			<tr>
-				<th>
-					Daňová skupina:
-				</th>
-				<td>
-					<?=$form->input('tax_class_id', array('label' => ''))?>
-					<?=$form->error('Product.tax_class_id')?>
-				</td>
+				<th>Daňová skupina:</th>
+				<td><?php echo $this->Form->input('Product.tax_class_id', array('label' => false))?></td>
 			</tr>
 			<tr>
 				<th>Cena bez DPH:</th>
 				<td><input type="text" name="price_without_tax" id="ProductPriceWithoutTax" onkeyup="return countPrice('with')" /></td>
 			</tr>
 			<tr>
-				<th>
-					Základní cena:
-				</th>
-				<td>
-					<?=$form->text('retail_price_with_dph')?>
-					<?=$form->error('Product.retail_price_with_dph')?>
-				</td>
+				<th>Základní cena:</th>
+				<td><?php echo $this->Form->input('Product.retail_price_with_dph', array('label' => false))?></td>
 			</tr>
 			<tr>
-				<td colspan="2">
-					Slevové ceny
-				</td>
+				<td colspan="2">Slevové ceny</td>
 			</tr>
 			<tr>
-				<th>
-					<abbr title="Běžná sleva z ceny">Běžná sleva</abbr>
-				</th>
-				<td>
-					<?=$form->text('Product.discount_common') ?>
-				</td>
+				<th><abbr title="Běžná sleva z ceny">Běžná sleva</abbr></th>
+				<td><?=$form->input('Product.discount_common', array('label' => false)) ?></td>
 			</tr>
+			<?php foreach ($customer_types as $customer_type) { ?>
 			<tr>
-				<th>
-					<abbr title="Sleva z ceny pro přihlášeného zákazníka">Členská sleva</abbr>
-				</th>
-				<td>
-					<?=$form->text('Product.discount_member') ?>
-				</td>
+				<th><abbr title="Sleva pro zákazníka typu <?php echo $customer_type['CustomerType']['name']?>">Cena pro <?php echo $customer_type['CustomerType']['name']?></abbr></th>
+				<td><?php
+					echo $this->Form->input('CustomerTypeProductPrice.' . $customer_type['CustomerType']['id'] . '.price', array('label' => false));
+					echo $this->Form->hidden('CustomerTypeProductPrice.' . $customer_type['CustomerType']['id'] . '.id');
+					echo $this->Form->hidden('CustomerTypeProductPrice.' . $customer_type['CustomerType']['id'] . '.customer_type_id', array('value' => $customer_type['CustomerType']['id']));
+				?></td>
 			</tr>
+			<?php } ?>
 			<tr>
 				<td colspan="2" align="center">
 					----------- níže uvedené nevyplňujte -----------
 				</td>
 			</tr>
 			<tr>
-				<th>
-					Titulek
-				</th>
-				<td>
-					<?=$form->text('title', array('size' => 60))?>
-				</td>
+				<th>Titulek</th>
+				<td><?=$form->input('Product.title', array('label' => false, 'size' => 60))?></td>
 			</tr>
 			<tr>
-				<th>
-					URL
-				</th>
-				<td>
-					<?=$form->text('url', array('size' => 60))?>
-				</td>
+				<th>URL</th>
+				<td><?=$form->input('Product.url', array('label' => false, 'size' => 60))?></td>
 			</tr>
 		</table>
-	<?php echo $form->input('id'); ?>
+		<?php echo $form->hidden('Product.id'); ?>
 	</fieldset>
-<?php echo $form->end('Uložit změny');?>
-<div class="actions">
-	<ul>
-		<li><?php echo $html->link(__('Zpět na seznam produktů', true), array('controller'=> 'categories', 'action'=>'list_products', $opened_category_id)); ?> </li>
-	</ul>
-</div>
+	<?php echo $form->end('Uložit změny');?>
+	<div class="actions">
+		<ul>
+			<li><?php echo $html->link(__('Zpět na seznam produktů', true), array('controller'=> 'categories', 'action'=>'list_products', $opened_category_id)); ?> </li>
+		</ul>
+	</div>
 </div>

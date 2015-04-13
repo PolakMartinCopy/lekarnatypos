@@ -1,4 +1,4 @@
-<div class="subproduct">
+﻿<div class="subproduct">
 <?php echo $form->create('Subproduct');?>
 	<fieldset>
  		<legend><?php echo sprintf(__('Add %s', true), __('Subproduct', true));?></legend>

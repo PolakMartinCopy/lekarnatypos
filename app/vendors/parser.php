@@ -11,9 +11,9 @@ class ProductsParser {
 		$category['Category']['compared'] = date('Y-m-d H:i:s');
 		
 		if ($this->Category->save($category, false)) {
-			echo $category['Category']['sportnutrition_url'] . " - datum poslední úpravy bylo nastaveno.<br/>\n";
+			echo $category['Category']['sportnutrition_url'] . " - datum poslednÃ­ Ãºpravy bylo nastaveno.<br/>\n";
 		} else {
-			echo $category['Category']['sportnutrition_url'] . " - datum poslední úpravy se nepodaøilo nastavit.<br/>\n";
+			echo $category['Category']['sportnutrition_url'] . " - datum poslednÃ­ Ãºpravy se nepodaÅ™ilo nastavit.<br/>\n";
 		}
 	}
 	
@@ -26,7 +26,7 @@ class ProductsParser {
 		// stahnu stranku kategorie
 		if (!$html = file_get_contents($category['Category']['sportnutrition_url'])) {
 			debug($category);
-			echo $category['Category']['sportnutrition_url'] . " se nepodaøilo stáhnout.<br/>\n";
+			echo $category['Category']['sportnutrition_url'] . " se nepodaÅ™ilo stÃ¡hnout.<br/>\n";
 			return false;
 		}
 
@@ -57,7 +57,7 @@ class ProductsParser {
 				$subpage_url = $category['Category']['sportnutrition_url'] . '/stranka:' . $page;
 				// nechci porad stahovat stranky kategorii, takze je budu kesovat
 				if (!$page_html = file_get_contents($subpage_url)) {
-					echo $subpage_url . " se nepodaøilo stáhnout.<br/>\n";
+					echo $subpage_url . " se nepodaÅ™ilo stÃ¡hnout.<br/>\n";
 					continue;
 				}
 			}
@@ -68,9 +68,9 @@ class ProductsParser {
 			$page_dom->preserveWhiteSpace = false;
 			if (!$page_dom->loadHTML($page_html)) {
 				if (isset($subpage_url)) {
-					echo $subpage_url . ' se nepodaøilo naloadovat.</br>';
+					echo $subpage_url . ' se nepodaÅ™ilo naloadovat.</br>';
 				} else {
-					echo $category['Category']['sportnutrition_url'] . ' se nepodaøilo naloadovat.</br>';
+					echo $category['Category']['sportnutrition_url'] . ' se nepodaÅ™ilo naloadovat.</br>';
 				}
 				continue;
 			}
@@ -113,9 +113,9 @@ class ProductsParser {
 		);
 		
 		if ($this->Product->save($product_save, false)) {
-			echo $product['Product']['sportnutrition_url'] . " - datum poslední úpravy produktu bylo nastaveno.<br/>\n";
+			echo $product['Product']['sportnutrition_url'] . " - datum poslednÃ­ Ãºpravy produktu bylo nastaveno.<br/>\n";
 		} else {
-			echo $product['Product']['sportnutrition_url'] . " - datum poslední úpravy produktu se nepodaøilo nastavit.<br/>\n";
+			echo $product['Product']['sportnutrition_url'] . " - datum poslednÃ­ Ãºpravy produktu se nepodaÅ™ilo nastavit.<br/>\n";
 		}
 	}
 	
@@ -148,12 +148,12 @@ class ProductsParser {
 			}
 			
 			foreach ($attributes[1] as $index => $value) {
-				$attributes[1][$index] = iconv('utf-8', 'windows-1250//IGNORE', $value);
+				$attributes[1][$index] = $value;
 			}
 			
 			// postavim si pole variant daneho produktu
 			$variants[] = array(
-				'name' => iconv('utf-8', 'windows-1250//IGNORE', str_replace(':', '', $option_matches[1])),
+				'name' => str_replace(':', '', $option_matches[1]),
 				'Attribute' => $attributes[1]
 			);
 			
@@ -163,7 +163,7 @@ class ProductsParser {
 		if (empty($variants)) {
 			// smazu subprodukty, ktere mel produkt mozna prirazene
 			$this->Product->Subproduct->deleteAll(array('product_id' => $product['Product']['id']));
-			echo $product['Product']['sportnutrition_url'] . " - nemá subprodukty k uložení.<br/>\n";
+			echo $product['Product']['sportnutrition_url'] . " - nemÃ¡ subprodukty k uloÅ¾enÃ­.<br/>\n";
 			return true;
 		}
 		
@@ -258,7 +258,7 @@ class ProductsParser {
 			$this->Product->Subproduct->create();
 			$this->Product->Subproduct->saveAll($subproduct_save);
 		}
-		echo $product['Product']['sportnutrition_url'] . " - subprodukty byly uloženy.<br/>\n";
+		echo $product['Product']['sportnutrition_url'] . " - subprodukty byly uloÅ¾eny.<br/>\n";
 		return true;
 	}
 	
@@ -276,7 +276,7 @@ class ProductsParser {
 		}
 		
 		$firstItem = $availability_fragment->item(0);
-		$availability = iconv('utf-8', 'windows-1250//IGNORE', $firstItem->nodeValue);
+		$availability = $firstItem->nodeValue;
 
 		// priradim dostupnost
 		$db_availability = $this->Product->Availability->find('first', array(
@@ -284,12 +284,12 @@ class ProductsParser {
 			'contain' => array(),
 			'fields' => array('id')
 		));
-		
+
 		if (!empty($db_availability) && $product['Product']['availability_id'] == $db_availability['Availability']['id']) {
 			echo $product['Product']['sportnutrition_url'] . " - dostupnost se nezmenila<br/>\n";
 			return true;
 		}
-		
+
 		// pokud jsem nenasel dostupnost, musim ji ulozit
 		if (empty($db_availability)) {
 			echo $product['Product']['sportnutrition_url'] . ' - dostupnost nebyla nalezena, vytvarim novou dostupnost "' . $availability . "\"<br/>\n";
@@ -330,7 +330,7 @@ class ProductsParser {
 		}
 		
 		$firstItem = $price_fragment->item(0);
-		$price_fragment = iconv('utf-8', 'windows-1250', $firstItem->nodeValue);
+		$price_fragment = $firstItem->nodeValue;
 		if (!preg_match('/(\d+)(?:\.(\d+))?.*/', $price_fragment, $price)) {
 			echo $product['Product']['sportnutrition_url'] . " - MOC cena se nevyparsovala - neodpovida RE vyraz.<br/>\n";
 			return false;
@@ -351,7 +351,7 @@ class ProductsParser {
 		}
 		
 		$firstItem = $common_discount_fragment->item(0);
-		$common_discount_fragment = iconv('utf-8', 'windows-1250', $firstItem->nodeValue);
+		$common_discount_fragment = $firstItem->nodeValue;
 		if (!preg_match('/(\d+)(?:\.(\d+))?.*/', $common_discount_fragment, $common_discount)) {
 			echo $product['Product']['sportnutrition_url'] . " - obycejna sleva se nevyparsovala - neodpovida RE vyraz.<br/>\n";
 			return false;
@@ -374,12 +374,12 @@ class ProductsParser {
 			echo $product['Product']['sportnutrition_url'] . " - cena byla upravena.<br/>\n";
 			return true;
 		} else {
-			echo $product['Product']['sportnutrition_url'] . " - cenu se nepodaøilo upravit.<br/>\n";
+			echo $product['Product']['sportnutrition_url'] . " - cenu se nepodaÅ™ilo upravit.<br/>\n";
 			return false;
 		}
 	}
 	
-	function parse_member_discount($product) {
+	function parse_discount($product, $discount) {
 		// INIT CURL
 		$ch = curl_init();
 		
@@ -391,7 +391,7 @@ class ProductsParser {
 		
 		// prihlaseni
 		// SET POST PARAMETERS : FORM VALUES FOR EACH FIELD
-		curl_setopt ($ch, CURLOPT_POSTFIELDS, 'form_login=brko&form_heslo=tc0wls&form_akce=prihlasit');
+		curl_setopt ($ch, CURLOPT_POSTFIELDS, 'form_login=' . $discount['login'] . '&form_heslo=' . $discount['password'] . '&form_akce=prihlasit');
 		
 		// IMITATE CLASSIC BROWSER'S BEHAVIOUR : HANDLE COOKIES
 		curl_setopt ($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
@@ -446,7 +446,7 @@ class ProductsParser {
 		}
 		
 		$firstItem = $price_fragment->item(0);
-		$price_fragment = iconv('utf-8', 'windows-1250', $firstItem->nodeValue);
+		$price_fragment = $firstItem->nodeValue;
 		if (!preg_match('/(\d+)(?:\.(\d+))?.*/', $price_fragment, $price)) {
 			echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cena se nevyparsovala - neodpovida RE vyraz.<br/>\n";
 			return false;
@@ -458,27 +458,33 @@ class ProductsParser {
 			}
 		}
 		
-		// porovnam cenu a vypisu vysledek
-		if ($price == $product['Product']['discount_member']) {
-			echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cena je stejna.<br/>\n";
-		} else {
-			echo $product['Product']['sportnutrition_url'] . "  - PARSOVANI SLEVY - cena se zmenila.<br/>\n";
-			
-			// nastavim novou hodnotu slevove ceny pro prihlaseneho zakaznika
-			$product_save = array(
-				'Product' => array(
-					'id' => $product['Product']['id'],
-					'discount_member' => $price
-				)
+		// nastavim novou hodnotu slevove ceny pro prihlaseneho zakaznika daneho typu
+		$customer_type_product_price = $this->Product->CustomerTypeProductPrice->find('first', array(
+			'conditions' => array(
+				'CustomerTypeProductPrice.product_id' => $product['Product']['id'],
+				'CustomerTypeProductPrice.customer_type_id' => $discount['customer_type_id']
+			),
+			'contain' => array(),
+			'fields' => array('CustomerTypeProductPrice.id', 'CustomerTypeProductPrice.price')
+		));
+
+		if (empty($customer_type_product_price)) {
+			$this->Product->CustomerTypeProductPrice->create();
+			$customer_type_product_price = array(
+				'CustomerTypeProductPrice' => array(
+					'product_id' => $product['Product']['id'],
+					'customer_type_id' => $discount['customer_type_id']
+				)	
 			);
-				
-			if ($this->Product->save($product_save, false)) {
-				echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cena byla upravena.<br/>\n";
-				return true;
-			} else {
-				echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cenu se nepodaøilo upravit.<br/>\n";
-				return false;
-			}
+		}
+		$customer_type_product_price['CustomerTypeProductPrice']['price'] = $price;
+
+		if ($this->Product->CustomerTypeProductPrice->save($customer_type_product_price)) {
+			echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cena byla upravena.<br/>\n";
+			return true;
+		} else {
+			echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cenu se nepodaÅ™ilo upravit.<br/>\n";
+			return false;
 		}
 	}
 	
@@ -501,9 +507,9 @@ class ProductsParser {
 		$values = array(
 			array('name', '//div[@id=\'product\']/h1'),
 			array('short_description', '//div[@id=\'product\']/strong[2]'),
-			array('description', '//div[@id=\'product\']', '/Výrobce:.*<br \/><br \/>.*<strong>.*<\/strong>(.*)<table class="cenik"/msU'),
+			array('description', '//div[@id=\'product\']', '/VÃ½robce:.*<br \/><br \/>.*<strong>.*<\/strong>(.*)<table class="cenik"/msU'),
 			array('availability', '//td[@align=\'center\'][@style=\'white-space: nowrap;\']'),
-			array('manufacturer', '//div[@id=\'product\']', '/Výrobce: <strong><a[^>]*>(.*)<\/a><\/strong>/m'),
+			array('manufacturer', '//div[@id=\'product\']', '/VÃ½robce: <strong><a[^>]*>(.*)<\/a><\/strong>/m'),
 			array('discount_common', '//td[@align=\'right\'][@style=\'white-space: nowrap;\'][1]', '/(\d+)(?:\.(\d+))?.*/'),
 			array('retail_price_with_dph', '//td[@align=\'right\'][@style=\'white-space: nowrap;\'][2]', '/(\d+)(?:\.(\d+))?.*/'),
 			array('images', '//div[@class=\'fotogalerie\']/a/@href'),
@@ -516,7 +522,7 @@ class ProductsParser {
 			$result = $domXPath->query($value[1]);
 			// popis
 			if ($value[0] == 'description') {
-				$text = iconv('utf-8', 'windows-1250//IGNORE', $dom->saveXML($result->item(0)));
+				$text = $dom->saveXML($result->item(0));
 				if (preg_match_all($value[2], $text, $matches)) {
 					// odstranim skript pro FB like a vsechno, co je za nim (protoze FB likes davaji na konec)
 					$product['Product']['description'] = preg_replace('/(?:<br \/>)?<br \/>(?:<script>)?<!\[CDATA.*/ms', '', $matches[1][0]);
@@ -555,12 +561,12 @@ class ProductsParser {
 					}
 					
 					foreach ($attributes[1] as $index => $value) {
-						$attributes[1][$index] = iconv('utf-8', 'windows-1250//IGNORE', $value);
+						$attributes[1][$index] = $value;
 					}
 					
 					// postavim si pole variant daneho produktu
 					$variants[] = array(
-						'name' => iconv('utf-8', 'windows-1250//IGNORE', str_replace(':', '', $option_matches[1])),
+						'name' => str_replace(':', '', $option_matches[1]),
 						'Attribute' => $attributes[1]
 					);
 					
@@ -569,7 +575,7 @@ class ProductsParser {
 				$product['Product']['Option'] = $variants;
 			} else {
 				if (isset($value[2])) {
-					$text = iconv('utf-8', 'windows-1250//IGNORE', $dom->saveXML($result->item(0)));
+					$text = $dom->saveXML($result->item(0));
 					if (preg_match($value[2], $text, $matches)) {
 						$product['Product'][$value[0]] = $matches[1];
 						if (isset($matches[2])) {
@@ -590,7 +596,7 @@ class ProductsParser {
 							if ($value[0] == 'option') {
 								$text = str_replace(':', '', $text);
 							}
-							$product['Product'][$value[0]] .= iconv('utf-8', 'windows-1250//IGNORE', $text);
+							$product['Product'][$value[0]] .= $text;
 						}
 						$i++;
 					}
@@ -687,7 +693,7 @@ class ProductsParser {
 		}
 		
 		$firstItem = $price_fragment->item(0);
-		$price_fragment = iconv('utf-8', 'windows-1250', $firstItem->nodeValue);
+		$price_fragment = $firstItem->nodeValue;
 		if (!preg_match('/(\d+)(?:\.(\d+))?.*/', $price_fragment, $price)) {
 			echo $product['Product']['sportnutrition_url'] . " - PARSOVANI SLEVY - cena se nevyparsovala - neodpovida RE vyraz.<br/>\n";
 			return false;
@@ -922,7 +928,7 @@ class ProductsParser {
 			$this->Product->Image->create();
 			if (!$this->Product->Image->save($image_save)) {
 				debug($this->Product->Image->validationErrors);
-				echo $url . ' - Obrázek ' . $image_name . ' nemohl být uložen.' . implode("<br/>\n", $this->Product->Image->validationErrors) . "<br/>\n";
+				echo $url . ' - ObrÃ¡zek ' . $image_name . ' nemohl bÃ½t uloÅ¾en.' . implode("<br/>\n", $this->Product->Image->validationErrors) . "<br/>\n";
 			}
 		}
 

@@ -7,7 +7,7 @@ class SubscribersController extends AppController {
 	 */
 	function add() {
 		if (!isset($this->data)) {
-			$this->Session->setFlash('Nejsou nastavena data pro přihlášení k odebírání newsletteru.');
+			$this->Session->setFlash('Nejsou nastavena data pro přihlášení k odebírání newsletteru.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(HP_URI);
 		}
 		
@@ -33,13 +33,13 @@ class SubscribersController extends AppController {
 				$customer['Customer']['newsletter'] = true;
 				$this->Customer->save($customer, false);
 			}
-			$this->Session->setFlash('Zadaná emailová adresa byla přihlášena k odběru novinek.');
+			$this->Session->setFlash('Zadaná emailová adresa byla přihlášena k odběru novinek.', REDESIGN_PATH . 'flash_success');
 			$this->redirect($this->data['Subscriber']['request_uri']);
 		} else {
 			// zasilani newsletteru UZ JE povoleno jednim ze 2 vyse popsanych zpusobu (email uz je v tabulce subscribers nebo je v customers s newsletter = true) nebo email neni ve validnim
 			// tvaru
 			$this->_persistValidation('Subscriber');
-			$this->Session->setFlash('Přihlášení k odběru novinek se nezdařilo, opravte chyby ve formuláři a opakujte akci.');
+			$this->Session->setFlash('Přihlášení k odběru novinek se nezdařilo, opravte chyby ve formuláři a opakujte akci.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect($this->data['Subscriber']['request_uri'] . '#subscription');
 		}
 	}

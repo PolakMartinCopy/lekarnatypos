@@ -1,92 +1,58 @@
-<table id="orderDisplay">
+﻿<table id="orderDisplay">
 	<tr>
 		<td valign="top">
 		
-		<?
-			if ( !empty( $order['Order']['comments'] ) ){
-		?>
+		<? if ( !empty( $order['Order']['comments'] ) ){ ?>
 			<h3>Komentář od zákazníka</h3>
 				<p style="font-size:11px;color:blue;"><?=$order['Order']['comments']?></p>
-		<?
-			}
-		?>
+		<? } ?>
 	
 		<h3>Objednávka č. <?=$order['Order']['id']?> (<?=strftime("%d.%m.%Y %H:%M", strtotime($order['Order']['created']))?>)</h3>
-		<span class="smallText"><?=$html->link('editovat objednávku', array('controller' => 'ordered_products', 'action' => 'edit', $order['Order']['id'])) ?></span>
-		<table id="productList">
+		<ul>
+			<li><span class="smallText"><?=$html->link('editovat objednávku', array('controller' => 'ordered_products', 'action' => 'edit', $order['Order']['id'])) ?></span></li>
+		</ul>
+
+		<table id="productList"  class="tabulka">
 			<tr>
-				<th>
-					Název produktu
-				</th>
-				<th>
-					Množství
-				</th>
-				<th>
-					Cena<br />
-					za kus
-				</th>
-				<th>
-					Cena<br />
-					celkem
-				</th>
+				<th>Název produktu</th>
+				<th>Množství</th>
+				<th>Cena<br />za kus</th>
+				<th>Cena<br />celkem</th>
 			</tr>
-		<? 
-			foreach ( $order['OrderedProduct'] as $product ){
+			<? foreach ( $order['OrderedProduct'] as $product ){
 				// celkova cena za pocet kusu krat jednotkova cena
-				$total_products_price = $product['product_quantity'] * $product['product_price_with_dph'];
-				echo '	<tr>
-							<td>
-								' . (!empty($product['Product']) ? $html->link($product['Product']['name'], '/' . $product['Product']['url'], array('escape' => false), false) : '<em>Neznámý produkt</em>');
-				// musim vyhodit atributy, pokud nejake produkt ma
-				if ( !empty( $product['OrderedProductsAttribute'] ) ){
-					echo '<div class="orderedProductsAttributes">';
-					foreach( $product['OrderedProductsAttribute'] as $attribute ){
-						echo '<span>- <strong>' . $attribute['Attribute']['Option']['name'] . '</strong>: ' . $attribute['Attribute']['value'] . '</span><br />';
+				$total_products_price = $product['product_quantity'] * $product['product_price_with_dph']; ?>
+			<tr>
+				<td><?php 
+					if (!empty($product['Product'])) { 
+						echo $html->link($product['Product']['name'] . '&nbsp;(' . $product['Product']['Manufacturer']['name'] . ')', '/' . $product['Product']['url'], array('escape' => false), false);
+					} else {
+						echo $product['product_name'];
 					}
-					echo '</div>';
-				}
-				if (!empty($product['Product']['supplier_product_id'])) {
-					echo '<div class="orderedProductsAttributes">- <strong>id produktu u dodavatele:</strong> ' . $product['Product']['supplier_product_id'] . '</div>';
-				}
-
-
-				echo		'</td>
-							<td>
-								' . $product['product_quantity'] . '&nbsp;ks
-							</td>
-							<td>
-								' . $product['product_price_with_dph'] . '&nbsp;Kč
-							</td>
-							<td>
-								' . $total_products_price . '&nbsp;Kč
-							</td>
-						</tr>';
-				
-			}
-		?>
+					// musim vyhodit atributy, pokud nejake produkt ma
+					if ( !empty( $product['OrderedProductsAttribute'] ) ){
+						echo '<div class="orderedProductsAttributes">';
+						foreach( $product['OrderedProductsAttribute'] as $attribute ){
+							echo '<span>- <strong>' . $attribute['Attribute']['Option']['name'] . '</strong>: ' . $attribute['Attribute']['value'] . '</span><br />';
+						}
+						echo '</div>';
+				} ?></td>
+				<td><?php echo $product['product_quantity'] ?>&nbsp;ks</td>
+				<td><?php echo $product['product_price_with_dph'] ?>&nbsp;Kč</td>
+				<td><?php echo $total_products_price ?>&nbsp;Kč</td>
+			</tr>
+			<?php } ?>		
 			<tr>
-				<th colspan="2" align="right">
-					cena za zboží celkem:
-				</th>
-				<td colspan="2" align="right">
-					<?=$order['Order']['subtotal_with_dph']?>&nbsp;Kč
-				</td>
+				<th colspan="2" align="right">cena za zboží celkem:</th>
+				<td colspan="2" align="right"><?=$order['Order']['subtotal_with_dph']?>&nbsp;Kč</td>
 			</tr>
 			<tr>
-				<td colspan="2" align="right">
-					způsob doručení: <?=$order['Shipping']['name']?>
-				</td>
-				<td colspan="2" align="right">
-					<?=$order['Order']['shipping_cost']?>&nbsp;Kč
-				</td>
+				<td colspan="2" align="right">způsob doručení: <?=$order['Shipping']['name']?></td>
+				<td colspan="2" align="right"><?=$order['Order']['shipping_cost']?>&nbsp;Kč</td>
 			</tr>
 			<tr>
-				<th colspan="2" align="right">
-					celková cena objednávky:
-				</th>
-				<td colspan="2" align="right">
-					<?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?>&nbsp;Kč
-				</td>
+				<th colspan="2" align="right">celková cena objednávky:</th>
+				<td colspan="2" align="right"><?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?>&nbsp;Kč</td>
 			</tr>
 		</table>
 <?
@@ -117,11 +83,9 @@
 					<td>' . $note['note'] . '</td>
 				</tr>
 			';
-		}
-?>
+		} ?>
 		</table>
-<?php } ?>
-
+<?php 	} ?>
 		<h3>Změna stavu / poznámka</h3>
 		<?=$form->Create('Order', array('url' => array('action' => 'edit')))?>
 		<fieldset  style="width:70%">
@@ -134,7 +98,7 @@
 			</tr>
 			<tr>
 				<th>poznámka:</th>
-				<td><?=$form->textarea('Ordernote.note')?></td>
+				<td><?=$form->textarea('Ordernote.note', array('cols' => 70, 'rows' => 3))?></td>
 			</tr>
 			<tr>
 				<th>číslo balíku:</th>
@@ -153,6 +117,7 @@
 		<h3>Kontaktní údaje</h3>
 		<span class="smallText"><?=$html->link('zobrazit profil', array('controller' => 'customers', 'action' => 'view', $order['Order']['customer_id'])) ?></span><br />
 		<?
+			//print_r ($order);
 			echo 'jméno:&nbsp;' . $order['Customer']['first_name'] . '<br />';
 			echo 'příjmení:&nbsp;' . $order['Customer']['last_name'] . '<br />';
 			echo 'telefon:&nbsp;' . $order['Order']['customer_phone'] . '<br />';
@@ -178,9 +143,6 @@
 
 			echo '<br />číslo balíku: ' . $html->link($order['Order']['shipping_number'], $order['Shipping']['tracker_prefix'] . trim($order['Order']['shipping_number']) . $order['Shipping']['tracker_postfix']);
 			echo '<br />variabilní symbol: ' . $order['Order']['variable_symbol'];
-			if ( file_exists('files/faktury/zal_' . $order['Order']['id'] . '.pdf') ){
-				echo ' - <a href="/files/faktury/zal_' . $order['Order']['id'] . '.pdf">zál. faktura</a>';
-			}
 		?>
 	</td>
 </tr>

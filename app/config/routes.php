@@ -52,6 +52,7 @@ if ( $_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz'){
 	Router::connect('/rekapitulace-objednavky', array('controller' => 'orders', 'action' => 'recapitulation'));
 	Router::connect('/vyhledavani-produktu', array('controller' => 'searches', 'action' => 'do_search'));
 	Router::connect('/registrace', array('controller' => 'customers', 'action' => 'add'));
+	Router::connect('/prihlaseni', array('controller' => 'customers', 'action' => 'login'));
 	Router::connect('/obnova-hesla', array('controller' => 'customers', 'action' => 'password'));
 
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));

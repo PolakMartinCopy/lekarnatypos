@@ -1,15 +1,24 @@
-<?
-class AppController extends Controller {
+<? class AppController extends Controller {
 	// musim si importnout cookie, potrebuju je pouzivat	
 	var $components = array('Cookie', 'Session');
+	
+	var $paginate = array(
+		'limit' => 50	
+	);
 
 	// beforeFilter se provede pri uplne kazde akci, ktera se vykona
 	function beforeFilter() {
 		Controller::disableCache();
 		
-		// pridam si LayoutHelper
-		$this->helpers[] = 'Layout';
-
+		// import tool modelu
+		App::import('Model', 'Tool');
+		
+		// osetruju pristup na /admin/ a na /admin, kdyz nekdo pritupuje na tyto adresy, je presmerovan na stranku s loginem
+		if ( $_SERVER['REQUEST_URI'] == '/admin/' || $_SERVER['REQUEST_URI'] == '/admin' ){
+			$this->redirect('/admin/administrators/login', null, true);
+		}
+				
+		
 		if ( !$this->Session->check('Config') || !$this->Session->check('Config.rand') ) {
 			$this->Session->_checkValid();
 			if ( !$this->Session->check('Config.rand') ) {
@@ -17,22 +26,10 @@ class AppController extends Controller {
 			}
 		}
 		
-		App::import('Model', 'Redirect');
-		$this->Redirect = &new Redirect;
-		if ($this->Redirect->hasAny(array('Redirect.request_uri' => $_SERVER['REQUEST_URI']))) {
-			$redirect = $this->Redirect->find('first', array(
-				'conditions' => array('Redirect.request_uri' => $_SERVER['REQUEST_URI']),
-				'contain' => array(),
-				'fields' => array('Redirect.target_uri')
-			));
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: http://www.lekarnatypos.cz" . $redirect['Redirect']['target_uri']);
-			exit();
-		}
-		
 		// otestuju, zda nekdo chce pristoupit do adminu
 		// ale zaroven testuju, zda se nesnazi zalogovat
-		if ( isset($this->params['admin']) && $this->params['admin'] == '1' && $this->action != 'admin_login' ){
+		//debug($this->params); die();
+		if (isset($this->params['admin']) && $this->params['admin'] == '1' && $this->action != 'admin_login') {
 			// jestlize clovek pristupuje do adminu
 			// a jeste se nezalogoval, musim ho presmerovat na stranku
 			// s loginem
@@ -59,11 +56,15 @@ class AppController extends Controller {
 					$this->redirect('/admin/administrators/login/url:' . base64_encode($this->params['url']['url']), null, true);
 				}
 			}
-			
+
 			// administrator ma session timeout 720 sekund * 10 = 2 hodiny
 			Configure::write('Session.timeout', 720);
 
 		}
+		
+		App::import('Model', 'Setting');
+		$this->Setting = &new Setting;
+		$this->Setting->init();
 	}
 	
 	function beforeRender() {
@@ -78,7 +79,7 @@ class AppController extends Controller {
 			App::import('Model', 'Product');
 			$this->Product = &new Product;
 			
-			$opened_category_id = 5;
+			$opened_category_id = ROOT_CATEGORY_ID;
 			if (isset($this->viewVars['opened_category_id'])) {
 				$opened_category_id = $this->viewVars['opened_category_id'];
 			}
@@ -86,36 +87,262 @@ class AppController extends Controller {
 			// data o kosiku
 			$this->set('carts_stats', $this->Product->CartsProduct->getStats($this->Product->CartsProduct->Cart->get_id()));
 
- 			// menu kategorie
-			$this->set('categories_menu', $this->Product->CategoriesProduct->Category->getSubcategoriesMenuList(5, $opened_category_id));
+			// menu hlavni kategorie
+			// $this->set('categories_menu', $this->Product->CategoriesProduct->Category->getSubcategoriesMenuList($opened_category_id, $this->Session->check('Customer')));
+			$this->set('categories_menu', $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), true));
 			
-			// nejnovejsi produkt
-			if ($this->layout == 'homepage') {
-				// nejnovejsi produkty
-//				$this->set('hp_categories_list', $this->Product->CategoriesProduct->Category->get_homepage_list());
-				$this->set('newest', $this->Product->get_list('newest'));
-				$this->set('favourite', $this->Product->get_list('most_sold'));
-			} 
-//			if ($this->layout != 'product_detail') {
-//				$this->set('most_sold', $this->Product->get_list('most_sold'));
-//			}
+			// submenu kategorii
+			$this->set('categories_submenu', $this->Product->CategoriesProduct->Category->getSubmenuCategories());
+			
+			// vyrobci do selectu
+			$manufacturers_list = $this->Product->Manufacturer->find('list', array(
+				'conditions' => array('Manufacturer.active' => true)	
+			));
+			$this->set('manufacturers_list', $manufacturers_list);
+			
+			// nastaveni aktivniho tabu v login boxu, defaultne prihlaseni
+			$login_box_tab = 'basket';
+			if ($this->Session->check('login_box_tab')) {
+				// jinak nactu ze sesny
+				$login_box_tab = $this->Session->read('login_box_tab');
+			}
+			$this->set('login_box_tab', $login_box_tab);
+			
+			if ($this->layout == REDESIGN_PATH . 'content') {
+				// nejprodavanejsi produkty
+				App::import('Model', 'CustomerType');
+				$this->CustomerType = new CustomerType;
+				$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+
+			} elseif ($this->layout == REDESIGN_PATH . 'homepage') {
+				App::import('Model', 'CustomerType');
+				$this->CustomerType = new CustomerType;
+				$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+				// discounted - newest, recommended, most_sold - favourite
+				$this->set('newest', $this->Product->DiscountedProduct->hp_list($customer_type_id));
+				$this->set('favourite', $this->Product->MostSoldProduct->hp_list($customer_type_id));
+			}
+		} elseif (isset($this->params['admin']) && $this->params['admin'] == 1) {
+			App::import('Model', 'Status');
+			$this->Status = &new Status;
+			$statuses_menu = $this->Status->find('all', array(
+				'contain' => array(),
+				'order' => array('Status.order' => 'asc')
+			));
+			$this->set('statuses_menu', $statuses_menu);
 		}
-		$this->disableCache();
 	}
 	
 	/**
-	 * Called with some arguments (name of default model, or model from var $uses),
-	 * models with invalid data will populate data and validation errors into the session.
+	 * Handles automatic pagination of model records.
 	 *
-	 * Called without arguments, it will try to load data and validation errors from session
-	 * and attach them to proper models. Also merges $data to $this->data in controller.
-	 *
-	 * @author poLK
-	 * @author drayen aka Alex McFadyen
-	 *
-	 * Licensed under The MIT License
-	 * @license            http://www.opensource.org/licenses/mit-license.php The MIT License
+	 * @param mixed $object Model to paginate (e.g: model instance, or 'Model', or 'Model.InnerModel')
+	 * @param mixed $scope Conditions to use while paginating
+	 * @param array $whitelist List of allowed options for paging
+	 * @return array Model query results
+	 * @access public
+	 * @link http://book.cakephp.org/view/1232/Controller-Setup
 	 */
+	function paginate($object = null, $scope = array(), $whitelist = array()) {
+		if (is_array($object)) {
+			$whitelist = $scope;
+			$scope = $object;
+			$object = null;
+		}
+		$assoc = null;
+	
+		if (is_string($object)) {
+			$assoc = null;
+			if (strpos($object, '.')  !== false) {
+				list($object, $assoc) = pluginSplit($object);
+			}
+	
+			if ($assoc && isset($this->{$object}->{$assoc})) {
+				$object =& $this->{$object}->{$assoc};
+			} elseif (
+					$assoc && isset($this->{$this->modelClass}) &&
+					isset($this->{$this->modelClass}->{$assoc}
+			)) {
+				$object =& $this->{$this->modelClass}->{$assoc};
+			} elseif (isset($this->{$object})) {
+				$object =& $this->{$object};
+			} elseif (
+					isset($this->{$this->modelClass}) && isset($this->{$this->modelClass}->{$object}
+			)) {
+				$object =& $this->{$this->modelClass}->{$object};
+			}
+		} elseif (empty($object) || $object === null) {
+			if (isset($this->{$this->modelClass})) {
+				$object =& $this->{$this->modelClass};
+			} else {
+				$className = null;
+				$name = $this->uses[0];
+				if (strpos($this->uses[0], '.') !== false) {
+					list($name, $className) = explode('.', $this->uses[0]);
+				}
+				if ($className) {
+					$object =& $this->{$className};
+				} else {
+					$object =& $this->{$name};
+				}
+			}
+		}
+	
+		if (!is_object($object)) {
+			trigger_error(sprintf(
+			__('Controller::paginate() - can\'t find model %1$s in controller %2$sController',
+			true
+			), $object, $this->name
+			), E_USER_WARNING);
+			return array();
+		}
+		$options = array_merge($this->params, $this->params['url'], $this->passedArgs);
+	
+		if (isset($this->paginate[$object->alias])) {
+			$defaults = $this->paginate[$object->alias];
+		} else {
+			$defaults = $this->paginate;
+		}
+	
+		if (isset($options['show'])) {
+			$options['limit'] = $options['show'];
+		}
+	
+		if (isset($options['sort'])) {
+			$direction = null;
+			if (isset($options['direction'])) {
+				$direction = strtolower($options['direction']);
+			}
+			if ($direction != 'asc' && $direction != 'desc') {
+				$direction = 'asc';
+			}
+			$options['order'] = array($options['sort'] => $direction);
+		}
+	
+		if (!empty($options['order']) && is_array($options['order'])) {
+			$alias = $object->alias ;
+			$key = $field = key($options['order']);
+	
+			if (strpos($key, '.') !== false) {
+				list($alias, $field) = explode('.', $key);
+			}
+			$value = $options['order'][$key];
+			unset($options['order'][$key]);
+	
+			if ($object->hasField($field)) {
+				$options['order'][$alias . '.' . $field] = $value;
+			} elseif ($object->hasField($field, true)) {
+				$options['order'][$field] = $value;
+			} elseif (isset($object->{$alias}) && $object->{$alias}->hasField($field)) {
+				$options['order'][$alias . '.' . $field] = $value;
+			}
+		}
+		$vars = array('fields', 'order', 'limit', 'page', 'recursive');
+		$keys = array_keys($options);
+		$count = count($keys);
+	
+		for ($i = 0; $i < $count; $i++) {
+			if (!in_array($keys[$i], $vars, true)) {
+				unset($options[$keys[$i]]);
+			}
+			if (empty($whitelist) && ($keys[$i] === 'fields' || $keys[$i] === 'recursive')) {
+				unset($options[$keys[$i]]);
+			} elseif (!empty($whitelist) && !in_array($keys[$i], $whitelist)) {
+				unset($options[$keys[$i]]);
+			}
+		}
+		$conditions = $fields = $order = $limit = $page = $recursive = null;
+
+		if (!isset($defaults['conditions'])) {
+			$defaults['conditions'] = array();
+		}
+	
+		$type = 'all';
+	
+		if (isset($defaults[0])) {
+			$type = $defaults[0];
+			unset($defaults[0]);
+		}
+	
+		$options = array_merge(array('page' => 1, 'limit' => 20), $defaults, $options);
+		$options['limit'] = (int) $options['limit'];
+		if (empty($options['limit']) || $options['limit'] < 1) {
+			$options['limit'] = 1;
+		}
+
+		extract($options);
+	
+		if (is_array($scope) && !empty($scope)) {
+			$conditions = array_merge($conditions, $scope);
+		} elseif (is_string($scope)) {
+			$conditions = array($conditions, $scope);
+		}
+		if ($recursive === null) {
+			$recursive = $object->recursive;
+		}
+	
+		$extra = array_diff_key($defaults, compact(
+				'conditions', 'fields', 'order', 'limit', 'page', 'recursive'
+		));
+		if ($type !== 'all') {
+			$extra['type'] = $type;
+		}
+
+		if (method_exists($object, 'paginateCount')) {
+			$count = $object->paginateCount($conditions, $recursive, $extra);
+		} else {
+			$parameters = compact('conditions');
+			if ($recursive != $object->recursive) {
+				$parameters['recursive'] = $recursive;
+			}
+			$count = $object->find('count', array_merge($parameters, $extra));
+		}
+
+		// Show all records
+		if ((isset($extra['show']) && 'all' == $extra['show']) || (isset($this->params['named']['show']) && 'all' == $this->params['named']['show'])) {
+			if ($count != 0) {
+				$options['limit'] = $defaults['limit'] = $limit = $count;
+			}
+		}
+		
+		$pageCount = intval(ceil($count / $limit));
+	
+		if ($page === 'last' || $page >= $pageCount) {
+			$options['page'] = $page = $pageCount;
+		} elseif (intval($page) < 1) {
+			$options['page'] = $page = 1;
+		}
+		$page = $options['page'] = (integer)$page;
+	
+		if (method_exists($object, 'paginate')) {
+			$results = $object->paginate(
+					$conditions, $fields, $order, $limit, $page, $recursive, $extra
+			);
+		} else {
+			$parameters = compact('conditions', 'fields', 'order', 'limit', 'page');
+			if ($recursive != $object->recursive) {
+				$parameters['recursive'] = $recursive;
+			}
+			$results = $object->find($type, array_merge($parameters, $extra));
+		}
+		$paging = array(
+				'page'		=> $page,
+				'current'	=> count($results),
+				'count'		=> $count,
+				'prevPage'	=> ($page > 1),
+				'nextPage'	=> ($count > ($page * $limit)),
+				'pageCount'	=> $pageCount,
+				'defaults'	=> array_merge(array('limit' => 20, 'step' => 1), $defaults),
+				'options'	=> $options
+		);
+		$this->params['paging'][$object->alias] = $paging;
+	
+		if (!in_array('Paginator', $this->helpers) && !array_key_exists('Paginator', $this->helpers)) {
+			$this->helpers[] = 'Paginator';
+		}
+		return $results;
+	}
+	
 	function _persistValidation() {
 		$args = func_get_args();
 	

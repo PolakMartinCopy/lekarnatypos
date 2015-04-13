@@ -1,4 +1,4 @@
-<h2>Seznam uploadových obrázků</h2>
+﻿<h2>Seznam uploadových obrázků</h2>
 <?=$html->link('zpět na obrázky produktu', array('controller' => 'products', 'action' => 'images_list', $product_id))?>
 <a href=""></a>
 <table class="topHeading" cellpadding="5" cellspacing="3">

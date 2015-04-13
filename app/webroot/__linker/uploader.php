@@ -1,24 +1,13 @@
 <?
-	function my_iconv($string){
-		$string = iconv("UTF-8", "windows-1250", $string);
-		return $string;
-	}
-
-	header('Content-Type: text/html; charset=windows-1250');
-
+function upload_links($layout_name, $ru) {
+	$output = '';
 	// kontrola, zda je zadane jmeno layoutu, pro ktery budu
 	// skladat linky
-	if ( !isset($_GET['layout_name']) ){
-		die('<!-- ERROR: Neni definovano jmeno layoutu, pro ktery se maji odkazy sestavit. -->');
-	} else {
-		$layout_name = $_GET['layout_name'];
-	}
-
 	// naimportuji si knihovnu pro praci s XML
-	require 'lib.xml.php';
-	
+	require_once 'lib.xml.php';
+
 	// nadefinuji URI
-	$uri = isset($_GET['ru']) ? base64_decode($_GET['ru']) : '/';
+	$uri = base64_decode($ru);
 
 	// vytvorim si objekt pro praci s XML
 	$xml_handler = &new ParseXML;
@@ -32,6 +21,7 @@
 		$count = count($xml['LAYOUT'][0]['LINK']);
 		$links = array();
 		for ( $i = 0; $i < $count; $i++ ){
+			$type = $xml['LAYOUT'][0]['LINK'][$i]['TYPE'][0]['VALUE'];
 			if ( isset($xml['LAYOUT'][0]['LINK'][$i]['URI'][0]['LOCATION']) ){
 				$uris = array();
 				$count2 = count($xml['LAYOUT'][0]['LINK'][$i]['URI'][0]['LOCATION']); 
@@ -51,12 +41,11 @@
 				}
 			}
 			
-			$type = $xml['LAYOUT'][0]['LINK'][$i]['TYPE'][0]['VALUE'];
-			$target = html_entity_decode($xml['LAYOUT'][0]['LINK'][$i]['TARGET'][0]['VALUE']);
-			$title = html_entity_decode($xml['LAYOUT'][0]['LINK'][$i]['TITLE'][0]['VALUE']);
-			$anchor = html_entity_decode($xml['LAYOUT'][0]['LINK'][$i]['ANCHOR'][0]['VALUE']);
-			$pre = iconv('windows-1250', 'UTF-8', base64_decode($xml['LAYOUT'][0]['LINK'][$i]['PRE'][0]['VALUE']));
-			$post = iconv('windows-1250', 'UTF-8', base64_decode($xml['LAYOUT'][0]['LINK'][$i]['POST'][0]['VALUE']));
+			$target = $xml['LAYOUT'][0]['LINK'][$i]['TARGET'][0]['VALUE'];
+			$title = iconv('utf-8', 'cp1250', $xml['LAYOUT'][0]['LINK'][$i]['TITLE'][0]['VALUE']);
+			$anchor = iconv('utf-8', 'cp1250', $xml['LAYOUT'][0]['LINK'][$i]['ANCHOR'][0]['VALUE']);
+			$pre = $xml['LAYOUT'][0]['LINK'][$i]['PRE'][0]['VALUE'];
+			$post = $xml['LAYOUT'][0]['LINK'][$i]['POST'][0]['VALUE'];
 
 			if ( eregi("\n", $anchor) ){
 				$anchor = explode("\n", $anchor);
@@ -66,13 +55,13 @@
 			}
 			
 			// sestavim linky
-			$links[] = ( !empty($pre) ? $pre . ' ' : '' ) . '<a href="' . $target . '"' . ( !empty($title) ? ' title="' . $title . '"' : '' ) . '>' . $anchor . '</a>' . ( !empty($post) ? ' ' . $post : '' );
+			$links[] = ( !empty($pre) ? base64_decode($pre) . ' ' : '' ) . '<a href="' . $target . '"' . ( !empty($title) ? ' title="' . $title . '"' : '' ) . '>' . $anchor . '</a>' . ( !empty($post) ? ' ' . base64_decode($post) : '' );
 		}
-	
-		$links = implode($separator, $links); 
-		echo $links;
-		echo base64_decode($xml['LAYOUT'][0]['SETTINGS'][0]['POST'][0]['VALUE']);
+		$output = implode($separator, $links);
+		//$output .= base64_decode($xml['LAYOUT'][0]['SETTINGS'][0]['POST'][0]['VALUE']);
+		return $output;
 	} else {
 		die('<!-- ERROR: Soubor s XML je prazdny. -->');
 	}
+}
 ?>

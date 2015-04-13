@@ -42,8 +42,6 @@
  * $controllerPaths = array('this path to controllers', 'second full path to controllers', 'etc...');
  *
  */
-define('HP_URI', '/');
-
 function strip_diacritic($text, $strip_dot = true) {
 	$text = trim($text);
 	
@@ -59,9 +57,9 @@ function strip_diacritic($text, $strip_dot = true) {
 	$text = str_replace("'", "", $text); //apostrof
 	$text = str_replace('"', '', $text); //uvozovky
 	$text = str_replace("/", "", $text); // lomitko
-	$text = str_replace("+", "-", $text);
+	$text = str_replace("+", "-", $text); // plus
+	$text = str_replace('!', '', $text); // vykricnik
 	$text = str_replace('™', '', $text); // trademark
-	$text = str_replace('–', '-', $text); // dlouha pomlcka
 	
 	if ($strip_dot) {
 		$text = str_replace(".", "", $text); // tecka
@@ -77,7 +75,7 @@ function strip_diacritic($text, $strip_dot = true) {
         'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
         'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
         'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r', 'Ř'=>'R', 'ř'=>'r', 'Ť'=>'T', 'ť'=>'t', 'Ě'=>'E', 'ě'=>'e',
-    	'Ň'=>'N', 'ň'=>'n', 'ú'=>'u', 'Ú'=>'U', 'ů'=>'u', 'Ů'=>'U', 'ď'=>'d', 'Ď'=>'d', 'ü'=>'u',
+    	'Ň'=>'N', 'ň'=>'n', 'ú'=>'u', 'Ú'=>'U', 'ů'=>'u', 'Ů'=>'U', 'ď'=>'d', 'Ď'=>'d', 'ü'=>'u'
     );
     $text = strtr($text, $table);
 
@@ -107,8 +105,8 @@ function cz_date_time($datetime){
 * @copyright Jakub Vrána, http://php.vrana.cz
 */
 function valid_email($email) {
-    $atom = '[-a-z0-9!#$%&\'*+/=?^_`{|}~]'; // znaky tvořící uživatelské jméno
-    $domain = '[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])'; // jedna komponenta domény
+    $atom = '[-a-z0-9!#$%&\'*+/=?^_`{|}~]';
+    $domain = '[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])';
     return eregi("^$atom+(\\.$atom+)*@($domain?\\.)+$domain\$", $email);
 }
 
@@ -144,6 +142,54 @@ function resize($filename, $max_x = 100, $max_y = 100) {
 	return array($i[0], $i[1]);
 }
 
+function cz2db_datetime($datetime) {
+	$datetime = explode(' ', $datetime);
+	$date = $datetime[0];
+	$time = $datetime[1];
+
+	$date = explode('.', $date);
+	if (strlen($date[0]) == 1) {
+		$date[0] = '0' . $date[0];
+	}
+	if (strlen($date[1]) == 1) {
+		$date[1] = '0' . $date[1];
+	}
+	$date = $date[2] . '-' . $date[1] . '-' . $date[0];
+
+	$datetime = $date . ' ' . $time;
+	return $datetime;
+}
+
+function cz2db_date($date) {
+	$date = explode('.', $date);
+	if (strlen($date[0]) == 1) {
+		$date[0] = '0' . $date[0];
+	}
+	if (strlen($date[1]) == 1) {
+		$date[1] = '0' . $date[1];
+	}
+	$date = $date[2] . '-' . $date[1] . '-' . $date[0];
+	return $date;
+}
+
+function json_encode_result($result) {
+	if (!function_exists('json_encode')) {
+		App::import('Vendor', 'Services_JSON', array('file' => 'JSON.php'));
+		$json = &new Services_JSON();
+		return $json->encode($result);
+	}
+	
+	return json_encode($result);
+}
+
+function format_price($price) {
+	return number_format($price, 0, ',', '.') . ' CZK';
+}
+
+function front_end_display_price($price, $decimals = 0) {
+	return number_format($price, $decimals, ',', ' ');
+}
+
 function download_url($url = null) {
 	if ($url) {
 		$content = false;
@@ -156,8 +202,26 @@ function download_url($url = null) {
 	return false;
 }
 
-define('CUST_MAIL', 'info@lekarnatypos.cz');
-define('CUST_ROOT', 'lekarnatypos.cz');
-define('CUST_NAME', 'Lékarna Typos CZ');
-define('CUST_PHONE', '778 437 811')
+define('REDESIGN_PATH', 'typos/');
+define('ROOT_CATEGORY_ID', 5);
+
+define('HP_URI', '/');
+
+define('FILES_DIR', 'files');
+define('DOCUMENTS_DIR', FILES_DIR . DS . 'documents');
+define('POHODA_EXPORT_DIR', DOCUMENTS_DIR . DS . 'pohoda_exports');
+
+$host = 'localhost';
+define('__DB_HOST__', $host);
+//define('IMAGE_IP', '78.80.90.21');
+define('IMAGE_IP', 'odstranit');
+
+// kontrola, zda nezadame URI ktere ma byt presmerovano
+App::import('Model', 'Redirect');
+$this->Redirect = &new Redirect;
+if ($r = $this->Redirect->check($_SERVER['REQUEST_URI'])) {
+	header("HTTP/1.1 301 Moved Permanently");
+	header("Location: " . $r['Redirect']['target_uri']);
+	exit();
+}
 ?>

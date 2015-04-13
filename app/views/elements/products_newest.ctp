@@ -1,4 +1,4 @@
-<?
+﻿<?
 	echo $html->link($newest_product['Product']['name'], '/' . $newest_product['Product']['url']);
 	echo '<br />';
 	$done = false;

@@ -1,38 +1,23 @@
-<h2>Vložení výrobce</h2>
-<div class="option">
-<?php echo $form->create('Manufacturer');?>
-	<fieldset>
- 		<legend>Výrobce</legend>
-		<table class="leftHeading" cellpadding="5" cellspacing="3">
-			<tr>
-				<th>
-					Název výrobce
-				</th>
-				<td>
-					<?=$form->text('name', array('size' => 70))?>
-					<?=$form->error('name')?>
-				</td>
-			</tr>
-			<tr>
-				<th><abbr title="">Alias dodavatele</abbr></th>
-				<td><?php echo $this->Form->input('Manufacturer.supplier_alias', array('label' => false, 'size' => 70))?></td>
-			</tr>
-			<tr>
-				<th>
-					adresa www stránek
-				</th>
-				<td>
-					<?=$form->text('www_address', array('size' => 70))?><br />
-					<?=$form->error('www_address')?>
-					<span class="formNote">např. http://www.mte.cz/</span>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
-	<?=$form->end('Vložit');?>
-</div>
-<div class="actions">
-	<ul>
-		<li><?php echo $html->link(__('Zpět na seznam výrobců', true), array('action'=>'index'));?></li>
-	</ul>
-</div>
+﻿<h2>Nový výrobce</h2>
+<?php echo $this->Form->create('Manufacturer');?>
+<fieldset>
+	<legend>Výrobce</legend>
+	<table class="tabulkaedit">
+		<tr class="nutne">
+			<td>Název výrobce</td>
+			<td><?php echo $this->Form->input('Manufacturer.name', array('label' => false))?></td>
+		</tr>
+		<tr>
+			<td>Adresa www stránek</td>
+			<td>
+				<?php echo $this->Form->input('Manufacturer.www_address', array('label' => false))?>
+				<span class="formNote">např. http://www.mte.cz/</span>
+			</td>
+		</tr>
+		<tr>
+			<th>Popis</th>
+			<td><?php echo $this->Form->input('Manufacturer.text', array('label' => false, 'rows' => 15))?></td>
+		</tr>
+	</table>
+</fieldset>
+<?=$form->end('Vložit');?>

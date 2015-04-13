@@ -28,10 +28,13 @@ class Newsletter extends AppModel{
 	 */
 	function create_body($id){
 		// nactu si vsechny produkty patrici do newsletteru
+		$products = $this->find('first', array(
+			'conditions' => array('Newsletter.news')
+		));
+		$this->NewslettersProduct->recursive = -1;
 		$products = $this->NewslettersProduct->find('all', array(
 			'conditions' => array('NewslettersProduct.newsletter_id' => $id),
-			'fields' => array('NewslettersProduct.id', 'NewslettersProduct.product_id'),
-			'contain' => array()
+			'fields' => array('NewslettersProduct.id', 'NewslettersProduct.product_id')
 		));
 
 		$ids = array();
@@ -162,36 +165,38 @@ class Newsletter extends AppModel{
 	function send($id){
 			include 'class.phpmailer.php';
 			$ppm = &new phpmailer;
-			$ppm->CharSet = 'windows-1250';
-			$ppm->Hostname = 'nutrishop.cz';
-			$ppm->Sender = 'newsletter@nutrishop.cz';
-			$ppm->From = 'newsletter@nutrishop.cz';
-			$ppm->FromName = 'NutriShop CZ';
-			$ppm->AddReplyTo('newsletter@nutrishop.cz', 'NutriShop CZ');
+			$ppm->CharSet = 'utf-8';
+			$ppm->Hostname = CUST_ROOT;
+			$ppm->Sender = 'newsletter@' . CUST_ROOT;
+			$ppm->From = 'newsletter@' . CUST_ROOT;
+			$ppm->FromName = CUST_NAME;
+			$ppm->AddReplyTo('newsletter@'.  CUST_ROOT, CUST_NAME);
 			
 
-			$ppm->Body = '<p style="font-size:10px;">nezobrazuje-li se vám obsah tohoto emailu správně, klikněte na následující <a href="http://www.nutrishop.cz/akce-tydne-c6?utm_source=mail_newsletter6_nezobrazuje">odkaz</a></p>
+			$ppm->Body = '<p style="font-size:10px;">nezobrazuje-li se vám obsah tohoto emailu správně, klikněte na následující <a href="http://www.' . CUST_ROOT . '/akce-tydne-c6?utm_source=mail_newsletter6_nezobrazuje">odkaz</a></p>
 <div style="font-family:Arial">Dobrý den,<br />
 <br />
-<strong>velice si vážíme Vašeho předchozího zájmu</strong> o nákupy v našem obchodě se sportovní výživou NutriShop.cz<br />
+<strong>velice si vážíme Vašeho předchozího zájmu</strong> o nákupy v našem obchodě se sportovní výživou ' . CUST_NAME . '<br />
 Nyní jsme pro Vás připravili mimořádnou slevovou akci pro měsíc srpen, kterou bychom Vám tímto rádi představili.<br />
 <br />
-<strong>Výběr z produktů</strong>, které Vám nabízíme za akční ceny si můžete <strong>zobrazit kliknutím</strong> na následující <a href="http://www.nutrishop.cz/akce-tydne-c6?utm_source=mail_newsletter6_kliknete">odkaz</a>.<br />
+<strong>Výběr z produktů</strong>, které Vám nabízíme za akční ceny si můžete <strong>zobrazit kliknutím</strong> na následující <a href="http://www.' . CUST_ROOT . '/akce-tydne-c6?utm_source=mail_newsletter6_kliknete">odkaz</a>.<br />
 <br />
 Zde je jejich seznam:<br />
  ' . $this->create_body($id) . '<br />
 Nákup za akční ceny lze uskutečnit pouze v případě, že se před odesláním objednávky přihlásíte ke svému zákaznickému účtu.<br />
 <br />
 S přáním příjemně stráveného zbytku léta<br /><br />
-zdraví team obchodu NutriShop.cz<br />
-<a href="http://www.nutrishop.cz/?utm_source=mail_newsletter6_paticka">www.nutrishop.cz</a>
+zdraví team obchodu ' . CUST_NAME . '<br />
+<a href="http://www.' . CUST_ROOT . '/?utm_source=mail_newsletter6_paticka">www.' . CUST_ROOT . '</a>
 </div>';
 
-			$ppm->AltBody = 'http://www.nutrishop.cz/akce-tydne-c6?utm_source=mail_newsletter6_altbody';			
+			$ppm->AltBody = 'http://www.' . CUST_ROOT . '/akce-tydne-c6?utm_source=mail_newsletter6_altbody';			
 			$ppm->IsHTML = true;
 
 			$recipients = $this->recipients($id);
 			$poslano = 0;
+			
+			debug($ppm); die();
 
 			foreach ( $recipients as $recipient ){
 				$recipient['Customer']['email'] = trim($recipient['Customer']['email']);

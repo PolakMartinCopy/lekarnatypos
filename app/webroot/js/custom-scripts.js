@@ -9,5 +9,11 @@
         $(".intro-video").find('iframe').show();
         $('.intro-video').find('iframe').attr('src', src);
     });
+    
+	$('#seeMoreCategoriesList').hide();
+	$('#seeMoreCategoriesLink').click(function(e) {
+		e.preventDefault();
+		$('#seeMoreCategoriesList').toggle();
+	});
 
 });

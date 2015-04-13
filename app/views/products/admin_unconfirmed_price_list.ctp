@@ -1,4 +1,4 @@
-<h1>Produkty s nepotvrzenou cenou</h1>
+﻿<h1>Produkty s nepotvrzenou cenou</h1>
 
 <?php echo $form->create('Product', array('url' => array('controller' => 'products', 'action' => 'unconfirmed_price_list')))?>
 <table class="topHeading" cellpadding="5" cellspacing="3">

@@ -2,9 +2,17 @@
 class RelatedProduct extends AppModel{
 	var $name = 'RelatedProduct';
 	
-	var $actsAs = array('Containable');
+	var $actsAs = array(
+		'Containable',
+		'Ordered' => array(
+			'field' => 'order',
+			'foreign_key' => 'product_id'
+		)
+	);
 	
 	var $belongsTo = array('Product');
+	
+	var $order = array('RelatedProduct.order' => 'asc');
 	
 	function get_list($id){
 		$related_products = $this->find('all', array(

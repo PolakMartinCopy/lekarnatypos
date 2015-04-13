@@ -1,69 +1,86 @@
-<div class="product-list favorite-products">
-    <div class="product-list-headline">Produkty</div>
-    <div class="item">
-        <ul class="clearfix">
-<?php		foreach ($products as $product) {
-				$image = '/img/na_250_250.jpg';
-				if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
-					$path = 'product-images/medium/' . $product['Image'][0]['name'];
-					//				if (file_exists($path) && is_file($path) && getimagesize($path)) {
-					$image = '/' . $path;
-					//				}
-				}   
+﻿<?
+	foreach ( $products as $product ){
 ?>
-            <li><?php 
-            	$options = array(
-					'product_url' => $product['Product']['url'],
-            		'product_name' => $product['Product']['name'],
-					'product_price' => $product['Product']['discount_price'],
-					'image' => $image,
-					'product_description' => $product['Product']['short_description']	
-				);
-				echo $this->element('product_box', $options);
-            ?></li>
-		<?php } ?>
-		</ul>
-	</div>
-</div>
-<?
-if (false) {
-$i = 0;
-foreach ($products as $product) {
-	$main_image = array();
-	// element pouzivam pro vykreslovani produktu v kategoriich
-	if (!empty($product['Product']['Image'])) {
-		$main_image = $product['Product']['Image'][0];
-	// i vysledku vyhledavani, proto tato rozboceni
-	} elseif (!empty($product['Image'])) {
-		$main_image = $product['Image'][0];
-	}
 
-	$availability_name = '';
-	$availability_allowed = null;
-	if (!empty($product['Product']['Availability'])) {
-		$availability_name = $product['Product']['Availability']['name'];
-		$availability_allowed = $product['Product']['Availability']['cart_allowed'];
-	} elseif (!empty($product['Availability'])) {
-		$availability_name = $product['Availability']['name'];
-		$availability_allowed = $product['Availability']['cart_allowed'];
+	<div class="productBox">
+		<h2><?=$html->link($product['Product']['name'], '/' . $product['Product']['url'], array('escape' => false), false);?></h2>
+		<div class="imageBox">
+			<div class="topShadow"></div>
+			<div class="shadow">
+				<table>
+					<tr>
+						<td align="center" valign="middle" style="height:100px;width:114px;">
+				<? if (!empty($product['Product']['Image'])) {
+					// zjistim hlavni obrazek
+					$main_image = $product['Product']['Image'][0];
+					foreach ($product['Product']['Image'] as $image) {
+						if ($image['is_main']) {
+							$main_image = $image;
+							break;
+						}
+					}
+					?>
+
+				<a href="/<?=$product['Product']['url']?>"><img src="/product-images/small/<?=$main_image['name']?>" alt="" /></a>
+
+				<?
+					} else {
+				?>
+					<img src="/product-images/small/na.gif" alt="" />
+				<?
+					}
+				?>
+
+						</td>
+					</tr>
+				</table>
+
+			</div>
+			<div class="bottomShadow"></div>
+			<?
+				if ( $product['Product']['discount_price'] < $product['Product']['retail_price_with_dph'] ){
+			?>
+					<span class="old_price"><?=$product['Product']['retail_price_with_dph']?> Kč</span><br />
+           			<span class="price"><?=$product['Product']['discount_price']?> Kč</span>
+           			<?
+           				if ( !$session->check('Customer.id') ){
+           			?>
+							<br /><span style="font-size:9px;"><a href="/slevy-sportovni-vyziva.htm" style="font-size:9px;">chcete lepší cenu?</a></span>
+           			<?
+           				}	
+				} else {
+			?>
+					<span class="price"><?=$product['Product']['retail_price_with_dph']?> Kč</span>
+			<?
+				}
+			?>
+		</div>
+
+		<div class="detailBox">
+			<div class="manufacturer">Výrobce: <?=$product['Product']['Manufacturer']['name']?></div>
+		</div>
+		<p><?=$product['Product']['short_description']?></p>
+		<div class="buyBox">
+				<?	
+					if ( $product['Product']['Availability']['cart_allowed'] == '1' ){
+				?>
+						počet kusů
+						<?=$form->Create(array('url' => array('controller' => 'products', 'action' => 'view', $product['Product']['id']), 'id' => 'addP' . $product['Product']['id']));?>
+						<div style="display:inline">
+							<input name="data[Product][quantity]" class="quantity" value="1" type="text" />
+							<input style="display:inline" type="submit" class="buyNow" value="Koupit" />
+							<input type="hidden" name="data[Product][id]" value="<?=$product['Product']['id']?>" />
+						</div>
+						<?=$form->end() ?>
+				<?
+					} else {
+						echo '<span>Produkt nyní nelze objednat kvůli nedostupnosti.</span>';
+					}
+				?>
+			<a href="/<?=$product['Product']['url']?>">Zobrazit detaily</a>
+		</div>						
+		<div style="clear:both"></div>
+	</div>
+<?
 	}
 ?>
-	<div class="product_listing <?php echo ($i % 3 == 0 ? ' first' : '')?>">
-<?php  	if (!empty($main_image)) {?>
-		<a href="/<?php echo $product['Product']['url']?>">
-			<img src="/product-images/medium/<?php echo $main_image['name']?>" width="210px" height="210px" alt="produkt <?php echo $product['Product']['name']?>" />
-		</a>
-<?php 	} ?>
-		<h3><a href="/<?php echo $product['Product']['url']?>"><?php echo $product['Product']['name']?></a></h3>
-		<p class="description"><?php echo $product['Product']['short_description']?></p>
-		<?php if ($availability_allowed) { ?>
-		<a href="/<?php echo $product['Product']['url']?>" class="buy_now">KOUPIT ZA <?php echo round($product['Product']['discount_price'])?>,-</a>
-		<?php } else { ?>
-		<div class="buy_now">NELZE OBJEDNAT</div>
-		<?php } ?>
-		<p class="availability"><?php echo $availability_name?></p>
-	</div>
-<?php 
-	$i++;
-} 
-}?>

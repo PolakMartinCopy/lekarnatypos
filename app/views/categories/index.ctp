@@ -1,4 +1,4 @@
-<div class="categories">
+﻿<div class="categories">
 <h2><?php __('Categories');?></h2>
 <table cellpadding="0" cellspacing="0">
 <tr>

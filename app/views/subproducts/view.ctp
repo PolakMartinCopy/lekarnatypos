@@ -1,4 +1,4 @@
-<div class="subproduct">
+﻿<div class="subproduct">
 <h2><?php  __('Subproduct');?></h2>
 	<dl>
 		<dt class="altrow"><?php __('Id') ?></dt>

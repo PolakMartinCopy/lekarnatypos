@@ -1,8 +1,76 @@
 <?php
 class Product extends AppModel {
+
 	var $name = 'Product';
 	
 	var $actsAs = array('Containable');
+	
+	var $hasAndBelongsToMany = array(
+		'Cart' => array('className' => 'Cart'),
+		'Flag' => array('className' => 'Flag')
+	);
+
+	var $hasMany = array(
+		'Subproduct' => array(
+			'dependent' => true
+		),
+		'Image' =>array(
+			'dependent' => true
+		),
+		'ProductDocument' => array(
+			'dependent' => true	
+		),
+		'CartsProduct' => array(
+			'dependent' => true
+		),
+		'Comment' => array(
+			'dependent' => true
+		),
+		'CategoriesProduct' => array(
+			'dependent' => true
+		),
+		'RelatedProduct' => array(
+			'dependent' => true
+		),
+		'CustomerTypeProductPrice' => array(
+			'dependent' => true
+		),
+		'RecommendedProduct' => array(
+			'dependent' => true
+		),
+		'OrderedProduct',
+		'ComparatorProductClickPrice' => array(
+			'dependent' => true
+		),
+		'CategoriesMostSoldProduct' => array(
+			'dependent' => true
+		),
+		'MostSoldProduct' => array(
+			'dependent' => true
+		),
+		'DiscountedProduct' => array(
+			'dependent' => true
+		)
+	);
+
+	var $belongsTo = array(
+		'Manufacturer' => array('className' => 'Manufacturer',
+			'foreignKey' => 'manufacturer_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'counterCache' => ''),
+		'TaxClass' => array('className' => 'TaxClass',
+			'foreignKey' => 'tax_class_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'counterCache' => ''),
+		'Availability',
+		'ProductType'
+	);
+	
+	var $order = array('Product.active' => 'desc', 'Product.priority' => 'asc');
 	
 	var $validate = array(
 		'name' => array(
@@ -17,68 +85,105 @@ class Product extends AppModel {
 			'rule' => array('minLength', 1),
 			'message' => 'Cena produktu musí být vyplněna!'
 		),
-	);
-
-	var $hasAndBelongsToMany = array(
-		'Cart' => array('className' => 'Cart'),
-		'Flag' => array('className' => 'Flag')
-	);
-
-	var $hasMany = array(
-		'Subproduct' => array(
-			'className' => 'Subproduct'
+		'tax_class_id' => array(
+			'rule' => array('minLength', 1),
+			'message' => 'Není vybrána žádná daňová třída!'
 		),
-		'Image' =>array(
-			'className' => 'Image'
-		),
-		'CartsProduct' => array(
-			'className' => 'CartsProduct'
-		),
-		'Comment' => array(
-			'className' => 'Comment'
-		),
-		'CategoriesProduct' => array(
-			'dependent' => true
-		),
-		'RelatedProduct' => array(
-			'dependent' => true
-		),
-		'RequestForm' => array(
-			'dependent' => true
-		),
-		'CategoriesMostSoldProduct' => array(
-			'dependent' => true
-		),
-		'NewslettersProduct' => array(
-			'dependent' => true
-		)
-	);
-
-	var $belongsTo = array(
-		'Manufacturer',
-		'TaxClass',
-		'Availability',
-		'ProductType',
-		'Supplier'
+/*		'ean' => array(
+			'length13' => array(
+				'rule' => array('between', 12, 13),
+				'message' => 'EAN musí mít 13 znaků',
+				'allowEmpty' => true
+			)
+		) */
 	);
 	
+	var $price = 'FLOOR(IF(CustomerTypeProductPrice.price, CustomerTypeProductPrice.price, IF(Product.discount_common, Product.discount_common, Product.retail_price_with_dph)))';
+	
+	var $virtualFields = array(
+		'rate' => 'ROUND(COALESCE(Product.overall_rate / Product.voted_count))'	
+	);
+	
+	var $product_types = null;
+	
+	var $sorting_options = array(0 => 'Doporučujeme', 'Nejprodávánější', 'Nejlevnější', 'Nejdražší', 'Abecedy');
+	
+	function __construct() {
+		parent::__construct();
+		$this->product_types = $this->ProductType->find('list', array(
+			'fields' => array('ProductType.id', 'ProductType.text')
+		));
+	}
+	
+	function beforeValidate() {
+		// udelam si kontrolu, jestli je vyplneny titulek a url
+		if (array_key_exists('title', $this->data['Product']) && empty($this->data['Product']['title'])){
+			$this->data['Product']['title'] = $this->data['Product']['name'];
+		}
+		// zkontroluju, jestli jsou vyplnene heading, breadcrumb, zbozi a related name
+		if (array_key_exists('heading', $this->data['Product']) && empty($this->data['Product']['heading'])) {
+			$this->data['Product']['heading'] = $this->data['Product']['name'];
+		}
+		if (array_key_exists('breadcrumb', $this->data['Product']) && empty($this->data['Product']['breadcrumb'])) {
+			$this->data['Product']['breadcrumb'] = $this->data['Product']['name'];
+		}
+		if (array_key_exists('related_name', $this->data['Product']) && empty($this->data['Product']['related_name'])) {
+			$this->data['Product']['related_name'] = $this->data['Product']['name'];
+		}
+		if (array_key_exists('zbozi_name', $this->data['Product']) && empty($this->data['Product']['zbozi_name'])) {
+			$this->data['Product']['zbozi_name'] = $this->data['Product']['name'];
+		}
+		if (array_key_exists('heureka_name', $this->data['Product']) && empty($this->data['Product']['heureka_name'])) {
+			$this->data['Product']['heureka_name'] = $this->data['Product']['name'];
+		}
+	}
+	
 	function beforeSave() {
-		// sprava volby zobrazeni skupiny, ean, sukl atd...
-		// pokud neni zaskrtnuty checkbox potvrzujici, ze chci data zobrazit v detailu, odpovidajici data odnastavim
-		$fields = array('product_type_id', 'code', 'ean', 'sukl', 'group');
-		foreach ($fields as $field) {
-			if (isset($this->data['Product']['show_' . $field]) && !$this->data['Product']['show_' . $field] && isset($this->data['Product'][$field])) {
-				$this->data['Product'][$field] = null;
-			}
-			
-			if (array_key_exists($field, $this->data['Product']) && $this->data['Product'][$field] == '') {
-				$this->data['Product'][$field] = null;
+		// uprava pole s cenou, aby se mohlo vkladat take s desetinnou carkou
+		if (array_key_exists('retail_price_with_dph', $this->data['Product'])) {
+			$this->data['Product']['retail_price_with_dph'] = str_replace(',', '.', $this->data['Product']['retail_price_with_dph']);
+			$this->data['Product']['retail_price_with_dph'] = floatval($this->data['Product']['retail_price_with_dph']);
+		}
+		if (!empty($this->data['Product']['discount_common'])) {
+			$this->data['Product']['discount_common'] = floatval(str_replace(',', '.', $this->data['Product']['discount_common']));
+		}
+		if (array_key_exists('CustomerTypeProductPrice', $this->data)) {
+			foreach ($this->data['CustomerTypeProductPrice'] as &$ctpp) {
+				$ctpp['price'] = str_replace(',', '.', $ctpp);
+				$ctpp['price'] = floatval($ctpp);
 			}
 		}
-
+		
 		return true;
 	}
-
+	
+	function afterSave($created) {
+		if ($created) {
+			// vygeneruju url
+			if ($url = $this->buildUrl($this->data)) {
+				$product = array(
+					'Product' => array(
+						'id' => $this->id,
+						'url' => $url
+					)
+				);
+				return $this->save($product);
+			} else {
+				return false;
+			}
+		}
+	
+		return true;
+	}
+	
+	function buildUrl($product) {
+		if (isset($product['Product']['name']) && isset($this->id)) {
+			return strip_diacritic($product['Product']['name']) . '-p' . $this->id;
+		}
+		trigger_error('Nejsou potrebna data k vytvoreni url produktu', E_USER_ERROR);
+		return false;
+	}
+	
 	function assign_discount_price($product){
 		App::import('Helper', 'Session');
 		$this->Session = new SessionHelper;
@@ -91,11 +196,35 @@ class Product extends AppModel {
 		}
 		
 		// jestlize je uzivatel prihlaseny
-		if ($this->Session->check('Customer') && !$this->Session->check('Customer.noreg')) {
-			// podivam se, jestli je zadana sleva pro prihlasene a je mensi, nez obecna sleva
-			if ($product['Product']['discount_member'] > 0 && $product['Product']['discount_member'] < $discount_price) {
-				// kdyz jo, tak ji dam jako vyslednou slevu
-				$discount_price = $product['Product']['discount_member'];
+		if ($this->Session->check('Customer')) {
+			// zjistim, jestli je pro dany typ uzivatele zadana sleva produktu a pokud ano, jestli je mensi, nez sleva obecna
+			$customer = $this->Session->read('Customer');
+			// pokud ma uzivatel prirazeny customer_type
+			if (isset($customer['customer_type_id'])) {
+				// najdu typ daneho customera, abych podle poradi typu mohl vzit nejblizsi vyssi slevu 
+				$customer_type = $this->CustomerTypeProductPrice->CustomerType->find('first', array(
+					'conditions' => array('CustomerType.id' => $customer['customer_type_id']),
+					'contain' => array(),
+					'fields' => array('CustomerType.order')
+				));
+				
+				// najdu cenu produktu, ktera odpovida dane skupine customeru (nebo nejblizsi slevu v hierarchii typu smerem dolu)
+				$discount = $this->CustomerTypeProductPrice->find('first', array(
+					'conditions' => array(
+						'CustomerType.order <=' => $customer_type['CustomerType']['order'],
+						'CustomerTypeProductPrice.product_id' => $product['Product']['id'],
+						'CustomerTypeProductPrice.price IS NOT NULL'
+					),
+					'contain' => array('CustomerType'),
+					'fields' => array('CustomerTypeProductPrice.price'),
+					'order' => array('CustomerType.order' => 'desc')
+				));
+	
+				// podivam se, jestli je zadana sleva pro prihlasene a je mensi, nez obecna sleva
+				if (!empty($discount) && $discount['CustomerTypeProductPrice']['price'] && $discount['CustomerTypeProductPrice']['price'] > 0 && $discount['CustomerTypeProductPrice']['price'] < $discount_price) {
+					// kdyz jo, tak ji dam jako vyslednou slevu
+					$discount_price = $discount['CustomerTypeProductPrice']['price'];
+				}
 			}
 		}
 		
@@ -113,33 +242,33 @@ class Product extends AppModel {
 					while ( file_exists('product-images/' . $image_name[0] . '_' . $i . '.jpg') ){
 						$i = $i + 1;
 					}
-					
+						
 					// vim jake muzu dat nove jmeno obrazku
 					// obstaram na disku kopii obrazku
 					if ( !copy('product-images/' . $image['name'], 'product-images/' . $image_name[0] . '_' . $i . '.jpg') ){
 						return 'Nepodařilo se zkopírovat obrázek ' . $image['name'] . ' do ' . $image_name[0] . '_' . $i . '.jpg';
 					}
-					
+						
 					if ( !copy('product-images/small/' . $image['name'], 'product-images/small/' . $image_name[0] . '_' . $i . '.jpg') ){
 						return 'Nepodařilo se zkopírovat SMALL obrázek ' . $image['name'] . ' do ' . $image_name[0] . '_' . $i . '.jpg';
 					}
-					
+						
 					if ( !copy('product-images/medium/' . $image['name'], 'product-images/medium/' . $image_name[0] . '_' . $i . '.jpg') ){
 						return 'Nepodařilo se zkopírovat MEDIUM obrázek ' . $image['name'] . ' do ' . $image_name[0] . '_' . $i . '.jpg';
 					}
 				} else {
 					return 'Nepodařilo se nalézt obrázek ' . $image['name'] . ' na disku.';
 				}
-
+	
 				// vyresetuju si ID obrazku
 				unset($this->Image->id);
-
+	
 				$new_image_data = array(
 					'name' => $image_name[0] . '_' . $i . '.jpg',
 					'product_id' => $new_product_id,
 					'is_main' => $image['is_main']
 				);
-				
+	
 				if ( !$this->Image->save($new_image_data) ){
 					return 'Nepodařilo se uložit nový obrázek ' . $new_image_data['name'] . ' do databáze.';
 				}
@@ -246,90 +375,6 @@ class Product extends AppModel {
 		return $res;
 	}
 	
-	function newest() {
-		$products = $this->find('all', array(
-			'order' => array('created' => 'desc'),
-			'limit' => 10,
-			'fields' => array('id', 'created'),
-			'recursive' => -1
-		));
-		$index = rand(0, 9);
-
-		$newest_product = $this->find('first', array(
-			'conditions' => array('Product.id' =>  $products[$index]['Product']['id']),
-			'contain' => array('Image')
-		));
-		
-		// vyhledam si cenu, zda neni zlevnen
-		$newest_product['Product']['discount_price'] = $this->assign_discount_price($newest_product);
-		return array('newest_product' => $newest_product);
-	}
-	
-	function get_list($id = null){
-		// option nese informaci o tom, ktery seznam chceme publikovat
-		switch ( $id ){
-			case "most_sold":
-				// seznam nejprodavanejsich produktu
-				$most_sold = $this->find('all', array(
-					'conditions' => array('Product.most_sold' => true, 'active' => true),
-					'contain' => array(),
-					'fields' => array('id')
-				));
-				$list = Set::extract('/Product/id', $most_sold);
-			break;
-			case "suggested":
-				// seznam doporucenych produktu
-				$recomended = $this->find('all', array(
-					'conditions' => array('Product.recomended' => true, 'active' => true),
-					'contain' => array(),
-					'fields' => array('id')
-				));
-				$list = Set::extract('/Product/id', $recomended);
-			break;
-			case "newest":
-				// seznam doporucenych produktu
-				$newest = $this->find('all', array(
-					'conditions' => array('Product.newest' => true, 'active' => true),
-					'contain' => array(),
-					'fields' => array('id')
-				));
-				$list = Set::extract('/Product/id', $newest);
-			break;
-			
-		}
-
-		// seznam vlozim do podminek
-		$conditions = array(
-			'Product.id' => $list,
-		);
-		
-		// vyhledam si produkty
-		$products = $this->find('all', array(
-			'conditions' => $conditions,
-			'contain' => array(
-				'Image' => array(
-					'conditions' => array('is_main' => '1')
-				)
-			),
-			'fields' => array(
-				'Product.id',
-				'Product.name',
-				'Product.url',
-//				'Product.description',
-				'Product.retail_price_with_dph',
-				'Product.discount_common',
-				'Product.discount_member'
-			)
-		));
-		
-		// priradim k nim zlevnene ceny, pokud nejake jsou
-		$count = count($products);
-		for ( $i = 0; $i < $count; $i++ ){
-			$products[$i]['Product']['discount_price'] = $this->assign_discount_price($products[$i]);
-		}
-		return $products;
-	}
-	
 	function sort_by_price($products, $direction){
 		function sort_by_final_price_desc($a, $b){
 			$a_final_price = $a['Product']['retail_price_with_dph'];
@@ -363,20 +408,398 @@ class Product extends AppModel {
 		return $products;
 	}
 	
-	function sort_products($products, $subject, $direction) {
-		if ($subject == 'price') {
-			$products = $this->sort_by_price($products, '_' . $direction);
+	/**
+	 * Updatuje zasobnik v minulosti navstivenych produktu
+	 * @param array $stack
+	 * @param int $product_id
+	 * @return multitype:array
+	 */
+	function update_stack($stack, $product_id) {
+		// v zasobniku muze byt max 7 produktu
+		$stack_size = 7;
+		// najdu produkt, ktery zakaznik navstivil
+		$product = $this->find('first', array(
+			'conditions' => array('Product.id' => $product_id),
+			'contain' => array(),
+			'fields' => array('Product.id', 'Product.name', 'Product.url')
+		));
+		if (!empty($product)) {
+			// pokud uz zakaznik ma neco v zasobniku navstivenych produktu
+			if ($stack) {
+				// pokud jiz mam v zasobniku prave navstiveny produkt, vypustim ho
+				$filter_func = function($element) use ($product_id) {
+					return $element['Product']['id'] != $product_id;
+				};
+				$stack = array_filter($stack, $filter_func);
+
+				// pridam prave navstiveny produkt na zacatek
+				array_unshift($stack, $product);
+				
+				// vypustim vsechny produkty na konci zasobniku, aby jeho velikost byla max $stack_size
+				$stack = array_slice($stack, 0, $stack_size);
+			} else {
+				// jinak vytvorim zasobnik, kde bude navstiveny produkt nahore
+				$stack = array(0 => $product);
+			}
+		}
+		return $stack;
+	}
+	
+	/**
+	 * Vrati 4 nejvice prodavane produkty k zadanemu
+	 * @param int $id
+	 */
+	function similar_products($id, $customer_type_id) {
+		// idcka kategorii, ktere chci vyloucit
+		$categories_products_conditions = '';
+		if (!empty($category_ids)) {
+			$categories_products_conditions = ' AND CategoriesProduct.category_id NOT IN (' . implode(',', $category_ids) . ')';
 		}
 		
+		$products = $this->OrderedProduct->find('all', array(
+			'conditions' => array('OrderedProduct.product_id' => $id),
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.url',
+				$this->price . ' AS price',
+				'Product.retail_price_with_dph',
+				'SUM(OtherOrderedProduct.product_quantity) AS ordered_quantity',
+				'Image.id',
+				'Image.name',
+				'CategoriesProduct.*'
+			),
+			'joins' => array(
+				array(
+					'table' => 'orders',
+					'alias' => 'Order',
+					'type' => 'INNER',
+					'conditions' => array('Order.id = OrderedProduct.order_id')
+				),
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OtherOrderedProduct',
+					'type' => 'INNER',
+					'conditions' => array('Order.id = OtherOrderedProduct.order_id AND OtherOrderedProduct.product_id != OrderedProduct.product_id')
+				),
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = OtherOrderedProduct.product_id AND Product.active = 1')
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = Image.product_id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+				array(
+					'table' => 'categories_products',
+					'alias' => 'CategoriesProduct',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CategoriesProduct.product_id' . $categories_products_conditions)
+				)
+			),
+			'group' => array('OtherOrderedProduct.product_id'),
+			'order' => array('ordered_quantity' => 'desc'),
+			'limit' => 4
+		));
+
 		return $products;
+	}
+	
+	function right_sidebar_products($id, $customer_type_id) {
+		$product = $this->find('first', array(
+			'conditions' => array('Product.id' => $id),
+			'contain' => array('CategoriesProduct'),
+			'fields' => array('Product.id')	
+		));
+		
+		$products = array();
+		if (!empty($product['CategoriesProduct'])) {
+			$products = $this->find('all', array(
+				'conditions' => array(
+					'Product.active' => true,
+					'CategoriesProduct.category_id' => $product['CategoriesProduct'][0]['category_id'],
+					'Availability.cart_allowed' => true,
+					'Product.id !=' => $product['Product']['id']
+				),
+				'contain' => array(),
+				'joins' => array(
+					array(
+						'table' => 'categories_products',
+						'alias' => 'CategoriesProduct',
+						'type' => 'INNER',
+						'conditions' => array('Product.id = CategoriesProduct.product_id')
+					),
+					array(
+						'table' => 'availabilities',
+						'alias' => 'Availability',
+						'type' => 'INNER',
+						'conditions' => array('Product.availability_id = Availability.id')
+					),
+					array(
+						'table' => 'images',
+						'alias' => 'Image',
+						'type' => 'INNER',
+						'conditions' => array('Product.id = Image.product_id AND Image.is_main = 1')
+					),
+					array(
+						'table' => 'customer_type_product_prices',
+						'alias' => 'CustomerTypeProductPrice',
+						'type' => 'LEFT',
+						'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+					)
+				),
+				'fields' => array(
+					'Product.id',
+					'Product.name',
+					$this->price . ' AS price',
+					'Product.url',
+					'Product.retail_price_with_dph',
+					'Image.id',
+					'Image.name'
+				),
+				'limit' => 3
+			));
+		}
+		return $products;
+	}
+	
+	function paginateCount($conditions, $recursive, $extra) {
+		$parameters = compact('conditions');
+		if ($recursive != $this->recursive) {
+			$parameters['recursive'] = $recursive;
+		}
+		$parameters = array_merge($parameters, $extra);
+		$parameters['fields'] = array('id');
+		$count = $this->find('all', $parameters);
+		return count($count);
+	}
+	
+	function redirect_url($url) {
+		$redirect_url = '/';
+		// zjistim na co chci presmerovat
+		// odstranim cast adresy, ktera mi urcuje, ze se jedna o produkt
+		if (preg_match('/^\/product\//', $url)) {
+			$pattern = preg_replace('/^\/product\//', '', $url);
+			
+			// vytahnu si id produktu na sportnutritionu
+			if (preg_match('/^[^:]+:(\d+)/', $pattern, $matches)) {
+				$sn_id = $matches[1];
+			}
+		} elseif (preg_match('/^\/produkty-id\/(\d+)/', $url, $matches)) {
+			$sn_id = $matches[1];
+		}
+
+		if (isset($sn_id) && !empty($sn_id)) {
+			// najdu nas produkt odpovidajici sn adrese
+			$product = $this->find('first', array(
+				'conditions' => array('Product.id' => $sn_id),
+				'contain' => array(),
+				'fields' => array('Product.id', 'Product.url')
+			));
+			if (!empty($product)) {
+				// vratim url pro presmerovani
+				$redirect_url = $product['Product']['url'];
+			}
+		}
+
+		return $redirect_url;
+	}
+	
+	function get_list($id = null){
+		// option nese informaci o tom, ktery seznam chceme publikovat
+		switch ( $id ){
+			case "most_sold":
+				// seznam nejprodavanejsich produktu
+				$most_sold = $this->MostSoldProduct->find('all', array(
+					'conditions' => array('Product.active' => true),
+					'contain' => array('Product'),
+					'fields' => array('Product.id')
+				));
+				$list = Set::extract('/Product/id', $most_sold);
+				break;
+			case "suggested":
+				// seznam doporucenych produktu
+				$recomended = $this->RecommendedProduct->find('all', array(
+					'conditions' => array('Product.active' => true),
+					'contain' => array('Product'),
+					'fields' => array('Product.id')
+				));
+				$list = Set::extract('/Product/id', $recomended);
+				break;
+			case "newest":
+				// seznam doporucenych produktu
+				$newest = $this->DiscountedProduct->find('all', array(
+					'conditions' => array('Product.active' => true),
+					'contain' => array(),
+					'fields' => array('Product.id')
+				));
+				$list = Set::extract('/Product/id', $newest);
+				break;
+					
+		}
+	
+		// seznam vlozim do podminek
+		$conditions = array(
+			'Product.id' => $list,
+		);
+	
+		$this->virtualFields['price'] = $this->price;
+		// vyhledam si produkty
+		$products = $this->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(
+				'Image' => array(
+						'conditions' => array('is_main' => '1')
+				)
+			),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.url',
+				'Product.price',
+			)
+		));
+		unset($this->virtualFields['price']);
+	
+		return $products;
+	}
+	
+	/*
+	 * Natahne sportnutrition data
+	*/
+	function import() {
+		$this->truncate();
+		$this->CustomerTypeProductPrice->truncate();
+		// vyprazdnim tabulku
+		$snProducts = $this->findAllSn();
+		foreach ($snProducts as $snProduct) {
+			$product = $this->transformSn($snProduct);
+			$this->create();
+			if (!$this->saveAll($product)) {
+				debug($product);
+				debug($this->validationErrors);
+				$this->saveAll($product, false);
+			}
+		}
+		return true;
+	}
+	
+	function findAllSn($condition = null) {
+		$this->setDataSource('admin');
+		$query = '
+			SELECT *
+			FROM products AS SnProduct
+		';
+		if ($condition) {
+			$query .= '
+				WHERE ' . $condition . '
+			';
+		}
+		$snProducts = $this->query($query);
+		$this->setDataSource('default');
+		return $snProducts;
+	}
+	
+	function findBySnId($snId) {
+		$product = $this->find('first', array(
+			'conditions' => array('Product.id' => $snId),
+			'contain' => array()
+		));
+	
+		return $product;
+	}
+	
+	function transformSn($snProduct) {
+		$availability = $this->Availability->findBySnId($snProduct['SnProduct']['availability_id']);
+		$availability_id = 1;
+		if (!empty($availability)) {
+			$availability_id = $availability['Availability']['id'];
+		}
+		
+		$product = array(
+			'Product' => array(
+				'id' => $snProduct['SnProduct']['id'],
+				'name' => $snProduct['SnProduct']['name'],
+				'heading' => $snProduct['SnProduct']['heading'],
+				'breadcrumb' => $snProduct['SnProduct']['breadcrumb'],
+				'related_name' => $snProduct['SnProduct']['related_name'],
+				'zbozi_name' => $snProduct['SnProduct']['zbozi_name'],
+				'heureka_name' => $snProduct['SnProduct']['zbozi_name'],
+				'title' => $snProduct['SnProduct']['title'],
+				'short_description' => $snProduct['SnProduct']['short_description'],
+				'description' => $snProduct['SnProduct']['description'],
+				'ean' => $snProduct['SnProduct']['ean'],
+				'retail_price_with_dph' => $snProduct['SnProduct']['retail_price_with_dph'],
+				'discount_common' => $snProduct['SnProduct']['discount_common'],
+				'url' => $snProduct['SnProduct']['url'],
+				'active' => $snProduct['SnProduct']['active'],
+				'feed' => 1,
+				'product_type_id' => $snProduct['SnProduct']['product_type_id'],
+				'code' => $snProduct['SnProduct']['code'],
+				'sukl' => $snProduct['SnProduct']['sukl'],
+				'group' => $snProduct['SnProduct']['group'],
+				'tax_class_id' => $snProduct['SnProduct']['tax_class_id'],
+				'manufacturer_id' => $snProduct['SnProduct']['manufacturer_id'],
+				'availability_id' => $availability_id,
+				'supplier_id' => $snProduct['SnProduct']['supplier_id'],
+				'supplier_product_id' => $snProduct['SnProduct']['supplier_product_id'],
+				'supplier_category_id' => $snProduct['SnProduct']['supplier_category_id'],
+			),
+			'CustomerTypeProductPrice' => array(
+				array(
+					'customer_type_id' => 1,
+					'price' => $snProduct['SnProduct']['discount_common'],
+				),
+				array(
+					'customer_type_id' => 2,
+					'price' => $snProduct['SnProduct']['discount_common'],
+				),
+				array(
+					'customer_type_id' => 3,
+					'price' => $snProduct['SnProduct']['discount_common'],
+				),
+				array(
+					'customer_type_id' => 4,
+					'price' => $snProduct['SnProduct']['discount_common'],
+				),
+				array(
+					'customer_type_id' => 5,
+					'price' => $snProduct['SnProduct']['discount_common'],
+				),
+				array(
+					'customer_type_id' => 6,
+					'price' => $snProduct['SnProduct']['discount_common'],
+				)
+			)
+		);
+
+		return $product;
+	}
+	
+	function get_action_products($customer_type_id, $limit = 3) {
+		// nejprodavanejsi produkty
+		$category_most_sold = $this->CategoriesProduct->Category->most_sold_products(5, $customer_type_id, $limit);
+
+		return $category_most_sold;
 	}
 	
 	function image_name($name, $suffix = 'jpg') {
 		if (is_numeric($name)) {
 			$product = $this->find('first', array(
-				'conditions' => array('Product.id' => $name),
-				'contain' => array(),
-				'fields' => array('Product.name')	
+					'conditions' => array('Product.id' => $name),
+					'contain' => array(),
+					'fields' => array('Product.name')
 			));
 			$name = $product['Product']['name'];
 		}

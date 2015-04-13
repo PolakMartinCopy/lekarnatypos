@@ -30,7 +30,7 @@ class OrderedProductsController extends AppController {
 		
 		// neni-li povoleno editovat, odeslu na detail objednavky a vypisu hlasku
 		if ( !in_array($order['Order']['status_id'], $allowed_edit_statuses) AND $this->Session->read('Administrator.id') != 3 ){
-			$this->Session->setFlash('Objednávka je ve stavu, který nepovoluje její editaci.');
+			$this->Session->setFlash('Objednávka je ve stavu, který nepovoluje její editaci.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'orders', 'action' => 'view', $id), null, true);
 		}
 		
@@ -39,8 +39,7 @@ class OrderedProductsController extends AppController {
 				// pridavam produkt do objednavky
 				case "add_product":
 					foreach ( $this->data['OrderedProduct'] as $product ){
-						if ( isset($product['add_it']) && $product['add_it'] == 'přidat'  ){
-
+						if (isset($product['add_it']) && $product['add_it'] == 'přidat') {
 							// zkontroluju, jestli nebyla zadana custom cena
 							// a prepisu ji, pokud ano
 							if ( isset($product['custom_price']) && !empty($product['custom_price']) ){
@@ -84,17 +83,19 @@ class OrderedProductsController extends AppController {
 										// zvysuju pocet
 										$this->OrderedProduct->id = $p2['OrderedProduct']['id'];
 										$this->OrderedProduct->save($data, false, array('product_quantity'));
-										$this->Session->setFlash('Množství produktů bylo upraveno.');
+										$this->Session->setFlash('Množství produktů bylo upraveno.', REDESIGN_PATH . 'flash_success');
 										$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id));
 									}
 								}
 							}
+						
 							// sem se dostanu, jen kdyz pridavam novy produkt do objednavky
 							$data = array(
 								'order_id' => $id,
 								'product_id' => $product['product_id'],
 								'product_price_with_dph' => $product['product_price_with_dph'],
-								'product_quantity' => $product['product_quantity']
+								'product_quantity' => $product['product_quantity'],
+								'product_name' => $this->OrderedProduct->generate_product_name($product['product_id'])
 							);
 							$this->OrderedProduct->create();
 							$this->OrderedProduct->save($data, false);
@@ -111,7 +112,7 @@ class OrderedProductsController extends AppController {
 									$this->OrderedProduct->OrderedProductsAttribute->save($ordered_product_attribute, false);
 								}
 							}
-							$this->Session->setFlash('Produkt byl přidán k objednávce.');
+							$this->Session->setFlash('Produkt byl přidán k objednávce.', REDESIGN_PATH . 'flash_success');
 							$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id));
 						}
 					}
@@ -119,7 +120,10 @@ class OrderedProductsController extends AppController {
 				break;
 				case "product_query":
 					$query_products = $this->OrderedProduct->Product->find('all', array(
-						'conditions' => array("Product.name LIKE '%%" . $this->data['OrderedProduct']['query'] . "%%'"),
+						'conditions' => array(
+							"Product.name LIKE '%%" . $this->data['OrderedProduct']['query'] . "%%'",
+							'Product.active' => true
+						),
 						'recursive' => -1
 					));
 					
@@ -137,14 +141,14 @@ class OrderedProductsController extends AppController {
 					$this->OrderedProduct->id = $this->data['OrderedProduct']['id'];
 					$this->OrderedProduct->save($this->data, false, array('product_price_with_dph'));
 					// musim upravit i celkovou cenu objednavky...???
-					$this->Session->setFlash('Cena produktu byla změněna.');
+					$this->Session->setFlash('Cena produktu byla změněna.', REDESIGN_PATH . 'flash_success');
 					$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id), null, true);
 
 				break;
 				case "quantity_change":
 					$this->OrderedProduct->id = $this->data['OrderedProduct']['id'];
 					$this->OrderedProduct->save($this->data, false, array('product_quantity'));
-					$this->Session->setFlash('Množství bylo změněno.');
+					$this->Session->setFlash('Množství bylo změněno.', REDESIGN_PATH . 'flash_success');
 					$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id), null, true);
 				break;
 				case "attributes_change":
@@ -153,7 +157,6 @@ class OrderedProductsController extends AppController {
 
 					// pripravim si data pro ukladani novych atributu
 					foreach ( $this->data['OrderedProduct']['Option'] as $attribute_id ){
-						
 						// nachystam data
 						$ordered_product = array(
 							'OrderedProductsAttribute' => array(
@@ -164,7 +167,7 @@ class OrderedProductsController extends AppController {
 						unset($this->OrderedProduct->OrderedProductsAttribute->id);
 						$this->OrderedProduct->OrderedProductsAttribute->save($ordered_product, false);
 					}
-					$this->Session->setFlash('Atributy byly změněny.');
+					$this->Session->setFlash('Atributy byly změněny.', REDESIGN_PATH . 'flash_success');
 					$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id));
 				break;
 			}
@@ -199,14 +202,23 @@ class OrderedProductsController extends AppController {
 		}
 
 		// vytahnu si list pro select shippings
-		$shipping_choices = $this->OrderedProduct->Order->Shipping->find('list');
+		$shipping_choices = $this->OrderedProduct->Order->Shipping->find('list', array(
+			'conditions' => array('Shipping.active' => true)
+		));
 		$this->set('shipping_choices', $shipping_choices);
+		
+		// vytahnu si list pro select payments
+		$payment_choices = $this->OrderedProduct->Order->Payment->find('list');
+		$this->set('payment_choices', $payment_choices);
 		
 		$this->set('order', $order);
 		$this->set('id', $id);
 		$this->set('products', $products);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
+
 	function sort_by_option_id($a, $b) {
 
 		if ($a['Attribute']['option_id'] == $b['Attribute']['option_id']) {

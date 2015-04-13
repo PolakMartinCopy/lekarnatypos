@@ -1,55 +1,39 @@
-<h2>Editace způsobu dopravy</h2>
+﻿<h2>Nový způsob dopravy</h2>
 <?php echo $form->Create('Shipping')?>
-	<fieldset>
- 		<legend>Způsob dopravy</legend>
-		<table class="leftHeading" cellpadding="5" cellspacing="3">
-			<tr>
-				<th>
-					Název způsobu dopravy
-				</th>
-				<td>
-					<?php echo $form->input('Shipping.name', array('label' => false, 'size' => 80))?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					Cena za dopravu
-				</th>
-				<td>
-					<?php echo $form->input('Shipping.price', array('label' => false, 'size' => 80))?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					Zdarma od
-				</th>
-				<td>
-					<?php echo $form->input('Shipping.free', array('label' => false, 'size' => 80))?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					URL prefix
-				</th>
-				<td>
-					<?php echo $form->input('Shipping.tracker_prefix', array('label' => false, 'size' => 80))?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					URL postfix
-				</th>
-				<td>
-					<?php echo $form->input('Shipping.tracker_postfix', array('label' => false, 'size' => 80))?>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
+<table class="tabulkaedit">
+	<tr class="nutne">
+		<td>Název</td>
+		<td><?php echo $form->input('Shipping.name', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
+		<td>Popis</td>
+		<td><?php echo $this->Form->input('Shipping.description', array('label' => false, 'rows' => 15, 'cols' => 100))?></td>
+	</tr>
+	<tr class="nutne">
+		<td>Cena za dopravu</td>
+		<td><?php echo $form->input('Shipping.price', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
+		<td>Zdarma od</td>
+		<td><?php echo $form->input('Shipping.free', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
+		<td>URL prefix</td>
+		<td><?php echo $form->input('Shipping.tracker_prefix', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
+		<td>URL postfix</td>
+		<td><?php echo $form->input('Shipping.tracker_postfix', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
+		<td>DPH</td>
+		<td><?php echo $form->input('Shipping.tax_class_id', array('label' => false, 'empty' => true))?></td>
+	</tr>
+</table>
+<br/>
 <?
-	echo $form->end('upravit')
+	echo $this->Form->hidden('Shipping.active', array('value' => true));
+	echo $form->submit('Uložit');
+	echo $this->Form->end();
 ?>
-<div class="actions">
-	<ul>
-		<li><?php echo $html->link('Zpět na seznam způsobů dopravy', array('controller' => 'shippings', 'action' => 'index'))?></li>
-	</ul>
-</div>
+<div class="prazdny"></div>

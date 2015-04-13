@@ -1,5 +1,5 @@
-<h2>Detaily kategorie: <?php echo $category['Category']['name']?>(ID:<?php echo $category['Category']['id']?>)</h2>
-<? if ( $category['Category']['id'] != 1 ){
+﻿<h2>Detaily kategorie: <?php echo $category['Category']['name']?>(ID:<?php echo $category['Category']['id']?>)</h2>
+<? if ( $category['Category']['id'] != ROOT_CATEGORY_ID ){
 ?>
 <div class="actions">
 	<ul>
@@ -11,7 +11,6 @@
 		<li><?php echo $html->link(__('Vložit novou podkategorii', true), array('action'=>'add', $category['Category']['id'])); ?> </li>
 		<li><?php echo $html->link(__('Zobrazit produkty', true), array('controller' => 'categories', 'action'=>'list_products', $category['Category']['id'])); ?> </li>
 		<li><?php echo $html->link('Vložit nový produkt', array('controller' => 'products', 'action' => 'add', $category['Category']['id'])); ?> </li>
-		<li><?php echo $html->link('Importovat nový produkt', array('controller' => 'products', 'action' => 'import', $category['Category']['id'])); ?> </li>
 	</ul>
 </div>
 <?
@@ -19,7 +18,7 @@
 ?>
 <div class="actions">
 	<ul>
-		<li><?php echo $html->link(__('Vložit novou podkategorii', true), array('action'=>'add', $category['Category']['id'])); ?> </li>
+		<li><?php echo $html->link(__('Vložit novou podkategorii', true), array('action'=>'add', ROOT_CATEGORY_ID)); ?> </li>
 	</ul>
 </div>
 <h3>Základní stránka administrace</h3>

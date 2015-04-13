@@ -1,45 +1,43 @@
-<div class="options">
-<h2>Daňové třídy - nastavení</h2>
-<table class="topHeading" cellpadding="5" cellspacing="3">
-<tr>
-	<th><?php echo $paginator->sort('ID', 'id');?></th>
-	<th><?php echo $paginator->sort('Název daňové třídy', 'name');?></th>
-	<th><?php echo $paginator->sort('Hodnota daně', 'name');?></th>
-	<th class="actions">&nbsp;</th>
-</tr>
-<?php
-$i = 0;
-foreach ($taxClasses as $taxClass):
-	$class = null;
-	if ($i++ % 2 == 0) {
-		$class = ' class="altrow"';
-	}
-?>
-	<tr<?php echo $class;?>>
-		<td>
-			<?php echo $taxClass['TaxClass']['id'] ?>
-		</td>
-		<td>
-			<?php echo $taxClass['TaxClass']['name'] ?>
-		</td>
-		<td>
-			<?php echo $taxClass['TaxClass']['value'] ?>%
-		</td>
-		<td class="actions">
-			<?php echo $html->link(__('Upravit', true), array('action'=>'edit', $taxClass['TaxClass']['id'])); ?>
-<!--			<?php echo $html->link(__('Smazat', true), array('action'=>'delete', $taxClass['TaxClass']['id']), null, sprintf(__('Opravdu chcete smazat tento název atributu?', true), $taxClass['TaxClass']['id'])); ?>-->
-		</td>
+﻿<h1>Daňové třídy</h1>
+<table class="tabulka" cellpadding="5" cellspacing="3">
+	<tr>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		<th>ID</th>
+		<th>Název</th>
+		<th>Hodnota daně</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
 	</tr>
-<?php endforeach; ?>
+	<tr>
+		<td colspan="2"><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/add.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'tax_classes', 'action' => 'add'), array('escape' => false, 'title' => 'Přidat daňovou třídu'));
+		?></td>
+		<td colspan="5">&nbsp;</td>
+	</tr>
+	<?php foreach ($tax_classes as $tax_class) { ?>
+	<tr>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'tax_classes', 'action' => 'edit', $tax_class['TaxClass']['id']), array('escape' => false, 'title' => 'Upravit daňovou třídu'));
+		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/delete.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'tax_classes', 'action' => 'delete', $tax_class['TaxClass']['id']), array('escape' => false, 'title' => 'Smazat daňovou třídu'), 'Opravdu chcete daňovou třídu smazat?');
+		?></td>
+		<td><?php echo $tax_class['TaxClass']['id'] ?></td>
+		<td><?php echo $tax_class['TaxClass']['name'] ?></td>
+		<td><?php echo $tax_class['TaxClass']['value'] ?>%</td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/up.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'tax_classes', 'action' => 'move_up', $tax_class['TaxClass']['id']), array('escape' => false, 'title' => 'Posunout nahoru'));
+		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/down.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'tax_classes', 'action' => 'move_down', $tax_class['TaxClass']['id']), array('escape' => false, 'title' => 'Posunout dolu'));
+		?></td>
+	</tr>
+	<?php } ?>
 </table>
-</div>
-<div class="paging">
-	<?php echo $paginator->prev('<< '.__('předchozí', true), array(), null, array('class'=>'disabled'));?>
- | 	<?php echo $paginator->numbers();?>
-	<?php echo $paginator->next(__('další', true).' >>', array(), null, array('class'=>'disabled'));?>
-</div>
-<div class="actions">
-	<ul>
-		<li><?php echo $html->link(__('Vložit novou daňovou třídu', true), array('action'=>'add')); ?></li>
-	</ul>
-</div>
+<div class="prazdny"></div>

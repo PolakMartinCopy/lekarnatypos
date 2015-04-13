@@ -1,42 +1,29 @@
-<h2>Stavy objednávek</h2>
+﻿<h2>Stavy objednávek</h2>
 <table class="topHeading" cellpadding="5" cellspacing="3">
 	<tr>
+		<th>&nbsp;</th>
 		<th>ID</th>
 		<th>Název</th>
-		<th>Barva</th>
-		<th>Šablona</th>
-		<th>Závislá pole</th>
 		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		
 	</tr>
-<?
-	foreach ( $statuses as $status ){
-		echo '
-			<tr>
-				<td>
-					' . $status['Status']['id'] . '
-				</td>
-				<td>
-					' . $status['Status']['name'] . '
-				</td>
-				<td>
-					' . $status['Status']['color'] . '
-				</td>
-				<td>
-					' . $status['MailTemplate']['subject'] . '
-				</td>
-				<td>
-					' . str_replace("\n", "<br />", $status['Status']['requested_fields']) . '
-				</td>
-				<td>
-					' . $html->link('upravit', array('action' => 'edit', $status['Status']['id'])) . '<br />' . $html->link('smazat', array('action' => 'delete', $status['Status']['id']), null, 'Opravdu chcete tento stav smazat?') . '
-				</td>
-			</tr>
-		';
-	}
-?>
+	<?php foreach ($statuses as $status) {?>
+	<tr>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'statuses', 'action' => 'edit', $status['Status']['id']), array('escape' => false));
+		?></td>
+		<td><?php echo $status['Status']['id'] ?></td>
+		<td><?php echo $status['Status']['name'] ?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/up.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'statuses', 'action' => 'move_up', $status['Status']['id']), array('escape' => false));
+		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/down.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'statuses', 'action' => 'move_down', $status['Status']['id']), array('escape' => false));
+		?></td>
+	</tr>
+	<?php } ?>
 </table>
-<div class="actions">
-	<ul>
-		<li><?=$html->link('Vytvořit nový status', array('action' => 'add'))?></li>
-	</ul>
-</div>

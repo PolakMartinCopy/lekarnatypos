@@ -1,4 +1,4 @@
-<h2>Seznam administrátorů</h2>
+﻿<h2>Seznam administrátorů</h2>
 <table class="topHeading">
 	<tr>
 		<th>ID</th>

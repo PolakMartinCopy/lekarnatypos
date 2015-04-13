@@ -1,4 +1,4 @@
-<div>
+﻿<div>
 	<h2>Editace newsletteru - "<?=$this->data['Newsletter']['name'] ?>"</h2>
 	<p><?=$html->link('preview', array('controller' => 'newsletters', 'action' => 'view', 'admin' => false, $this->data['Newsletter']['id']), array('target' => '_blank')) ?></p>
 	<h3>Podrobnosti newsletteru</h3>

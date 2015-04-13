@@ -1,4 +1,4 @@
-<?//debug($comment) ?>
+﻿<?//debug($comment) ?>
 
 <h2>Administrace komentáře</h2>
 <table class="leftHeading">

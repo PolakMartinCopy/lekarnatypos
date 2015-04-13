@@ -1,4 +1,4 @@
-<h2>Přesunout produkt</h2>
+﻿<h2>Přesunout produkt</h2>
 <?
 	if ( !empty($contained) ){
 ?>

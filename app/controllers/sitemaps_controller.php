@@ -4,7 +4,7 @@ class SitemapsController extends AppController{
 	
 	function admin_generate(){
 		// otevrit soubor pro zapis, s vymazanim obsahu
-		$fp = fopen('files/sitemap.xml', 'w+');
+		$fp = fopen('sitemap.xml', 'w');
 
 	$start_string = '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -20,8 +20,11 @@ class SitemapsController extends AppController{
 		App::import('Model', 'Product');
 		$this->Sitemap->Product = new Product;
 		
-		$this->Sitemap->Product->recursive = -1;
-		$products = $this->Sitemap->Product->find('all', array('fields' => array('Product.url', 'Product.modified')));
+		$products = $this->Sitemap->Product->find('all', array(
+			'conditions' => array('Product.active' => true),
+			'contain' => array(),
+			'fields' => array('Product.url', 'Product.modified')
+		));
 
 		foreach ( $products as $product ){
 			// pripnout k sitemape
@@ -42,14 +45,30 @@ class SitemapsController extends AppController{
 		App::import('Model', 'Category');
 		$this->Sitemap->Category = new Category;
 		
-		$this->Sitemap->Category->recursive = -1;
-		$categories = $this->Sitemap->Category->find('all', array('fields' => array('Category.id', 'Category.url')));
+		// nechci kategorie, ktere jsou v podstromu neaktivnich
+		$category_conditions = array('Category.public' => true);
+		$unactive_categories = $this->Sitemap->Category->find('all', array(
+			'conditions' => array('Category.active' => false),
+			'contain' => array(),
+			'fields' => array('Category.id')
+		));
 
-		$skip = array(0 => '5', '25', '26', '53');
+		$unactive_categories_ids = array(ROOT_CATEGORY_ID);
+		foreach ($unactive_categories as $unactive_category) {
+			$subtree_ids = $this->Sitemap->Category->subtree_ids($unactive_category['Category']['id']);
+			$unactive_categories_ids = array_merge($unactive_categories_ids, $subtree_ids);
+		}
+		if (!empty($unactive_categories_ids)) {
+			$category_conditions[] = 'Category.id NOT IN (' . implode(',', $unactive_categories_ids) . ')';
+		}
+
+		$categories = $this->Sitemap->Category->find('all', array(
+			'conditions' => $category_conditions,
+			'contain' => array(),
+			'fields' => array('Category.id', 'Category.url')
+		));
+
 		foreach ( $categories as $category ){
-			if ( in_array($category['Category']['id'], $skip) ){
-				continue;
-			}
 			$mod = date('Y-m-d');
 
 			// pripnout k sitemape
@@ -68,8 +87,10 @@ class SitemapsController extends AppController{
 		App::import('Model', 'Manufacturer');
 		$this->Sitemap->Manufacturer = new Manufacturer;
 		
-		$this->Sitemap->Manufacturer->recursive = -1;
-		$manufacturers = $this->Sitemap->Manufacturer->find('all', array('fields' => array('Manufacturer.id', 'Manufacturer.name')));
+		$manufacturers = $this->Sitemap->Manufacturer->find('all', array(
+			'contain' => array(),
+			'fields' => array('Manufacturer.id', 'Manufacturer.name')
+		));
 		
 		foreach ( $manufacturers as $manufacturer ){
 			// pripnout k sitemape
@@ -87,8 +108,10 @@ class SitemapsController extends AppController{
 		App::import('Model', 'Content');
 		$this->Sitemap->Content = new Content;
 		
-		$this->Sitemap->Content->recursive = -1;
-		$contents = $this->Sitemap->Content->find('all', array('fields' => array('Content.path')));
+		$contents = $this->Sitemap->Content->find('all', array(
+			'contain' => array(),
+			'fields' => array('Content.path')
+		));
 		
 		foreach ( $contents as $content ){
 			// pripnout k sitemape
@@ -97,7 +120,7 @@ class SitemapsController extends AppController{
 			}
 			$string = '
 	<url>
-    		<loc>http://www.' . CUST_ROOT . '/' . $content['Content']['path'] . '</loc>
+    		<loc>http://www.' . CUST_ROOT . '/' . $content['Content']['path'] . '.htm</loc>
     		<changefreq>weekly</changefreq>
     		<priority>0.7</priority>
 	</url>';

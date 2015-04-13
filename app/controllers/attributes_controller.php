@@ -5,32 +5,19 @@ class AttributesController extends AppController {
 	var $helpers = array('Html', 'Form', 'Javascript' );
 
 	var $paginate = array(
-
-			'Attribute' => array(
-
-				'limit' => 25,
-
-				'order' => array(
-
-					'Attribute.option_id' => 'asc',
-
-					'Attribute.sort_order' => 'asc',
-
-				),
-
-				'fields' => array(
-
-					'`Option`.`name` as `option_name`',
-
-					'Attribute.*',
-
-					'Option.*',
-
-				)
-
+		'Attribute' => array(
+			'limit' => 25,
+			'order' => array(
+				'Attribute.option_id' => 'asc',
+				'Attribute.sort_order' => 'asc',
+			),
+			'fields' => array(
+				'`Option`.`name` as `option_name`',
+				'Attribute.*',
+				'Option.*',
 			)
-
-		);
+		)
+	);
 
 	function admin_index() {
 		$this->Attributes->recursive = -1;
@@ -56,6 +43,7 @@ $(\'#attribute_table tbody\').sortable().disableSelection();
 			$this->set('script', $script);
 			$this->paginate['Attribute']['limit'] = 1000;
 			$this->paginate['Attribute']['conditions'] = array('option_id' => $this->params['named']['option_id']);
+			$this->paginate['Attribute']['contain'] = array('Option');
 			
 			if (isset($this->data)) {
 				$order = 1;
@@ -71,7 +59,8 @@ $(\'#attribute_table tbody\').sortable().disableSelection();
 				$this->redirect(array('controller' => 'attributes', 'action' => 'index', 'option_id' => $this->params['named']['option_id']));
 			}
 		}
-		$this->set('attributes', $this->paginate('Attribute'));
+		$attributes = $this->paginate('Attribute');
+		$this->set('attributes', $attributes);
 	}
 
 	function admin_add() {
@@ -108,46 +97,25 @@ $(\'#attribute_table tbody\').sortable().disableSelection();
 	}
 
 	function admin_edit($id = null) {
-
 			$this->set('options_options', $this->Attribute->Option->find('list'));
-
 		if (!$id) {
-
 			$this->Session->setFlash('Neexistující atribut.');
-
 			$this->redirect(array('action'=>'index'), null, true);
-
 		} else {
-
 			$this->set('id', $id);
-
-			
-
 		}
 
 		if (!empty($this->data)) {
-
 			if ($this->Attribute->save($this->data)) {
-
 				$this->Session->setFlash('Atribut byl uložen.');
-
 				$this->redirect(array('action'=>'index'), null, true);
-
 			} else {
-
 				$this->Session->setFlash('Atribut nemohl být uložen, vyplňte prosím správně všechna pole.');
-
 			}
-
 		} else {
-
 			$this->data = $this->Attribute->read(null, $id);
-
 		}
-
 	}
-
-	
 
 	function admin_delete($id = null) {
 		if (!$id) {
@@ -184,140 +152,76 @@ $(\'#attribute_table tbody\').sortable().disableSelection();
 
 
 	function admin_move_up($id = null) {
-
 		if (!$id) {
-
 			$this->Session->setFlash('Neexistující atribut');
-
 			$this->redirect(array('controller' => 'attributes', 'action' => 'index'));
-
 		}
-
 		
-
 		// nactu si atribut, ktery budu posunovat
-
 		$moved_attribute = $this->Attribute->find('first', array(
-
 			'conditions' => array('id' => $id),
-
 			'contain' => array()
-
 		));
-
 		// pokud ma presouvany atribut nejnizsi sort_order (== 1), tak nic nepresouvam
-
 		if ($moved_attribute['Attribute']['sort_order'] == 1) {
-
 			$this->Session->setFlash('Atribut nelze přesunout, je již na nejvrchnější pozici');
-
 			$this->redirect(array('controller' => 'attributes', 'action' => 'index'));
-
 		} else {
-
 			// nactu atribut, se kterym chci zadany prohodit
-
 			$pre_attribute = $this->Attribute->find('first', array(
-
 				'conditions' => array('sort_order' => $moved_attribute['Attribute']['sort_order'] - 1, 'option_id' => $moved_attribute['Attribute']['option_id']),
-
 				'contain' => array()
-
 			));
 
-
-
 			// nastavim si nove hodnoty sort_order
-
 			$moved_attribute['Attribute']['sort_order'] = $moved_attribute['Attribute']['sort_order'] - 1;
-
 			$pre_attribute['Attribute']['sort_order'] = $pre_attribute['Attribute']['sort_order'] + 1;
-
 			
-
 			$this->Attribute->save($moved_attribute);
-
 			$this->Attribute->save($pre_attribute);
-
 			
-
 			$this->Session->setFlash('Atribut byl přesunut');
-
 			$this->redirect(array('controller' => 'attributes', 'action' => 'index'));
-
 		}
-
 	}
-
 	
-
 	function admin_move_down($id = null) {
-
 		if (!$id) {
-
 			$this->Session->setFlash('Neexistující atribut');
-
 			$this->redirect(array('controller' => 'attributes', 'action' => 'index'));
-
 		}
-
 		
-
 		// nactu si atribut, ktery chci posouvat
-
 		$moved_attribute = $this->Attribute->find('first', array(
-
 			'conditions' => array('id' => $id),
-
 			'contain' => array()
-
 		));
-
 		
-
 		// nactu si atribut, ktery je za nim
-
 		$post_attribute = $this->Attribute->find('first', array(
-
 			'conditions' => array('sort_order' => $moved_attribute['Attribute']['sort_order'] + 1, 'option_id' => $moved_attribute['Attribute']['option_id']),
-
 			'contain' => array()
-
 		));
-
 		// pokud neexistuje post_attribute, moved_attribute je posledni a proto nemuze byt presunut dal dolu
-
 		if (empty($post_attribute)) {
-
 			$this->Session->setFlash('Atribut nelze přesunout, je již na nejnižší pozici');
-
 			$this->redirect(array('controller' => 'attributes', 'action' => 'index'));
-
 		} else {
-
 			// nastavim si nove hodnoty sort_order
-
 			$moved_attribute['Attribute']['sort_order'] = $moved_attribute['Attribute']['sort_order'] + 1;
-
 			$post_attribute['Attribute']['sort_order'] = $post_attribute['Attribute']['sort_order'] - 1;
-
 			
-
 			$this->Attribute->save($moved_attribute);
-
 			$this->Attribute->save($post_attribute);
-
 			
-
 			$this->Session->setFlash('Atribut byl přesunut');
-
 			$this->redirect(array('controller' => 'attributes', 'action' => 'index'));
-
 		}
-
 	}
-
 	
-
+	function admin_import() {
+		$this->Attribute->import();
+		die('here');
+	}
 }
 ?>

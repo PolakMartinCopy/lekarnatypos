@@ -13,9 +13,13 @@ class StatusesController extends AppController {
 	}
 
 	function admin_index(){
-		$this->Status->recursive = 0;
-		$statuses = $this->Status->find('all');
+		$statuses = $this->Status->find('all', array(
+			'contain' => array('MailTemplate'),
+			'order' => array('Status.order' => 'asc')	
+		));
 		$this->set('statuses', $statuses);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_edit($id){
@@ -23,17 +27,46 @@ class StatusesController extends AppController {
 			$this->Status->recursive = -1;
 			$this->data = $this->Status->read(null, $id);
 			if ( empty($this->data) ){
-				$this->Session->setFlash('Neexistující status!');
+				$this->Session->setFlash('Neexistující status!', REDESIGN_PATH . 'flash_failure');
 				$this->redirect(array('action' => 'index'), null, true);
 			}
 		} else {
 			if ( $this->Status->save($this->data) ){
-				$this->Session->setFlash('Status byl upraven!');
+				$this->Session->setFlash('Status byl upraven!', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('action' => 'edit', $this->Status->id), null, true);
 			} else {
-				$this->Session->setFlash('Chyba při úpravě statusu!');
+				$this->Session->setFlash('Chyba při úpravě statusu!', REDESIGN_PATH . 'flash_failure');
 			}
 		}
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function admin_move_up($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Neznámý stav.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'statuses', 'action' => 'index'));
+		}
+		
+		if ($this->Status->moveUp($id)) {
+			$this->Session->setFlash('Stav byl posunut nahorů.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Stav se nepodařilo posunout nahorů.', REDESIGN_PATH . 'flash_failure');
+		}
+		$this->redirect(array('controller' => 'statuses', 'action' => 'index'));
+	}
+	
+	function admin_move_down($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Neznámý stav.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'statuses', 'action' => 'index'));
+		}
+	
+		if ($this->Status->moveDown($id)) {
+			$this->Session->setFlash('Stav byl posunut dolů.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Stav se nepodařilo posunout dolů.', REDESIGN_PATH . 'flash_failure');
+		}
+		$this->redirect(array('controller' => 'statuses', 'action' => 'index'));
 	}
 
 	function admin_delete($id){

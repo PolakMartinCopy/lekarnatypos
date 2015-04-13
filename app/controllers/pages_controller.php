@@ -63,7 +63,7 @@ class PagesController extends AppController{
  * @access public
  */
 	function display() {
-		$this->layout = 'front_end';
+		$this->layout = REDESIGN_PATH . 'default';
 
 		if (!func_num_args()) {
 			$this->redirect('/');
@@ -77,6 +77,8 @@ class PagesController extends AppController{
 		$page = null;
 		$subpage = null;
 		$title = null;
+		$description = null;
+		$keywords = null;
 
 		if (!empty($path[0])) {
 			$page = $path[0];
@@ -85,12 +87,50 @@ class PagesController extends AppController{
 			$subpage = $path[1];
 		}
 		if (!empty($path[$count - 1])) {
-			$title = Inflector::humanize($path[$count - 1]);
+			$title = $_description = Inflector::humanize($path[$count - 1]);
 		}
 		$this->set('page', $page);
 		$this->set('subpage', $subpage);
-		$this->set('title', $title);
+		$this->set('_title', $title);
+		$this->set('_description', $description);
+		$this->set('_keywords', $keywords);
+		
 		$this->render(join('/', $path));
+	}
+	
+	function home() {
+		$this->layout = REDESIGN_PATH . 'homepage';
+		$title = 'Online Lékárna';
+		$description = 'Léky a doplňky stravy online od LékárnaTypos CZ. Přípravky proti bolesti, nachlazení a mnohé další.';
+		$keywords = 'online lékárna, Lékárna Typos';
+		
+		$this->set('_title', $title);
+		$this->set('_description', $description);
+		$this->set('_keywords', $keywords);
+		
+		App::import('Model', 'News');
+		$this->News = new News;
+		$hp_news = $this->News->hp_list();
+		$this->set('hp_news', $hp_news);
+		
+		App::import('Model', 'CustomerType');
+		$this->CustomerType = new CustomerType;
+		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+		
+		App::import('Model', 'RecommendedProduct');
+		$this->RecommendedProduct = new RecommendedProduct;
+		$hp_recommended = $this->RecommendedProduct->hp_list($customer_type_id);
+		$this->set('hp_recommended', $hp_recommended);
+		
+		App::import('Model', 'DiscountedProduct');
+		$this->DiscountedProduct = new DiscountedProduct;
+		$hp_discounted = $this->DiscountedProduct->hp_list($customer_type_id);
+		$this->set('hp_discounted', $hp_discounted);
+		
+		App::import('Model', 'MostSoldProduct');
+		$this->MostSoldProduct = new MostSoldProduct;
+		$hp_most_sold = $this->MostSoldProduct->hp_list($customer_type_id);
+		$this->set('hp_most_sold', $hp_most_sold);
 	}
 }
 ?>

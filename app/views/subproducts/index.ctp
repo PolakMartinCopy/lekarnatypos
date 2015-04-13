@@ -1,4 +1,4 @@
-<div class="subproducts">
+﻿<div class="subproducts">
 <h2><?php __('Subproducts');?></h2>
 <p>
 <?php

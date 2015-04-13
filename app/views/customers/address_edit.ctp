@@ -1,7 +1,7 @@
 <div class="mainContentWrapper">
 	<?=$form->create('Address', array('url' => array('controller' => 'customers', 'action' => 'address_edit', 'type' => $this->params['named']['type']), '')) ?>
 	<div class="form-group">
-		<label>jméno a příjmení <br /> / název společnosti</label>
+		<label>jméno a příjmení / název společnosti</label>
 		<?=$form->input('Address.name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
 	</div>
 	<div class="form-group">

@@ -1,4 +1,4 @@
-<div class="attributes">
+﻿<div class="attributes">
 <h2>Atributy produktů - nastavení</h2>
 
 <h3>Řazení atributů</h3>

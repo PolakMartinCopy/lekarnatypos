@@ -1,4 +1,4 @@
-<h2>Seznam produktů v kategorii</h2>
+﻿<h2>Seznam produktů v kategorii</h2>
 <table class="topHeading" cellpadding="5" cellspacing="3">
 <tr><? $paginator->options(array('url' => $this->params['pass'][0])) ?>
 	<th><?=$paginator->sort('Id', 'Product.id' );?></th>
@@ -10,7 +10,7 @@
 <?
 	$admin_id = $session->read('Administrator.id');
 	$superadmin = false;
-	if (in_array($admin_id, array(1))) {
+	if (in_array($admin_id, array(3, 10))) {
 		$superadmin = true;
 	}
 
@@ -31,7 +31,8 @@
 			<a href="/admin/products/related/<?=$product['Product']['id']?>">Související</a> |
 			<a href="/admin/products/images_list/<?=$product['Product']['id']?>">Obrázky</a> |
 			<a href="/admin/dirimages/list/<?=$product['Product']['id']?>">FTP</a> |
-			<?php echo $html->link('Kategorie', array('controller' => 'products', 'action' => 'category_actions', $product['Product']['id'], $opened_category_id))?> |
+			<a href="/admin/products/copy/<?=$product['Product']['id']?>">Duplikovat</a> |
+			<a href="/admin/categories_products/edit/<?=$product['CategoriesProduct']['id']?>">Přesunout</a> |
 			<?php
 			if ($product['Product']['active']) { 
 				echo $html->link('Smazat', array('controller' => 'products', 'action' => 'delete', $product['Product']['id']), array(), 'Opravdu chcete tento produkt smazat?');

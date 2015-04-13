@@ -2,27 +2,93 @@
 class ContentsController extends AppController{
 	var $name = 'Contents';
 
+	var $helpers = array('Html', 'Javascript', 'Form');
+	
 	var $scaffold = 'admin';
 	
-	function beforeFilter() {
-		parent::beforeFilter();
-		$helpers = array('Html', 'Javascript', 'Form');
-		$this->helpers = array_unique(array_merge($this->helpers, $helpers));
+	function admin_index() {
+		$contents = $this->Content->find('all', array(
+			'contain' => array()
+		));
+		
+		$this->set('contents', $contents);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
+	function admin_add(){
+		if (isset($this->data)){
+			if ( $this->Content->save($this->data) ){
+				$this->Session->setFlash('Stránka byla uložena!', REDESIGN_PATH . 'flash_success');
+				$this->redirect(array('action' => 'index'));
+			} else {
+				$this->Session->setFlash('Stránku se nepodařilo uložit! Opravte chyby ve formuláři a uložte ji znovu.', REDESIGN_PATH . 'flash_failure');
+			}
+		}
+		
+		$this->set('tinyMceElement', 'ContentContent');
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+
+	function admin_edit($id = null){
+		if (!$id) {
+			$this->Session->setFlash('Neznámá webstránka.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		$content = $this->Content->find('first', array(
+			'conditions' => array('Content.id' => $id),
+			'contain' => array(),
+		));
+		
+		if (empty($content)) {
+			$this->Session->setFlash('Neexistující webstránka.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		if (isset($this->data)){
+			if ($this->Content->save($this->data)) {
+				$this->Session->setFlash('Stránka byla uložena!', REDESIGN_PATH . 'flash_success');
+				$this->redirect(array('action' => 'index'));
+			} else {
+				$this->Session->setFlash('Stránku se nepodařilo uložit!', REDESIGN_PATH . 'flash_failure');
+			}
+		} else {
+			$this->data = $content;
+		}
+	
+		$this->set('tinyMceElement', 'ContentContent');
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function admin_delete($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Neznámá webstránka.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		if ($this->Content->delete($id)) {
+			$this->Session->setFlash('Webstránka byla odstraněna.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Webstránku se nepodařilo odstranit.', REDESIGN_PATH . 'flash_failure');
+		}
+		$this->redirect(array('action' => 'index'));
+	}
+
 	function view($id) {
 		// navolim si layout stranky
-		$this->layout = 'content';
+		$this->layout = REDESIGN_PATH . 'content';
+		
 		// natvrdo layout hlavni stranky
 		if (in_array($id, array(1))) {
-			$this->layout = 'homepage';
+			$this->layout = REDESIGN_PATH . 'homepage';
 		}
 
 		$page = $this->Content->find('first', array(
 			'conditions' => array('id' => $id),
 			'contain' => array()
 		));
-
+		
 		if (!empty($page)) {
 			$this->set('page_content', $page['Content']['content']);
 			$this->set('title_for_content', $page['Content']['title']);
@@ -37,45 +103,6 @@ class ContentsController extends AppController{
 			
 		} else {
 			die('404 nenalezeno');
-		}
-	}
-	
-	function admin_index() {
-		$contents = $this->Content->find('all', array(
-			'contain' => array(),
-			'fields' => array('id', 'title', 'path')
-		));
-		
-		$this->set('contents', $contents);
-	}
-
-	function admin_edit($id){
-		if ( isset($this->data) ){
-			$this->Content->id = $id;
-			if ( $this->Content->save($this->data) ){
-				$this->Session->setFlash('Stránka byla uložena!');
-				$this->redirect(array('action' => 'edit', $id), null, true);
-			} else {
-				$this->Session->setFlash('Stránku se nepodařilo uložit!');
-			}
-		} else {
-			$this->data = $this->Content->read(null, $id);
-		}
-		$this->set('tinyMce', true);
-		$this->set('tinyMceElement', 'ContentContent');		
-	}
-	
-	function admin_add(){
-		$this->set('tinyMce', true);
-		$this->set('tinyMceElement', 'ContentContent');
-		
-		if ( isset($this->data) ){
-			if ( $this->Content->save($this->data) ){
-				$this->Session->setFlash('Stránka byla uložena!');
-				$this->redirect(array('action' => 'edit', $this->Content->id), null, true);
-			} else {
-				$this->Session->setFlash('Stránku se nepodařilo uložit!');
-			}
 		}
 	}
 

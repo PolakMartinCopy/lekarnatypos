@@ -1,4 +1,4 @@
-<h2>Přidat nový status</h2>
+﻿<h2>Přidat nový status</h2>
 <?php echo $form->Create('Status')?>
 	<fieldset>
  		<legend>Status objednávky</legend>

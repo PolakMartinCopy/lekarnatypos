@@ -1,4 +1,4 @@
-<h2>Vložení nové šablony</h2>
+﻿<h2>Vložení nové šablony</h2>
 <?=$form->create('MailTemplate');?>
 	<fieldset>
  		<legend>Šablona</legend>

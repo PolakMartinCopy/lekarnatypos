@@ -1,3 +1,13 @@
+<FilesMatch ".(html|htm|js|css|pdf)$">
+	FileETag None
+	<ifModule mod_headers.c>
+		Header unset ETag
+		Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+		Header set Pragma "no-cache"
+		Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+	</ifModule>
+</FilesMatch>
+
 # htaccess rules for subdomains and aliases
 # to create new subdomain, create a folder www/subdom/(subdomain name)
 # to create web for alias, create a folder www/domains/(whole domain name)
@@ -8,6 +18,9 @@
 # dalsi info a priklady: http://kb.wedos.com/r/32/webhosting-htaccess.html
 
 RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^lekarnatypos.cz
+RewriteRule (.*) http://www.lekarnatypos.cz/$1 [R=301,QSA,L]
 
 # cele domeny (aliasy)
 RewriteCond %{REQUEST_URI} !^domains/
@@ -31,18 +44,14 @@ RewriteRule ^domains/[^/]+/(.+[^/])$ /$1/ [R]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^subdom/[^/]+/(.+[^/])$ /$1/ [R]
 
+
+
 # presmerovani na kejk
-RewriteCond %{HTTP_HOST} !^c\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^bonus\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^bonus2\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^exchange\.lekarnatypos\.cz$
 RewriteCond %{HTTP_HOST} !^dev\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^lekarny\.lekarnatypos\.cz$
+RewriteCond %{HTTP_HOST} !^test\.lekarnatypos\.cz$
+RewriteCond %{HTTP_HOST} !^old\.lekarnatypos\.cz$
 RewriteRule    ^$ app/webroot/    [QSA,L]
-RewriteCond %{HTTP_HOST} !^c\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^bonus\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^bonus2\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^exchange\.lekarnatypos\.cz$
 RewriteCond %{HTTP_HOST} !^dev\.lekarnatypos\.cz$
-RewriteCond %{HTTP_HOST} !^lekarny\.lekarnatypos\.cz$
+RewriteCond %{HTTP_HOST} !^test\.lekarnatypos\.cz$
+RewriteCond %{HTTP_HOST} !^old\.lekarnatypos\.cz$
 RewriteRule    (.*) app/webroot/$1 [QSA,L]

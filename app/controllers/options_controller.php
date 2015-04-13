@@ -59,5 +59,10 @@ class OptionsController extends AppController {
 		$options = $this->Option->generateList(null, array('name' => 'asc'), null, '{n}.Option.id', '{n}.Option.name');
 		return $options;
 	}
+	
+	function import() {
+		$this->Option->import();
+		die('here');
+	}
 }
 ?>

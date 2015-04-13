@@ -1,4 +1,4 @@
-<div>
+﻿<div>
 	<h2>Vytvoření nového newsletteru</h2>
 	<?
 		echo $form->Create('Newsletter');

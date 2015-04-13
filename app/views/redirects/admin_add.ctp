@@ -1,4 +1,4 @@
-<h2>Přidat přesměrování</h2>
+﻿<h2>Přidat přesměrování</h2>
 <?=$form->Create('Redirect')?>
 	<fieldset>
  		<legend>Detaily přesměrování</legend>

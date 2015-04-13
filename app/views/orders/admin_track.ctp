@@ -1,4 +1,4 @@
-<h2>Kontrola doručených objednávek</h2>
+﻿<h2>Kontrola doručených objednávek</h2>
 <p>Nedoručené objednávky byly překontrolovány.</p>
 <?
 	if ( !empty($bad_orders) ){

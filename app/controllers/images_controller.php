@@ -78,26 +78,26 @@ class ImagesController extends AppController {
 			$fields = array('id', 'is_main');
 			$order = array('is_main' => 'desc');
 			$images = $this->Image->find('all', array(
-
 				'conditions' => $conditions,
-
 				'fields' => $fields,
-
 				'order' => $order,
-
 				'recursive' => 1
-
 			));
 			
 			if ( $images[0]['Image']['is_main'] != '1' ){
-				$fields = array('is_main' => "'1'");
-				$conditions = array('id' => $images[0]['Image']['id']);
+				$fields = array('Image.is_main' => "'1'");
+				$conditions = array('Image.id' => $images[0]['Image']['id']);
 				$this->Image->updateAll($fields, $conditions);
+			}
+			
+			$category_id = null;
+			if (isset($this->data['Image']['category_id'])) {
+				$category_id = $this->data['Image']['category_id'];
 			}
 
 			// presmeruju
-			$this->Session->setFlash(implode("<br />", $message));
-			$this->redirect(array('controller' => 'products', 'action' => 'images_list', $this->data['Image']['product_id']), null, true);
+			$this->Session->setFlash(implode("<br />", $message), REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'images_list', $this->data['Image']['product_id'], (isset($category_id) ? $category_id : null)));
 		}
 	}
 
@@ -136,78 +136,138 @@ class ImagesController extends AppController {
 		}
 	}
 
-
-	function admin_delete($id = null) {
+	function admin_set_as_main($id = null, $category_id = null){
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Image');
-			$this->redirect(array('action'=>'index'), null, true);
-		} else {
-			// nactu si info o obrazku, potrebuju ID produktu kvuli
-			// navratovemu URL
-			$this->Image->id = $id;
-			$this->Image->read(array('name', 'product_id'));
-			$image_name = $this->Image->data['Image']['name'];
-			$product_id = $this->Image->data['Image']['product_id'];
-
-			// musim vymazat vsechny obrazky z disku
-			if ( file_exists('product-images/' . $image_name) ){
-				unlink('product-images/' . $image_name);
-			}
-			if ( file_exists('product-images/small/' . $image_name) ){
-				unlink('product-images/small/' . $image_name);
-			}
-			if ( file_exists('product-images/medium/' . $image_name) ){
-				unlink('product-images/medium/' . $image_name);
-			}
-
-			// vymazu zaznam z databaze a presmeruju
-			if ($this->Image->delete($id)) {
-				$this->Session->setFlash('Obrázek byl vymazán.');
-				$this->redirect(array('controller' => 'products', 'action'=>'images_list', $product_id), null, true);
-			}
+			$this->Session->setFlash('Není zadán obrázek.'. REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
 		}
-	}
-
-	function admin_set_as_main($id){
-		// nactu si obrazek ktery chceme nastavit jako
-		// hlavni
-		$this->Image->id = $id;
-		$this->Image->recursive = -1;
-		$image = $this->Image->read();
+		
+		// nactu si obrazek ktery chceme nastavit jako hlavni
+		$image = $this->Image->find('first', array(
+			'conditions' => array('Image.id' => $id),
+			'contain' => array()
+		));
+		
+		if (empty($image)) {
+			$this->Session->setFlash('Špatné ID obrázku!');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
 
 		if ( !empty($image) ){
 			// obrazek mam nacteny, tzn. existuje
 			// muzu si upravit vsechny jako NEhlavni
-			$fields = array('is_main' => "'0'");
+			$fields = array('is_main' => 0);
 			$conditions = array('product_id' => $image['Image']['product_id']);
 			$this->Image->updateAll($fields, $conditions);
 			
 			// a upravim si na hlavni ten ktery chci
-			$fields = array('is_main' => "'1'");
-			$conditions = array('id' => $id);
-			$this->Image->updateAll($fields, $conditions);
-
+			$image['Image']['is_main'] = true;
+			$this->Image->save($image);
+			
 			// mam nastaveno, presmeruju zpatky na seznam obrazku
 			$this->Session->setFlash('Obrázek byl nastaven jako hlavní!');
-			$this->redirect(array('controller' => 'products', 'action' => 'images_list', $image['Image']['product_id']), null, true);
+			$this->redirect(array('controller' => 'products', 'action' => 'images_list', $image['Image']['product_id'], $category_id));
 		} else {
-			$this->Session->setFlash('Špatné ID obrázku!');
-			$this->redirect(array('controller' => 'categories', 'action' => 'index'), null, true);
+
 		}
 		
 	}
 	
-	function repair_small() {
-		$image_folder = 'product-images/';
-		$images_dir = opendir($image_folder);
+	function admin_move_up($id = null, $category_id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadán obrázek.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
 		
-		while($image_name = readdir($images_dir)) {
-			if ($image_name != '.' && $image_name != '..') {
-				$image_name = $image_folder . $image_name;
-				$this->Image->makeThumbnails($image_name);
+		$image = $this->Image->find('first', array(
+			'conditions' => array('Image.id' => $id),
+			'contain' => array(),
+			'fields' => array('Image.product_id')
+		));
+		
+		if (empty($image)) {
+			$this->Session->setFlash('Neexistující obrázek.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
+		
+		if ($this->Image->moveup($id)) {
+			$this->Session->setFlash('Obrázek byl posunut nahoru.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Obrázek se nepodařilo posunout nahoru.', REDESIGN_PATH . 'flash_failure');
+		}
+		
+		$this->redirect(array('controller' => 'products', 'action' => 'images_list', $image['Image']['product_id'], $category_id));
+	}
+	
+	function admin_move_down($id = null, $category_id) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadán obrázek.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
+	
+		$image = $this->Image->find('first', array(
+			'conditions' => array('Image.id' => $id),
+			'contain' => array(),
+			'fields' => array('Image.product_id')
+		));
+	
+		if (empty($image)) {
+			$this->Session->setFlash('Neexistující obrázek.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
+	
+		if ($this->Image->movedown($id)) {
+			$this->Session->setFlash('Obrázek byl posunut dolů.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Obrázek se nepodařilo posunout dolů.', REDESIGN_PATH . 'flash_failure');
+		}
+	
+		$this->redirect(array('controller' => 'products', 'action' => 'images_list', $image['Image']['product_id'], $category_id));
+	}
+	
+	function admin_delete($id = null, $category_id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Invalid id for Image');
+			$this->redirect(array('action'=>'index'), null, true);
+		}
+
+		// nactu si info o obrazku, potrebuju ID produktu kvuli
+		// navratovemu URL
+		$image = $this->Image->find('first', array(
+			'conditions' => array('Image.id' => $id),
+			'contain' => array(),
+			'fields' => array('Image.id', 'Image.product_id')
+		));
+	
+		// vymazu zaznam z databaze a presmeruju
+		if ($this->Image->deleteImage($id)) {
+			$this->Session->setFlash('Obrázek byl vymazán.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Obrázek se nepodařilo vymazat.', REDESIGN_PATH . 'flash_failure');
+		}
+		
+		$this->redirect(array('controller' => 'products', 'action'=>'images_list', $image['Image']['product_id'], $category_id));
+	}
+	
+	function admin_import() {
+		$this->Image->import();
+		die('here');
+	}
+	
+
+	function delete_remains() {
+		$images = $this->Image->find('all', array(
+				'conditions' => array(),
+				'contain' => array(),
+				'fields' => array('Image.id', 'Image.product_id')
+		));
+	
+		foreach ($images as  $image) {
+			if (!$this->Image->Product->hasAny(array('Product.id' => $image['Image']['product_id']))) {
+				$this->Image->deleteImage($image['Image']['id']);
 			}
 		}
-		die();
+		die('horovo');
 	}
 }
 ?>

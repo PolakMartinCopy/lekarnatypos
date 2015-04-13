@@ -16,10 +16,6 @@
 			<td><?php echo $this->Form->input('Supplier.url', array('label' => false, 'size' => 70))?></td>
 		</tr>
 		<tr>
-			<th><abbr title="Kategorie, do které chcete nahrát produkty z feedu">Kategorie</abbr><sup>*</sup></th>
-			<td><?php echo $this->Form->input('Supplier.category_id', array('label' => false, 'options' => $categories, 'empty' => false))?></td>
-		</tr>
-		<tr>
 			<th><abbr title="Název tagu, ve kterém je v XML feedu cena produktu">Pole s cenou</abbr><sup>*</sup></th>
 			<td><?php echo $this->Form->input('Supplier.price_field', array('label' => false, 'size' => 70))?></td>
 		</tr>

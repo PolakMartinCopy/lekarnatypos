@@ -1,24 +1,23 @@
-<div class="mainContentWrapper">
-<h1>Nový komentář k produktu <?php echo $product['Product']['name']?></h1>
+﻿<div class="mainContentWrapper">
 	<?=$form->create('Comment', array('url' => array('action' => 'add', $product['Product']['id']))) ?>
 	<table>
 		<tr>
 			<th>Jméno (přezdívka):</th>
-			<td><?=$form->input('Comment.author', array('label' => false, 'div' => false, 'size' => 50)) ?></td>
+			<td><?=$form->input('Comment.author', array('label' => false)) ?></td>
 		</tr>
 		<tr>
 			<th>Email:</th>
 			<td>
-				<?=$form->input('Comment.email', array('label' => false, 'div' => false, 'size' => 50)) ?>
+				<?=$form->input('Comment.email', array('label' => false)) ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Předmět:</th>
-			<td><?=$form->input('Comment.subject', array('label' => false, 'div' => false, 'size' => 100)) ?></td>
+			<td><?=$form->input('Comment.subject', array('label' => false)) ?></td>
 		</tr>
 		<tr>
 			<th>Komentář (dotaz):</th>
-			<td><?=$form->input('Comment.body', array('label' => false, 'div' => false, 'cols' => 63, 'rows' => 10)) ?></td>
+			<td><?=$form->input('Comment.body', array('label' => false)) ?></td>
 		</tr>
 	</table>
 	<?=$form->hidden('Comment.product_id', array('value' => $product['Product']['id'])) ?>

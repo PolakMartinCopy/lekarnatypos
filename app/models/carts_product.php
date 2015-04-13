@@ -64,8 +64,8 @@ class CartsProduct extends AppModel {
 		$contents = $this->find('all', array(
 			'conditions' => array('cart_id' => $cart_id),
 			'fields' => array('quantity', 'price_with_dph')
-		));
 
+		));
 		foreach ( $contents as $item ){
 			$products_count = $products_count + $item['CartsProduct']['quantity'];
 			$total_price = $total_price + $item['CartsProduct']['price_with_dph'] * $item['CartsProduct']['quantity'];
@@ -92,7 +92,7 @@ class CartsProduct extends AppModel {
 				'Product' => array(
 					'Flag',
 					'TaxClass',
-					'fields' => array('id', 'name', 'url')
+					'fields' => array('id', 'name')
 				),
 				'Subproduct' => array(
 					'AttributesSubproduct' => array(

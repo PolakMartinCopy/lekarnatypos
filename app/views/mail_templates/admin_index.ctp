@@ -1,4 +1,4 @@
-<h2>Seznam emailových šablon</h2>
+﻿<h2>Seznam emailových šablon</h2>
 
 <table class="topHeading" cellpadding="5" cellspacing="3">
 	<tr>

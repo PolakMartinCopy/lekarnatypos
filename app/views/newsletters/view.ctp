@@ -1,4 +1,4 @@
-<?
+﻿<?
 	$newsletter['Newsletter']['body'] = eregi_replace("\n", "<br />", $newsletter['Newsletter']['body']);	
 	
 	if ( eregi("##NEWSLETTER PRODUCTS##", $newsletter['Newsletter']['body']) ){

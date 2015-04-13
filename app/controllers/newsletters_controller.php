@@ -1,8 +1,7 @@
 <?
 class NewslettersController extends AppController{
 	var $name = 'Newsletters';
-
-	var $scaffold = 'admin';
+	//var $scaffold;
 
 	/*
 	 * @description						Vytvoření nového newsletteru.

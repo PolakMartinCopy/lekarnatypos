@@ -1,30 +1,29 @@
-<? if ($has_subproducts) { ?>
-<p><span class="header">Před vložením do košíku zvolte:</span></p>
-<ul id="subproductsList">
-	<?php 
-		$odd = false;
-		$first = true;
-		foreach ($subproducts as $subproduct) {
-			$information = array();
-			foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
-				$information []= $attributes_subproduct['Attribute']['Option']['name'] . ': ' . $attributes_subproduct['Attribute']['value'];
-			}
-			if ($subproduct['Subproduct']['price_with_dph'] != 0) {
-				$information []= 'cena: ' . ($product['Product']['retail_price_with_dph'] + $subproduct['Subproduct']['price_with_dph']) . ' Kč';
-			}
-			if ($first) {
-				$checked = 'checked';
-				$first = false;
-			} else {
-				$checked = '';
-			}
-			$style = '';
-			if ($odd) {
-				$style = ' class="odd"';
-			}
-			$odd = !$odd;
-		?>
-	<li<?php echo $style?>><input type="radio" name="data[Subproduct][id]" value="<?=$subproduct['Subproduct']['id'] ?>" <?=$checked ?>/><?=implode(', ', $information);?></li>
-	<?php } ?>
-</ul>
+<h3>Zvolte si variantu</h3>
+<?php echo $this->Form->create('Subproduct', array('url' => '/' . $product['Product']['url'])); ?>
+<table>
+	<tr>
+		<th class="left">Varianta</th>
+		<th>Cena</th>
+		<th>Množství</th>
+		<th>&nbsp;</th>
+	</tr>
+<?php 
+foreach ($subproducts as $subproduct) {
+	$information = '';
+	foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
+		$information .= $attributes_subproduct['Attribute']['Option']['name'] . ': ' . $attributes_subproduct['Attribute']['value'] . '<br/>';
+	}
+	
+	if ($subproduct['Subproduct']['price_with_dph'] != 0) {
+		$product['Product']['price'] += $subproduct['Subproduct']['price_with_dph'];
+	}
+?>
+	<tr>
+		<td><?php echo $information ?></td>
+		<td class="center"><?php echo $product['Product']['price']?>&nbsp;Kč</td>
+		<td class="center"><input type="number" value="1"/>&nbsp;Ks</td>
+		<td class="center"><button name="add" value="1">Do košíku</button></td>
+	</tr>
 <?php } ?>
+</table>
+<?php echo $this->Form->end()?>

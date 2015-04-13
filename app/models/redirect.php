@@ -26,7 +26,7 @@ class Redirect extends AppModel{
 				'request_uri' => $uri
 			)
 		));
-
+		
 		if ( !empty($r) ){
 			return $r;
 		}

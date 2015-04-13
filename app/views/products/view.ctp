@@ -1,5 +1,5 @@
 <?php 
-$image = '/img/na_250_250.jpg';
+$image = '/img/' . REDESIGN_PATH . 'na_250_250.jpg';
 $has_image = false;
 if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
 	$path = 'product-images/medium/' . $product['Image'][0]['name'];
@@ -11,7 +11,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
 ?>
 <div class="product-image">
 	<?php if ($has_image) { ?>
-    <a href="/product-images/<?php echo $product['Image'][0]['name']?>" data-lightbox="product-image" data-title="<?php echo $product['Product']['name']?>">
+    <a href="/product-images/<?php echo $product['Image'][0]['name']?>" data-lightbox="product-image" data-title="<?php echo $product['Product']['name']?>" class="product-image-link">
     <?php } ?>
         <img src="<?php echo $image?>" />
     <?php if ($has_image) { ?>
@@ -26,17 +26,23 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
     if (!empty($product['Product']['note'])) { ?>
     	<p class="note"><span class="header">Poznámka: </span><?php echo $product['Product']['note']?></p>
     <?php } ?>
-	<p class="availability"><span class="header">Dostupnost:</span> <?php echo $product['Availability']['name']?><?php if ($product['Availability']['cart_allowed']) { ?> (<a href="/cenik-dopravy">kdy zboží dostanu</a>)<?php  } ?></p>
+	<p class="availability"><span class="header">Dostupnost:</span>
+		<?php if ($product['Product']['active']) { ?>
+			<?php echo $product['Availability']['name']?><?php if ($product['Availability']['cart_allowed']) { ?> (<a href="/cenik-dopravy">kdy zboží dostanu</a>)<?php  } ?></p>
+		<?php } else { ?>
+			Nyní nelze objednat
+		<?php } ?>
+
 	<div class="fb-like" data-href="http://www.<?php echo CUST_ROOT?>/<?php echo $product['Product']['url']?>" data-action="like" data-layout="button_count" data-width="450" data-show-faces="false"></div>
-	<p class="price"><span class="header">Cena:</span> <span class="nominal"><?php echo round($product['Product']['discount_price'])?>,-</span></p>
+	<p class="price"><span class="header">Cena:</span> <span class="nominal"><?php echo round($product['Product']['price'])?>,-</span></p>
 	
 	<?php // form pro vlozeni do kosiku
-		if ($product['Availability']['cart_allowed']) {
+		if ($product['Availability']['cart_allowed'] && $product['Product']['active']) {
 			echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'id' => 'cart', 'encoding' => false, 'class' => 'form-inline'));
-			echo $this->element('subproducts_choices', $this->requestAction('/subproducts/control/' . $product['Product']['id']));
+			echo $this->element(REDESIGN_PATH . 'subproducts_choices', $this->requestAction('/subproducts/control/' . $product['Product']['id']));
 		?>
 		<div class="input-group">
-			<?php echo $this->Form->input('Subproduct.quantity', array('type' => 'text', 'value' => 1, 'label' => false, 'div' => false, 'class' => 'form-control input-lg', 'style' => 'width: 50px;'));?>
+			<?php echo $this->Form->input('Subproduct.quantity', array('type' => 'text', 'value' => 1, 'label' => false, 'div' => false, 'class' => 'form-control input-lg product-quantity'));?>
 		</div>
 		<button class="btn btn-success btn-lg" type="submit"><i class="fa fa-shopping-cart"></i>&nbsp;Koupit produkt</button>
 		<?php echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id'])); ?>

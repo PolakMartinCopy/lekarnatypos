@@ -5,73 +5,261 @@ class OrdersController extends AppController {
 	var $helpers = array('Form');
 
 	var $paginate = array(
-		'limit' => 20,
-		'order' => array(
-			'Order.created' => 'desc'
-		),
-	);
+				'limit' => 20,
+				'order' => array(
+					'Order.created' => 'desc'
+				),
+		);
 
 	function admin_index(){
-		$this->Order->Status->recursive = -1;
-		$statuses = $this->Order->Status->find('all');
-		foreach ( $statuses as $key => $value ){
-			$statuses[$key]['Status']['count'] = $this->Order->find('count', array(
-				'conditions' => array('status_id' => $statuses[$key]['Status']['id'])
-			));
-		}
-		$this->set('statuses', $statuses);
 		// implicitne si vyhledavam do seznamu "otevrene" statusy
 		$conditions = array('Status.closed' => false);
 		// kdyz chci omezit vypis na urcity status
-		if ( isset( $this->params['named']['status_id'] ) ){
-			$conditions = array('status_id' => $this->params['named']['status_id']);
+		$status = null;
+		$statuses = null;
+		if (isset($this->params['named']['status_id'])) {
+			if (is_numeric($this->params['named']['status_id'])) {
+				$status = $this->Order->Status->find('first', array(
+					'conditions' => array('Status.id' => $this->params['named']['status_id']),
+					'contain' => array(),
+					'fields' => array('Status.id', 'Status.name')	
+				));
+				$conditions = array('Order.status_id' => $this->params['named']['status_id']);
+			} elseif ($this->params['named']['status_id'] == 'all') {
+				$conditions = array();
+			}
+		} else {
+			$this->Order->Status->recursive = -1;
+			$statuses = $this->Order->Status->find('all');
+			foreach ( $statuses as $key => $value ){
+				$statuses[$key]['Status']['count'] = $this->Order->find('count', array(
+					'conditions' => array('Order.status_id' => $statuses[$key]['Status']['id'])
+				));
+			}
 		}
-		$orders = $this->paginate('Order', $conditions);
-		$this->set('orders', $orders);
-	}
-
-	function admin_view($id) {
-		// nactu si data o objednavce
-		$this->Order->contain(array(
+		$this->set('status', $status);
+		$this->set('statuses', $statuses);
+		
+		$this->paginate['conditions'] = $conditions;
+		$this->paginate['contain'] = array(
 			'OrderedProduct' => array(
 				'OrderedProductsAttribute' => array(
 					'Attribute' => array(
 						'Option'
 					)
 				),
-				'Product' => array(
-					'fields' => array('id', 'name', 'url', 'manufacturer_id', 'supplier_product_id')
-				),
+				'Product'
 			),
-			'Shipping',
-			'Customer',
-			'Status',
-			'Payment',
 			'Ordernote' => array(
-				'Status' => array(
-					'fields' => array('id', 'name')
-				),
-				'Administrator' => array(
-					'fields' => array('id', 'first_name', 'last_name')
-				)
+				'order' => array('Ordernote.created' => 'desc'),
+				'Status',
+				'Administrator'
+			),
+			'Status',
+			'Shipping',
+			'Payment',
+			'Customer' => array(
+				'CustomerType'
 			)
+		);
+
+		$this->Order->virtualFields['date'] = 'CONCAT(DATE_FORMAT(DATE(Order.created), "%d.%m.%Y"), " ", TIME(Order.created))';
+		$orders = $this->paginate('Order', $conditions);
+		unset($this->Order->virtualFields['date']);
+
+		foreach ($orders as &$order) {
+			$order['Customer']['orders_count'] = $this->Order->Customer->orders_count($order['Customer']['id']);
+			foreach ($order['OrderedProduct'] as &$ordered_product) {
+				if ((!isset($ordered_product['product_name']) || (empty($ordered_product['product_name']))) && isset($ordered_product['Product']['name'])) {
+					$ordered_product['product_name'] = $ordered_product['Product']['name'];
+				}
+			}
+		}
+		$this->set('orders', $orders);
+		
+		$this->Order->virtualFields['total_vat'] = 'SUM(Order.subtotal_with_dph + Order.shipping_cost)';	
+
+		$total_vat = $this->Order->find('first', array(
+			'conditions' => $conditions,
+			'contain' => array('Status'),
+			'fields' => array('Order.total_vat')	
+		));
+		unset($this->Order->virtualFields['total_vat']);
+		$total_vat = round($total_vat['Order']['total_vat']);
+		$this->set('total_vat', $total_vat);
+		
+		$statuses_options = $this->Order->Status->find('list');
+		$this->set('statuses_options', $statuses_options);
+
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+
+	function admin_view($id) {
+		// nactu si data o objednavce
+		$order = $this->Order->find('first', array(
+			'conditions' => array('Order.id' => $id),
+			'contain' => array(
+				'OrderedProduct' => array(
+					'fields' => array('OrderedProduct.id', 'OrderedProduct.product_id', 'OrderedProduct.product_name', 'OrderedProduct.product_quantity', 'OrderedProduct.product_price_with_dph'),
+					'OrderedProductsAttribute' => array(
+						'fields' => array('OrderedProductsAttribute.id', 'OrderedProductsAttribute.ordered_product_id', 'OrderedProductsAttribute.attribute_id'),
+						'Attribute' => array(
+							'fields' => array('Attribute.id', 'Attribute.value'),
+							'Option' => array(
+								'fields' => array('Option.id', 'Option.name')
+							)
+						)
+					),
+					'Product' => array(
+						'fields' => array('Product.id', 'Product.name', 'Product.url', 'Product.manufacturer_id'),
+						'Manufacturer' => array(
+							'fields' => array('Manufacturer.id', 'Manufacturer.name')
+						)
+					),
+				),
+				'Shipping' => array(
+					'fields' => array('Shipping.id', 'Shipping.name', 'Shipping.tracker_prefix', 'Shipping.tracker_postfix')
+				),
+				'Customer' => array(
+					'fields' => array('Customer.id', 'Customer.first_name', 'Customer.last_name', 'Customer.email', 'Customer.phone')
+				),
+				'Status' => array(
+					'fields' => array('Status.id', 'Status.name', 'Status.color'),
+				), 
+				'Payment' => array(
+					'fields' => array('Payment.id', 'Payment.name')
+				),
+				'Ordernote' => array(
+					'fields' => array('Ordernote.id', 'Ordernote.created', 'Ordernote.note'),
+					'Status' => array(
+						'fields' => array('Status.id', 'Status.name')
+					),
+					'Administrator' => array(
+						'fields' => array('Administrator.id', 'Administrator.first_name', 'Administrator.last_name')
+					)
+				)	
+			),
+			'fields' => array('Order.id', 'Order.created', 'Order.comments', 'Order.subtotal_with_dph', 'Order.shipping_cost', 'Order.status_id', 'Order.customer_id', 'Order.customer_phone', 'Order.customer_email', 'Order.customer_name', 'Order.customer_ico', 'Order.customer_dic', 'Order.customer_street', 'Order.customer_city', 'Order.customer_zip', 'Order.customer_state', 'Order.delivery_name', 'Order.delivery_street', 'Order.delivery_city', 'Order.delivery_zip', 'Order.delivery_state', 'Order.shipping_number', 'Order.variable_symbol')
 		));
 
-		$order = $this->Order->read(null, $id);
+		// pokud je zadano spatne id, nic se nenacte,
+		// osetrim presmerovanim
+		if ( empty( $order ) ){
+			$this->Session->setFlash('Neexistující objednávka!', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'), null, true);
+		}
+
+		// potrebuju vytahnout mozne statusy
+		$statuses = $this->Order->Status->find('list');
+
+		// predam data do view
+		$this->set(compact(array('order', 'statuses', 'notes', 'manufacturers')));
+		
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function admin_stats() {
+		$virtual_fields = array(
+			'date' => 'CONCAT(Month(created), "/", Year(created))',
+			'income' => 'SUM(shipping_cost + subtotal_with_dph)',
+			'count' => 'COUNT(*)',
+			'month' => 'Month(created)',
+			'year' => 'Year(created)'
+		);
+		
+		$this->Order->virtualFields = array_merge($this->Order->virtualFields, $virtual_fields);
+		
+		$no_storno_conditions = array('Order.status_id !=' => 5);
+		
+		$no_storno_orders = $this->Order->find('all', array(
+			'conditions' => $no_storno_conditions,
+			'contain' => array(),
+			'fields' => array('Order.date', 'Order.income', 'Order.count'),
+			'group' => array('Order.month', 'Order.year'),
+			'order' => array('Order.year' => 'asc', 'Order.month.asc')
+		));
+		$this->set('no_storno_orders', $no_storno_orders);
+		
+		$no_storno_orders_sum = $this->Order->find('first', array(
+			'conditions' => $no_storno_conditions,
+			'contain' => array(),
+			'fields' => array('Order.income', 'Order.count'),
+		));
+		$this->set('no_storno_orders_sum', $no_storno_orders_sum);
+		
+		$finished_orders_conditions = array('Order.status_id' => 4);
+		
+		$finished_orders = $this->Order->find('all', array(
+			'conditions' => $finished_orders_conditions,
+			'contain' => array(),
+			'fields' => array('Order.date', 'Order.income', 'Order.count'),
+			'group' => array('Order.month', 'Order.year'),
+			'order' => array('Order.year' => 'asc', 'Order.month.asc')
+		));
+		$this->set('finished_orders', $finished_orders);
+		
+		$finished_orders_sum = $this->Order->find('first', array(
+			'conditions' => $finished_orders_conditions,
+			'contain' => array(),
+			'fields' => array('Order.income', 'Order.count'),
+		));
+		$this->set('finished_orders_sum', $finished_orders_sum);
+		
+		unset($this->Order->virtualFields['date']);
+		unset($this->Order->virtualFields['income']);
+		unset($this->Order->virtualFields['count']);
+		unset($this->Order->virtualFields['month']);
+		unset($this->Order->virtualFields['year']);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function admin_print($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadána objednávka, kterou chcete vytisknout.');
+			$this->redirect(array('action' => 'index'));
+		}
+		// nactu si data o objednavce
+		$order = $this->Order->find('first', array(
+			'conditions' => array('Order.id' => $id),
+			'contain' => array(
+				'OrderedProduct' => array(
+					'fields' => array('OrderedProduct.id', 'OrderedProduct.product_id', 'OrderedProduct.product_name', 'OrderedProduct.product_quantity', 'OrderedProduct.product_price_with_dph'),
+					'OrderedProductsAttribute' => array(
+						'fields' => array('OrderedProductsAttribute.id', 'OrderedProductsAttribute.ordered_product_id', 'OrderedProductsAttribute.attribute_id'),
+						'Attribute' => array(
+							'fields' => array('Attribute.id', 'Attribute.value'),
+							'Option' => array(
+								'fields' => array('Option.id', 'Option.name')
+							)
+						)
+					),
+					'Product' => array(
+						'fields' => array('Product.id', 'Product.name', 'Product.url', 'Product.manufacturer_id'),
+						'Manufacturer' => array(
+							'fields' => array('Manufacturer.id', 'Manufacturer.name')
+						)
+					),
+				),
+				'Shipping' => array(
+					'fields' => array('Shipping.id', 'Shipping.name', 'Shipping.tracker_prefix', 'Shipping.tracker_postfix')
+				),
+				'Payment' => array(
+					'fields' => array('Payment.id', 'Payment.name')
+				),
+			)
+		));
+		
 		// pokud je zadano spatne id, nic se nenacte,
 		// osetrim presmerovanim
 		if ( empty( $order ) ){
 			$this->Session->setFlash('Neexistující objednávka!');
 			$this->redirect(array('action' => 'index'), null, true);
 		}
-
-		// potrebuju vytahnout mozne statusy
-		$statuses = $this->Order->Status->find('list');
-		$manufacturers = $this->Order->OrderedProduct->Product->Manufacturer->find('list');
-
-		// predam data do view
-		$this->set(compact(array('order', 'statuses', 'notes', 'manufacturers')));
-
+		
+		$this->set('order', $order);
+		
+		$this->layout = REDESIGN_PATH . 'print';
 	}
 
 	function admin_delete($id){
@@ -109,7 +297,7 @@ class OrdersController extends AppController {
 			if ( empty($this->data['Order']['shipping_number']) ){
 				unset($this->data['Order']['shipping_number']);
 			} else {
-				$this->data['Ordernote']['note'] .= "\n" . 'přidáno čílo balíku: ' . $this->data['Order']['shipping_number'];
+				$this->data['Ordernote']['note'] .= "\n" . 'přidáno číslo balíku: ' . $this->data['Order']['shipping_number'];
 			}
 			
 			// osetrim, zda dochazi ke zmene variabilniho symbolu,
@@ -119,9 +307,10 @@ class OrdersController extends AppController {
 			} else {
 				$this->data['Ordernote']['note'] .= "\n" . 'přidán variabilní symbol: ' . $this->data['Order']['variable_symbol'];
 			}
-			
-			$this->Order->Ordernote->save($this->data);
+
+			$this->Order->Ordernote->save($this->data, false);
 				
+			
 			// zalozim si idecko, abych updatoval
 			$this->Order->id = $this->data['Order']['id'];
 			unset($this->data['Order']['id']);
@@ -132,12 +321,13 @@ class OrdersController extends AppController {
 
 			// odeslat na mail notifikaci zakaznikovi
 			$mail_result = $this->Order->Status->change_notification($this->Order->id, $this->data['Order']['status_id']);
+
 			
-			$this->Session->setFlash('Objednávka byla změněna!');
+			$this->Session->setFlash('Objednávka byla změněna!', REDESIGN_PATH . 'flash_success');
 			$this->redirect(array('action' => 'view', $this->Order->id), null, true);
 		} else {
 			$message = implode("<br />", $valid_requested_fields);
-			$this->Session->setFlash('Chyba při změně statusu!<br />' . $message);
+			$this->Session->setFlash('Chyba při změně statusu!<br />' . $message, REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action' => 'view', $this->Order->id), null, true);
 		}
 	}
@@ -152,8 +342,87 @@ class OrdersController extends AppController {
 	function admin_edit_shipping($id = null){
 		$this->Order->id = $id;
 		$this->Order->save($this->data, false, array('shipping_id'));
+		$this->Order->reCount($id);
 		$this->Session->setFlash('Způsob dopravy byl změněn.');
 		$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id));
+	}
+	
+	function admin_edit_status() {
+		$data = array(
+			'success' => false,
+			'message' => null	
+		);
+		if (!isset($_POST)) {
+			$data['message'] = 'Nejsou nastavena data formuláře pro změnu stavu objednávky.';
+		} else {
+			if (!isset($_POST['id']) || !isset($_POST['statusId']) || !isset($_POST['variableSymbol']) || !isset($_POST['shippingNumber'])) {
+				$data['message'] = 'Není nastavena informace potřebná k uložení změny stavu objednávky.';
+			} else {
+				$id = $_POST['id'];
+				$status_id = $_POST['statusId'];
+				$variable_symbol = $_POST['variableSymbol'];
+				$shipping_number = $_POST['shippingNumber'];
+				
+				
+				// kontrola, zda jsou pro dany status vyzadovana nejake pole
+				$valid_requested_fields = array();
+				$requested_fields = $this->Order->Status->has_requested($status_id);
+				if ( !empty($requested_fields) ){
+					// nejaka pole jsou vyzadovana, takze si to musim zkontrolovat
+					$order = $this->Order->find('first', array(
+						'conditions' => array('Order.id' => $id),
+						'contain' => array(),
+					));
+						
+					foreach ($requested_fields as $key => $value) {
+						if (empty($order['Order'][$key]) && empty($$key)) {
+							$valid_requested_fields[] = $value;
+						}
+					}
+				}
+				if (empty($valid_requested_fields)) {
+					$order = array(
+						'Order' => array(
+							'id' => $id,
+							'status_id' => $status_id
+						),
+						'Ordernote' => array(
+							0 => array(
+								'administrator_id' => $this->Session->read('Administrator.id'),
+								'status_id' => $status_id,
+							)		
+						)
+					);
+					
+					if (!empty($variable_symbol)) {
+						$order['Order']['variable_symbol'] = $variable_symbol;
+						// hlaska, ze je pridan variabilni symbol
+						$order['Ordernote'][0]['note'] = 'přidán variabilní symbol: ' . $variable_symbol;
+					}
+					
+					if (!empty($shipping_number)) {
+						$order['Order']['shipping_number'] = $shipping_number;
+						// hlaska, ze je pridano cislo baliku
+						$order['Ordernote'][0]['note'] = 'přidáno číslo balíku: ' . $shipping_number;
+					}
+
+					if ($this->Order->saveAll($order)) {
+						if (!$this->Order->Status->change_notification($id, $status_id)) {
+							$data['message'] = 'Stav objednávky ' . $id . ' byl úspěšně upraven, ale nepodařilo se odeslat informační email zákazníkovi.';
+						}
+						$data['success'] = true;
+						$data['message'] = 'Stav objednávky ' . $id . ' byl úspěšně upraven.';
+					} else {
+						$data['message'] = 'Stav objednávky ' . $id . ' se nepodařilo upravit.';
+					}
+				} else {
+					$message = implode(" ", $valid_requested_fields);
+					$data['message'] = 'Chyba při změně statusu! ' . $message;
+				}
+			}
+		}
+		echo json_encode($data);
+		die();
 	}
 	
 	/**
@@ -165,31 +434,38 @@ class OrdersController extends AppController {
 		
 		$orders = $this->Order->find('all',
 			array('conditions' => array(
-					// nekontroluju 4 - dorucene objednavky
-					// 8 - objednavka vracena
-					// 5 - storno
-					"NOT" => array(
-						"status_id" => array('4', '8', '5')
-					),
- 					"shipping_number != ''",
+					// nekontroluju terminalni stavy objednavek (closed == true)
+					'Status.closed' => false,
+ 					"Order.shipping_number != ''",
 					//'id' => 3914
 				),
-				'fields' => array('id', 'shipping_id')
+				'contain' => array('Status', 'Shipping'),
+				'fields' => array('Order.id', 'Shipping.heureka_id'),
 			)
 		);
 
 		$bad_orders = array();
 		foreach( $orders as $order ){
 			// rozlisit zpusob doruceni
-			switch ( $order['Order']['shipping_id'] ){
-				case "2":
-					// ceska posta - dobirka
+			switch ( $order['Shipping']['heureka_id'] ){
+				case "CESKA_POSTA":
+					// ceska posta
 					$result = $this->Order->track_cpost($order['Order']['id']);
+					break;
 				break;
-				case "9":
-					// ceska posta - platba predem
-					$result = $this->Order->track_cpost($order['Order']['id']);
+				case "GENERAL_PARCEL":
+					// general parcel
+					$result = $this->Order->track_gparcel($order['Order']['id']);
+					break;
 				break;
+				case "DPD":
+					// DPD
+					$result = $this->Order->track_dpd($order['Order']['id']);
+					break;
+				case "PPL":
+					// PPL
+					$result = $this->Order->track_ppl($order['Order']['id']);
+					break;
 				default:
 					$result = $order['Order']['id'];
 				break;
@@ -201,22 +477,199 @@ class OrdersController extends AppController {
 		}
 		
 		$this->set('bad_orders', $bad_orders);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function admin_pohoda_view() {
+		$orders_to_export = array();
+		$backtrace_url = '/admin/orders';
+		$flash_messages = array();
+		$orders = array();
+		if (isset($this->data)) {
+
+			// je nastavena adresa, na kterou se bude po zpracovani pozadavku presmerovavat
+			if (isset($this->data['Order']['backtrace_url'])) {
+				$backtrace_url = $this->data['Order']['backtrace_url'];
+			}
+			// hledam objednavky, ktere jsem chtel exportovat
+			foreach ($this->data['Order'] as $order_id => $export) {
+				if (isset($export['export']) && $export['export'] && is_int($order_id)) {
+					// mam opravdu v systemu objednavky s timto ideckem
+					if ($this->Order->hasAny(array('Order.id' => $order_id))) {
+						// objednavka je jiz fakturovana
+						if ($this->Order->hasAny(array('Order.id' => $order_id, 'Order.invoice' => false))) {
+							// zapamatuju si objednavku, kterou chci fakturovat
+							$orders[] = $order_id;
+						} else {
+							$flash_messages[] = 'Objednávka č. ' . $order_id . ' je již vyfakturovaná, není součástí exportu.';
+						}
+					} else {
+						$flash_messages[] = 'Objednávka č. ' . $order_id . ' není v systému, není součástí exportu.';
+					}
+				}
+			}
+
+			if (empty($orders)) {
+				$flash_messages[] = 'Žádná objednávka není k fakturaci, export nebyl vytvořen.';
+			} else {
+
+				$file_name = $this->Order->create_pohoda_file($orders);
+
+				if ($file_name !== false) {
+					if (!$this->Order->set_attribute($orders, 'invoice', true)) {
+						$flash_messages[] = 'Nepodařilo se uložit informaci o tom, že objednávky byly vyfakturovány.';
+					}
+				}
+
+				// objednavky, ktere jsem vyexportoval do xml a byly neprijate, dam do stavu prijate
+				$unreceived_orders = $this->Order->find('all', array(
+					'conditions' => array('Order.id' => $orders, 'Order.status_id' => 1),
+					'contain' => array(),
+					'fields' => array('Order.id', 'Order.comments')	
+				));
+				$unreceived_orders = Set::extract('/Order/id', $unreceived_orders);
+
+				if (!$this->Order->set_attribute($orders, 'status_id', 2)) {
+					$flash_messages[] = 'Nepodařilo se uložit informaci o tom, že objednávky byly vyfakturovány.';
+				} else {
+					foreach ($unreceived_orders as $unreceived_order) {
+						$this->Order->Status->change_notification($unreceived_order, 2);
+					}
+				}
+
+				$flash_messages[] = 'Export objednávek do účetního systému Pohoda naleznete <a href="/admin/orders/pohoda_download/' . urlencode($file_name) . '">zde</a>.';
+			}
+		} else {
+			$flash_messages[] = 'Není zadáno, které objednávky chcete exportovat';
+		}
+			
+		$flash_messages = implode('<br/>', $flash_messages);
+		$this->Session->setFlash($flash_messages, REDESIGN_PATH . 'flash_failure');
+		$this->redirect($backtrace_url);
+	}
+	
+	function admin_pohoda_download($file_name = null) {
+		if ($file_name) {
+			header('Content-Type: text/xml');
+			header('Content-Transfer-Encoding: Binary');
+			header('Content-disposition: attachment; filename="' . basename(DS . POHODA_EXPORT_DIR . DS . $file_name) . '"');
+			readfile(POHODA_EXPORT_DIR . DS . $file_name); // do the double-download-dance (dirty but worky)
+			die();
+		}
+		$this->redirect(array('action' => 'index'));
+	}
+	
+	function admin_eform_download($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadáno ID objednávky, u které chcete stáhnout eform.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		if (!$this->Order->hasAny(array('Order.id' => $id))) {
+			$this->Session->setFlash('Objednávka, ke které chcete stánout eform, neexistuje.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		header('Content-Type: text/xml');
+		header('Content-Transfer-Encoding: Binary');
+		header('Content-disposition: attachment; filename="' . basename('pohodaorder.xph') . '"');
+		readfile('http://www.' . CUST_ROOT . '/orders/eform/' . $id); // do the double-download-dance (dirty but worky)
+		die();
+	}
+	
+	function admin_notify_admin($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadáno ID objednávky, u které chcete odeslat email.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		if (!$this->Order->hasAny(array('Order.id' => $id))) {
+			$this->Session->setFlash('Objednávka, ke které chcete odeslat email, neexistuje.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		$this->Order->notifyAdmin($id);
+		$this->Session->setFlash('Informace o nové objednávce byla odeslána', REDESIGN_PATH . 'flash_success');
+		$this->redirect(array('action' => 'index'));
+	}
+	
+	function eform($id = null) {
+		$order = $this->Order->find('first', array(
+			'conditions' => array('Order.id' => $id),
+			'contain' => array(
+				'OrderedProduct' => array(
+					'fields' => array('OrderedProduct.id', 'OrderedProduct.product_name', 'OrderedProduct.product_quantity', 'OrderedProduct.product_price_with_dph'),
+					'Product' => array(
+						'fields' => array('Product.id', 'Product.name', 'Product.tax_class_id', 'Product.pohoda_id'),
+						'Manufacturer' => array(
+							'fields' => array('Manufacturer.id', 'Manufacturer.name')
+						)
+					),
+					'OrderedProductsAttribute' => array(
+						'fields' => array('OrderedProductsAttribute.id'),
+						'Attribute' => array(
+							'fields' => array('Attribute.id', 'Attribute.value'),
+							'Option' => array(
+								'fields' => array('Option.id', 'Option.name')
+							)
+						)
+					)
+				),
+				'Shipping' => array(
+						'fields' => array('Shipping.id', 'Shipping.name')
+				)
+			),
+			'joins' => array(
+				array(
+					'table' => 'payments',
+					'alias' => 'Payment',
+					'type' => 'LEFT',
+					'conditions' => array('Order.payment_id = Payment.id')
+				),
+				array(
+					'table' => 'payment_types',
+					'alias' => 'PaymentType',
+					'type' => 'LEFT',
+					'conditions' => array('Payment.payment_type_id = PaymentType.id')
+				)
+			),
+			'fields' => array(
+				'Order.id',
+				'Order.created',
+				'Order.customer_name',
+				'Order.customer_dic',
+				'Order.customer_ico',
+				'Order.customer_street',
+				'Order.customer_city',
+				'Order.customer_zip',
+				'Order.customer_phone',
+				'Order.customer_email',
+				'Order.shipping_cost',
+				'Order.shipping_tax_class',
+				'Order.comments',
+				'Order.invoice',
+		
+				'Payment.id',
+				'Payment.name',
+					
+				'PaymentType.id',
+				'PaymentType.name'
+			),
+		));
+		
+		$date = explode(' ', $order['Order']['created']);
+		$order['Order']['date'] = $date[0];
+		
+		$this->set('order', $order);
+		$this->layout = REDESIGN_PATH . 'pohoda';
 	}
 	
 	function address_edit(){
 		// navolim si layout, ktery se pouzije
-		$this->layout = 'content';
-		
-		// sestavim breadcrumbs
-		$breadcrumbs = array(
-			array('anchor' => 'Domů', 'href' => '/'),
-			array('anchor' => 'Rekapitulace objednávky', 'href' => '/rekapitulace-objednavky'),
-			array('anchor' => 'Úprava adresy', 'href' => $_SERVER['REQUEST_URI'])
-		);
-		$this->set('breadcrumbs', $breadcrumbs);
+		$this->layout = REDESIGN_PATH . 'content';
 
 		// nastavim si pro menu zakladni idecko
-		$this->set('opened_category_id', 1);
+		$this->set('opened_category_id', ROOT_CATEGORY_ID);
 
 		// nastavim si nadpis stranky
 		$this->set('page_heading', 'Úprava adresy');
@@ -225,19 +678,30 @@ class OrdersController extends AppController {
 			// musi byt validni data
 			$this->Order->Customer->Address->set($this->data);
 			if ( $this->Order->Customer->Address->validates() ){
-				$this->data['Address']['type'] = $this->params['named']['type'];
 				switch ( $this->params['named']['type'] ){
 					case "d":
 						$this->Session->write('Address', $this->data['Address']);
+						// pokud mam jako zpusob doruceni geis point (vydejni misto), musim po zmene adresy poslat zakaznika znova na plugin, kterym
+						// si zvoli vydejni misto
+						// to udelam tak, ze priznak v sesne, ktery mi rika, ze adresa byla vybrana pomoci pluginu, nastavim na false
+						if ($this->Session->check('Order.shipping_id')) {
+							$shipping_id = $this->Session->read('Order.shipping_id');
+							if ($shipping_id == $this->Order->Shipping->GP_shipping_id) {
+								$this->Session->write('Address.plugin_check', false);
+							// pokud mam jiny zpusob dopravy nez GP a mam priznak								
+							} elseif ($this->Session->check('Address.plugin_check')) {
+								// tak ho zahodim
+								$this->Session->delete('Address.plugin_check');
+							}
+						}
 					break;
 					case "f":
 						$this->Session->write('Address_payment', $this->data['Address']);
 					break;
 				}
-				$this->Session->setFlash('Adresa byla upravena.');
 				$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'), null, true);
 			} else {
-				$this->Session->setFlash('Některé údaje nejsou správně vyplněny, zkontrolujte prosím formulář.');
+				$this->Session->setFlash('Některé údaje nejsou správně vyplněny, zkontrolujte prosím formulář.', REDESIGN_PATH . 'flash_failure');
 			}
 		} else {
 			// musim rozlisit, kterou adresu edituju
@@ -264,7 +728,7 @@ class OrdersController extends AppController {
 						$this->redirect(array('controller' => 'customers', 'action' => 'address_edit', 'type' => 'f'));
 					}
 				} else {
-					$this->Session->setFlash('Vložte prosím Vaši doručovací adresu a klikněte znovu na "Zaplatit".');
+					$this->Session->setFlash('Vložte prosím Vaši doručovací adresu a klikněte znovu na "Zaplatit".', REDESIGN_PATH . 'flash_failure');
 					$this->redirect(array('controller' => 'customers', 'action' => 'address_edit', 'type' => 'd'));
 				}
 			} else {
@@ -276,128 +740,210 @@ class OrdersController extends AppController {
 			}
 		}
 
+		// vyzkousim, zda nemuzu preskocit rovnou na rekapitulaci
+		if ( $this->Session->check('Customer') && 
+			$this->Session->check('Address') &&
+			$this->Session->check('Address_payment') &&
+			$this->Session->check('Order.shipping_id') 
+		) {
+			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
+		}
+	
 		// potrebuju si vytahnout statistiky o kosiku,
 		// abych vedel zda je nejake zbozi v kosi
-		
+
 		// pripojim si model
-		$this->Order->bindModel(array('hasOne' => array('CartsProduct')));
+		App::import('Model', 'CartsProduct');
+		$this->Order->CartsProduct = &new CartsProduct;
 		// vytahnu si statistiky kosiku
-		$cart_stats = $this->Order->CartsProduct->getStats($this->Order->CartsProduct->Cart->get_id());
+		$cart_stats = $this->Order->CartsProduct->getStats($this->requestAction('/carts/get_id'));
 
 		// zjistim pocet produktu v kosiku
 		if ( $cart_stats['products_count'] == 0 ){
 			// v kosiku neni zadne zbozi, dam hlasku a presmeruju na kosik
-			$this->Session->setFlash('Nemáte žádné zboží v košíku, v objednávce proto nelze pokračovat.');
+			$this->Session->setFlash('Nemáte žádné zboží v košíku, v objednávce proto nelze pokračovat.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'), null, true);
 		}
-		
-		// vyzkousim, zda nemuzu preskocit rovnou na rekapitulaci
-		if ( $this->Session->check('Customer') &&
-			$this->Session->check('Address') &&
-			$this->Session->check('Address_payment') &&
-			$this->Session->check('Order.shipping_id')
-		) {
-			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
-		}
-		
 		// navolim si layout, ktery se pouzije
-		$this->layout = 'content';
-
-		// nastavim si pro menu zakladni idecko
-		$this->set('opened_category_id', 1);
-
-		// sestavim breadcrumbs
-		$breadcrumbs = array(
-			array('anchor' => 'Domů', 'href' => '/'),
-			array('anchor' => 'Nová objednávka', 'href' => '/orders/add')
-		);
+		$this->layout = REDESIGN_PATH . 'content';
+		
+		$this->set('_title', 'Detaily objednávky');
+		$this->set('_description', 'Informace nutné pro kompletaci objednávky');
+		$breadcrumbs = array(array('anchor' => 'Detaily objednávky', 'href' => '/orders/add'));
 		$this->set('breadcrumbs', $breadcrumbs);
 		
+		// nastavim si pro menu zakladni idecko
+		$this->set('opened_category_id', ROOT_CATEGORY_ID);
+
+		// nastavim si nadpis stranky
+		$this->set('page_heading', 'Objednávka');
+		
 		// vytahnu si list pro select shippings
-		$shipping_choices = $this->Order->Shipping->find('all', array(
-			'contain' => array(),
-			'fields' => array('id', 'name', 'price', 'free'),
-			'order' => array('name' => 'asc')
+		$shipping_choices = $this->Order->Shipping->find('list', array(
+			'conditions' => array('Shipping.active' => true)
 		));
-		// v selectu chci mit, kolik stoji doprava
-		foreach ($shipping_choices as $shipping_choice) {
-			$shipping_item = $shipping_choice['Shipping']['name'] . ' - ' . $shipping_choice['Shipping']['price'] . ' Kč';
-			if ($cart_stats['total_price'] > $shipping_choice['Shipping']['free']) {
-				$shipping_item = $shipping_choice['Shipping']['name'] . ' - zdarma';
-			}
-			$shipping_choices_list[$shipping_choice['Shipping']['id']] = $shipping_item;
-		}
+		$this->set('shipping_choices', $shipping_choices);
 		
-		$this->set('shipping_choices', $shipping_choices_list);
-		
-/*		// vytahnu si list pro select payments
-		$payment_choices = $this->Order->Payment->find('list');
-		$this->set('payment_choices', $payment_choices);*/
+		// vytahnu si list pro select payments
+		$payment_choices = $this->Order->Payment->find('list', array(
+			'conditions' => array('Payment.active' => true)
+		));
+		$this->set('payment_choices', $payment_choices);
 
 		// formular byl uz odeslan
 		if ( isset( $this->data) && !empty($this->data) ){
-			if ( empty($this->data['Address']['name']) ){
-				$this->data['Address']['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+			if (!isset($this->data['Customer']) && $this->Session->check('Customer')) {
+				$this->data['Customer'] = $this->Session->read('Customer');
 			}
 			
+			if ( empty($this->data['Address']['name']) && isset($this->data['Customer'])){
+				$this->data['Address']['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+			}
+
 			// validace dat zakaznika
-			unset($this->Order->Customer->validate['email']['isUnique']);
 			$this->Order->Customer->set($this->data);
 			$valid_customer = $this->Order->Customer->validates();
-			
+
 			// validace dat adresy
 			$this->Order->Customer->Address->set($this->data);
 			$valid_address = $this->Order->Customer->Address->validates();
-			
+
 			// jsou-li data validni
-			if ($valid_address && $valid_customer) {
-				// jestli neni zakaznik prihlaseny a zaroven existuje zakaznik se zadanou emailovou adresou
-				if (!$this->Session->check('Customer.id')) {
-					$customer = $this->Order->Customer->find('first', array(
-						'conditions' => array('Customer.email' => $this->data['Customer']['email']),
-						'contain' => array(),
-						'fields' => array('Customer.id')
-					));
-					// pokud existuje, priradim k objednavce zakaznikovo idcko (at nezakladam noveho a nevznikaji mi ucty
-					// s duplicitnim emailem
-					if (!empty($customer)) {
-						$this->Session->setFlash('Váš email je již v systému zaregistrován. Chcete-li sledovat stav Vaší objednávky a neznáte heslo, nechte si jej zaslat <a href="/obnova-hesla" target="_blank">zde</a>.');
-						$this->data['Customer']['id'] = $customer['Customer']['id'];
-					}
-					// pamatuju si, ze zakaznik neni prihlaseny v objednavce (protoze to vsude testuju z historickych duvodu
-					// pres customer id v sesne a to je mi ted na nic
-					$this->data['Customer']['noreg'] = true;
-				}
+			if ( $valid_address && $valid_customer ){
 				// v prvnim kroku se vklada pouze dorucovaci adresa
 				$this->data['Address']['type'] = 'd';
-				
+
 				// poslu si dal data zakaznika, adresy a objednavky
 				$this->Session->write('Customer', $this->data['Customer']);
 				$this->Session->write('Address', $this->data['Address']);
 				$this->Session->write('Order', $this->data['Order']);
 				$this->redirect(array('action' => 'recapitulation'), null, true);
 			} else {
-				$this->Session->setFlash('Pro pokračování v objednávce vyplňte prosím všechna pole.');
+				$this->Session->setFlash('Pro pokračování v objednávce vyplňte prosím všechna pole.', REDESIGN_PATH . 'flash_failure');
 			}
 		}
+	}
+	
+	function set_payment_and_shipping() {
+		if (isset($this->data)) {
+			$this->data['Order']['payment_id'] =  $this->Order->Shipping->get_payment_id($this->data['Order']['shipping_id']);
+			$this->Session->write('Order', $this->data['Order']);
+			// pokud je jako zpusob dopravy vybrano Geis Point (doruceni na odberne misto), presmeruju na plugin pro vyber odberneho
+			// mista s tim, aby se po navratu presmeroval na ulozeni informaci o vyberu odberneho mista
+			// zpusob dopravy GEIS POINT neni nastaven (id == false)
+			if ($this->data['Order']['shipping_id'] == $this->Order->Shipping->GP_shipping_id) {
+				if ($service_url = $this->Order->Shipping->geis_point_url($this->Session)) {
+					$this->redirect($service_url);
+				} else {
+					$this->Session->setFlash('Zadejte prosím Vaši doručovací adresu');
+					$this->redirect(array('controller' => 'customers', 'action' => 'order_personal_info'));
+				}
+			}
+			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
+		}
+		
+		$shippings = $this->Order->Shipping->find('all', array(
+			'conditions' => array('Shipping.active' => true),
+			'contain' => array(),
+			'order' => array('Shipping.order' => 'asc')
+		));
+		foreach ($shippings as &$shipping) {
+			$shipping['Shipping']['price'] = $this->Order->get_shipping_cost($shipping['Shipping']['id']);
+		}
+		
+		$this->set(compact('shippings'));
+
+		if ($this->Session->check('Order.payment_id')) {
+			$this->data['Order']['payment_id'] = $this->Session->read('Order.payment_id');
+		}
+		
+		if ($this->Session->check('Order.shipping_id')) {
+			$this->data['Order']['shipping_id'] = $this->Session->read('Order.shipping_id');
+		}
+		
+		if ($this->Session->check('Order.comments')) {
+			$this->data['Order']['comments'] = $this->Session->read('Order.comments');
+		}
+		
+		// sestavim breadcrumbs
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Objednávka - doprava a způsob platby', 'href' => '/' . $this->params['url']['url'])
+		);
+		$this->set('breadcrumbs', $breadcrumbs);
+		
+		$this->layout = REDESIGN_PATH . 'content';
 	}
 
 	function recapitulation(){
 		if (!$this->Session->check('Order.shipping_id')) {
-			$this->Session->setFlash('Není zvolena doprava pro Vaši objednávku');
+			$this->Session->setFlash('Není zvolena doprava pro Vaši objednávku', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'));
 		}
 		
 		$order = $this->Session->read('Order');
 		$customer = $this->Session->read('Customer');
+		
+		$shipping_id = $order['shipping_id'];
+		// pokud mam zvoleno dodani na vydejni misto geis point, nactu parametry pro doruceni (z GET nebo sesny)
+		if ($shipping_id == $this->Order->Shipping->GP_shipping_id) {
+			// parametry jsou v GET
+			if (isset($this->params['url']['GPName']) && isset($this->params['url']['GPAddress']) && isset($this->params['url']['GPID'])) {
+				$gp_name = urldecode($this->params['url']['GPName']);
+				$gp_address = urldecode($this->params['url']['GPAddress']);
+				$gp_address = explode(';', $gp_address);
+				$gp_street = '';
+				if (isset($gp_address[0])) {
+					$gp_street = $gp_address[0];
+				}
+				$gp_city = '';
+				if (isset($gp_address[1])) {
+					$gp_city = $gp_address[1];
+				}
+				$gp_zip = '';
+				if (isset($gp_address[2])) {
+					$gp_zip = $gp_address[2];
+				}
+				$gp_id = urldecode($this->params['url']['GPID']);
+				// ulozim do sesny jako dorucovaci adresu
+				$this->Session->write('Address.name', $gp_name . ', ' . $gp_id);
+				$this->Session->write('Address.street', $gp_street);
+				$this->Session->write('Address.street_no', '');
+				$this->Session->write('Address.city', $gp_city);
+				$this->Session->write('Address.zip', $gp_zip);
+				// poznacim si, ze adresa je vybrana pomoci pluginu
+				$this->Session->write('Address.plugin_check', true);
+			} elseif (!$this->Session->check('Address') || !$this->Session->check('Address.plugin_check') || !$this->Session->read('Address.plugin_check')) {
+				// nemam data pro vydejni misto ani v sesne ani v GET, ale potrebuju je, takze presmeruju znova na plugin
+				// pro vyber vydejniho mista a z nej se sem vratim
+				if ($service_url = $this->Order->Shipping->geis_point_url($this->Session)) {
+					$this->redirect($service_url);
+				} else {
+					$this->Session->setFlash('Zadejte prosím Vaši doručovací adresu.');
+					$this->redirect(array('controller' => 'customers', 'action' => 'order_personal_info'));
+				}
+			}
+		}
+		
 		$address = $this->Session->read('Address');
 
-		if (!$this->Session->check('Address_payment')){
+		if (!$this->Session->check('Address_payment')) {
 			$address_payment = $this->Session->read('Address');
 			$address_payment['type'] = 'f';
 			$this->Session->write('Address_payment', $address_payment);
 		}
 		$address_payment = $this->Session->read('Address_payment');
+		
+		// produkty ktere jsou v kosiku
+		$cart_products = $this->requestAction('/carts_products/getProducts/');
+		$this->set('cart_products', $cart_products);
+		
+		$order['shipping_cost'] = $this->Order->get_shipping_cost($order['shipping_id']);
+		// pokud je zvolena doprava na slovensko (id = 6) a platba prevodem (id = 2), je sleva z dopravy 70,-
+		if ($order['shipping_id'] == 16 && $order['payment_id'] == 2) {
+			$order['shipping_cost'] -= 70;
+		}
+		$this->Session->write('Order.shipping_cost', $order['shipping_cost']);
 
 		// data o objednavce
 		$this->set('order', $order);
@@ -408,91 +954,52 @@ class OrdersController extends AppController {
 		// data o adrese fakturacni
 		$this->set('address_payment', $address_payment);
 		
+		// nadpis stranky
+		$this->set('page_heading', 'Rekapitulace objednávky');
+
 		// zakladni layout stranky
-		$this->layout = 'content';
-		
+		$this->layout = REDESIGN_PATH . 'content';
+		$this->set('_title', 'Rekapitulace objednávky');
+		$this->set('_description', 'Kontrola údajů před odesláním objednávky.');
 		// sestavim breadcrumbs
 		$breadcrumbs = array(
 			array('anchor' => 'Domů', 'href' => '/'),
-			array('anchor' => 'Rekapitulace objednávky', 'href' => '/rekapitulace-objednavky')
+			array('anchor' => 'Objednávka - rekapitulace', 'href' => '/' . $this->params['url']['url'])
 		);
 		$this->set('breadcrumbs', $breadcrumbs);
-
-		// produkty ktere jsou v kosiku
-		App::import('Model', 'CartsProduct');
-		$this->CartsProduct = new CartsProduct;
-		$cart_products = $this->CartsProduct->getProducts();
-		if (empty($cart_products)) {
-			$this->Session->setFlash('Nemáte žádné zboží v košíku, v objednávce proto nelze pokračovat.');
-			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'));
-		}
-		$this->set('cart_products', $cart_products);
-
-		// potrebuju si projit produkty z kosiku,
-		// pokud alespon jeden ma akci s dopravou zdarma,
-		// cela objednavka je s dopravou zdarma
-		$free_shipping = false; // prepoklad, ze doprava zdarma nebude
-		foreach ( $cart_products as $cart_product ){
-			// produkt nejaky priznak ma prirazen
-			if ( !empty($cart_product['Product']['Flag']) ){
-				// projdu vsechny priznaky
-				foreach ( $cart_product['Product']['Flag'] as $flag ){
-					// priznak pro dopravu zdarma je "1"
-					if ( $flag['id'] == 1 && $cart_product['CartsProduct']['quantity'] >= $flag['FlagsProduct']['quantity'] ){
-						$free_shipping = true;
-					}
-				}
-			}
-		}
-		$this->set('free_shipping', $free_shipping);
 
 		// vytahnu si data o zpusobu dopravy
 		$shipping = $this->Order->Shipping->get_data($order['shipping_id']);
 		// vytahnu si data o zpusobu platby
+		$payment = $this->Order->Payment->get_data($order['payment_id']);
 		$this->set(compact(array('shipping', 'payment')));
 	}
 
 	function shipping_edit(){
 		// navolim si layout, ktery se pouzije
-		$this->layout = 'content';
-		
-		// sestavim breadcrumbs
-		$breadcrumbs = array(
-			array('anchor' => 'Domů', 'href' => '/'),
-			array('anchor' => 'Rekapitulace objednávky', 'href' => '/rekapitulace-objednavky'),
-			array('anchor' => 'Způsob dopravy a platby', 'href' => '/orders/shipping_edit')
-		);
-		$this->set('breadcrumbs', $breadcrumbs);
+		$this->layout = REDESIGN_PATH . 'content';
 
 		// nastavim si pro menu zakladni idecko
-		$this->set('opened_category_id', 1);
+		$this->set('opened_category_id', ROOT_CATEGORY_ID);
 
-		// pripojim si model
-		$this->Order->bindModel(array('hasOne' => array('CartsProduct')));
-		// vytahnu si statistiky kosiku
-		$cart_stats = $this->Order->CartsProduct->getStats($this->requestAction('/carts/get_id'));
-		
+		// nastavim si nadpis stranky
+		$this->set('page_heading', 'Způsob dopravy a platby');
 		
 		// vytahnu si list pro select shippings
-		$shipping_choices = $this->Order->Shipping->find('all', array(
-			'contain' => array(),
-			'fields' => array('id', 'name', 'price', 'free'),
-			'order' => array('name' => 'asc')
+		$shipping_choices = $this->Order->Shipping->find('list', array(
+			'conditions' => array('Shipping.active' => true)
 		));
-		// v selectu chci mit, kolik stoji doprava
-		foreach ($shipping_choices as $shipping_choice) {
-			$shipping_item = $shipping_choice['Shipping']['name'] . ' - ' . $shipping_choice['Shipping']['price'] . ' Kč';
-			if ($cart_stats['total_price'] > $shipping_choice['Shipping']['free']) {
-				$shipping_item = $shipping_choice['Shipping']['name'] . ' - zdarma';
-			}
-			$shipping_choices_list[$shipping_choice['Shipping']['id']] = $shipping_item;
-		}
+		$this->set('shipping_choices', $shipping_choices);
 		
-		$this->set('shipping_choices', $shipping_choices_list);
+		// vytahnu si list pro select payments
+		$payment_choices = $this->Order->Payment->find('list', array(
+			'conditions' => array('Payment.active' => true)
+		));
+		$this->set('payment_choices', $payment_choices);
 		
 		if ( isset($this->data) ){
 			$this->Session->write('Order', $this->data['Order']);
-			$this->Session->setFlash('Objednávka byla upravena.');
+			$this->Session->setFlash('Objednávka byla upravena.', REDESIGN_PATH . 'flash_success');
 			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation')); 
 		} else {
 			$this->data['Order'] = $this->Session->read('Order');
@@ -501,30 +1008,27 @@ class OrdersController extends AppController {
 	
 	function finalize(){
 		if (!$this->Session->check('Order.shipping_id')) {
-			$this->Session->setFlash('Není zvolena doprava pro Vaši objednávku');
+			$this->Session->setFlash('Není zvolena doprava pro Vaši objednávku', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'));
 		}
 		
-		if (!$this->Session->check('Customer.id')){
-			$sess_customer = $this->Session->read('Customer');
-			// jedna se o neprihlaseneho a nezaregistrovaneho zakaznika
-			// musim vytvorit novy zakaznicky ucet,
-			// takze vygeneruju login a heslo
-			$customer['Customer'] = $sess_customer;
-			$customer['Customer']['login'] = $this->Order->Customer->generateLogin($sess_customer);
+		$sess_customer = $this->Session->read('Customer');
+		$customer['Customer'] = $sess_customer;
+
+		// pridam adresy
+		$customer['Address'][] = $this->Session->read('Address');
+		$customer['Address'][] = $this->Session->read('Address_payment');
+		
+		// jedna se o neprihlaseneho a nezaregistrovaneho zakaznika
+		if (!isset($customer['Customer']['id']) || empty($customer['Customer']['id'])) {
+			// musim vytvorit novy zakaznicky ucet, takze vygeneruju login a heslo
+			$customer['CustomerLogin'][0]['login'] = $this->Order->Customer->generateLogin($sess_customer);
 			$customer_password = $this->Order->Customer->generatePassword($sess_customer['last_name']);
-			$customer['Customer']['password'] = md5($customer_password);
+			$customer['CustomerLogin'][0]['password'] = md5($customer_password);
 			$customer['Customer']['confirmed'] = 1;
 			$customer['Customer']['registration_source'] = 'eshop';
+			$customer['Customer']['customer_type_id'] = 1;
 			
-			// pridam adresy
-			$customer['Address'][] = $this->Session->read('Address');
-			$customer['Address'][] = $this->Session->read('Address_payment');
-
-			// ulozim si bokem heslo v nezahashovane podobe,
-			// v dalsim pohledu mu ho chci vypsat
-			$this->Session->write('cpass', $customer_password);
-		
 			$c_dataSource = $this->Order->Customer->getDataSource();
 			$c_dataSource->begin($this->Order->Customer);
 			try {
@@ -536,32 +1040,29 @@ class OrdersController extends AppController {
 			}
 			$c_dataSource->commit($this->Order->Customer);
 			
-			// jedna se o nove zalozeny zakaznicky ucet,
-			// takze mu poslu notifikaci, pokud pri registraci
-			// uvedl svou emailovou adresu
-			$this->Order->Customer->notify_account_created($customer['Customer']);
+			// jedna se o nove zalozeny zakaznicky ucet, takze mu poslu notifikaci, pokud pri registraci uvedl svou emailovou adresu
+			$customer['CustomerLogin'][0]['password'] = $customer_password;
+			$this->Session->write('cpass', $customer_password);
+			$this->Session->write('login', $customer['CustomerLogin'][0]['login']);
+			$this->Order->Customer->notify_account_created($customer);
 			$customer['Customer']['id'] = $this->Order->Customer->id;
+//			$this->Session->write('Customer.id', $customer['Customer']['id']);
 			$this->Session->delete('Customer.noreg');
-		} else {
-			// zakaznik je zaregistrovany, takze jen nastavim
-			// jeho id podle session a updatenu, kdyby nahodou
-			// menil nektere ze svych kontaktnich udaju
-			$customer = $this->Order->Customer->find('first', array(
-				'conditions' => array('Customer.id' => $this->Session->read('Customer.id')),
-				'contain' => array(
-					'Address' => array(
-						'order' => array('Address.type' => 'asc')
-					)
-				)
-			));
+			
 		}
 
 		//data pro objednavku
 		$order = $this->Order->build($customer);
 
+		if ($order === false) {
+			$this->Session->setFlash('Objednávku se nepodařilo uložit, máte správně zadané adresy?', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
+		}
+
 		$dataSource = $this->Order->getDataSource();
 		$dataSource->begin($this->Order);
 		try {
+
 			$this->Order->save($order[0]);
 			// musim ulozit objednavku a smazat produkty z kosiku
 			foreach ($order[1] as $ordered_product) {
@@ -570,7 +1071,7 @@ class OrdersController extends AppController {
 			}
 		} catch (Exception $e) {
 			$dataSource->rollback($this->Order);
-			$this->Session->setFlash('Uložení objednávky se nepodařilo, zopakujte prosím znovu dokončení objednávky.');
+			$this->Session->setFlash('Uložení objednávky se nepodařilo, zopakujte prosím znovu dokončení objednávky.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
 		}
 		$this->Order->cleanCartsProducts();
@@ -587,40 +1088,42 @@ class OrdersController extends AppController {
 		$this->Session->write('Order.id', $this->Order->id);
 
 		// nastavim hlasku a presmeruju
-		$this->Session->setFlash('Vaše objednávka byla úspešně uložena!');
+		$this->Session->setFlash('Vaše objednávka byla úspešně uložena!', REDESIGN_PATH . 'flash_success');
+
 		$this->redirect(array('action' => 'finished'), null, true);
 	} // konec funkce
 	
-	function finished(){
+	function finished() {
 		$id = $this->Session->read('Order.id');
-		if (empty($id)){
+		if ( empty($id) ){
 			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'), null, true);
 		}
-		
+
 		if (!$this->Session->check('Customer.id') || ($this->Session->check('Customer.id') && $this->Session->check('Customer.noreg'))) {
 			// tenhle zaznam mazu jen kdyz se jedna o neprihlaseneho
 			$this->Session->delete('Customer');
 		}
-
 		// smazu zaznamy o objednavce ze session
 		$pass = $this->Session->read('cpass');
+		$login = $this->Session->read('login');
 		$this->Session->delete('Order');
 		$this->Session->delete('Address');
 		$this->Session->delete('Address_payment');
 		$this->Session->delete('cpass');
+		$this->Session->delete('login');
 				
 		// navolim si layout, ktery se pouzije
-		$this->layout = 'content';
-		
-		// sestavim breadcrumbs
-		$breadcrumbs = array(
-			array('anchor' => 'Domů', 'href' => '/'),
-			array('anchor' => 'Děkujeme', 'href' => '/orders/finished')
-		);
+		$this->layout = REDESIGN_PATH . 'content';
+		$this->set('_title', 'Potvrzení objednávky');
+		$this->set('_description', 'Potvrzení odeslání objednávky do systému ' . CUST_NAME);
+		$breadcrumbs = array(array('anchor' => 'Potvrzení objednávky', 'href' => '/orders/finished'));
 		$this->set('breadcrumbs', $breadcrumbs);
 
 		// nastavim si pro menu zakladni idecko
-		$this->set('opened_category_id', 1);
+		$this->set('opened_category_id', ROOT_CATEGORY_ID);
+
+		// nastavim nadpis stranky
+		$this->set('page_heading', 'Objednávka byla dokončena');
 		
 		$conditions = array(
 			'Order.id' => $id
@@ -631,7 +1134,11 @@ class OrdersController extends AppController {
 				'fields' => array(
 					'id', 'product_id', 'product_price_with_dph', 'product_quantity'
 				),
-				'OrderedProductsAttribute',
+				'OrderedProductsAttribute' => array(
+					'Attribute' => array(
+						'Option'
+					)
+				),
 				'Product' => array(
 					'fields' => array(
 						'id', 'name', 'tax_class_id'
@@ -658,10 +1165,10 @@ class OrdersController extends AppController {
 		// celkova dan vsech produktu v objednavce
 		$tax_value = 0;
 		
-  		// heureka overeno zakazniky
+		// heureka overeno zakazniky
 		App::import('Vendor', 'HeurekaOvereno', array('file' => 'HeurekaOvereno.php'));
 		try {
-			$overeno = new HeurekaOvereno('f4ce59a7e0b67e0468b557653c8db5b2');
+			$overeno = new HeurekaOvereno('5c898f377be0c776bcfb82767b52fba2');
 			$overeno->setEmail($order['Order']['customer_email']);
 			foreach ($order['OrderedProduct'] as $op) {
 				$overeno->addProductItemId($op['Product']['id']);
@@ -671,7 +1178,6 @@ class OrdersController extends AppController {
 			$overeno->send();
 		} catch (Exception $e) {}
 
-		// js kod pro GA
 		foreach ( $order['OrderedProduct'] as $op ){
 			$sku = $op['Product']['id'];
 			$variations = '';
@@ -681,8 +1187,8 @@ class OrdersController extends AppController {
 
 			$tax_value = $tax_value + $p_tax_value;
 			
-			foreach ( $op['OrderedProductsAttribute'] as $opa ){
-				$variations[] = $opa['option_name'] . ': ' . $opa['value_name'];
+			foreach ( $op['OrderedProductsAttribute'] as $opa ) {
+				$variations[] = $opa['Attribute']['Option']['name'] . ': ' . $opa['Attribute']['value'];
 			}
 			
 			if ( !empty($variations) ){
@@ -708,7 +1214,7 @@ class OrdersController extends AppController {
 		$jscript_code = "
 			_gaq.push(['_addTrans',
 				'" . $order['Order']['id'] . "',           // order ID - required
-				'www." . CUST_ROOT . "',  // affiliation or store name
+				'www.' . CUST_ROOT,  // affiliation or store name
 				'" . $order['Order']['orderfinaltotal'] . "',          // total - required
 				'" . $tax_value . "',           // tax
 				'" . $order['Order']['shipping_cost'] . "',              // shipping
@@ -720,195 +1226,73 @@ class OrdersController extends AppController {
 		
 		$jscript_code .= "\n\n" . "_gaq.push(['_trackTrans']);"; //submits transaction to the Analytics servers
 
-		$contents = file_get_contents('js/ga-add.js');
-		
-		$jscript_code = str_replace('//GA DATA', $jscript_code, $contents);
-		
 		$this->set('jscript_code', $jscript_code);
 
-		// vytahnu info o objednavce
-		$order = $this->Order->read(null, $id);
 		$order['Customer']['password'] = $pass;
+		$order['Customer']['login'] = $login;
+		
 		$this->set('order', $order);
+
 	}
-	
-	function admin_old_import() {
-		$my_orders = $this->Order->find('all', array(
-			'contain' => array(),
-			'fields' => array('id')
-		));
-		$my_order_ids = Set::extract('/Order/id', $my_orders);
-		
-		$conditions = '';
-		if (!empty($my_orders)) {
-			$conditions = ' WHERE OldOrder.id NOT IN (' . implode(',', $my_order_ids) . ')';
-		}
-		
-		$old_orders = $this->Order->query("
-			SELECT *
-			FROM old_orders AS OldOrder
-			" . $conditions
-		);
 
-		foreach ($old_orders as $old_order) {
-			// sestavim zakaznika s jeho adresou
-			$customer = array(
-				'Customer' => array(
-					'first_name' => $old_order['OldOrder']['name'],
-					'last_name' => $old_order['OldOrder']['surname'],
-					'phone' => $old_order['OldOrder']['phone'],
-					'email' => $old_order['OldOrder']['email'],
-					'company_name' => $old_order['OldOrder']['company'],
-					'company_ico' => $old_order['OldOrder']['ico'],
-					'company_dic' => $old_order['OldOrder']['dic'],
-					'registration_source' => 'eshop',
-					'confirmed' => true,
-					'newsletter' => true,
-					'created' => $old_order['OldOrder']['date'],
-				),
-				'Address' => array(
-					array(
-						'name' => $old_order['OldOrder']['name'] . ' ' . $old_order['OldOrder']['surname'],
-						'street' => $old_order['OldOrder']['address'],
-						'zip' => $old_order['OldOrder']['psc'],
-						'city' => $old_order['OldOrder']['city'],
-						'state' => 'Česká republika',
-						'type' => 'd'
-					),
-					array(
-						'name' => (empty($old_order['OldOrder']['f_name']) ? $old_order['OldOrder']['name'] . ' ' . $old_order['OldOrder']['surname'] : $old_order['OldOrder']['f_name']),
-						'street' => (empty($old_order['OldOrder']['f_address']) ? $old_order['OldOrder']['address'] : $old_order['OldOrder']['f_address']),
-						'zip' => (empty($old_order['OldOrder']['f_psc']) ? $old_order['OldOrder']['psc'] : $old_order['OldOrder']['f_psc']),
-						'city' => (empty($old_order['OldOrder']['f_city']) ? $old_order['OldOrder']['city'] : $old_order['OldOrder']['f_city']),
-						'state' => 'Česká republika',
-						'type' => 'f'
-					)
-				)
-			);
-			// dogeneruju login a heslo
-			$customer['Customer']['login'] = $this->Order->Customer->generateLogin($customer['Customer']);
-			$customer['Customer']['password'] = $this->Order->Customer->generatePassword($customer['Customer']);
-			
-			// ulozim zakaznika i s adresou
-			if (!$this->Order->Customer->saveAll($customer, array('validate' => false))) {
-				debug($old_order);
-				debug($customer);
-				die('nepodarilo se ulozit zakaznika');
-			}
-			
-			// prevedu jejich info o stavu objednavky do naseho
-			switch ($old_order['OldOrder']['status']) {
-				case 'new': $status_id = 1; break;
-				case 'done': $status_id = 4; break;
-				case 'storno': $status_id = 5; break;
-				case 'ordr': $status_id = 4; break;
-			}
-			
-			// prevedu jejich info o zpusobu dodani objednavky do naseho
-			switch($old_order['OldOrder']['transit']) {
-				case 'Soukromý přepravce': $shipping_id = 7; break;
-				case 'Naše soukromá doprava': $shipping_id = 6; break;
-				case 'Česká pošta': $shipping_id = 2; break;
-			}
+	function admin_create_addresses(){
+		$orders = $this->Order->find('all');
 
-			// sestavim objednavku
-			$order = array(
-				'Order' => array(
-					'id' => $old_order['OldOrder']['id'],
-					'created' => $old_order['OldOrder']['date'],
-					'customer_id' => $this->Order->Customer->id,
-					'customer_name' => $customer['Address'][1]['name'],
-					'customer_ico' => $customer['Customer']['company_ico'],
-					'customer_dic' => $customer['Customer']['company_dic'],
-					'customer_first_name' => $customer['Customer']['first_name'],
-					'customer_last_name' => $customer['Customer']['last_name'],
-					'customer_street' => $customer['Address'][1]['street'],
-					'customer_city' => $customer['Address'][1]['city'],
-					'customer_zip' => $customer['Address'][1]['zip'],
-					'customer_state' => $customer['Address'][1]['state'],
-					'customer_phone' => $customer['Customer']['phone'],
-					'customer_email' => $customer['Customer']['email'],
-					'delivery_name' => $customer['Address'][0]['name'],
-					'customer_first_name' => $customer['Customer']['first_name'],
-					'delivery_last_name' => $customer['Customer']['last_name'],
-					'delivery_street' => $customer['Address'][0]['street'],
-					'delivery_city' => $customer['Address'][0]['city'],
-					'delivery_zip' => $customer['Address'][0]['zip'],
-					'delivery_state' => $customer['Address'][0]['state'],
-					'status_id' => $status_id,
-					'shipping_id' => $shipping_id,
-					'payment_id' => NULL,
-					'comments' => $old_order['OldOrder']['pozn']
-				),
-				'OrderedProduct' => array()
-			);
+		foreach ( $orders as $order ){
+			// inicializace
+			$payment_address = array();
+			$shipping_address = array();
+			unset($this->Order->Customer->Address->id);
 			
-			// nasctu polozky objednavky
-			$old_order_items = $this->Order->query("
-				SELECT *
-				FROM old_order_items AS OldOrderItem
-				WHERE OldOrderItem.order=" . $old_order['OldOrder']['id'] 
+			$payment_address = array(
+				'customer_id' => $order['Customer']['id'],
+				'name' => $order['Order']['customer_first_name'] . ' ' . $order['Order']['customer_last_name'],
+				'street' => $order['Order']['customer_street'],
+				'city' => $order['Order']['customer_city'],
+				'zip' => $order['Order']['customer_zip'],
+				'state' => $order['Order']['customer_state']
 			);
 
-			// doplnit celkovou cenu objednavky (s dph) - secist polozky objednavky mimo dopravy
-			// inicializace ceny
-			$subtotal_with_dph = 0;
-			
-			foreach ($old_order_items as $old_order_item) {
-				// doplnit cenu dopravy objednavky, je jako polozka old objednavky
-				if ($old_order_item['OldOrderItem']['code'] == 'POST') {
-					$order['Order']['shipping_price'] = $old_order_item['OldOrderItem']['price'];
-				} else {
-					// podle kodu musim najit produkt, ktery je objednan
-					$product = $this->Order->OrderedProduct->Product->find('first', array(
-						'conditions' => array('code' => $old_order_item['OldOrderItem']['code']),
-						'contain' => array(),
-						'fields' => array('id')
-					));
-					
-					$product_id = null;
-					if (!empty($product)) {
-						$product_id = $product['Product']['id'];
-					}
-					
-					$order['OrderedProduct'][] = array(
-						'product_id' => $product_id,
-						'product_price_with_dph' => $old_order_item['OldOrderItem']['price'],
-						'product_quantity' => $old_order_item['OldOrderItem']['count']
-					);
-					
-					$subtotal_with_dph += $old_order_item['OldOrderItem']['price'];
+			$shipping_address = array(
+				'customer_id' => $order['Customer']['id'],
+				'name' => $order['Order']['delivery_first_name'] . ' ' . $order['Order']['delivery_last_name'],
+				'street' => $order['Order']['delivery_street'],
+				'city' => $order['Order']['delivery_city'],
+				'zip' => $order['Order']['delivery_zip'],
+				'state' => $order['Order']['delivery_state']
+			);
+
+			$same = true;
+			foreach ( $payment_address as $key => $value ){
+				if ( $payment_address[$key] != $shipping_address[$key] ){
+					$same = false;
 				}
 			}
-			
-			$order['Order']['subtotal_with_dph'] = $subtotal_with_dph;
-			
-			if (!$this->Order->saveAll($order)) {
-				debug($order);
-				debug($old_order);
-				debug($old_order_items);
-				die('nepodailo se ulozit objednavku');
+
+			$result = $this->Order->Customer->Address->save($payment_address);
+			debug($result);
+
+			if ( !$same ){
+				unset($this->Order->Customer->Address->id);
+				$result = $this->Order->Customer->Address->save($shipping_address);
 			}
 		}
-		die('hotovo');
+		die();
 	}
 	
-	function viewPdf($id){
-		$order = $this->Order->find('first', array(
-			'conditions' => array(
-				'Order.id' => $id
-			),
-			'contain' => array(
-				'Customer',
-				'OrderedProduct' => array(
-					'Product'
-				),
-				'Shipping'
-			)
-		));
+	function import() {
+		$this->Order->import();
+		die('here');
+	}
+
+	function update() {
+		$this->Order->update();
+		die('here');
+	}
 	
-		$this->set('order', $order);
-		$this->layout = 'pdf'; //this will use the pdf.ctp layout
+	function test() {
+		$this->Order->notifyAdmin(36293);
+		die('hotovo');
 	}
 } // konec tridy
 ?>

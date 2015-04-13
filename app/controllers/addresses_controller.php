@@ -17,5 +17,10 @@ class AddressesController extends AppController{
 			$this->redirect(array('controller' => 'customers', 'action' => 'view',$address['Address']['customer_id']), null, true);
 		}
 	}
+	
+	function admin_import() {
+		$this->Address->import();
+		die('here');
+	}
 }
 ?>

@@ -19,6 +19,15 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+/**
+ * Pokud nekdo chce jit na '/admin' nebo '/admin/', presmeruju na log in
+ */
+date_default_timezone_set('Europe/Prague');
+if ($_SERVER['REQUEST_URI'] == '/admin' || $_SERVER['REQUEST_URI'] == '/admin/') {
+	header("HTTP/1.1 301 Moved Permanently");
+	header("Location: http://" . $_SERVER['HTTP_HOST'] . "/admin/administrators/login");
+	exit();
+}
 
 /**
  * Use the DS to separate the directories in other defines
@@ -53,7 +62,6 @@
 	if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 		define('CAKE_CORE_INCLUDE_PATH', ROOT);
 	}
-
 /**
  * Editing below this line should NOT be necessary.
  * Change at your own risk.
@@ -80,7 +88,6 @@
 	if (isset($_GET['url']) && $_GET['url'] === 'favicon.ico') {
 		return;
 	} else {
-
 		$Dispatcher = new Dispatcher();
 		$Dispatcher->dispatch();
 	}

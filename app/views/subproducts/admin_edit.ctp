@@ -1,4 +1,4 @@
-<h2>Upravit atribut</h2>
+﻿<h2>Upravit atribut</h2>
 <div class="subproduct">
 <?php echo $form->create('Subproduct', array('url' => array_merge(   array('action' => 'edit', 'id' => null), $this->params['pass']   )));?>
 	<fieldset>

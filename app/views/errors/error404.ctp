@@ -1,6 +1,4 @@
-<?php $this->layout = 'content'?>
-
-<h2>Stránka nenalezena</h2>
+﻿<h2><span>Stránka nenalezena</span></h2>
 <p class="error">
 	<strong>chyba: </strong>
 	<?php echo sprintf(__("Požadovaná stránka %s nebyla nalezena.", true), "<strong>'{$message}'</strong>")?>

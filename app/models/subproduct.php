@@ -10,8 +10,6 @@ class Subproduct extends AppModel {
 		'Availability'
 	);
 
-	
-
 	var $hasMany = array(
 		'AttributesSubproduct' => array(
 			'dependent' => true
@@ -44,6 +42,57 @@ class Subproduct extends AppModel {
 			$filter = 'option_id:' . $params['option_id'];
 		}
 		return $filter;
+	}
+	
+	/*
+	 * Natahne sportnutrition data
+	*/
+	function import() {
+		$this->truncate();
+		$snSubproducts = $this->findAllSn();
+		foreach ($snSubproducts as $snSubproduct) {
+			$subproduct = $this->transformSn($snSubproduct);
+			$this->create();
+			if (!$this->save($subproduct)) {
+				debug($subproduct);
+				debug($this->validationErrors);
+				$this->save($subproduct, false);
+			}
+		}
+		
+		return true;
+	}
+	
+	function findAllSn($condition = null) {
+		$this->setDataSource('admin');
+		$query = '
+			SELECT *
+			FROM subproducts AS SnSubproduct
+		';
+		if ($condition) {
+			$query .= '
+				WHERE ' . $condition . '
+			';
+		}
+		$snSubproducts = $this->query($query);
+		$this->setDataSource('default');
+		return $snSubproducts;
+	}
+	
+	function transformSn($snSubproduct) {
+		$subproduct = array(
+			'Subproduct' => array(
+				'id' => $snSubproduct['SnSubproduct']['id'],
+				'price_with_dph' => $snSubproduct['SnSubproduct']['price_with_dph'],
+				'price_wout_dph' => $snSubproduct['SnSubproduct']['price_wout_dph'],
+				'product_id' => $snSubproduct['SnSubproduct']['product_id'],
+				'pieces' => $snSubproduct['SnSubproduct']['pieces'],
+				'active' => $snSubproduct['SnSubproduct']['active'],
+				'availability_id' => $snSubproduct['SnSubproduct']['availability_id'],
+			)
+		);
+
+		return $subproduct;
 	}
 }
 ?>

@@ -12,10 +12,15 @@ class CartsProductsController extends AppController {
 	function index() {
 		// kosik nesouvisi s kategoriemi,
 		// menu necham zavrene
-		$opened_category_id = 1;
+		$opened_category_id = ROOT_CATEGORY_ID;
 		
-		$this->layout = 'content';
-		
+		$this->layout = REDESIGN_PATH . 'content';
+
+		// nastavim si titulek stranky
+		$this->set('page_heading', 'Obsah nákupního košíku');
+		$this->set('_title', 'Obsah nákupního košíku');
+		$this->set('_description', 'Jednoduchá správa obsahu nákupního košíku');
+
 		// sestavim breadcrumbs
 		$breadcrumbs = array(
 			array('anchor' => 'Domů', 'href' => '/'),
@@ -23,11 +28,7 @@ class CartsProductsController extends AppController {
 		);
 		$this->set('breadcrumbs', $breadcrumbs);
 
-		// nastavim si titulek stranky
-		$this->set('page_heading', 'Obsah nákupního košíku');
-
 		// potrebuju vedet, ktery kosik mam zobrazit
-
 		// odpojim nepotrebne modely
 		$this->CartsProduct->unbindModel(array('belongsTo' => array('Cart')));
 		$this->CartsProduct->Product->unbindModel(
@@ -43,9 +44,22 @@ class CartsProductsController extends AppController {
 		// vytahnu si vsechny produkty, ktere patri
 		// do zakaznikova kose
 		$cart_products = $this->CartsProduct->find('all', array(
-			'conditions' => array('CartsProduct.cart_id' => $this->CartsProduct->cart_id)
+			'conditions' => array('CartsProduct.cart_id' => $this->CartsProduct->cart_id),
+			'contain' => array(
+				'Product' => array(
+					'Image' => array(
+						'conditions' => array('Image.is_main' => true)
+					),
+					'fields' => array(
+						'Product.id',
+						'Product.name',
+						'Product.url'
+					)
+				)
+			)
 		));
-		foreach ( $cart_products as $index => $cart_product ){
+
+		foreach ($cart_products as $index => $cart_product) {
 			// u produktu si pridam jmenne atributy
 			// chci tam dostat pole napr (barva -> bila, velikost -> S) ... takze (option_name -> value)
 			// pokud znam id subproduktu, tak ma produkt varianty a muzu si je jednoduse vytahnout
@@ -61,14 +75,11 @@ class CartsProductsController extends AppController {
 				));
 				$subproduct = $this->CartsProduct->Product->Subproduct->read();
 				$product_attributes = array();
-				if ($subproduct) {
-					foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
-						$product_attributes[$attributes_subproduct['Attribute']['Option']['name']] = $attributes_subproduct['Attribute']['value'];
-					}
+				foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
+					$product_attributes[$attributes_subproduct['Attribute']['Option']['name']] = $attributes_subproduct['Attribute']['value'];
 				}
 				$cart_products[$index]['CartsProduct']['product_attributes'] = $product_attributes;
 			}
-			//$cart_products[$index]['CartsProduct']['product_attributes'] = $this->requestAction('subproducts/to_names', array('attributes' => $cart_product['CartsProduct']['product_attributes']));
 		}
 
 		$this->set('cart_products', $cart_products);
@@ -77,23 +88,26 @@ class CartsProductsController extends AppController {
 	
 	function add() {
 		$this->data['CartsProduct'] = $this->params['CartsProduct'];
+		
+		App::import('Model', 'CustomerType');
+		$this->CustomerType = new CustomerType;
+		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
 
-		// musim si vytahnout info o produktu
+		$this->CartsProduct->Product->virtualFields['price'] = $this->CartsProduct->Product->price;
 		$product = $this->CartsProduct->Product->find('first', array(
 			'conditions' => array('Product.id' => $this->data['CartsProduct']['product_id']),
-			'contain' => array(
-				'Subproduct',
-				'Availability' => array(
-					'fields' => array('Availability.id', 'Availability.name', 'Availability.cart_allowed')
+			'contain' => array('Subproduct'),
+			'fields' => array('*', 'Product.price'),
+			'joins' => array(
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
 				)
-			),
+			)
 		));
-		
-		// stav produktu musi umoznovat vlozeni do kosiku (cart_allowed == true)
-		if (!$product['Availability']['cart_allowed']) {
-			$this->Session->setFlash('Produkt je ve stavu <strong>' . $product['Availability']['name'] . '</strong> a nyní ho nelze objednat.');
-			$this->redirect('/' . $product['Product']['url']);
-		}
+		unset($this->CartsProduct->Product->virtualFields['price']);
 
 		// pokud ma produkt varianty a neni zadna zvolena, musim ho poslat na detail produktu a vyhodit flash
 		if (!empty($product['Subproduct']) && !(isset($this->data['Subproduct']) || isset($this->data['Product']['Option']))) {
@@ -102,7 +116,7 @@ class CartsProductsController extends AppController {
 		}
 		
 		// nejnizsi cena je povazovana za zakladni cenu produktu
-		$total_price_with_dph = $this->CartsProduct->Product->assign_discount_price($product);
+		$total_price_with_dph = $product['Product']['price'];
 		
 		// vytahnu si info o subproduktech pokud
 		// nejake existuji a pripoctu jejich prirustkovou cenu
@@ -121,7 +135,7 @@ class CartsProductsController extends AppController {
 		// inicializuju si objekt
 		$this->CartsProduct->create();
 		// vytvorim si data, ktera ulozim
-		$this->data['CartsProduct']['cart_id'] = $this->CartsProduct->Cart->get_id();
+		$this->data['CartsProduct']['cart_id'] = $this->requestAction('carts/get_id');
 		$this->data['CartsProduct']['price_with_dph'] = $total_price_with_dph;
 
 		// nejdriv zkontroluju, jestli uz produkt nemam
@@ -142,32 +156,33 @@ class CartsProductsController extends AppController {
 			$c = $this->CartsProduct->read(array('CartsProduct.quantity'));
 			$c['CartsProduct']['quantity'] = $c['CartsProduct']['quantity'] + $this->data['CartsProduct']['quantity'];
 			$this->CartsProduct->save($c);
+//			$this->CartsProduct->updateAll(array('quantity' => '`quantity` + ' . $this->data['CartsProduct']['quantity']), array('Cart.id' => $cpID));
 		}
 		return true;
 	}
 	
 	function edit($id){
 		// predpoklad ze se to nepodari
-		$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.');
+		$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.', REDESIGN_PATH . 'flash_failure');
 
 		// najdu si produkt a upravim ho
 		if ( $this->CartsProduct->findByIds($this->CartsProduct->cart_id, $id) ){
 			$this->CartsProduct->id = $this->data['CartsProduct']['id'];
 			unset($this->data['CartsProduct']['id']);
 			$this->CartsProduct->save($this->data['CartsProduct'], false, array('quantity'));
-			$this->Session->setFlash('Množství bylo upraveno');
+			$this->Session->setFlash('Množství bylo upraveno', REDESIGN_PATH . 'flash_success');
 		}
 		$this->redirect(array('action' => 'index'), null, true);
 	}
 
 	function delete($id){
 		// predpoklad ze se to nepodari
-		$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.');
+		$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.', REDESIGN_PATH . 'flash_failure');
 
 		// najdu si produkt a smazu ho
 		if ( $this->CartsProduct->findByIds($this->CartsProduct->cart_id, $id) ){
 			$this->CartsProduct->delete($id);
-			$this->Session->setFlash('Produkt byl z košíku vymazán.');
+			$this->Session->setFlash('Produkt byl z košíku vymazán.', REDESIGN_PATH . 'flash_success');
 		}
 		$this->redirect(array('action' => 'index'), null, true);
 	}

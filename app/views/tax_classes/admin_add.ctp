@@ -1,33 +1,18 @@
-<h2>Vložení daňové třídy</h2>
-<div class="option">
+﻿<h2>Vložení daňové třídy</h2>
 <?php echo $form->create('TaxClass');?>
-	<fieldset>
- 		<legend>Daňová třída</legend>
-		<table class="leftHeading" cellpadding="5" cellspacing="3">
-			<tr>
-				<th>
-					Název daňové třídy
-				</th>
-				<td>
-					<?=$form->text('name')?>
-					<?=$form->error('name')?>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					Hodnota daně
-				</th>
-				<td>
-					<?=$form->text('value')?>
-					<?=$form->error('value')?>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
-	<?=$form->end('Vložit');?>
-</div>
-<div class="actions">
-	<ul>
-		<li><?php echo $html->link(__('Zpět na seznam daňových tříd', true), array('action'=>'index'));?></li>
-	</ul>
-</div>
+<table class="tabulkaedit" cellpadding="5" cellspacing="3">
+	<tr class="nutne">
+		<td>Název daňové třídy</td>
+		<td><?php echo $this->Form->input('TaxClass.name', array('label' => false))?></td>
+	</tr>
+	<tr class="nutne">
+		<td>Hodnota daně</td>
+		<td><?php echo $this->Form->input('TaxClass.value', array('label' => false))?></td>
+	</tr>
+</table>
+<?php 
+	echo $this->Form->hidden('TaxClass.active', array('value' => true));
+	echo $this->Form->submit('Uložit');
+	echo $this->Form->end()
+?>
+<div class="prazdny"></div>

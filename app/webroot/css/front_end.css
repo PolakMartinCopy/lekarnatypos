@@ -1,0 +1,873 @@
+body, ul, form, h1, h2, h3{
+	margin:0; padding:0;
+}
+
+div#flashMessage{
+	font-family:Tahoma;
+	border:1px solid red;
+	background:yellow;
+	color:red;
+	font-size:14px;
+	padding:15px;
+	margin:15px;
+}
+
+a:hover{
+	text-decoration:none;
+}
+
+div#content-wrapper{
+	width:970px;
+	margin:auto;
+	background:url(/images/body-background.gif);
+}
+
+div#top-links{
+	border:1px solid #FFFFFF;
+	background-color:#EB872F;
+	padding:3px;
+}
+
+div#top-links ul li{
+	display:inline;
+	margin-right:20px;
+}
+
+div#top-links ul li a{
+	color:#FFFFFF;
+	font-weight:bold;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:13px;
+}
+
+div#top-baner{
+	width:970px; height:102px;
+	background:url("/images/banernovy.jpg") no-repeat;
+	background-color:#BAC308;
+}
+
+div#cart-info-box{
+	text-align:right;
+	background:url(/images/login-paper.gif) no-repeat right;
+	height:72px; /* -30 */
+	padding-top:30px;
+	padding-right:45px;
+	font-family:Arial;
+	font-size:12px;
+}
+
+div#top-stripe-navi{
+	width:970px; height:31px;
+	background:url("/images/sportovni-vyziva-vrch-2.jpg") no-repeat;
+	background-color: #2B98DE;
+}
+
+div#mid-left-column-wrapper{
+	width:770px;
+	float:left;
+}
+
+
+/************************************************************************
+	DEFINICE PRO LEVY SLOUPEC
+**
+*/
+
+div#left-column{
+	/*border-top:3px solid red;*/
+	float:left;
+	width:200px;
+	background-color:#C2C6C7;
+}
+
+.menu ul {
+	padding: 0px;
+	margin: 0px;
+	border-right: 1px solid #A9CCDE;
+	font-family:Verdana;		
+}
+
+.menu ul a.menuItem {
+	line-height: 2em;	
+	color: #003A78;
+	font-size:11px;
+	height: 24px;
+	display: block;
+	text-align: left;
+	text-decoration: none;
+	background-image: url(/images/lightBlueBackground.gif);
+	padding-left: 10px;
+	border-left: #EB872F 8px solid;
+}
+
+.menu ul a.menuItem2Lines {
+	line-height: 2em;	
+	color: #003A78;
+	font-size:11px;
+	height: 45px;
+	display: block;
+	text-align: left;
+	text-decoration: none;
+	background-image: url(/images/lightBlueBackground.gif);
+	padding-left: 10px;
+	border-left: #EB872F 8px solid;
+}
+
+.menu ul a.menuItem:hover, .menu ul a.menuItem2Lines:hover {
+	color: white;
+	background: #2B98DE;
+	border-left-color: #FFFFFF;
+}
+
+.menu ul li {
+	border-bottom: 1px solid #A9CCDE;
+	list-style-type: none;
+}
+
+div#posilovaci-stroje-vrch{
+	height:31px;
+	background-image: url(/images/posilovaci-stroje-vrch.jpg);
+}
+
+div#sportovni-obleceni-vrch{
+	height:31px;
+	background-image: url(/images/sportovni-obleceni-vrch.jpg);
+}
+
+div#novinky-vrch{
+	height:31px;
+	background-image: url(/images/novinky-vrch.jpg);
+}
+
+div#novinky{
+	text-align:center;
+	font-family:Arial;
+	font-size:12px;
+}
+
+div#vyrobci-vrch{
+	height:31px;
+	background-image: url(/images/vyrobci-vrch.jpg);
+}
+
+div#spoluprace-vrch{
+	height:31px;
+	background-image: url(/images/spolupracujeme-vrch.jpg);
+}
+
+div#spoluprace{
+	font-size:11px;
+	padding:5px;
+	font-family:Arial;
+}
+
+
+
+
+
+/************************************************************************
+	DEFINICE PRO PROSTREDNI SLOUPEC
+**
+*/
+
+div#middle-column{
+	/*border-top:3px solid blue;*/
+	float:right;
+	width:554px; /* 16px padding */
+	padding:8px;
+	background-color: #F2F7FD;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+div#middle-column h1{
+	color:#EB872F;
+	font-size:24px;
+}
+
+div#middle-column h2 {
+	font-size:12px;
+}
+
+div#middle-column p {
+	font-size:12px;
+}
+
+.productBox {
+	width: 544px; /* border -2px; padding - 8px; */
+	border: 1px solid #8AD4FF;
+	margin: 4px 0px 4px 0px;
+	padding:4px;
+	color: #003A78;
+	clear:both;
+}
+.productBox h2 {
+	margin: 5px 0px 0px 10px;
+	padding: 0px;
+	height:30px;
+	line-height:1.1;
+}
+
+.productBox h2 a, table#productsList th h2 a {
+	color: #E3191C;	
+	font-size: 12px;	
+	overflow:hidden;
+}
+
+.productBox h2 a:hover {
+	color: darkblue;
+}
+
+.imageBox, .topShadow, .bottomShadow {
+	width: 114px;
+}
+
+.productBox .imageBox  {
+	margin-left: 15px;
+	float: left;
+}
+
+.imageBox {
+	margin: 15px 20px 0px 0px;
+	text-align:center;
+}
+
+.imageBox .zoom {
+	background-image: url(/images/zoom.gif);
+	width: 99%;
+	background-repeat: no-repeat;
+	background-position: right;
+	height: 17px;
+	padding-right:12px;
+	width:95px;
+}
+
+.imageBox .topShadow {
+	background-image: url(/images/imageBoxShadow1.gif);
+	height: 3px;
+	font-size: 0px;
+}
+
+.imageBox .shadow {
+	background-image: url(/images/imageBoxShadow2.gif);	
+	width: 114px;
+}
+
+.imageBox a img{
+	border:none;
+}
+
+.imageBox .bottomShadow {
+	background-image: url(/images/imageBoxShadow3.gif);
+	height: 4px;
+	font-size: 0px;
+}
+
+.imageBox span.price {
+	color: red;
+	font-family: Tahoma;	
+	font-weight: bold;
+	text-align: center;
+}
+
+span.old_price {
+	font-size:9px;
+	text-decoration:line-through;
+}
+
+
+.productBox p {
+	padding: 0px;
+	font-size: 13px;
+	font-family: Tahoma;
+	text-align:justify;
+}
+
+.detailBox {
+
+}
+
+.detailBox a, .detailBox .manufacturer {	
+	font-family: Tahoma;
+	font-weight: bold;
+	color: #003A78;
+	font-size:11px;
+}
+
+.manufacturer{
+
+}
+
+.detailBox .details {
+	float: left;
+}
+
+.productBox .buyBox {
+/*	float:left;*/
+	width: 536px;
+}
+#productCard .buyBox {	
+	/*margin-top: 15px;*/
+}
+
+.buyBox {	
+	height: 32px;
+	background-image: url(/images/lightBlueBackground.gif);
+	border: 1px solid #A9CCDE;
+	clear: both;	
+/*	margin-bottom: 3px;*/
+	line-height: 32px;
+	font-size: 11px;
+	font-weight: bold;
+	padding-left:5px;
+}
+
+.buyBox form {
+	padding: 0px;
+	margin: 0px;
+	display:inline;
+}
+
+input.quantity {
+	width:20px;
+/*	width: 30px;
+	border: 1px solid #08407C;
+	margin: 0px 0px 0px 10px;*/
+}
+
+input.buyNow, input.changeAmount {
+	font-size: 11px;
+	font-weight: bold;
+	border:none;
+	cursor:pointer;
+	color:red;
+	background:url(/images/cartLink.gif) no-repeat 3px top;
+	padding:3px 3px 3px 19px;
+	margin-top:7px;
+}
+
+input.changeAmount{
+	color:blue;
+}
+
+.buyBox div, .buyBox form {
+/*	float: left;*/
+}
+
+.buyBox .cartDiv {
+	background-image: url(/images/cartLink.gif);
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left: 25px;
+	margin-left: 10px;
+	display: inline;
+}
+.productBox .buyBox form input {
+/*	_margin-top: 5px;
+	margin-right: 135px;
+	display: inline;*/
+}
+#productCard .buyBox form input {
+	_margin-top: 5px;	
+	margin-right: 360px;
+	_margin-right: 346px;
+}
+
+.buyBox a {	
+	color: #003A78;
+}
+
+div.breadcrumbs {
+	font-size: 12px;
+	padding: 5px;
+}
+
+div.listingChoices{
+	padding:5px;
+	font-size:12px;
+}
+
+div#subcategoriesWrapper{
+	margin-top:5px;
+	width:546px;
+	padding:3px;
+	font-size:11px;
+	border:1px solid #294E95;
+	border-top:3px solid #294E95;
+}
+
+/** ********************* 	*/
+/*  detail produktu 		*/
+/** ********************* 	*/
+
+
+h1.productName {
+	margin: 15px 0px 0px 15px;
+	padding: 0px;
+	color: #E3191C;	
+	font-size: 18px;
+	text-decoration: underline;
+}
+
+#productCard {
+	margin-top:10px;
+	border-left: 1px solid #8AD4FF;
+	float: left;
+	padding-left:10px;
+	color: #003A78;
+	width: 370px;
+}
+
+div#productCard ul, ol{
+	font-size:12px;
+	margin-left:15px;
+}
+
+#productCard p, table {
+	font-size:12px;
+}
+
+#productPictures {
+	width: 125px;
+	float: left;
+}
+
+#productCard .productDescription {
+	font-size:12px;
+}
+
+#productCard .productDescription th {
+	width: 100px;
+	text-align:left;
+}
+
+#productCard h3 {
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left: 25px;
+	margin-left: 11px;
+	font-family: tahoma;
+	text-decoration: underline;
+	font-size: 14px;
+}
+
+#productCard #details {
+	background-image: url(/images/infoLink.gif);
+}
+
+table#productsList{
+	margin-top:5px;
+	width:554px;
+	margin:auto;
+}
+
+table#productsList th{
+	font-size:12px;
+}
+
+table#productsList td p{
+	text-align:justify;
+}
+
+h2#details{
+	font-size:21px;
+	color:#E3191C;
+	margin:20px 0px 10px 0px;
+	border-bottom:1px solid #E3191C;
+}
+
+div.similarProductBox{
+	width:110px;
+	height:260px;
+	overflow:hidden;
+	float:left;
+	padding:5px;
+	border:1px solid #F5F5F5;
+	margin-right:10px;
+}
+
+span.puv_cena_rp{
+	font-size:9px;
+}
+
+span.nova_cena_rp{
+	font-size:11px;
+	font-weight:bold;
+}
+
+table.related_image_holder td{
+	height:107px;
+	width:100px;
+	padding:0px;
+	margin:0px;
+	border:1px solid silver;
+	background:#FFF;
+}
+
+
+div.similarProductBox h3{
+	margin-bottom: 10px;
+	margin-top: -15px;
+	height:45px;
+	overflow:hidden;
+}
+
+div.similarProductBox h3 a{
+	font-size:12px;
+	color:blue;
+}
+
+div.similarProductBox p{
+	font-size:9px !important;
+	text-align:left;
+}
+
+/************************************************************************
+	DEFINICE PRO PRAVY SLOUPEC
+**
+*/
+
+div#right-column{
+	/*border-top:3px solid green;*/
+	float:right;
+	width:200px;
+	background-color:#C2C6C7;
+}
+
+div#hledani-vrch{
+	height:31px;
+	background-image: url(/images/hledani-vrch.jpg);
+}
+
+div#hledani-form{
+	text-align:center;
+}
+
+div#hledani-form input.submit{
+	background-color:#A4DB24;
+	border:1px solid #000000;
+}
+
+div#user-menu-vrch{
+	height:31px;
+	background-image: url(/images/menu-vrch.jpg);
+}
+
+ul#user-menu li{
+	list-style-type:none;
+}
+
+ul#user-menu li a{
+	padding-left:10px;
+	font-size:12px;
+	font-weight:bold;
+	font-family:Arial;
+	color:#000000;
+}
+
+/*********************************************************
+		PATICKA
+**********************************************************/
+
+div#footer{
+	background-color:#C2C6C7;
+	text-align:center;
+	font-family:Tahoma;
+	font-size:11px;
+	font-weight:bold;
+	padding:7px;
+}
+
+
+/**********************************************************
+		OTHERS
+***********************************************************/
+
+table#cartContents{
+	border:1px solid #254589;
+	font-size:12px;
+}
+
+table#cartContents th{
+	background:#254589;
+	color:#FFFFFF;
+	padding:5px;
+}
+
+table#cartContents td{
+	padding:5px;
+	border-bottom:1px solid #254589;
+}
+
+table#cartContents td input{
+	display:inline;
+}
+
+div.submit{
+	display:inline;
+}
+
+form#orderForm legend{
+	font-weight:bold;
+}
+
+form#orderForm fieldset{
+	margin-bottom:10px;
+}
+
+
+table#orderForm{
+	padding:10px;
+	font-size:12px;
+}
+
+table#orderForm sup{
+	color:red;
+}
+
+table#orderForm th{
+	text-align:right;
+	width:200px;
+	font-weight:normal;
+}
+
+#orderAndPay{
+	padding-left:25px;
+	background: url(/images/payLink.gif) no-repeat;
+	font-weight:bold;
+}
+
+table#recapWrapper{
+	border:1px solid #254589;
+}
+
+table#recapWrapper h3{
+	font-size:17px;
+	font-weight:normal;
+}
+
+table#recapWrapper td.leftBorder{
+	border-left:1px solid #254589;
+	width:70%;
+}
+
+table#recapProducts th{
+	background-color:#EDF9FF;
+	font-weight:normal;
+}
+
+td.totalPrice, th.totalPrice{
+	font-size:17px;
+	font-weight:normal;
+	text-align:right;
+}
+
+a#finalLink{
+	font-size:17px;
+}
+
+a#finalLink:hover{
+	text-decoration:none;
+}
+
+a.smallLinkEdit{
+	font-size:9px;
+}
+
+div#editorContent{
+	padding:10px;
+}
+
+div#editorContent h2{
+	font-size:17px;
+	font-weight:normal;
+	color:#AC0909;
+}
+
+table#recapWrapper{
+	border:1px solid #254589;
+	font-size:12px;
+	background:#FFFFFF;
+}
+
+table#recapWrapper h3{
+	font-size:17px;
+	font-weight:normal;
+}
+
+table#recapWrapper td.leftBorder{
+	border-left:1px solid #254589;
+	width:70%;
+}
+
+table#recapProducts th{
+	background-color:#EDF9FF;
+	font-weight:normal;
+}
+
+td.totalPrice, th.totalPrice{
+	font-size:17px;
+	font-weight:normal;
+	text-align:right;
+}
+
+a#finalLink{
+	font-size:17px;
+}
+
+a#finalLink:hover{
+	text-decoration:none;
+}
+
+a.smallLinkEdit{
+	font-size:9px;
+}
+
+table#customerLayout{
+	border:1px solid #00235F;
+	background:#FFFFFF;
+}
+
+table#customerLayout th{
+	padding:5px;
+	color:#FFFFFF;
+	background:#00235F;
+	font-size:15px;
+}
+
+table#customerLayout td{
+	background:#e7f5ff;
+}
+
+table#customerLayout table.topHeading th{
+	text-align:center;
+	background:transparent;
+	color:#000000;
+	border:1px solid #FFFFFF;
+	font-size:12px;
+}
+
+table#customerLayout table.topHeading td{
+	background:#FFFFFF;
+	padding:5px;
+}
+
+table#customerLayout table.leftHeading th{
+	text-align:right;
+	background:transparent;
+	color:#000000;
+	border:1px solid #FFFFFF;
+	font-size:12px;
+}
+
+table#customerLayout table.leftHeading td{
+	background:#FFFFFF;
+	padding:5px;
+}
+
+p.productNote{
+	border-left:5px solid silver;
+	padding:4px;
+	text-align:justify;
+}
+
+div.error-message{
+	color:red;
+}
+
+input.form-error{
+	border:1px solid red;
+}
+
+/**********************************************************
+		STYLY PRO HOMEPAGE
+***********************************************************/
+
+table.homepage-product-list{
+	background-color:#CCCCFF;
+}
+table.homepage-product-list td{
+	background-color:#FFFFFF;
+}
+
+table.homepage-product-list td.width-wrapper{
+	width:170px;
+}
+
+table.homepage-product-list-cell td.image{
+	width:60px;
+	text-align:center;
+}
+
+table.homepage-product-list-cell td.image div.image-wrapper{
+	height:50px;
+	text-align:center;
+}
+
+table.homepage-product-list-cell td.image p.regular-price{
+	text-decoration:line-through;
+	font-size:9px;
+}
+
+table.homepage-product-list-cell td h3{
+	font-size:11px;
+	padding:0;margin:0;
+}
+
+table.homepage-product-list-cell td h3 a{
+	color: #E3191C;
+}
+
+table.homepage-product-list-cell td p{
+	font-size:10px !important;
+	text-align:justify;
+	padding:0;margin:0;
+}
+
+table.homepage-product-list-cell td.product-properties{
+	height:140px;
+}
+
+
+
+/* styly pro vyhledavaci stranku */
+p.title, p.resultdesc,p.url{
+	padding:0; margin:0;
+}
+
+p.title{
+	margin-top:12px;
+}
+
+p.url{
+	color:green;
+}
+
+.darkClass {
+	background:url(http://www.nutrishop.cz/images/pruhledny-pixel.png) repeat;
+    z-index: 20;
+    width: 100%;
+    position:absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#loading {
+	font-family:Verdana;
+	font-size:17px;
+	z-index: 50;
+	margin:auto;
+	margin-top:200px;
+	text-align:center;
+	color:#222;
+	background:#FFF;
+	position:relative;
+	width:250px;
+	height:150px;
+	border:1px solid #222;
+	padding:30px;
+}
+
+#ManufacturerSelect {
+	width:192px;
+	margin-top:5px;
+}

@@ -40,10 +40,10 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	$admin_ips = array('213.194.204.132', '85.237.227.52', '85.132.201.158', '127.0.0.1');
+	$admin_ids = array('213.194.204.132', '85.132.201.158', '127.0.0.1');
 
 	Configure::write('debug', 0);
-	if (in_array($_SERVER['REMOTE_ADDR'], $admin_ips)) {
+	if (in_array($_SERVER['REMOTE_ADDR'], $admin_ids)) {
 		Configure::write('debug', 2);
 	}
 
@@ -63,6 +63,7 @@
  * And uncomment the App.baseUrl below:
  */
 	//Configure::write('App.baseUrl', env('SCRIPT_NAME'));
+	Configure::write('App.base', '/');
 /**
 
  * Uncomment the define below to use CakePHP prefix routes.
@@ -267,6 +268,5 @@
  *
  */
 	Cache::config('default', array('engine' => 'File'));
-	
-	date_default_timezone_set('Europe/Prague');
+
 ?>

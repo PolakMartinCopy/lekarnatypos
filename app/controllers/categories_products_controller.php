@@ -5,42 +5,30 @@ class CategoriesProductsController extends AppController {
 	var $helpers = array('Form');
 	
 	var $paginate = array(
-				'limit' => 50,
-				'order' => array(
-					'CategoriesProduct.product_id' => 'desc'
-				),
-		);
-	
-	function admin_add($product_id){
-		// zkopiruje produkt do vybrane kategorie
-		if ( !isset($this->data) ){
-			// nactu si data o produktu
-			$product = $this->CategoriesProduct->Product->find('first', array(
-				'conditions' => array('Product.id' => $product_id),
-				'contain' => array(),
-				'fields' => array('id', 'name')
-			));
-			
-			$this->data['CategoriesProduct']['product_id'] = $product_id;
-			
-			// najdu si kategorie, kam uz produkt patri
-			$contained = $this->CategoriesProduct->find('all', array(
-				'conditions' => array('product_id' => $product_id),
-				'contain' => array('Category')
-			));
-			
-			// nactu si strom kategorií
-			$categories = $this->CategoriesProduct->Category->generatetreelist(array('not' => array('id' => array('5'))), '{n}.Category.id', '{n}.Category.name', ' - ');
-			$this->set(compact(array('categories', 'contained', 'product')));
-		} else {
-			$this->CategoriesProduct->create();
-			if ($this->CategoriesProduct->save($this->data['CategoriesProduct'])) {
-				$this->Session->setFlash('Produkt byl zkopírován.');
-				$this->redirect(array('controller' => 'products', 'action' => 'category_actions', $this->data['CategoriesProduct']['product_id'], $this->data['CategoriesProduct']['category_id']), null, true);
+		'limit' => 50,
+		'order' => array(
+			'CategoriesProduct.product_id' => 'desc'
+		),
+	);
+		
+	function admin_add(){
+		if (isset($this->data)){
+			if ($this->CategoriesProduct->hasAny($this->data['CategoriesProduct'])) {
+				$this->Session->setFlash('Produkt je již přiřazen do kategorie.', REDESIGN_PATH . 'flash_failure');
 			} else {
-				$this->Session->setFlash('Produkt nemohl být zkopírován, došlo k chybě.');
+				$this->CategoriesProduct->create();
+				if ($this->CategoriesProduct->save($this->data)) {
+					$this->Session->setFlash('Produkt byl přiřazen do kategorie.', REDESIGN_PATH . 'flash_success');
+				} else {
+					$this->Session->setFlash('Produkt nemohl být zkopírován, došlo k chybě.', REDESIGN_PATH . 'flash_failure');
+				}
 			}
+			$this->redirect(array('controller' => 'products', 'action' => 'edit_categories', $this->data['CategoriesProduct']['product_id'], (isset($this->params['named']['category_id']) ? $this->params['named']['category_id'] : null)));
+		} else {
+			$this->Session->setFlash('Neznámý produkt.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
 		}
+		
 	}
 		
 	// presun produktu mezi kategoriemi
@@ -57,41 +45,50 @@ class CategoriesProductsController extends AppController {
 		} else {
 			if ($this->CategoriesProduct->save($this->data)) {
 				$this->Session->setFlash('Produkt byl přesunut.');
-				$this->redirect(array('controller' => 'products', 'action' => 'category_actions', $this->data['CategoriesProduct']['product_id'], $this->data['CategoriesProduct']['category_id']), null, true);
+				$this->redirect(array('controller' => 'categories', 'action' => 'list_products', $this->data['CategoriesProduct']['category_id']), null, true);
 			} else {
 				$this->Session->setFlash('Produkt nemohl být přesunut.');
 			}
 		}
 	}
 	
-	function admin_delete($id, $category_id) {
-		$categories_product = $this->CategoriesProduct->find('first', array(
-			'conditions' => array('CategoriesProduct.id' => $id),
-			'contain' => array('Product', 'Category')
-		));
-		if ($this->CategoriesProduct->delete($id)) {
-			$this->Session->setFlash('Produkt ' . $categories_product['Product']['name'] . ' byl odstraněn z kategorie ' . $categories_product['Category']['name']);
-		} else {
-			$this->Session->setFlash('Product se z kategorie nepodařilo odstranit, opakujte prosím akci');
+	// smaze prirazeni produktu do kategorie
+	function admin_delete($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Neznámé přiřazení do kategorie.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
 		}
 		
-		$redirect_category_id = $category_id;
-
-		$this->redirect(array('controller' => 'products', 'action' => 'category_actions', $categories_product['CategoriesProduct']['product_id'], $redirect_category_id));
+		$categories_product = $this->CategoriesProduct->find('first', array(
+			'conditions' => array('CategoriesProduct.id' => $id),
+			'contain' => array(),
+			'fields' => array('CategoriesProduct.id', 'CategoriesProduct.product_id')	
+		));
+		
+		if (empty($categories_product)) {
+			$this->Session->setFlash('Neexistující přiřazení do kategorie.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
+		
+		if ($this->CategoriesProduct->delete($id)) {
+			$this->Session->setFlash('Produkt byl odstraněn z kategorie.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Produkt se nepodařilo odstranit z kategorie.', REDESIGN_PATH . 'flash_failure');
+		}
+		$this->redirect(array('controller' => 'products', 'action' => 'edit_categories', $categories_product['CategoriesProduct']['product_id'], (isset($this->params['named']['category_id']) ? $this->params['named']['category_id'] : null)));
 	}
 	
-	function view($id = null){
+	function view($id = null) {
 		if (!$id) {
 			die('neni zvolena kategorie, kterou chcete zobrazit');
 		}
-
+		
 		// navolim si layout, ktery se pouzije
-		$this->layout = 'content';
-
-		// nastavim si pro menu IDecko kategorie,
-		// kterou momentalne prohlizim
+		$this->layout = REDESIGN_PATH . 'content';
+		
+		// nastavim si pro menu IDecko kategorie, kterou momentalne prohlizim
 		$this->set('opened_category_id', $id);
-		// sestavim breadcrumbs
+		
 		$path = $this->CategoriesProduct->Category->getPath($id);
 		$breadcrumbs = array();
 		
@@ -108,91 +105,207 @@ class CategoriesProductsController extends AppController {
 		}
 		$this->set('breadcrumbs', $breadcrumbs);
 		
-		// musim nacist produkty ze subkategorii
-		$category_ids = array();
-		$category_ids = $this->CategoriesProduct->Category->get_subcategories_ids($id);
-
-		if (!empty($category_ids)) {
-			$conditions = array('CategoriesProduct.category_id' => $category_ids, 'Product.active' => true);
-		}
-		
-		$order = array();
-		// pokud chci produkty seradit podle jmena, muzu to udelat uz v selectu (podle ceny musim radit zvlast pak v kodu)
-		if ((isset($_GET['sort_name']) && $_GET['sort_name'] == 'name') || (!isset($_GET['sort_name']) && !isset($_GET['sort_order']))) {
-			$sort_direction = 'asc';
-			if (isset($_GET['sort_order']) && $_GET['sort_order'] == 'desc') {
-				$sort_direction = 'desc';
-			}
-			$order = array('Product.name' => $sort_direction);
-		}
-
-		// nactu si produkty
-		$products = $this->CategoriesProduct->Product->find('all', array(
-			'conditions' => $conditions,
-			'contain' => array(
-				'Image' => array(
-					'conditions' => array(
-							'is_main' => '1'
-					),
-					'fields' => array('Image.id', 'Image.name', 'Image.is_main')
-				),
-				'Manufacturer' => array(
-					'fields' => array('Manufacturer.id', 'Manufacturer.name')
-				),
-				'Availability' => array(
-					'fields' => array('Availability.id', 'Availability.name', 'Availability.cart_allowed')
-				)
-			),
-			'fields' => array('DISTINCT Product.id', 'Product.name', 'Product.short_description', 'Product.retail_price_with_dph', 'Product.discount_common', 'Product.discount_member', 'Product.url'),
-			'joins' => array(
-				array(
-					'table' => 'categories_products',
-					'alias' => 'CategoriesProduct',
-					'type' => 'INNER',
-					'conditions' => array('Product.id = CategoriesProduct.product_id')
-				)
-			),
-			'order' => $order
-		));
-
-		// musim si projit vsechny produkty, jestli nemaji nejakou slevu
-		for ( $i = 0; $i < count($products); $i++ ){
-			$products[$i]['Product']['discount_price'] = $this->CategoriesProduct->Product->assign_discount_price($products[$i]);
-		}
-
-		// pokud chci radit podle ceny (bud nemam vubec zadny parametry pro razeni -> chci radi podle ceny vzestupne, nebo mam zadany v GET, ze chci radit podle ceny)
-		if (isset($_GET['sort_name']) && $_GET['sort_name'] == 'price') {
-			$sort_direction = '_asc';
-			if (isset($_GET['sort_order']) && $_GET['sort_order'] == 'desc') {
-				$sort_direction = '_desc';
-			}
-			$products = $this->CategoriesProduct->Product->sort_by_price($products, $sort_direction);
-		}
-
-		$this->set('products', $products);
-		
-		// nejprodavanejsi produkty v kategorii
-		$category_most_sold_products = $this->CategoriesProduct->Category->get_most_sold($id);
-		$this->set('category_most_sold_products', $category_most_sold_products);
-
-		// urcim si jak se zobrazi produkty
-		$listing_style = 'products_listing_grid';
-		$this->set('listing_style', $listing_style);
-
 		// nactu si info o kategorii
 		$category = $this->CategoriesProduct->Category->find('first', array(
-			'conditions' => array('Category.id' => $id),
-			'contain' => array(),
-			'fields' => array('Category.id', 'Category.title', 'Category.description', 'Category.heading', 'Category.name', 'Category.content')
+			'conditions' => array('Category.id' => $id, 'Category.active' => true),
+			'contain' => array()	
 		));
-		$this->set('title_for_content', $category['Category']['title']);
-		$this->set('description_for_content', $category['Category']['description']);
-		$this->set('category', $category);
-		$page_heading = $category['Category']['heading'];
-		if (empty($page_heading)) {
-			$page_heading = $category['Category']['name'];
+		
+		if (empty($category)) {
+			$this->cakeError('error404');
 		}
-		$this->set('page_heading', $page_heading);
+
+		// k informaci o kategorii pridam text o sleve pro registrovane
+		App::import('Model', 'Setting');
+		$this->Setting = &new Setting;
+		$category_text = $this->Setting->findValue('CATEGORYTEXT');
+		
+		$category['Category']['content'] = $category['Category']['content'] . ($category_text ? $category_text : '');
+		$this->set('category', $category);
+		
+		// nastavim head tagy
+		$_title = $category['Category']['title'];
+		$_description = $category['Category']['description'];
+		$this->set('_title', $_title);
+		$this->set('_description', $_description);
+		// nejprodavanejsi produkty
+		App::import('Model', 'CustomerType');
+		$this->CustomerType = new CustomerType;
+		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+		$category_most_sold = $this->CategoriesProduct->Category->get_most_sold($id, $customer_type_id);
+		$this->set('category_most_sold_products', $category_most_sold);
+		
+		$category_ids = $this->CategoriesProduct->Category->children($category['Category']['id']);
+		$category_ids = Set::extract('/Category/id', $category_ids);
+		$category_ids[] = $id;
+		
+		$conditions = array(
+			'CategoriesProduct.category_id' => $category_ids,
+			'Product.active' => true,
+			'Product.price >' => 0
+		);
+
+		if (isset($_GET['manufacturer_id']) && !empty($_GET['manufacturer_id'])) {
+			$manufacturer_id = $_GET['manufacturer_id'];
+			$manufacturer_id_arr = explode(',', $manufacturer_id);
+			if ($this->CategoriesProduct->Product->Manufacturer->filter_limit && count($manufacturer_id_arr) == $this->CategoriesProduct->Product->Manufacturer->filter_limit) {
+				$manufacturer_id = '';
+			} else {
+				$conditions = array_merge($conditions, array('Product.manufacturer_id' => $manufacturer_id_arr));
+				$this->data['CategoriesProduct']['manufacturer_id'] = $manufacturer_id;
+			}
+		}
+
+		$joins = array(
+			array(
+				'table' => 'ordered_products',
+				'alias' => 'OrderedProduct',
+				'type' => 'LEFT',
+				'conditions' => array('OrderedProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'categories_products',
+				'alias' => 'CategoriesProduct',
+				'type' => 'INNER',
+				'conditions' => array('CategoriesProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'images',
+				'alias' => 'Image',
+				'type' => 'LEFT',
+				'conditions' => array('Image.product_id = Product.id AND Image.is_main = "1"')
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPrice',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+			),
+			array(
+				'table' => 'availabilities',
+				'alias' => 'Availability',
+				'type' => 'INNER',
+				'conditions' => array('Availability.id = Product.availability_id')
+			)
+		);
+
+		if (isset($_GET['attribute_id']) && !empty($_GET['attribute_id'])) {
+			$attribute_id = $_GET['attribute_id'];
+			$attribute_id_arr = explode(',', $attribute_id);
+			$conditions = array_merge($conditions, array('AttributesSubproduct.attribute_id' => $attribute_id_arr));
+			$this->data['CategoriesProduct']['attribute_id'] = $attribute_id;
+			
+			$add_joins = array(
+				array(
+					'table' => 'subproducts',
+					'alias' => 'Subproduct',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = Subproduct.product_id'),
+				),
+				array(
+					'table' => 'attributes_subproducts',
+					'alias' => 'AttributesSubproduct',
+					'type' => 'LEFT',
+					'conditions' => array('Subproduct.id = AttributesSubproduct.subproduct_id')
+				)
+			);
+			
+			$joins = array_merge($joins, $add_joins);
+		}
+
+		$this->paginate['Product'] = array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.url',
+				'Product.short_description',
+				'Product.retail_price_with_dph',
+				'Product.discount_common',
+				'Product.sold',
+				'Product.price',
+				'Product.rate',
+					
+				'Image.id',
+				'Image.name',
+				
+				'Availability.id',
+				'Availability.cart_allowed'
+
+			),
+			'joins' => $joins,
+			'group' => 'Product.id',
+		);
+
+		
+		$this->paginate['Product']['show'] = 'all';
+		
+		// sestavim podminku pro razeni podle toho, co je vybrano
+		$order = array('Availability.cart_allowed' => 'desc');
+		if (isset($this->data['CategoriesProduct']['sorting'])) {
+			switch ($this->data['CategoriesProduct']['sorting']) {
+				// vychozi razeni podle priority
+				case 0: $order = array_merge($order, array('Product.priority' => 'asc')); break;
+				// nastavim razeni podle prodejnosti
+				case 1: $order = array_merge($order, array('Product.sold' => 'desc')); break;
+				// nastavim razeni podle ceny
+				case 2: $order = array_merge($order, array('Product.price' => 'asc')); break;
+				case 3: $order = array_merge($order, array('Product.price' => 'desc')); break;
+				// nastavim razeni podle nazvu
+				case 4: $order = array_merge($order, array('Product.name' => 'asc')); break;
+				default: $order = array();
+			}
+		}
+		
+		$this->paginate['Product']['order'] = $order;
+
+		$this->CategoriesProduct->Product->virtualFields['sold'] = 'SUM(OrderedProduct.product_quantity)';
+		// cenu produktu urcim jako cenu podle typu zakaznika, pokud je nastavena, pokud neni nastavena cena podle typu zakaznika, vezmu za cenu beznou slevu, pokud ani ta neni nastavena
+		// vezmu jako cenu produktu obycejnou cenu
+		$this->CategoriesProduct->Product->virtualFields['price'] = $this->CategoriesProduct->Product->price;
+		$products = $this->paginate('Product');
+
+		// opetovne vypnuti virtualnich poli, nastavenych za behu
+		unset($this->CategoriesProduct->Product->virtualFields['sold']);
+		unset($this->CategoriesProduct->Product->virtualFields['price']);
+
+		$this->set('products', $products);
+
+		$listing_style = 'products_listing_grid';
+		
+		$this->set('listing_style', $listing_style);
+		
+//		$action_products = $this->CategoriesProduct->Product->get_action_products($customer_type_id, 4);
+//		$this->set('action_products', $action_products);
+		
+		$subcategories_conditions = array(
+			'public' => true,
+			'active' => true,
+			'parent_id' => $id
+		);
+		if ($this->Session->check('Customer')) {
+			unset($subcategories_conditions['public']);
+		}
+		$subcategories = $this->CategoriesProduct->Category->find('all', array(
+			'conditions' => $subcategories_conditions,
+			'contain' => array(),
+			'fields' => array('Category.id', 'Category.name', 'Category.url', 'Category.image'),
+			'order' => array('Category.lft' => 'asc')
+		));
+		foreach ($subcategories as &$subcategory) {
+			if (!empty($subcategory['Category']['image'])) {
+				$subcategory['Category']['image'] = $this->CategoriesProduct->Category->image_path . DS . $subcategory['Category']['image'];
+				if (!file_exists($subcategory['Category']['image'])) {
+					$subcategory['Category']['image'] = 'img' . REDESIGN_PATH . 'category_image_na_150x150.jpg';
+				}
+			} else {
+				$subcategory['Category']['image'] = 'img' . DS . REDESIGN_PATH . 'category_image_na_150x150.jpg';
+			}
+				
+		}
+
+		$this->set('subcategories', $subcategories);
 	}
 	
 	function cancel_filter($id) {
@@ -207,66 +320,6 @@ class CategoriesProductsController extends AppController {
 		$this->redirect($url);
 	}
 	
-	function admin_change_dph(){
-		$cats = array('1', '52', '15', '30', '23', '6', '24', '25');
-		$subcats = array();
-		
-		foreach ( $cats as $cat => $value ){
-			$subs = $this->CategoriesProduct->Category->children($value);
-			$subcats = array_merge($subcats, $subs);
-		}
-
-		$subcats = Set::extract('/Category/id', $subcats);
-		
-		// seznam vsech kategorii ktere nebereme v uvahu
-		$subcats = array_merge($cats, $subcats);
-
-		$products = $this->CategoriesProduct->find('all', array(
-			'conditions' => array(
-				'NOT' => array(
-					'category_id' => $subcats
-				)
-			),
-			'contain' => array()
-		));
-		
-		$product_ids = Set::extract('/CategoriesProduct/product_id', $products);
-		
-		$products = $this->CategoriesProduct->Product->find('all', array(
-			'conditions' => array(
-				'Product.id' => $product_ids
-			),
-			'contain' => array(),
-			'fields' => array('id', 'price', 'tax_class_id', 'name')
-		));
-		
-		foreach ( $products as $product ){
-			$dph = 1.19;
-			$new_dph = 1.2;
-			if ( $product['Product']['tax_class_id'] != 1 ){
-				$dph = 1.09;
-				$new_dph = 1.1;				
-			}
-			
-			$wout = $product['Product']['price'] / $dph;
-			$product['Product']['price'] = round($wout * $new_dph);
-			
-			if ( $product['Product']['id'] != 121 OR $product['Product']['id'] == 88 OR $product['Product']['id'] == 89 ){
-				$this->CategoriesProduct->Product->id = $product['Product']['id']; 
-				$this->CategoriesProduct->Product->save($product, false);
-			}
-			
-			debug($product);
-			echo '<br>';
-		}
-
-		die();
-	}
-	
-	function leave_empty($a) {
-		return (!empty($a));
-	}
-	
 	function sort_by_availability_and_price($a, $b) {
 		if ($a['Product']['Availability']['cart_allowed'] && !$b['Product']['Availability']['cart_allowed']) {
 			return -1;
@@ -275,6 +328,11 @@ class CategoriesProductsController extends AppController {
 		} elseif ($a['Product']['Availability']['cart_allowed'] == $b['Product']['Availability']['cart_allowed']) {
 			return $a['Product']['discount_price'] > $b['Product']['discount_price'];
 		}
+	}
+	
+	function admin_import($truncate = true) {
+		$this->CategoriesProduct->import($truncate);
+		die('here');
 	}
 }
 ?>

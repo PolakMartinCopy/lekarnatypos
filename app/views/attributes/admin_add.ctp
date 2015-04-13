@@ -1,4 +1,4 @@
-<div class="attribute">
+﻿<div class="attribute">
 <h2>Vložit nový atribut</h2>
 <?php echo $form->create('Attribute');?>
 	<fieldset>

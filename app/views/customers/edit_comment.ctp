@@ -1,4 +1,4 @@
-<h2>Upravit komentář</h2>
+﻿<h2>Upravit komentář</h2>
 <?=$html->link('Zpět na seznam komentářů', array('controller' => 'products', 'action' => 'view_comments', $product_id)) ?>
 <?=$form->create('Comment', array('url' => array('controller' => 'customers', 'action' => 'edit_comment', $comment_id))) ?>
 <table>

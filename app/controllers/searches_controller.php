@@ -13,22 +13,18 @@ class SearchesController extends AppController {
 			
 			App::import('Model', 'Product');
 			$this->Product = &new Product;
-
-			$this->Product->unbindModel(
-				array(
-					'hasAndBelongsToMany' => array('Cart', 'Flag'),
-					'hasMany' => array('Subproduct', 'CartsProduct', 'Comment', 'Image'),
-					'belongsTo' => array('TaxClass', 'Availability')
-				)
-			);
 			
 			// vysledky s celym retezcem
 			$products = $this->Product->find('all', array(
 				'conditions' => array(
-					"Product.name LIKE '%%" . $this->data['Search']['query'] . "%%'"
-				)
+					'OR' => array(
+						array("Product.name LIKE '%%" . $this->data['Search']['query'] . "%%'"),
+						array('Product.id' => $this->data['Search']['query'])
+					)
+				),
+				'contain' => array('CategoriesProduct')
 			));
-			
+
 			// vysledky s rozsekanym retezcem
 			$split_query = explode(" ", $this->data['Search']['query']);
 			$count_split = count($split_query);
@@ -61,6 +57,19 @@ class SearchesController extends AppController {
 		}
 	}
 	
+	function index($query = null, $start = 0){
+		// layout
+		$this->layout = 'default_front_end';
+		
+		// nastavim nadpis
+		$this->set('page_heading', 'Vyhledávání');
+
+		if ( !empty($query) ){
+			$XML = $this->Search->doSearch($query, $start);
+			$this->set('xml', $XML);
+		}
+	}
+	
 	function parsequery(){
 		$target = array('controller' => 'searches', 'action' => 'index');
 		if ( isset($this->data) && !empty($this->data['Search']['q']) ){
@@ -75,31 +84,35 @@ class SearchesController extends AppController {
 	 *
 	 * @param string $id
 	 */
-	function do_search(){
-		$this->layout = 'content';
+	function do_search() {
+		App::import('Model', 'Product');
+		$this->Search->Product = new Product;
+		
+		$this->layout = REDESIGN_PATH . 'content';
+		$this->set('_title', 'Vyhledávání produktů');
+		$this->set('_description', 'Vyhledávač produktů v obchodě ' . CUST_NAME);
 		
 		// sestavim breadcrumbs
 		$breadcrumbs = array(
-			array('anchor' => 'Domů', 'href' => HP_URI),
-			array('anchor' => 'Vyhledávání produktů', 'href' => '/vyhledavani-produktu')
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Vyhledávání produktů', 'href' => '/' . $this->params['url']['url'])
 		);
 		$this->set('breadcrumbs', $breadcrumbs);
 		
-		$this->set('title_for_content', 'Vyhledávání produktů');
-		$this->set('description_for_content', 'Vyhledávač produktů v obchodě ' . CUST_ROOT);
 		$products = array();
+		$customer_type_id = 2;
 		
 		if (!empty($_GET) && isset($_GET['q']) && !empty($_GET['q'])) {
 			$this->data['Search']['q'] = $_GET['q'];
 		}
-				
-		if (!empty($this->data)) {
+
+		if (!empty($this->data) && isset($this->data['Search']['q'])){
 			// hledany vyraz musim ocistit
 			// od mezer na zacatku a konci celeho vyrazu
 			$queries = trim($this->data['Search']['q']);
 			
 			// od vice mezer za sebou
-			while ( eregi("  ", $queries) ){
+			while (eregi("  ", $queries)) {
 				$queries = str_replace("  ", " ", $queries);
 			}
 			
@@ -110,6 +123,7 @@ class SearchesController extends AppController {
 			foreach ( $queries as $key => $value ){
 				$or[] = array(
 					'OR' => array(
+						'Product.id' => $value,
 						"Product.name LIKE '%%" . $value . "%%'",
 						"Product.title LIKE '%%" . $value . "%%'",
 						"Product.heading LIKE '%%" . $value . "%%'",
@@ -117,60 +131,121 @@ class SearchesController extends AppController {
 						"Product.zbozi_name LIKE '%%" . $value . "%%'",
 						"Product.short_description LIKE '%%" . $value . "%%'",
 						"Product.description  LIKE '%%" . $value . "%%'",
-						"Manufacturer.name  LIKE '%%" . $value . "%%'"
+						"Manufacturer.name  LIKE '%%" . $value . "%%'",
 					)
 				);
 			}
 			
 			$conditions = array(
 				'AND' => array(
+					// podminka z formu pro vyhledavani
 					$or,
-					'Product.active' => true
+					// chci jen aktivni produkty
+					'Product.active' => true,
 				)
 			);
 			
-			$fields = array('id', 'name', 'url', 'retail_price_with_dph', 'short_description', 'discount_common', 'discount_member');
+			App::import('Model', 'CustomerType');
+			$this->CustomerType = new CustomerType;
+			$customer_type_id = $this->CustomerType->get_id($this->Session->read());
 			
-			App::import('Model', 'Product');
-			$this->Product = &new Product;
-
-			// donactu si data o produktech
-			$products = $this->Product->find('all', array(
-				'contain' => array(
-					'Manufacturer' => array(
-						'fields' => array('id', 'name'),
-					),
-					'Image' => array(
-						'conditions' => array(
-							'is_main' => '1'
-						),
-						'fields' => array('name')
-					),
-					'Availability' => array(
-						'fields' => array('id', 'name', 'cart_allowed')
-					)
+			$joins = array(
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OrderedProduct',
+					'type' => 'LEFT',
+					'conditions' => array('OrderedProduct.product_id = Product.id')
 				),
+ 				array(
+					'table' => 'categories_products',
+					'alias' => 'CategoriesProduct',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = CategoriesProduct.product_id')
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Image.product_id = Product.id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+				array(
+					'table' => 'availabilities',
+					'alias' => 'Availability',
+					'type' => 'INNER',
+					'conditions' => array('Availability.id = Product.availability_id')
+				),
+				array(
+					'table' => 'manufacturers',
+					'alias' => 'Manufacturer',
+					'type' => 'LEFT',
+					'conditions' => array('Manufacturer.id = Product.manufacturer_id')
+				)
+			);
+
+			$this->paginate['Product'] = array(
 				'conditions' => $conditions,
-				'fields' => $fields
-			));
+				'contain' => array(),
+				'fields' => array(
+					'Product.id',
+					'Product.name',
+					'Product.url',
+					'Product.short_description',
+					'Product.retail_price_with_dph',
+					'Product.discount_common',
+					'Product.price',
+					'Product.rate',
+						
+					'Image.id',
+					'Image.name',
+						
+					'Availability.id',
+					'Availability.cart_allowed'
+				),
+				'joins' => $joins,
+				'group' => 'Product.id',
+			);
 			
-			// musim si projit vsechny produkty, jestli nemaji nejakou slevu
-			for ( $i = 0; $i < count($products); $i++ ){
-				$products[$i]['Product']['discount_price'] = $this->Product->assign_discount_price($products[$i]);
+			$this->paginate['Product']['show'] = 'all';
+			
+			// sestavim podminku pro razeni podle toho, co je vybrano
+			$order = array('Availability.cart_allowed' => 'desc');
+			if (isset($this->data['Search']['sorting'])) {
+				switch ($this->data['Search']['sorting']) {
+					// vychozi razeni podle priority
+					case 0: $order = array_merge($order, array('Product.priority' => 'asc')); break;
+					// nastavim razeni podle prodejnosti
+					case 1: $order = array_merge($order, array('Product.sold' => 'desc')); break;
+					// nastavim razeni podle ceny
+					case 2: $order = array_merge($order, array('Product.price' => 'asc')); break;
+					case 3: $order = array_merge($order, array('Product.price' => 'desc')); break;
+					// nastavim razeni podle nazvu
+					case 4: $order = array_merge($order, array('Product.name' => 'asc')); break;
+					default: $order = array();
+				}
 			}
-			usort($products, array('SearchesController', 'sort_by_availability_and_price'));
+			
+			$this->paginate['Product']['order'] = $order;
+	
+			$this->Search->Product->virtualFields['sold'] = 'SUM(OrderedProduct.product_quantity)';
+			// cenu produktu urcim jako cenu podle typu zakaznika, pokud je nastavena, pokud neni nastavena cena podle typu zakaznika, vezmu za cenu beznou slevu, pokud ani ta neni nastavena
+			// vezmu jako cenu produktu obycejnou cenu
+			$this->Search->Product->virtualFields['price'] = $this->Search->Product->price;
+
+			$products = $this->paginate('Product');
+
+			// opetovne vypnuti virtualnich poli, nastavenych za behu
+			unset($this->Search->Product->virtualFields['sold']);
+			unset($this->Search->Product->virtualFields['price']);
 		}
 		$this->set('products', $products);
-	}
-
-	function sort_by_availability_and_price($a, $b) {
-		if ($a['Availability']['cart_allowed'] && !$b['Availability']['cart_allowed']) {
-			return -1;
-		} elseif (!$a['Availability']['cart_allowed'] && $b['Availability']['cart_allowed']) {
-			return 1;
-		} elseif ($a['Availability']['cart_allowed'] == $b['Availability']['cart_allowed']) {
-			return $a['Product']['discount_price'] > $b['Product']['discount_price'];
-		}
+		
+		$this->set('listing_style', 'products_listing_grid');
 	}
 }
 ?>

@@ -1,4 +1,4 @@
-<div class="mainContentWrapper">
+﻿<div class="mainContentWrapper">
 	<ul class="actions">
 		<li><?=$html->link('zákaznický panel', array('controller' => 'customers', 'action' => 'index'))?></li>
 	</ul>

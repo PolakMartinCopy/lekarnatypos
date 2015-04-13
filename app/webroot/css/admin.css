@@ -28,6 +28,10 @@ ul#categoriesMenu li{
 	list-style-type:none;
 }
 
+ul#categoriesMenu ul {
+	margin: 0 0 0 -25px;
+}
+
 td.leftSideWrapper{
 	border-right:1px solid black;
 	width:250px;
@@ -119,18 +123,20 @@ table#productList{
 
 }
 
-div#flashMessage{
-	font-family:Tahoma;
-	border:1px solid red;
-	background:yellow;
-	color:red;
-	font-size:14px;
-	padding:15px;
-	margin:15px;
+div#flash {
+	border: 1px solid;
+	padding: 5px;
 }
 
-.error-message{
-	font-size:11px;
-	color:red;
-	font-weight:bold;
+div.flash_success {
+	color: green;
+}
+
+div.flash_failure {
+	color: red;
+}
+
+div.error-message {
+	color: red;
+	font-size: 12px;
 }

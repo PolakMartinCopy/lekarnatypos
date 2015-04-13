@@ -1,4 +1,4 @@
-<h2>Seznam zákazníků</h2>
+﻿<h2>Seznam zákazníků</h2>
 <?
 	$count = count($alphabet);
 	setlocale( LC_ALL, 'cs_CZ' );

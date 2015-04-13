@@ -1,93 +1,62 @@
-<h2>Detail zákazníka <?php echo $customer['Customer']['last_name']. ' ' . $customer['Customer']['first_name'] ?></h2>
+﻿<h2>Detail zákazníka <?php echo $customer['Customer']['last_name']. ' ' . $customer['Customer']['first_name'] ?></h2>
+<?php echo $this->Form->create('Customer')?>
 <table>
 	<tr>
 		<td rowspan="2">
-			<table class="leftHeading">
-				<tr>
-					<th>
-						jméno
-					</th>
-					<td>
-						<?php echo $customer['Customer']['last_name'] ?>
-					</td>
+			<table class="tabulkaedit">
+				<tr class="nutne">
+					<td>Jméno</td>
+					<td><?php echo $this->Form->input('Customer.first_name', array('label' => false, 'size' => 60)) ?></td>
+				</tr>
+				<tr class="nutne">
+					<td>Příjmení</td>
+					<td><?php echo $this->Form->input('Customer.last_name', array('label' => false, 'size' => 60)) ?></td>
 				</tr>
 				<tr>
-					<th>
-						příjmení
-					</th>
-					<td>
-						<?php echo $customer['Customer']['first_name'] ?>
-					</td>
-				</tr>
-				<tr>
-					<th>
-						registrace
-					</th>
+					<td>Registrace</td>
 					<td>
 						<?php echo $customer['Customer']['created'] ?>
-						<br />
-						zdroj: <?php echo $customer['Customer']['registration_source'] ?>
-						<br />
-						potvrzen: <?php echo $customer['Customer']['confirmed'] ?>
 						<br />
 						<?php echo $html->link('smazat zákazníka z databáze', array('controller' => 'customers', 'action' => 'delete', $customer['Customer']['id']), array(), 'Opravdu si přejete zákazníka odstranit z databáze?')?>
 					</td>
 				</tr>
-				<tr>
-					<th>
-						telefon
-					</th>
-					<td>
-						<?php echo $customer['Customer']['phone'] ?>
-					</td>
+				<tr class="nutne">
+					<td>Telefon</td>
+					<td><?php echo $this->Form->input('Customer.phone', array('label' => false)) ?></td>
+				</tr>
+				<tr class="nutne">
+					<td>Email</td>
+					<td><?php echo $this->Form->input('Customer.email', array('label' => false, 'size' => 60)) ?></td>
 				</tr>
 				<tr>
-					<th>
-						email
-					</th>
+				<?php foreach ($customer['CustomerLogin'] as $index => $customer_login) { ?>
+					<td>Login <?php echo $index + 1 ?></td>
 					<td>
-						<?php echo $customer['Customer']['email'] ?>
+						<?php echo $this->Form->hidden('CustomerLogin.' . $index . '.id')?>
+						<?php echo $this->Form->input('CustomerLogin.'. $index . '.login', array('label' => false)) ?>
 					</td>
+				</tr>
+				<?php } ?>
+				<tr>
+					<td>Typ</td>
+					<td><?php echo $this->Form->input('Customer.customer_type_id', array('label' => false, 'options' => $customer_types)) ?></td>
 				</tr>
 				<tr>
-					<th>
-						login
-					</th>
-					<td>
-						<?php echo $customer['Customer']['login'] ?>
-					</td>
-				</tr>
-			<?
-				if ( !empty($customer['Customer']['company_name']) || !empty($customer['Customer']['company_ico']) || !empty($customer['Customer']['company_dic']) ){
-			?>
-				<tr>
-					<th>
-						název společnosti
-					</th>
-					<td>
-						<?php echo $customer['Customer']['company_name'] ?>
-					</td>
+					<td>Zasílat novinky</td>
+					<td><?php echo $this->Form->input('Customer.newsletter', array('label' => false))?></td>
 				</tr>
 				<tr>
-					<th>
-						IČO
-					</th>
-					<td>
-						<?php echo $customer['Customer']['company_ico'] ?>
-					</td>
+					<td>Název společnosti</td>
+					<td><?php echo $this->Form->input('Customer.company_name', array('label' => false, 'size' => 60)) ?></td>
 				</tr>
 				<tr>
-					<th>
-						DIČ
-					</th>
-					<td>
-						<?php echo $customer['Customer']['company_dic'] ?>
-					</td>
+					<td>IČ</td>
+					<td><?php echo $this->Form->input('Customer.company_ico', array('label' => false)) ?></td>
 				</tr>
-				
-			<?
-				}
-			?>
+				<tr>
+					<td>DIČ</td>
+					<td><?php echo $this->Form->input('Customer.company_dic', array('label' => false)) ?></td>
+				</tr>
 			</table>
 		</td>
 		<td>
@@ -120,35 +89,25 @@
 		</td>
 	</tr>
 	<tr>
-		<th>
-			Objednávky zákazníka:
-		</th>
-		<td>&nbsp;</td>
+		<th colspan="2">Objednávky zákazníka:</th>
 	</tr>
-	<?php 
-		if ( !empty($customer['Order']) ){
-	?>
+	<?php if (!empty($customer['Order'])) { ?>
 		<tr>
 			<th>ID obj.</th>
 			<td>hodnota</td>
 		</tr>
-	<?php	
-			foreach ( $customer['Order'] as $o ){
-	?>
+	<?php foreach ($customer['Order'] as $o) { ?>
 		<tr>
 			<th><?php echo $html->link($o['id'], array('controller' => 'orders', 'action' => 'view', $o['id']))?></th>
-			<td><?php echo $o['subtotal_with_dph']?>&nbsp;Kč</td>
+			<td><?php echo $o['orderfinaltotal']?>&nbsp;Kč</td>
 		</tr>
-	<?php
-				
-			}
-		} else {
-	?>
+	<?php }
+		} else { ?>
 		<tr>
-			<th>&nbsp;</th>
-			<td>Zákazník zatím neprovedl žádné objednávky.</td>
+			<td colspan="2">Zákazník zatím neprovedl žádné objednávky.</td>
 		</tr>
-	<?php
-		}
-	?>
+	<?php } ?>
 </table>
+<?php echo $this->Form->hidden('Customer.id')?>
+<?php echo $this->Form->submit('Uložit')?>
+<?php echo $this->Form->end()?>

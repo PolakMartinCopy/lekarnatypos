@@ -1,4 +1,4 @@
-<h2>Vložení nového administrátora</h2>
+﻿<h2>Vložení nového administrátora</h2>
 <?=$form->create('Administrator');?>
 	<fieldset>
  		<legend>Administrátor</legend>

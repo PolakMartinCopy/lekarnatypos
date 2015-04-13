@@ -1,4 +1,4 @@
-<h2>Editovat přesměrování</h2>
+﻿<h2>Editovat přesměrování</h2>
 <?=$form->Create('Redirect', array('url' => array('controller' => 'redirects', 'action' => 'edit')))?>
 	<fieldset>
  		<legend>Detaily přesměrování</legend>

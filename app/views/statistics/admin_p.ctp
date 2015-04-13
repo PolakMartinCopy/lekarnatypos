@@ -1,4 +1,4 @@
-<h2>Provize</h2>
+﻿<h2>Provize</h2>
 <form action="/admin/statistics/p" method="post">
 	od:&nbsp;<?=$form->dateTime('Statistic.from', 'DMY', 24)?><br />
 	do:&nbsp;<?=$form->dateTime('Statistic.to', 'DMY', 24)?><br />

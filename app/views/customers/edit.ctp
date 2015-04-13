@@ -1,49 +1,48 @@
-<div class="mainContentWrapper">
-	<h2>Změna údajů zákazníka</h2>
-	<?=$form->Create('Customer', array('url' => array('action' => 'edit')))?>
+<h1><?php echo $page_heading?></h1>
+<?=$form->Create('Customer', array('url' => array('action' => 'edit')))?>
+<fieldset>
+	<legend>Změna údajů zákazníka</legend>
 	<div class="form-group">
-		<label>jméno</label>
+		<label>Jméno</label>
 		<?=$form->input('Customer.first_name', array('label'=> false, 'class' => 'form-control'))?>
 	</div>
 	<div class="form-group">
-		<label>příjmení</label>
+		<label>Příjmení</label>
 		<?=$form->input('Customer.last_name', array('label'=> false, 'class' => 'form-control'))?>
 	</div>
 	<div class="form-group">
-		<label>telefon</label>
+		<label>Telefon</label>
 		<?=$form->input('Customer.phone', array('label'=> false, 'class' => 'form-control'))?>
 	</div>
 	<div class="form-group">
-		<label>email</label>
+		<label>Email</label>
 		<?=$form->input('Customer.email', array('label'=> false, 'class' => 'form-control'))?>
 	</div>
-	<div class="form-group">
-		<label>login</label>
-		<?=$form->input('Customer.login', array('label'=> false, 'class' => 'form-control'))?>
-	</div>
-<?php 
-	$form->hidden('Customer.edit', array('value' => 'info'));
-	echo $this->Form->submit('uložit', array('class' => 'btn btn-success'));
-	echo $form->end();
-?>
+</fieldset>
 
-	<h2>Změna hesla</h2>
-	<?=$form->Create('Customer', array('url' => array('action' => 'edit')))?>
+<fieldset>
+	<legend>Přístupové údaje</legend>
+<?php foreach ($customer['CustomerLogin'] as $index => $customer_login) { ?>
+	<div class="form-group">
+		<label>Login</label>
+		<?php echo $this->Form->input('CustomerLogin.' . $index . '.login', array('label' => false, 'class' => 'form-control'))?>
+	</div>
 	<div class="form-group">
 		<label>původní heslo</label>
-		<?=$form->input('Customer.old_password', array('label'=> false, 'type' => 'password', 'class' => 'form-control'))?>
+		<?=$form->input('CustomerLogin.' . $index . '.old_password', array('label' => false, 'type' => 'password', 'class' => 'form-control'))?>
+		<?php echo $this->Form->hidden('CustomerLogin.' . $index . '.password')?>
 	</div>
 	<div class="form-group">
 		<label>nové heslo</label>
-		<?=$form->input('Customer.new_password', array('label'=> false, 'type' => 'password', 'class' => 'form-control'))?>
+		<?=$form->input('CustomerLogin.' . $index . '.new_password', array('label'=> false, 'type' => 'password', 'class' => 'form-control'))?>
 	</div>
 	<div class="form-group">
 		<label>zopakujte nové heslo</label>
-		<?=$form->input('Customer.new_password_rep', array('label'=> false, 'type' => 'password', 'class' => 'form-control'))?>
+		<?=$form->input('CustomerLogin.' . $index . '.new_password_rep', array('label'=> false, 'type' => 'password', 'class' => 'form-control'))?>
+		<?php echo $this->Form->hidden('CustomerLogin.' . $index . '.id', array('value' => $customer_login['id']))?>
 	</div>
-<?php 
-	$form->hidden('Customer.edit', array('value' => 'pass'));
-	echo $this->Form->submit('změnit heslo', array('class' => 'btn btn-success'));
-	echo $this->Form->end()
-?>
-</div>
+</fieldset>
+<?php } ?>
+<?php echo $this->Form->hidden('Customer.id')?>
+<?php echo $this->Form->submit('Uložit', array('class' => 'btn btn-success'))?>
+<?php echo $this->Form->end()?>

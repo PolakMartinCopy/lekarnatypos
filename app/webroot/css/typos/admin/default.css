@@ -1,0 +1,180 @@
+body {
+	text-align: left;
+	font-size: 12px;
+  font-family: Arial, Tahoma, Verdana, Arial;
+  margin: 0;
+  padding: 0;
+  background-image: url('images/pozadi.gif');
+  background-repeat: repeat;
+  background-position: 0px 0px;
+}
+img,form { border: 0; margin: 0; padding: 0; }
+
+.prazdny { clear: both; height: 10px; }
+a { color: #0c98d3; text-decoration: none; }
+a:hover { text-decoration: none; }
+.odkaz { color: #0c98d3; text-decoration: underline; }
+
+#admin_hlavni_menu {
+  	font-size: 11px;
+	background:	url('images/admin_menu_bg.png') repeat-x 0px 0px;
+	clear: both;
+	margin-top: 10px;
+}
+
+#admin_content {
+  width: 1200px;
+  margin: 0 10px;
+  padding: 10px 10px 0 10px;
+  clear: both;
+  background-color: #fff;
+  border: 1px solid #333;
+}
+
+table.hlavni {
+  border: 1px solid #aaa;
+  width: 95%;
+  font-size: 12px;
+}
+
+table.hlavni tr td {
+  padding: 3px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f78f1e;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+h2 {
+  font-size: 18px;
+  color: #000;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+h3 {
+  font-size: 17px;
+  color: #33a0fe;
+  padding: 0;
+  margin: 10px 0 5px 0;
+}
+
+table.legenda {
+  border: 1px solid #aaa;
+  font-size: 12px;
+  border-collapse: collapse;
+  float: right;
+  margin-left: 10px;
+  width: 260px;
+}
+
+table.legenda th {
+  padding: 2px 5px 2px 5px;
+  border: 1px solid #aaa;
+  background-image: url('images/pozadi.gif');
+  background-repeat: repeat;
+  background-position: 0px 0px;
+  color: #fff;
+}
+
+table.legenda td {
+  padding: 2px 5px 2px 5px;
+  border: 1px solid #aaa;
+}
+
+
+table {
+  border: 1px solid #aaa;
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th {
+  padding: 2px 5px 2px 5px;
+  border: 1px solid #aaa;
+  background-image: url('images/pozadi.gif');
+  background-repeat: repeat;
+  background-position: 0px 0px;
+  color: #fff;
+}
+
+table th a {
+	color: #FFFFFF;
+	text-decoration: underline;
+}
+
+table td {
+  padding: 2px 5px 2px 5px;
+  border: 1px solid #aaa;
+}
+
+table tr.selected { background-color: #d8edf6; }
+
+table td a { color: #0c98d3; }
+table td a.neaktivni { color: #bbb; font-style: italic; }
+/* table td img { border: 2px solid #fff; } 
+table td img:hover { border: 2px solid #0c98d3; } */
+
+table.tabulka tr:hover {
+  background-color: #eee;
+}
+
+table.tabulkaedit { border: 1px solid #aaa; font-size: 12px; border-collapse: collapse; }
+table.tabulkaedit tr.nutne { background-color: #fe8900; color: #fff; font-weight: bold; }
+table.tabulkaedit th { padding: 2px 5px 2px 5px; border: 1px solid #aaa; background-color: #fe8900; color: #fff; }
+table.tabulkaedit td { padding: 2px 5px 2px 5px; border: 0; }
+
+input, textarea, select { font-family: Arial, Tahoma, Verdana, Arial; font-size: 9pt; border: 1px solid #666; padding: 1px; }
+.input_velky { width: 600px; }
+.input_stredni { width: 400px; }
+.input_maly { width: 150px; }
+.textarea_velky { width: 600px; height: 100px; }
+.textarea_velky2 { width: 600px; height: 250px; }
+
+.vyrazny { font-weight: bold; color: #fe8900; }
+
+#navigationsub { clear: both; }
+#navigationsub ul { clear: both; list-style-type: none; margin: 0; padding: 0; }
+#navigationsub ul li { float: left; background: #333; border-right: 1px solid #aaa; }
+#navigationsub ul li a { display: block; padding: 5px 7px; color: #fff; }
+#navigationsub ul li a:hover, #navigationsub ul li a.selected { background-color: #f78f1e; }
+
+.upozorneni_text {
+  background-color: #ff0000;
+  color: #fff;
+  font-size: 1.2em;
+  padding: 10px;
+  border: 1px solid #000;
+  margin-bottom: 10px;
+}
+
+th#orderId {
+	text-align: center;
+}
+
+div#flash {
+	border: 1px solid;
+	padding: 5px;
+}
+
+div.flash_success {
+	color: green;
+}
+
+div.flash_failure {
+	color: red;
+}
+
+div.error-message {
+	color: red;
+	font-size: 12px;
+}
+
+tr.nutne div.error-message {
+	color: white;
+}

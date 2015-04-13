@@ -20,39 +20,48 @@ class SubproductsController extends AppController {
 	
 
 	/**
-
 	 * spravuje element pro vyber subproduktu pri objednavce
-
 	 *
-
 	 * @param int $product_id
-
 	 * @return array - pole vysledku pro zobrazeni elementu pro vyber subproduktu
-
 	 */
-
 	function control($product_id) {
-		$contain = array(
-			'CategoriesProduct' => array(
-				'Category'
-			),
-			'Image' => array(
-				'order' => array(
-					'is_main' => 'desc'
-				)
-			),
-			'Manufacturer',
-			'Availability',
-			'TaxClass',
-		);
-	
-		$this->Subproduct->Product->contain($contain);
+		$customer_type_id = 0;
+		if ($this->Session->check('Customer')) {
+			$customer = $this->Session->read('Customer');
+			if (isset($customer['customer_type_id'])) {
+				$customer_type_id = $customer['customer_type_id'];
+			}
+		}
 		
-		// vyhledam si info o produktu
-		$product = $this->Subproduct->Product->read(null, $product_id);
-		
-		// vyhledam si jestli neni produkt zlevnen
-		$product['Product']['discount_price_with_dph'] = $this->Subproduct->Product->assign_discount_price($product);
+		$this->Subproduct->Product->virtualFields['discount_price_with_dph'] = $this->Subproduct->Product->price;
+		$product = $this->Subproduct->Product->find('first', array(
+			'conditions' => array('Product.id' => $product_id),
+			'contain' => array(
+				'CategoriesProduct' => array(
+					'Category'
+				),
+				'Image' => array(
+					'order' => array(
+						'is_main' => 'desc'
+					)
+				),
+				'Manufacturer',
+				'Availability',
+				'TaxClass',
+			),
+			'fields' => array('*', 'Product.discount_price_with_dph'),
+			'joins' => array(
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+			)
+		));
+		unset($this->Subproduct->Product->virtualFields['discount_price_with_dph']);
+
 		$return = array('product' => $product);
 		
 		// zjistim, jestli vubec budu vypisovat varianty produktu (jestli produkt vubec nejake ma)
@@ -613,5 +622,11 @@ class SubproductsController extends AppController {
 		} // empty
 		return $product_attributes;
 	}
+	
+	function admin_import() {
+		$this->Subproduct->import();
+		die('here');
+	}
+	
 } // konec definice tridy
 ?>

@@ -1,4 +1,4 @@
-<div class="attribute">
+﻿<div class="attribute">
 <h2>Editace atributu</h2>
 <? echo $form->create('Attribute', array('controller' => 'attributes', 'action' => 'edit', $id));?>
 	<fieldset>

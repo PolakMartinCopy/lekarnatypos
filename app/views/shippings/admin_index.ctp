@@ -1,46 +1,43 @@
-<h2>Způsoby dopravy</h2>
-<table class="topHeading" cellpadding="5" cellspacing="3">
+﻿<h1>Způsoby dopravy</h1>
+<table class="tabulka">
 	<tr>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
 		<th>ID</th>
 		<th>Název</th>
-		<th>Dopravne</th>
-		<th>Zdarma od</th>
-		<th>Závislá pole</th>
-		<th>URL prefix</th>
-		<th>URL postfix</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
 	</tr>
-<?
-	foreach ( $shippings as $shipping ){
-		echo '
-			<tr>
-				<td>
-					' . $shipping['Shipping']['id'] . '
-				</td>
-				<td>
-					' . $shipping['Shipping']['name'] . '
-				</td>
-				<td>
-					' . $shipping['Shipping']['price'] . '
-				</td>
-				<td>
-					' . $shipping['Shipping']['free'] . '
-				</td>
-				<td>
-					' . $shipping['Shipping']['tracker_prefix'] . '
-				</td>
-				<td>
-					' . $shipping['Shipping']['tracker_postfix'] . '
-				</td>
-				<td>
-					' . $html->link('upravit', array('action' => 'edit', $shipping['Shipping']['id'])) . '<br />' . $html->link('smazat', array('action' => 'delete', $shipping['Shipping']['id']), null, 'Opravdu chcete tento způsob dopravy smazat?') . '
-				</td>
-			</tr>
-		';
-	}
-?>
+	<tr>
+		<td colspan="2"><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/add.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'shippings', 'action' => 'add'), array('escape' => false, 'title' => 'Přidat způsob dopravy'));
+		?></td>
+		<td colspan="4">&nbsp;</td>
+	</tr>
+	<?php if (!empty($shippings)) {
+		foreach ($shippings as $shipping) { ?>
+	<tr>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'shippings', 'action' => 'edit', $shipping['Shipping']['id']), array('escape' => false, 'title' => 'Upravit způsob dopravy'));
+		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/delete.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'shippings', 'action' => 'delete', $shipping['Shipping']['id']), array('escape' => false, 'title' => 'Smazat způsob dopravy'), 'Opravdu chcete způsob dopravy odstranit?');
+		?></td>
+		<td><?php echo $this->Html->link($shipping['Shipping']['id'], array('controller' => 'shippings', 'action' => 'edit', $shipping['Shipping']['id']))?></td>
+		<td><?php echo $this->Html->link($shipping['Shipping']['name'], array('controller' => 'shippings', 'action' => 'edit', $shipping['Shipping']['id']))?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/up.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'shippings', 'action' => 'move_up', $shipping['Shipping']['id']), array('escape' => false, 'title' => 'Posunout nahoru'));
+		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/down.png" alt="" />';
+			echo $this->Html->link($icon, array('controller' => 'shippings', 'action' => 'move_down', $shipping['Shipping']['id']), array('escape' => false, 'title' => 'Posunout dolu'));
+		?></td>
+	</tr>
+	<?php } 
+	} ?>
 </table>
-<div class="actions">
-	<ul>
-		<li><?=$html->link('Vytvořit nový způsob dopravy', array('action' => 'add'))?></li>
-	</ul>
-</div>
+<div class="prazdny"></div>

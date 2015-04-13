@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<layout>
+	<settings>
+		<pre></pre>
+		<separator>LCA=</separator>
+		<post></post>
+	</settings>
+<link>
+	<type>1</type>
+	<pre>S3ZhbGl0bu0=</pre>
+	<target>http://www.beg-regaly.cz/</target>
+	<title>regálové systémy, regály</title>
+	<anchor>regály</anchor>
+	<post>QmVnIEJvaGVtaWE=</post>
+</link>
+<link>
+	<type>1</type>
+	<pre>S2+eZW7p</pre>
+	<target>http://www.svetpenezenek.cz</target>
+	<title>Kožené peněženky a kabelky</title>
+	<anchor>peněženky</anchor>
+	<post>YSBrYWJlbGt5</post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.lekarna24h.cz/</target>
+	<title>lékárna 24h online</title>
+	<anchor>lékárna 24h online</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.levne-kuchyne.eu/</target>
+	<title>Kuchyňské linky</title>
+	<anchor>Kuchyňské linky</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.zaffe.cz/</target>
+	<title>Dámské spodní prádlo</title>
+	<anchor>Dámské spodní prádlo</anchor>
+	<post></post>
+</link>
+</layout>

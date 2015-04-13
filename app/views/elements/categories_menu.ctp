@@ -1,74 +1,45 @@
-<ul class="categories">
-	<?
+<ul><?
 	foreach ( $categories as $category ){
-		$link_options = array('title' => $category['Category']['name'], 'escape' => false);
-		$lvl1_active = '';
-		if (in_array($category['Category']['id'], $path_ids)) {
-			$lvl1_active = ' class="active"';
+		// nastavim si isActive
+		$isActive = false;
+		if ( $category['Category']['id'] == $opened_category_id ){
+			$isActive = true;
 		}
-	?>
-	<li<?php echo $lvl1_active?>><?php
-		echo $this->Html->link(mb_strtoupper($category['Category']['name'], 'utf-8'), '/' . $category['Category']['url'], $link_options);
-		if (!empty($category['children'])) { ?>
-		<ul>
-	<?php 	foreach ($category['children'] as $child) {
-				$link_options = array('title' => $child['Category']['name'], 'escape' => false);
-				$lvl2_active = '';
-				if (in_array($child['Category']['id'], $path_ids)) {
-					$lvl2_active = ' class="active"';
-				} ?>
-			<li<?php echo $lvl2_active?>><?php
-				$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($child['Category']['name'], 'utf-8');
-				echo $this->Html->link($anchor, '/' . $child['Category']['url'], $link_options);
-				if (!empty($child['children'])) { ?>
-				<ul>
-	<?php 			foreach ($child['children'] as $grandchild) {
-						$link_options = array('title' => $grandchild['Category']['name'], 'escape' => false);
-						$lvl3_active = '';
-						if (in_array($grandchild['Category']['id'], $path_ids)) {
-							$lvl3_active = ' class="selected"';
-						} ?>
-					<li<?php echo $lvl3_active?>><?php
-						$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($grandchild['Category']['name'], 'utf-8');
-						echo $this->Html->link($anchor, '/' . $grandchild['Category']['url'], $link_options);
-						if (!empty($grandchild['children'])) { ?>
-						<ul>
-<?php 						foreach ($grandchild['children'] as $g_grandchild) {
-								$link_options = array('title' => $g_grandchild['Category']['name'], 'escape' => false);
-								$lvl4_active = '';
-								if (in_array($g_grandchild['Category']['id'], $path_ids)) {
-									$lvl4_active = ' class="selected"';
-								} ?>
-							<li<?php echo $lvl4_active?>><?php
-								$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($g_grandchild['Category']['name'], 'utf-8');
-								echo $this->Html->link($anchor, '/' . $g_grandchild['Category']['url'], $link_options);
-								if (!empty($g_grandchild['children'])) { ?>
-								<ul>
-<?php		 						foreach ($g_grandchild['children'] as $gg_grandchild) {
-										$link_options = array('title' => $gg_grandchild['Category']['name'], 'escape' => false);
-										$lvl5_active = '';
-										if (in_array($gg_grandchild['Category']['id'], $path_ids)) {
-											$lvl5_active = ' class="selected"';
-										} ?>
-									<li<?php echo $lvl5_active?>><?php
-										$anchor = '<i class="fa fa-caret-right"></i>' . mb_strtoupper($gg_grandchild['Category']['name'], 'utf-8');
-										echo $this->Html->link($anchor, '/' . $gg_grandchild['Category']['url'], $link_options);?>
-									</li>
-<?php 								} ?>
-								</ul>
-<?php 							} ?>
-							</li>
-<?php 						} ?>
-						</ul>
-						<?php } ?>
-					</li>
-	<?php 			}?>
-				</ul>
-	<?php		}?>	
-			</li>
-	<?php 	} ?>
-		</ul>
-	<?php } ?>
-	</li>
-	<?php } ?>
-</ul>
+
+		$spaces = 10;
+		$offset = array_search($category['Category']['parent_id'], $ids_to_find);
+		for ( $i = 0; $i < $offset; $i++ ){
+			$spaces += 4;
+		}
+
+		$padding = '';
+		$spacer = '';
+		if ( $spaces != 10 ){
+			$padding = ' style="padding-left:' . $spaces . 'px"';
+			$spacer = '-&nbsp;';
+		}
+		
+		$class = 'menuItem';
+		if (strlen($category['Category']['name']) > 30) {
+			$class = 'menuItem2Lines';
+		}
+		echo '<li><a class="' . $class . '"' . $padding . ' href="/' . $category['Category']['url'] . '">'; // otevru si list item
+		
+		
+		// test jestli to ma byt v tucnem
+		if ( $isActive ){
+			echo '<strong id="activeMenuItem">';
+		}
+		
+		// vypisu obsah list itemu
+		echo '' . $spacer . '' . $category['Category']['name'] . '';
+
+		// ukonceni tucneho pisma, pokud je zacato
+		if ( $isActive ){
+			echo '</strong>';
+		}
+		
+		echo '</a></li>'; // ukonceni list item
+	}
+?></ul>				
+

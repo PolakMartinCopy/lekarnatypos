@@ -1,0 +1,127 @@
+<dat:dataPack id="3478" ico="42956391" application="e-shop" version="2.0" note="Import Objednavky"
+	xmlns:dat="http://www.stormware.cz/schema/version_2/data.xsd"
+	xmlns:ord="http://www.stormware.cz/schema/version_2/order.xsd"
+	xmlns:typ="http://www.stormware.cz/schema/version_2/type.xsd"
+>
+	<dat:dataPackItem id="1" version="2.0">
+		<ord:order version="2.0">
+			<ord:orderHeader>
+				<ord:orderType><![CDATA[receivedOrder]]></ord:orderType>
+				<ord:numberOrder><![CDATA[1]]></ord:numberOrder>
+				<ord:date><![CDATA[2015-02-24]]></ord:date>
+				<ord:text><![CDATA[testovaci objednavka - prosim neexpedovat]]></ord:text>
+				<ord:partnerIdentity>
+					<typ:address>
+						<typ:company><![CDATA[Martin Polák]]></typ:company>
+						<typ:name><![CDATA[Martin Polák]]></typ:name>
+						<typ:city><![CDATA[Mokrá-Horákov]]></typ:city>
+						<typ:street><![CDATA[Mokrá 307]]></typ:street>
+						<typ:zip><![CDATA[66404]]></typ:zip>
+						<typ:ico><![CDATA[]]></typ:ico>
+						<typ:dic><![CDATA[]]></typ:dic>
+						<typ:phone><![CDATA[723238866]]></typ:phone>
+						<typ:email><![CDATA[brko11@gmail.com]]></typ:email>
+					</typ:address>
+					<typ:shipToAddress>
+			            <typ:name><![CDATA[Martin Polák]]></typ:name>
+			            <typ:city><![CDATA[Mokrá-Horákov]]></typ:city>
+			            <typ:street><![CDATA[Mokrá 307]]></typ:street>
+			            <typ:zip><![CDATA[66404]]></typ:zip>
+					</typ:shipToAddress>
+				</ord:partnerIdentity>
+				<ord:paymentType>
+					<typ:ids>Hotově</typ:ids>
+				</ord:paymentType>
+			</ord:orderHeader>
+			<ord:orderDetail>
+				<ord:orderItem>
+					<ord:text><![CDATA[BORAX, 344 (Boiron)]]></ord:text> 
+					<ord:quantity>1</ord:quantity> 
+					<ord:payVAT>true</ord:payVAT> 
+					<ord:rateVAT>low</ord:rateVAT> 
+					<ord:homeCurrency>
+						<typ:unitPrice>79</typ:unitPrice> 
+					</ord:homeCurrency>
+					<ord:stockItem>
+						<typ:stockItem>
+							<typ:ids></typ:ids> 
+						</typ:stockItem>
+					</ord:stockItem>
+				</ord:orderItem>
+				<ord:orderItem>
+					<ord:text><![CDATA[BORAX, 344 (Boiron)]]></ord:text> 
+					<ord:quantity>1</ord:quantity> 
+					<ord:payVAT>true</ord:payVAT> 
+					<ord:rateVAT>low</ord:rateVAT> 
+					<ord:homeCurrency>
+						<typ:unitPrice>79</typ:unitPrice> 
+					</ord:homeCurrency>
+					<ord:stockItem>
+						<typ:stockItem>
+							<typ:ids></typ:ids> 
+						</typ:stockItem>
+					</ord:stockItem>
+				</ord:orderItem>
+				<ord:orderItem>
+					<ord:text><![CDATA[BORAX, 344 (Boiron)]]></ord:text> 
+					<ord:quantity>2</ord:quantity> 
+					<ord:payVAT>true</ord:payVAT> 
+					<ord:rateVAT>low</ord:rateVAT> 
+					<ord:homeCurrency>
+						<typ:unitPrice>99</typ:unitPrice> 
+					</ord:homeCurrency>
+					<ord:stockItem>
+						<typ:stockItem>
+							<typ:ids></typ:ids> 
+						</typ:stockItem>
+					</ord:stockItem>
+				</ord:orderItem>
+				<ord:orderItem>
+					<ord:text><![CDATA[Syncare BB NEW AGE omlazující denní krém s kmenovými buňkami, 641 (SynCare)]]></ord:text> 
+					<ord:quantity>2</ord:quantity> 
+					<ord:payVAT>true</ord:payVAT> 
+					<ord:rateVAT>high</ord:rateVAT> 
+					<ord:homeCurrency>
+						<typ:unitPrice>329</typ:unitPrice> 
+					</ord:homeCurrency>
+					<ord:stockItem>
+						<typ:stockItem>
+							<typ:ids>641</typ:ids> 
+						</typ:stockItem>
+					</ord:stockItem>
+				</ord:orderItem>
+				<ord:orderItem>
+					<ord:text><![CDATA[Osobní odběr]]></ord:text> 
+					<ord:quantity>1</ord:quantity>
+					<ord:payVAT>true</ord:payVAT> 
+					<ord:rateVAT>none</ord:rateVAT> 
+					<ord:homeCurrency>
+						<typ:unitPrice>0.00</typ:unitPrice> 
+					</ord:homeCurrency>
+					<ord:stockItem>
+						<typ:stockItem>
+							<typ:ids></typ:ids> 
+						</typ:stockItem>
+					</ord:stockItem>
+				</ord:orderItem>
+				<ord:orderItem>
+					<ord:text><![CDATA[V hotovosti při osobním odběru]]></ord:text> 
+					<ord:quantity>1</ord:quantity> 
+					<ord:payVAT>true</ord:payVAT> 
+					<ord:rateVAT>none</ord:rateVAT> 
+					<ord:homeCurrency>
+						<typ:unitPrice>0</typ:unitPrice> 
+					</ord:homeCurrency>
+					<ord:stockItem>
+						<typ:stockItem>
+							<typ:ids></typ:ids>
+						</typ:stockItem>
+					</ord:stockItem>
+				</ord:orderItem>
+			</ord:orderDetail>
+			<ord:orderSummary>
+				<ord:roundingDocument>math2one</ord:roundingDocument> 
+			</ord:orderSummary>
+		</ord:order>
+	</dat:dataPackItem>
+</dat:dataPack>

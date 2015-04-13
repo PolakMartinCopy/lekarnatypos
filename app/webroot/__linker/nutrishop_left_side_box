@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<layout>
+	<settings>
+		<pre></pre>
+		<separator>LCA=</separator>
+		<post></post>
+	</settings>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.bazeny-morava.cz/</target>
+	<title></title>
+	<anchor>bazény</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.sauny-morava.cz/</target>
+	<title>infrasauny, sauny a příslušenství</title>
+	<anchor>sauny</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre>Wm5h6Gtvduk=</pre>
+	<target>http://www.bbcreative.cz/reklamni-predmety</target>
+	<title>Reklamní předmety pro firmy - propisky, trička, flash disky a další s potiskem</title>
+	<anchor>reklamní předměty</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.cinovivojacci.cz/</target>
+	<title></title>
+	<anchor>cínové figurky</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.nutrishop.cz/seznam_webu.htm</target>
+	<title>Zajímavé www stránky a prezentace partnerů</title>
+	<anchor>Partnerské weby</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<uri>
+		<location id="0">/</location>
+	</uri>
+	<pre></pre>
+	<target>http://www.pravidlahubnuti.cz/ovocna-dieta</target>
+	<title></title>
+	<anchor>Ovocná dieta</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.e-kola.cz</target>
+	<title>jízdní kola značek Amulet, Acstar, Giant a dalších</title>
+	<anchor>Jízdní kola</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.e-lyze.cz</target>
+	<title>Lyže značek Blizzard, Elan, Fischer a dalších</title>
+	<anchor>Lyže</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.zdrava-mrkvicka.cz/</target>
+	<title>Zdravá výživa</title>
+	<anchor>Zdravá výživa</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.hry-obchod.cz/</target>
+	<title></title>
+	<anchor>Deskové hry</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.bazeny.it/</target>
+	<title>Bazény IT prodej nafukovacích bazénů bestway</title>
+	<anchor>Bazény</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.svitidla-osvetleni-elektro.cz/</target>
+	<title>Svítidla, osvětlení</title>
+	<anchor>Svítidla, osvětlení</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.nilan.cz/</target>
+	<title>Rekuperace vzduchu, rekuperace</title>
+	<anchor>Rekuperace vzduchu</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.hotelpanorama.cz/</target>
+	<title>Wellness Víkend, Wellness pobyty, Ubytovaní Jižní Morava</title>
+	<anchor>Wellness Víkend</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://www.mamaja.cz/latkove-pleny/</target>
+	<title>Látkové pleny</title>
+	<anchor>Látkové pleny</anchor>
+	<post></post>
+</link>
+<link>
+	<type>1</type>
+	<pre></pre>
+	<target>http://sport.shop-in.cz/</target>
+	<title>Kola, sportovní potřeby, sportovní vybavení a oblečení</title>
+	<anchor>Kola a sportovní potřeby</anchor>
+	<post></post>
+</link>
+</layout>

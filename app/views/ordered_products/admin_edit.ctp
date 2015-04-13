@@ -1,30 +1,20 @@
-<h2>Úprava objednávky č. <?=$id ?></h2>
+﻿<h2>Úprava objednávky č. <?=$id ?></h2>
 <p><?=$html->link('zpět na objednávku', array('controller' => 'orders', 'action' => 'view', $order['Order']['id'])) ?></p>
-<table id="productList">
+<table id="productList" class="tabulka">
 	<tr>
-		<th>
-			Objednaný produkt
-		</th>
-		<th>
-			Změna atributů
-		</th>
-		<th>
-			Množství
-		</th>
-		<th>
-			Cena<br />
-			za kus
-		</th>
-		<th>
-			&nbsp;
-		</th>
+		<th>Objednaný produkt</th>
+		<th>Změna atributů</th>
+		<th>Množství</th>
+		<th>Cena<br />
+			za kus</th>
+		<th>&nbsp;</th>
 	</tr>
 	<?
 	foreach ( $products as $product ){
 		// celkova cena za pocet kusu krat jednotkova cena
 		$total_products_price = $product['OrderedProduct']['product_quantity'] * $product['OrderedProduct']['product_price_with_dph'];
 	?>
-				<tr style="background-color:silver">
+				<tr>
 					<td>
 						<?=$product['Product']['name'] ?>
 						<? 
@@ -32,13 +22,9 @@
 						if ( !empty( $product['OrderedProductsAttribute'] ) ){
 						?>
 							<div class="orderedProductAttributes">
-							<?
-								foreach( $product['OrderedProductsAttribute'] as $attribute ){
-							?>
+							<? foreach( $product['OrderedProductsAttribute'] as $attribute ){ ?>
 									<span>- <strong> <?=$attribute['Attribute']['Option']['name'] ?></strong>: <?=$attribute['Attribute']['value'] ?></span><br /> 
-							<?
-								}
-							?>
+							<? } ?>
 							</div>
 						<? 
 						}
@@ -111,7 +97,7 @@
 								běžná sleva: <?php echo $product['Product']['discount_common']?> Kč
 							</option>
 						<?php } ?>
-						<?php if ($product['Product']['discount_member'] > 0) { ?>
+						<?php if (isset($product['Product']['discount_member']) && $product['Product']['discount_member'] > 0) { ?>
 							<option value="<?php echo $product['Product']['discount_member'] ?>"<?php echo ($product['Product']['discount_member'] == $product['OrderedProduct']['product_price_with_dph'] ? ' selected="selected"' : "") ?>>
 								členská sleva: <?php echo $product['Product']['discount_member']?> Kč
 							</option>
@@ -153,6 +139,17 @@
 		</td>
 	</tr>
 	<tr>
+		<td colspan="2" align="right">
+			způsob platby:
+		</td>
+		<td colspan="2" align="right">
+			<?=$form->create('Order', array('url' => array('action' => 'edit_payment', $order['Order']['id'])));?>
+			<?=$form->select('Order.payment_id', $payment_choices, $order['Order']['payment_id'], array('empty' => false));?>
+			<?=$form->submit('změnit');?>
+			<?=$form->end();?>
+		</td>
+	</tr>
+	<tr>
 		<th colspan="2" align="right">
 			celková cena objednávky:
 		</th>
@@ -171,32 +168,27 @@
 		</td>
 	</tr>
 	<tr>
-		<th>
-			vyhledat produkt
-		</th>
-		<th>
-			<?=$form->input('OrderedProduct.query', array('label' => false)) ?>
-		</th>
+		<th>vyhledat produkt</th>
+		<th><?=$form->input('OrderedProduct.query', array('label' => false)) ?></th>
 	</tr>
 	<tr>
-		<td>
-			<?=$form->submit('vyhledat') ?>
-		</td>
+		<td><?=$form->submit('vyhledat') ?></td>
 	</tr>
 </table>
 <?=$form->hidden('OrderedProduct.change_switch', array('value' => 'product_query')); ?>
 <?=$form->end(); ?>
+<br/>
 <?
 if ( isset($query_products) ){
 	echo $form->create('OrderedProduct', array('url' => array('action' => 'edit', $order['Order']['id'])));
 ?>
-<table>
+<table class="tabulka">
 <?
 	foreach ( $query_products as $product ){
 ?>
-				<tr style="background-color:silver">
+				<tr>
 					<td>
-						<?=$product['Product']['name'] ?>
+						<?php echo $this->Html->link($product['Product']['name'], '/' . $product['Product']['url'], array('target' => 'blank')) ?>
 					</td>
 					<td>
 						<?
@@ -242,7 +234,7 @@ if ( isset($query_products) ){
 								běžná sleva: <?php echo $product['Product']['discount_common']?> Kč
 							</option>
 						<?php } ?>
-						<?php if ($product['Product']['discount_member'] > 0) { ?>
+						<?php if (isset($product['Product']['discount_member']) && $product['Product']['discount_member'] > 0) { ?>
 							<option value="<?php echo $product['Product']['discount_member'] ?>">
 								členská sleva: <?php echo $product['Product']['discount_member']?> Kč
 							</option>

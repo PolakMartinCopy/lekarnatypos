@@ -1,4 +1,4 @@
-<h2>Přesunout produkt</h2>
+﻿<h2>Přesunout produkt</h2>
 <p>Zvolte kategorii, do které chcete produkt <strong><?=$this->data['Product']['name']?></strong> přesunout.</p>
 <?
 	echo $form->Create('CategoriesProduct');

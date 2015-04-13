@@ -6,15 +6,13 @@ class CategoriesMostSoldProduct extends AppModel {
 	
 	var $belongsTo = array('Category', 'Product');
 	
-	var $count = 9;
+	var $count = 6;
 	
 	// vyprazdni tabulku
 	function truncate() {
 		// prepnu na admin db config
-		$this->useDbConfig = 'admin';
 		$query = 'TRUNCATE TABLE ' . $this->useTable;
 		$result = $this->query($query);
-		$this->useDbConfig = 'default';
 		return $result;
 	}
 }

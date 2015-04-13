@@ -1,11 +1,21 @@
 <?php
 class Image extends AppModel {
-
 	var $name = 'Image';
+	
+	var $actsAs = array(
+		'Containable',
+		'Ordered' => array(
+			'field' => 'order',
+			'foreign_key' => 'product_id'
+		)
+	);
 
 	var $order = array(
-		'Image.is_main' => 'desc'
+		'Image.is_main' => 'desc',
+		'Image.order'
 	);
+	
+	var $belongsTo = array('Product');
 
 	var $validate = array(
 		'name' => array(
@@ -19,8 +29,34 @@ class Image extends AppModel {
 		),
 	);
 
+	function beforeDelete() {
+		// pred smazanim obrazku otestuju, zda neni nastaveny jako hlavni a pripadne nastavim jiny (abych mel vzdycky hlavni obrazek)
+		$image = $this->find('first', array(
+			'conditions' => array('Image.id' => $this->id),
+			'contain' => array(),
+			'fields' => array('Image.id', 'Image.is_main', 'Image.product_id')
+		));
+		
+		if ($image['Image']['is_main']) {
+			$new_main_image = $this->find('first', array(
+				'conditions' => array('Image.is_main ' => false, 'Image.product_id' => $image['Image']['product_id']),
+				'contain' => array(),
+				'fields' => array('Image.id'),
+				'order' => array('Image.order' => 'asc')
+			));
+			if (!empty($new_main_image)) {
+				$new_main_image['Image']['is_main'] = true;
+				return $this->save($new_main_image);
+			}
+		}
+		return true;
+	}
+
 	function resize($file_in, $file_out, $max_x, $max_y = 0) {
-	    $imagesize = getimagesize($file_in);
+		if (!$imagesize = getimagesize($file_in)) {
+			debug('"' . $file_in . '"');
+			return false;
+		}
 
 		if ((!$max_x && !$max_y) || !$imagesize[0] || !$imagesize[1]) {
 	        return false;
@@ -43,28 +79,28 @@ class Image extends AppModel {
 	    if (!$img) {
 	        return false;
 	    }
-
+	    
 	    if ($max_x) {
 	        $width = $max_x;
 	        $height = round($imagesize[1] * $width / $imagesize[0]);
 	    }
-	    
 	    if ($max_y && (!$max_x || $height > $max_y)) {
 	        $height = $max_y;
 	        $width = round($imagesize[0] * $height / $imagesize[1]);
 	    }
-
-	    // vytvori cerny obrazek o definovanych rozmerech (pozadovane velikosti miniatury)
+	    
+	    $off_x = ceil(($max_x - $width) / 2);
+	    $off_y = 0;
+	    if ($max_y) {
+	    	$off_y = ceil(($max_y - $height) / 2);
+	    }
+	    
+	    
 	    $img2 = imagecreatetruecolor($max_x, $max_y);
-	    // z cerneho pozadi udelam bile
-	    $background = imagecolorallocate ($img2, 255, 255, 255);
-	    imagefill ($img2, 0, 0, $background);
-
-	    $dest_x = round(($max_x - $width) / 2);
-	    $dest_y = round(($max_y - $height) / 2);
-
-	    // do bileho obrazku o pozadovanych rozmerech vlozim miniaturu puvodniho na stred (z obou boku budou bile pruhy)
-	    imagecopyresampled($img2, $img, $dest_x, $dest_y, 0, 0, $width, $height, $imagesize[0], $imagesize[1]);
+	    $bg = imagecolorallocate($img2, 255, 255, 255);
+	    imagefill($img2, 0, 0, $bg);
+	    
+	    imagecopyresampled($img2, $img, $off_x, $off_y, 0, 0, $width, $height, $imagesize[0], $imagesize[1]);
 	    if ($imagesize[2] == 2) {
 	        $return = imagejpeg($img2, $file_out, 80);
 			@imagedestroy($return);
@@ -79,11 +115,16 @@ class Image extends AppModel {
 		return $return;
 	}
 	
-	function deleteImage($id){
-		if ( !$id ){
+	function deleteImage($id) {
+		if (!$id){
 			return false;
 		} else {
-			$image = $this->read(array('id', 'name'), $id);
+			$image = $this->find('first', array(
+				'conditions' => array('Image.id' => $id),
+				'contain' => array(),
+				'fields' => array('Image.id', 'Image.name')
+			));
+
 			if ( file_exists('product-images/' . $image['Image']['name']) ){
 				unlink('product-images/' . $image['Image']['name']);
 			}
@@ -94,12 +135,12 @@ class Image extends AppModel {
 				unlink('product-images/medium/' . $image['Image']['name']);
 			}
 
-			if ( $this->delete($id) ){
+			if ($this->delete($id)) {
 				return true;
 			}
 		}
 	}
-
+	
 	function deleteAllImages($conditions = null) {
 		if (!$conditions) {
 			return false;
@@ -164,6 +205,70 @@ class Image extends AppModel {
 			$name_out = $new_fileName;
 		}
 		return $name_out;
+	}
+	
+	/*
+	 * Natahne sportnutrition data
+	*/
+	function import() {
+		// vyprazdnim tabulku
+		$this->truncate();
+		$condition = null;
+		$snImages = $this->findAllSn($condition);
+		foreach ($snImages as $snImage) {
+			if ($image = $this->transformSn($snImage)) {
+				$this->create();
+				if (!$this->save($image)) {
+					debug($image);
+					debug($this->validationErrors);
+					$this->save($image, false);
+				}
+			}
+		}
+	}
+	
+	function findAllSn($condition = null) {
+		$this->setDataSource('admin');
+		$query = '
+			SELECT *
+			FROM images AS SnImage
+		';
+		if ($condition) {
+			$query .= '
+				WHERE ' . $condition . '
+			';
+		}
+		
+		$snImages = $this->query($query);
+		$this->setDataSource('default');
+		return $snImages;
+	}
+	
+	function findBySnId($snId) {
+		$image = $this->find('first', array(
+			'conditions' => array('Image.id' => $snId),
+			'contain' => array()
+		));
+	
+		if (empty($image)) {
+			trigger_error('Obrázek s id ' . $snId . ' neexistuje.', E_USER_ERROR);
+		}
+	
+		return $image;
+	}
+	
+	function transformSn($snImage) {
+		$image = array(
+			'Image' => array(
+				'id' => $snImage['SnImage']['id'],
+				'name' => $snImage['SnImage']['name'],
+				'product_id' => $snImage['SnImage']['product_id'],
+				'is_main' => $snImage['SnImage']['is_main'],
+				'supplier_url' => $snImage['SnImage']['supplier_url'],
+			)
+		);
+
+		return $image;
 	}
 }
 ?>

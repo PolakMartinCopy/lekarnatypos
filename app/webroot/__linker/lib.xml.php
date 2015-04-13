@@ -1,56 +1,29 @@
 <?php
-
 /* 
 
-
-
 XML Parser Class
-
 by Eric Rosebrock
-
 http://www.phpfreaks.com
-
-
 
 Class originated from: kris@h3x.com AT: http://www.devdump.com/phpxml.php
 
-
-
 Usage:
-
-
 
 include 'clsParseXML.php';
 
-
-
 $xmlparse = &new ParseXML;
-
 $xml = $xmlparse->GetXMLTree('/path/to/xmlfile.xml');
 
-
-
 echo "<pre>";
-
 print_r($xml);
-
 echo "</pre>";
 
 
-
-
-
 The path to the XML file may be a local file or a URL.
-
 Returns the elements of the XML file into an array with
-
 it's subelements as keys and subarrays.
 
-
-
 */
-
-
 
 class ParseXML{
       function GetChildren($vals, &$i) { 
@@ -106,27 +79,27 @@ class ParseXML{
    }
      
       function GetXMLTree($xmlloc){ 
+
 		 $data = "";
          if (file_exists($xmlloc)){
             $data = implode('', file($xmlloc)); 
          } else {
-            $fp = fopen($xmlloc,'r');
+            $fp = fopen('__linker/' . $xmlloc,'r');
             while(!feof($fp)){
                $data = $data . fread($fp, 1024);
             }
       
             fclose($fp);
          }
-      
+
          $parser = xml_parser_create('UTF-8');
-         
          xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 0); 
          xml_parse_into_struct($parser, $data, $vals, $index); 
          xml_parser_free($parser); 
       
          $tree = array(); 
          $i = 0; 
-
+      
          if (isset($vals[$i]['attributes'])) {
             $tree[$vals[$i]['tag']][]['ATTRIBUTES'] = $vals[$i]['attributes']; 
             $index = count($tree[$vals[$i]['tag']])-1;
@@ -135,7 +108,6 @@ class ParseXML{
             $tree[$vals[$i]['tag']][] = $this->GetChildren($vals, $i); 
          }
       return $tree; 
-     }
+      }
 }
-
 ?>

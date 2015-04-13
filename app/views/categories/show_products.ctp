@@ -1,4 +1,4 @@
-<?
+﻿<?
 	if ( !empty($products) ){
 		switch ( $listing_style ){
 			case "products_listing_grid":

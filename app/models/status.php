@@ -2,6 +2,14 @@
 class Status extends AppModel {
 
 	var $name = 'Status';
+	
+	var $actsAs = array(
+		'Containable',
+		'Ordered' => array(
+			'field' => 'order',
+			'foreign_key' => false
+		)
+	);
 
 	var $hasMany = array('Order');
 	
@@ -41,10 +49,10 @@ class Status extends AppModel {
 			$matches2 = '';
 			preg_match_all("/%(.*)%/U", $template['MailTemplate']['content'], $matches, PREG_SET_ORDER);
 			preg_match_all("/%(.*)%/U", $template['MailTemplate']['subject'], $matches2, PREG_SET_ORDER);
-		
+			
 			// spojim matches
 			$matches = array_merge($matches, $matches2);
-
+			
 			// vysbiram si jednotlive objekty, ktere potrebuju nacist
 			$objects = array();
 			
@@ -65,7 +73,7 @@ class Status extends AppModel {
 			foreach ( $objects as $object ){
 				if ( $object == 'Shipping' ){
 					App::import('Model', 'Shipping');
-					$this->Status->Shipping = new Shipping;
+					$this->Status->Shipping = &new Shipping;
 					
 					$this->Status->Shipping->recursive = -1;
 					$shipping = $this->Status->Shipping->read(null, $order['Order']['shipping_id']);
@@ -89,7 +97,6 @@ class Status extends AppModel {
 				
 				// sestavim si retezec, kterym nahradim needle
 				$replace = ${$varname}[$index][$column];
-
 				// jedna-li se o datum, musim ho pocestit
 				if ( $column == 'created' || $column == 'modified' ){
 					$replace = cz_date_time(${$varname}[$index][$column]);
@@ -99,40 +106,30 @@ class Status extends AppModel {
 				$template['MailTemplate']['content'] = str_replace($match[0], $replace, $template['MailTemplate']['content']);
 				$template['MailTemplate']['subject'] = str_replace($match[0], $replace, $template['MailTemplate']['subject']);
 			}
-
+			
 			// mam sestaveny mail template s daty
 			// musim ho odeslat
 			$this->Order->Customer->recursive = -1;
 			$customer = $this->Order->Customer->read(null, $order['Order']['customer_id']);
 			
 			// natahnu si mailovaci skript
-			App::import('Vendor', 'phpmailer', array('file' => 'class.phpmailer.php'));
+			App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
 			$ppm = &new phpmailer;
 			$ppm->CharSet = 'utf-8';
 			$ppm->Hostname = CUST_ROOT;
 			$ppm->Sender = CUST_MAIL;
-			$ppm->AddReplyTo(CUST_MAIL, CUST_NAME);
 			$ppm->From = CUST_MAIL;
-			$ppm->FromName = 'Automatické potvrzení';
+			$ppm->FromName = CUST_NAME;
+			$ppm->ReplyTo = CUST_MAIL;
 			
 			$ppm->Body = $template['MailTemplate']['content'];
 			$ppm->Subject = $template['MailTemplate']['subject'];
 			$ppm->AddAddress($customer['Customer']['email'], $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']);
-
-			// otestuju, jestli neni potreba neco vlozit do prilohy
-			// (zalohova faktura)
-			if ( $status['Status']['id'] == '7' ){
-				// musim ulozit zalohovku na filesystem
-				$contents = file_get_contents('http://www.lekarna-obzor.cz/orders/viewPdf/' . $order_id);
-				$fp = fopen('files/faktury/zal_' . $order_id . '.pdf', "w");
-				fwrite($fp, $contents);
-				fclose($fp);
+//			$ppm->AddAddress('brko11@gmail.com', $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']);
 			
-				// mam ulozeno, prilozim k mailu
-				$ppm->AddAttachment('files/faktury/zal_' . $order_id . '.pdf');
-			}
-
 			return $ppm->Send();
+			
+			
 		} else {
 			return false;
 		}
@@ -140,7 +137,13 @@ class Status extends AppModel {
 
 	function has_requested($status_id){
 		$return = false;
-		$status = $this->read(array('requested_fields'), $status_id);
+		
+		$status = $this->find('first', array(
+			'conditions' => array('Status.id' => $status_id),
+			'fields' => array('Status.id', 'Status.requested_fields'),
+			'recursive' => -1
+		));
+		
 		$rfs = array();
 		if ( !empty($status['Status']['requested_fields']) ){
 			$rf = explode("\n", $status['Status']['requested_fields']);
@@ -151,6 +154,15 @@ class Status extends AppModel {
 			$return = $rfs;
 		}
 		return $return;
+	}
+	
+	function findBySnName($snName) {
+		$status = $this->find('first', array(
+			'conditions' => array('Status.sn_name' => $snName),
+			'contain' => array()
+		));
+		
+		return $status;
 	}
 }
 ?>

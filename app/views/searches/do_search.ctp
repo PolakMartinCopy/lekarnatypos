@@ -1,9 +1,8 @@
-<div class="text"><h1>Výsledek vyhledávání</h1></div>
-<?
-if ( !empty($this->data) ){
-	if ( empty($products) ){
-		echo '<p>Nebyl nalezen žádný produkt odpovídající Vašemu dotazu.</p>';
-	} else {
-		echo $this->element('products_listing_grid', array('products' => $products));
-	}
-} ?>
+<h2><span>Výsledky vyhledávání</span></h2>
+<?php if (!empty($products) ){?>
+<?php 	echo $this->element(REDESIGN_PATH . $listing_style); ?>
+<?php } else { ?>
+	<div id="mainContentWrapper">
+		<p>Zadanému dotazu neodpovídají žádné produkty v našem obchodě.</p>
+	</div>
+<? } ?>

@@ -13,9 +13,9 @@ class CartsController extends AppController {
 		$cart_id = $this->Cart->get_id();
 		$success = $this->Cart->CartsProduct->deleteAll(array('cart_id' => $cart_id));
 		if ($success) {
-			$this->Session->setFlash('Produkty z košíku byly odstraněny.');
+			$this->Session->setFlash('Produkty z košíku byly odstraněny.', REDESIGN_PATH . 'flash_success');
 		} else {
-			$this->Session->setFlash('Produkty z košíku se nepodařilo odstranit.');
+			$this->Session->setFlash('Produkty z košíku se nepodařilo odstranit.', REDESIGN_PATH . 'flash_failure');
 		}
 		$this->redirect(array('controller' => 'carts_products', 'action' => 'index'));
 	}
@@ -23,10 +23,10 @@ class CartsController extends AppController {
 	// vysypani kosiku ajaxem
 	function ajax_dump() {
 		$result = array(
-			'success' => false,
-			'message' => ''	
+				'success' => false,
+				'message' => ''
 		);
-		
+	
 		$cart_id = $this->Cart->get_id();
 		$success = $this->Cart->CartsProduct->deleteAll(array('cart_id' => $cart_id));
 		if ($success) {
@@ -35,7 +35,7 @@ class CartsController extends AppController {
 		} else {
 			$result['message'] = 'Produkty z košíku se nepodařilo odstranit.';
 		}
-		
+	
 		echo json_encode($result);
 		die();
 	}

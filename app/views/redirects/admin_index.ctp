@@ -1,4 +1,4 @@
-<h2>Administrace přesměrování</h2>
+﻿<h2>Administrace přesměrování</h2>
 <div class="actions">
 	<ul>
 		<li><?=$html->link('Vytvořit nové přesměrování', array('action' => 'add'))?></li>

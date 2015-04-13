@@ -1,4 +1,4 @@
-<h3>Přihlášení k administraci</h3>
+﻿<h3>Přihlášení k administraci</h3>
 <?=$form->Create('Administrator', array('url' => array('action' => 'login') + $this->params['named']))?>
 <fieldset>
 	<label>LOGIN:</label>

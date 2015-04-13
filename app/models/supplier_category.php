@@ -9,6 +9,8 @@ class SupplierCategory extends AppModel {
 		'Category'
 	);
 	
+	var $hasMany = array('Product');
+	
 	var $validate = array(
 		'name' => array(
 			'rule' => 'notEmpty',
@@ -35,5 +37,18 @@ class SupplierCategory extends AppModel {
 			return $this->Category->CategoriesProduct->save($categories_product);
 		}
 		return true;
+	}
+	
+	function isActive($categoryId) {
+		$active = false;
+		$category = $this->find('first', array(
+			'conditions' => array('SupplierCategory.id' => $categoryId),
+			'contain' => array(),
+			'fields' => array('SupplierCategory.active')
+		));
+		if (!empty($category)) {
+			$active = $category['SupplierCategory']['active'];
+		}
+		return $active;
 	}
 }

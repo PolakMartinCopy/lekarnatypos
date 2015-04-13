@@ -1,4 +1,4 @@
-<h2>Vložit nový název atributu</h2>
+﻿<h2>Vložit nový název atributu</h2>
 <div class="option">
 <?php echo $form->create('Option');?>
 	<fieldset>

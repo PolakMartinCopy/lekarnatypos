@@ -6,7 +6,7 @@ class Statistic extends AppModel {
 
 	var $hasMany = array('OrderedProduct', 'Order');
 
-	function most_sold($date_from = null, $date_to = null, $limit = 10, $category_id = null){
+	function most_sold($date_from = null, $date_to = null, $limit = 20, $category_id = null){
 		$category_condition = "";
 		if ( $category_id != null ){
 			App::import('model', 'Category');
@@ -29,104 +29,56 @@ class Statistic extends AppModel {
 		if ( !empty($date_from) AND !empty($date_to) ){
 			$date_condition = " AND `OrderedProduct`.`created` > '" . $date_from . "' AND `OrderedProduct`.`created` < '" . $date_to . "'";
 		}
+		
+		$sold_products_query = "
+		SELECT 
+			`OrderedProduct`.`id`,
+			`OrderedProduct`.`product_id`,
+			SUM( product_quantity ) AS quantity,
+			SUM(product_quantity) * Product.retail_price_with_dph as total_price,
+			`Product`.`id`,
+			`Product`.`name`,
+			`Product`.`url`
+		FROM `ordered_products` AS `OrderedProduct`
+			LEFT JOIN `orders` AS `Order` ON (`OrderedProduct`.`order_id` = `Order`.`id`)
+			LEFT JOIN `products` AS `Product` ON (`OrderedProduct`.`product_id` = `Product`.`id`)
+		WHERE 1 = 1 " . $date_condition . "
+		GROUP BY `OrderedProduct`.`product_id`
+		ORDER BY `quantity` DESC, `total_price` DESC
+		LIMIT " . $limit;
 
-		App::import('Model', 'OrderedProduct');
-		$this->OrderedProduct = new OrderedProduct;
-		
-		$date_from = explode(' ', $date_from);
-		$date_from = $date_from[0];
-		
-		$sold_products = $this->OrderedProduct->find('all', array(
-			'conditions' => array(
-				'Order.created >=' => $date_from,
-				'Order.created <=' => $date_to
-			),
-			'contain' => array('Product', 'Order'),
-			'fields' => array(
-				'OrderedProduct.id',
-				'OrderedProduct.created',
-				'Product.id',
-				'Product.name',
-				'Product.url',
-				'SUM(OrderedProduct.product_quantity) AS OrderedProduct__quantity',
-				'SUM(OrderedProduct.product_quantity) * Product.retail_price_with_dph AS OrderedProduct__total_price'
-			),
-			'group' => 'OrderedProduct.product_id',
-//			'limit' => $limit,
-			'order' => array('OrderedProduct__quantity' => 'desc')
-		));
-		
+		$sold_products = $this->query($sold_products_query);
+
 		return $sold_products;
 	}
 
-	function stats($date_from = null, $date_to = null){
-		App::import('Model', 'Order');
-		$this->Order = &new Order;
-
-		$conditions = array();
-		if ($date_from != null AND $date_to != null ){
-			$date_from = explode(' ', $date_from);
-			$date_from = $date_from[0];
-			$conditions[] = array(
-				'Order.created >=' => $date_from,
-				'Order.created <=' => $date_to
-			);
-		}
-		// pocet objednavek v danem rozmezi
-		$orders['Order']['count'] = $this->Order->find('count', array(
-			'conditions' => $conditions,
-		));
-		// hodnota objednavek v danem rozmezi
-		$orders['Order']['total'] = $this->Order->find('all', array(
-			'conditions' => $conditions,
-			'contain' => array(),
-			'fields' => array('SUM(subtotal_with_dph) as total')
-		));
-		$orders['Order']['total'] = $orders['Order']['total'][0][0]['total'];
-		
-		return $orders;
-	}
-	
 	function orders($date_from = null, $date_to = null){
-		App::import('Model', 'Order');
-		$this->Order = &new Order;
 		
-		$date_from = explode(' ', $date_from);
-		$date_from = $date_from[0];
-		
-		// vytahnu si vsechny objednavky vcetne prodanych produktu
-		$conditions = array(
-			'Order.created >=' => $date_from,
-			'Order.created <=' => $date_to
+		$virtual_fields = array(
+			'date' => 'CONCAT(Month(created), "/", Year(created))',
+			'income' => 'SUM(shipping_cost + subtotal_with_dph)',
+			'count' => 'COUNT(*)',
+			'month' => 'Month(created)',
+			'year' => 'Year(created)'
 		);
 		
-		$contain = array(
-			'OrderedProduct' => array(
-				'fields' => array(
-					'created', 'modified', 'product_id', 'product_price_with_dph', 'product_quantity'
-				),
-				'Product' => array(
-					'fields' => array(
-						'id', 'name', 'tax_class_id'
-					),
-					'TaxClass'
-				)
-			),
-			'Status' => array(
-				'fields' => array(
-					'id', 'name'
-				)
-			)
-		);
+		$this->Order->virtualFields = array_merge($this->Order->virtualFields, $virtual_fields);
 		
-		$fields = array('id', 'status_id', 'customer_zip', 'delivery_zip', 'customer_id', 'customer_name');
+		$conditions = array('Order.status_id !=' => 5);
+		if (isset($date_from) && isset($date_to)) {
+			$conditions[] = 'Order.created >= \'' . $date_from . '\' AND Order.created <= \'' . $date_to . '\'';
+		}
 		
 		$orders = $this->Order->find('all', array(
 			'conditions' => $conditions,
-			'fields' => $fields,
-			'contain' => $contain
+			'contain' => array(),
+			'fields' => array('Order.date', 'Order.income', 'Order.count'),
+			'order' => array('Order.year' => 'asc', 'Order.month.asc')
 		));
-
+		if (!empty($orders)) {
+			$orders = $orders[0];
+		}
+		
 		return $orders;
 	}
 
@@ -180,16 +132,12 @@ class Statistic extends AppModel {
 			}
 
 			$similar_products = $this->OrderedProduct->find('all', array(
-
 				'conditions' => array('order_id' => $oIDs, 'product_id' => 'not ' . $product_id ),
-
 				'fields' => array('DISTINCT( product_id )'),
-
 				'order' => array('product_id' => 'asc'),
-
 				'recursive' => 2
-
 			));
+
 			if ( !empty($similar_products) ){
 				$similar_product_ids = array();
 				foreach ( $similar_products as $similar_product ){
@@ -205,12 +153,10 @@ class Statistic extends AppModel {
 					'belongsTo' => array('TaxClass', 'Availability')
 					)
 				);
+				
 				$similar_products = $this->Product->find('all', array(
-
 					'conditions' => array('Product.id' => $similar_product_ids),
-
 					'fields' => array('Product.id', 'Product.name', 'Product.url', 'Product.short_description', 'Product.price', 'Manufacturer.id', 'Manufacturer.name')
-
 				));
 			}
 		}

@@ -1,4 +1,4 @@
-<h2>Editace stavu</h2>
+﻿<h2>Editace stavu</h2>
 <?php echo $form->Create('Status')?>
 	<fieldset>
  		<legend>Status objednávky</legend>

@@ -1,4 +1,4 @@
-<h2>Editace výrobce</h2>
+﻿<h2>Editace výrobce</h2>
 <div class="option">
 <?php echo $form->create('Manufacturer');?>
 	<fieldset>
@@ -9,23 +9,23 @@
 					Název výrobce
 				</th>
 				<td>
-					<?=$form->text('name', array('size' => 70))?>
+					<?=$form->text('name')?>
 					<?=$form->error('name')?>
 				</td>
-			</tr>
-			<tr>
-				<th><abbr title="">Alias dodavatele</abbr></th>
-				<td><?php echo $this->Form->input('Manufacturer.supplier_alias', array('label' => false, 'size' => 70))?></td>
 			</tr>
 			<tr>
 				<th>
 					adresa www stránek
 				</th>
 				<td>
-					<?=$form->text('www_address', array('size' => 70))?><br />
+					<?=$form->text('www_address')?><br />
 					<?=$form->error('www_address')?>
 					<span class="formNote">např. http://www.mte.cz/</span>
 				</td>
+			</tr>
+			<tr>
+				<th>Popis</th>
+				<td><?php echo $this->Form->input('Manufacturer.text', array('label' => false, 'rows' => 15))?></td>
 			</tr>
 		</table>
 	</fieldset>

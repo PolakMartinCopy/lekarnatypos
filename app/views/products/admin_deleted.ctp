@@ -1,4 +1,4 @@
-<div>
+﻿<div>
 	<h2>Smazané produkty</h2>
 	<?
 		if ( empty($products) ){

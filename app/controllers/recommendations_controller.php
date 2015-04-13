@@ -4,14 +4,14 @@ class RecommendationsController extends AppController {
 	
 	function send() {
 		if (!isset($this->data)) {
-			$this->Session->setFlash('Nejsou nastavena data pro odeslání doporučujícího formuláře.');
+			$this->Session->setFlash('Nejsou nastavena data pro odeslání doporučujícího formuláře.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(HP_URI);
 		}
 
-		$this->layout = 'content';
+		$this->layout = REDESIGN_PATH . 'content';
 		
 		require_once('recaptchalib.php');
-		$privatekey = "6Le4B_oSAAAAAMeYJk1TmYaMUyCZgRLDWvvUARL8";
+		$privatekey = "6Le8Ee0SAAAAABiT8yUIOaxCjyw3x4hhkbEaltfW";
 		
 		$challenge = (isset($_POST['recaptcha_challenge_field']) ? $_POST['recaptcha_challenge_field'] : '');
 		$response = (isset($_POST['recaptcha_response_field']) ? $_POST['recaptcha_response_field'] : '');
@@ -22,10 +22,10 @@ class RecommendationsController extends AppController {
 		$recaptcha_valid = $resp->is_valid;
 		if ($recommendation_valid && $recaptcha_valid) {
 			if ($this->Recommendation->send($this->data['Recommendation']['source_name'], $this->data['Recommendation']['source_email'], $this->data['Recommendation']['target_email'], $this->data['Recommendation']['request_uri'])) {
-				$this->Session->setFlash('Vaše doporučení bylo odesláno na zadanou emailovou adresu.');
+				$this->Session->setFlash('Vaše doporučení bylo odesláno na zadanou emailovou adresu.', REDESIGN_PATH . 'flash_success');
 				$this->redirect($this->data['Recommendation']['request_uri']);					
 			} else {
-				$this->Session->setFlash('Vaše doporučení se nepodařilo odeslat na zadanou emailovou adresu.');
+				$this->Session->setFlash('Vaše doporučení se nepodařilo odeslat na zadanou emailovou adresu.', REDESIGN_PATH . 'flash_failure');
 			}
 		} else {
 			$message = array();
@@ -35,7 +35,7 @@ class RecommendationsController extends AppController {
 			if (!$recaptcha_valid) {
 				$message[] = 'Nesprávně opsaný kontrolní kód z obrázku, opakujte prosím akci';
 			}
-			$this->Session->setFlash(implode('<br/>', $message));
+			$this->Session->setFlash(implode('<br/>', $message), REDESIGN_PATH . 'flash_failure');
 		}
 	}
 	

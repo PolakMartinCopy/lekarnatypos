@@ -6,5 +6,14 @@ class Ordernote extends AppModel{
 	);
 
 	var $belongsTo = array('Administrator', 'Order', 'Status');
+	
+	var $validate = array(
+		'note' => array(
+			'notEmpty' => array(
+				'rule' => 'notEmpty',
+				'message' => 'Zadejte text poznámky.'
+			)
+		)	
+	);
 }
 ?>

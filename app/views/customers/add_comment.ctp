@@ -1,4 +1,4 @@
-<div class="mainContentWrapper">
+﻿<div class="mainContentWrapper">
 	<?=$form->create('Comment', array('url' => array('controller' => 'customers', 'action' => 'add_comment', $product['Product']['id']))) ?>
 	<table>
 		<tr>

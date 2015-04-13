@@ -1,4 +1,4 @@
-<div id="suggestedProducts">
+﻿<div id="suggestedProducts">
 <?
 	foreach ( $products as $product ){
 ?>

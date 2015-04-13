@@ -1,4 +1,4 @@
-<div class="options">
+﻿<div class="options">
 <h2>Názvy atributů - nastavení</h2>
 <table class="topHeading" cellpadding="5" cellspacing="3">
 <tr>

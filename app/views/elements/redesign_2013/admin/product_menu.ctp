@@ -1,0 +1,14 @@
+<div id='navigationsub'>
+	<ul>
+		<li><?php echo $this->Html->link('Detail', array('controller' => 'products', 'action' => 'edit_detail', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_edit_detail' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Ceník', array('controller' => 'products', 'action' => 'edit_price_list', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_edit_price_list' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Fotogalerie', array('controller' => 'products', 'action' => 'images_list', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_images_list' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Dokumenty', array('controller' => 'products', 'action' => 'edit_documents', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_edit_documents' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Související produkty', array('controller' => 'products', 'action' => 'edit_related', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_edit_related' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Kategorie', array('controller' => 'products', 'action' => 'edit_categories', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_edit_categories' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Povinný výběr', array('controller' => 'products', 'action' => 'attributes_list', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_attributes_list' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Ceny za proklik', array('controller' => 'products', 'action' => 'comparator_click_prices', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_comparator_click_prices' ? 'selected' : '')));?></li>
+		<li><?php echo $this->Html->link('Duplikace', array('controller' => 'products', 'action' => 'duplicate', $product['Product']['id'], (isset($opened_category_id) ? $opened_category_id : null)), array('escape' => false, 'class' => ($this->params['action'] == 'admin_duplicate' ? 'selected' : '')));?></li>
+	</ul>
+</div>
+<div class='prazdny'></div>
