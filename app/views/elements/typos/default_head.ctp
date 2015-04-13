@@ -35,7 +35,7 @@
     <?php if ($this->params['controller'] != 'orders' && $this->params['action'] != 'finished') { ?>
     <script type="text/javascript">
         var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-38268275-1']);
+        _gaq.push(['_setAccount', 'UA-50091083-1']);
         _gaq.push(['_trackPageview']);
         (function () {
             var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
