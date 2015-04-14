@@ -1187,7 +1187,7 @@ class OrdersController extends AppController {
 		// heureka overeno zakazniky
 		App::import('Vendor', 'HeurekaOvereno', array('file' => 'HeurekaOvereno.php'));
 		try {
-			$overeno = new HeurekaOvereno('5c898f377be0c776bcfb82767b52fba2');
+			$overeno = new HeurekaOvereno('f4ce59a7e0b67e0468b557653c8db5b2');
 			$overeno->setEmail($order['Order']['customer_email']);
 			foreach ($order['OrderedProduct'] as $op) {
 				$overeno->addProductItemId($op['Product']['id']);

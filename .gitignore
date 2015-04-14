@@ -5,3 +5,4 @@ tmp
 /.settings
 /app/webroot/product-images
 /.externalToolBuilders
+/app/webroot/files/*.log
