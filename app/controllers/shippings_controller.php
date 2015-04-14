@@ -28,7 +28,7 @@ class ShippingsController extends AppController {
 		$taxClasses = $this->Shipping->TaxClass->find('list');
 		$this->set('taxClasses', $taxClasses);
 		
-		$this->set('tiny_mce_elements', 'ShippingDescription');
+		$this->set('tinyMceElement', 'ShippingDescription');
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
@@ -63,7 +63,7 @@ class ShippingsController extends AppController {
 		$taxClasses = $this->Shipping->TaxClass->find('list');
 		$this->set('taxClasses', $taxClasses);
 		
-		$this->set('tiny_mce_elements', 'ShippingDescription');
+		$this->set('tinyMceElement', 'ShippingDescription');
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
