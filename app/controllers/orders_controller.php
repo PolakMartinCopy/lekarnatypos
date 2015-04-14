@@ -1233,7 +1233,7 @@ class OrdersController extends AppController {
 		$jscript_code = "
 			_gaq.push(['_addTrans',
 				'" . $order['Order']['id'] . "',           // order ID - required
-				'www.' . CUST_ROOT,  // affiliation or store name
+				'www." . CUST_ROOT . "',  // affiliation or store name
 				'" . $order['Order']['orderfinaltotal'] . "',          // total - required
 				'" . $tax_value . "',           // tax
 				'" . $order['Order']['shipping_cost'] . "',              // shipping

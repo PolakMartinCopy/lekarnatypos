@@ -32,7 +32,6 @@
     
     <link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>categories.css" />
 
-    <?php if ($this->params['controller'] != 'orders' && $this->params['action'] != 'finished') { ?>
     <script type="text/javascript">
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-50091083-1']);
@@ -43,4 +42,3 @@
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
     </script>
-    <?php } ?>
