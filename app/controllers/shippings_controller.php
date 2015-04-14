@@ -16,7 +16,7 @@ class ShippingsController extends AppController {
 	
 
 	function admin_add(){
-		if ( isset($this->data) ){
+		if (isset($this->data)) {
 			if ( $this->Shipping->save($this->data) ){
 				$this->Session->setFlash('Způsob dopravy byl uložen!', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('controller' => 'shippings', 'action' => 'index'), null, true);

@@ -6,7 +6,7 @@ class Shipping extends AppModel {
 		'Containable',
 		'Ordered' => array(
 			'field' => 'order',
-			'foreign_key' => 'active'
+			'foreign_key' => false
 		)
 	);
 	
@@ -15,6 +15,12 @@ class Shipping extends AppModel {
 	var $hasMany = array('Order');
 	
 	var $validate = array(
+		'provider_name' => array(
+			'minLength' => array(
+				'rule' => array('minLength', 1),
+				'message' => 'Vyplňte prosím název dopravce'
+			)
+		),
 		'name' => array(
 			'minLength' => array(
 				'rule' => array('minLength', 1),
@@ -78,25 +84,22 @@ class Shipping extends AppModel {
 	}
 
 	function get_cost($id, $order_total, $is_voc = false) {
-		// pokud je doprava po CR (mimo osobniho odberu) a soucasne je zakaznik VOC, je cena vzdy 95 KC
-		if ($is_voc && in_array($id, array(2, 3, 7, 18, 14))) {
-			$price = 95;
-		} else {
-			$shipping = $this->find('first', array(
-				'conditions' => array('Shipping.id' => $id),
-				'contain' => array(),
-				'fields' => array('Shipping.id', 'Shipping.price', 'Shipping.free')	
-			));
+		$shipping = $this->find('first', array(
+			'conditions' => array('Shipping.id' => $id),
+			'contain' => array(),
+			'fields' => array('Shipping.id', 'Shipping.price', 'Shipping.order_percentage_price', 'Shipping.free')	
+		));
 			
-			$price = $shipping['Shipping']['price'];
-			
-			// u sobotniho doruceni (id = 20) neni doprava zdarma, pouze u objednavky nad 2000 se odecte 80,-
-			if ($shipping['Shipping']['id'] == 20 && $order_total >= 2000) {
-				$price = 50;
-			} elseif (intval($shipping['Shipping']['free'] > 0) && $order_total > intval($shipping['Shipping']['free'])) {
-				$price = 0;
-			}
+		$price = $shipping['Shipping']['price'];
+		if (isset($shipping['Shipping']['order_percentage_price'])) {
+			$price += $order_total * $shipping['Shipping']['order_percentage_price'] / 100;
 		}
+			
+		if (intval($shipping['Shipping']['free'] > 0) && $order_total > intval($shipping['Shipping']['free'])) {
+			$price = 0;
+		}
+
+		$price = ceil($price);
 		return $price;
 	}
 	

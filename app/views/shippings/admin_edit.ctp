@@ -2,6 +2,10 @@
 <?php echo $form->Create('Shipping')?>
 <table class="tabulkaedit">
 	<tr class="nutne">
+		<td>Název dopravce</td>
+		<td><?php echo $form->input('Shipping.provider_name', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr class="nutne">
 		<td>Název</td>
 		<td><?php echo $form->input('Shipping.name', array('label' => false, 'size' => 80))?></td>
 	</tr>
@@ -12,6 +16,10 @@
 	<tr class="nutne">
 		<td>Cena za dopravu</td>
 		<td><?php echo $form->input('Shipping.price', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
+		<td>Navýšení ceny o procenta<br/>z ceny objednávky</td>
+		<td><?php echo $form->input('Shipping.order_percentage_price', array('label' => false, 'size' => 80))?></td>
 	</tr>
 	<tr>
 		<td>Zdarma od</td>

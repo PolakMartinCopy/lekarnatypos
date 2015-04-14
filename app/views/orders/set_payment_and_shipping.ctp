@@ -5,26 +5,40 @@
 	<?php echo $this->Form->create('Order', array('url' => array('controller' => 'orders', 'action' => 'set_payment_and_shipping')))?>
 	<fieldset>
 		<legend>Doprava</legend>
-		<?php if (!empty($shippings)) { ?>
+		<?php if (!empty($providers)) { ?>
 		<table style="width:100%">
 		<?php
 			$first = true;
-			foreach ($shippings as $shipping) { 
-				$checked = '';
-				if (isset($this->data['Order']['shipping_id']) && $this->data['Order']['shipping_id'] == $shipping['Shipping']['id']) {
-					$checked = ' checked="checked"';
-				}
-				if (!isset($this->data['Order']['shipping_id']) && $first) {
-					$checked = ' checked="checked"';
-				}
+			foreach ($providers as $provider) {
+				$show_provider_row = true;
+				foreach ($provider['shippings'] as $shipping) { 
+					$checked = '';
+					if (isset($this->data['Order']['shipping_id']) && $this->data['Order']['shipping_id'] == $shipping['Shipping']['id']) {
+						$checked = ' checked="checked"';
+					}
+					if (!isset($this->data['Order']['shipping_id']) && $first) {
+						$checked = ' checked="checked"';
+					}
 		?>
 			<tr>
-				<td style="width:10%;padding:3px"><input name="data[Order][shipping_id]" type="radio" value="<?php echo $shipping['Shipping']['id']?>" id="OrderShippingId<?php echo $shipping['Shipping']['id']?>"<?php echo $checked?>/></td>
-				<td style="width:30%;padding:3px"><?php echo $shipping['Shipping']['name']?></td>
-				<td style="width:50%;padding:3px"><small><?php echo $shipping['Shipping']['description']?></small></td>
-				<td style="width:10%;padding:3px"><?php echo round($shipping['Shipping']['price'])?>&nbsp;Kč</td> 
+				<?php
+					$border_top = '';  
+					if ($show_provider_row) {
+						if (!$first) {
+							$border_top = ';border-top:1px solid #c0c0c0';
+						}
+				 ?>
+				<td style="width:10%;padding:3px<?php echo $border_top?>" nowrap rowspan="<?php echo count($provider['shippings'])?>" valign="top" ><?php echo $provider['Shipping']['provider_name']?></td>
+				<?php
+					$show_provider_row = false; 
+				} ?>
+				<td style="width:5%;padding:3px<?php echo $border_top?>"><input name="data[Order][shipping_id]" type="radio" value="<?php echo $shipping['Shipping']['id']?>" id="OrderShippingId<?php echo $shipping['Shipping']['id']?>"<?php echo $checked?>/></td>
+				<td style="width:35%;padding:3px<?php echo $border_top?>"><?php echo $shipping['Shipping']['name']?></td>
+				<td style="width:40%;padding:3px<?php echo $border_top?>"><small><?php echo $shipping['Shipping']['description']?></small></td>
+				<td style="width:10%;padding:3px<?php echo $border_top?>"><?php echo round($shipping['Shipping']['price'])?>&nbsp;Kč</td> 
 			</tr>
-		<?php	$first = false; 
+		<?php		$first = false;
+				}
 			} ?>
 		</table>
 		<?php } ?>

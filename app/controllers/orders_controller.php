@@ -842,16 +842,25 @@ class OrdersController extends AppController {
 			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
 		}
 		
-		$shippings = $this->Order->Shipping->find('all', array(
-			'conditions' => array('Shipping.active' => true),
+		$providers = $this->Order->Shipping->find('all', array(
+			'conditions' => array('Shipping.active'),	
 			'contain' => array(),
+			'fields' => array('DISTINCT Shipping.provider_name'),
 			'order' => array('Shipping.order' => 'asc')
 		));
-		foreach ($shippings as &$shipping) {
-			$shipping['Shipping']['price'] = $this->Order->get_shipping_cost($shipping['Shipping']['id']);
+
+		foreach ($providers as &$provider) {
+			$provider['shippings'] = $this->Order->Shipping->find('all', array(
+				'conditions' => array('Shipping.active' => true, 'Shipping.provider_name' => $provider['Shipping']['provider_name']),
+				'contain' => array(),
+				'order' => array('Shipping.order' => 'asc'),
+			));
+			foreach ($provider['shippings'] as &$shipping) {
+				$shipping['Shipping']['price'] = $this->Order->get_shipping_cost($shipping['Shipping']['id']);
+			}			
 		}
-		
-		$this->set(compact('shippings'));
+
+		$this->set(compact('providers'));
 
 		if ($this->Session->check('Order.payment_id')) {
 			$this->data['Order']['payment_id'] = $this->Session->read('Order.payment_id');
@@ -1063,11 +1072,21 @@ class OrdersController extends AppController {
 		$dataSource->begin($this->Order);
 		try {
 
-			$this->Order->save($order[0]);
+			if (!$this->Order->save($order[0])) {
+				$dataSource->rollback($this->Order);
+				debug($this->Order->validationErrors);
+				trigger_error('Objednávku se nepodařilo uložit', E_USER_ERROR);
+				die();
+			}
 			// musim ulozit objednavku a smazat produkty z kosiku
 			foreach ($order[1] as $ordered_product) {
 				$ordered_product['OrderedProduct']['order_id'] = $this->Order->id;
-				$this->Order->OrderedProduct->saveAll($ordered_product);
+				if (!$this->Order->OrderedProduct->saveAll($ordered_product)) {
+					$dataSource->rollback($this->Order);
+					debug($this->Order->OrderedProduct->validationErrors);
+					trigger_error('Produkty na objednavce se nepodařilo uložit', E_USER_ERROR);
+					die();
+				}
 			}
 		} catch (Exception $e) {
 			$dataSource->rollback($this->Order);

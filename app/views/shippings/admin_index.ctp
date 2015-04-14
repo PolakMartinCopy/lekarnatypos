@@ -4,6 +4,7 @@
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th>ID</th>
+		<th>Dopravce</th>
 		<th>Název</th>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
@@ -27,6 +28,7 @@
 			echo $this->Html->link($icon, array('controller' => 'shippings', 'action' => 'delete', $shipping['Shipping']['id']), array('escape' => false, 'title' => 'Smazat způsob dopravy'), 'Opravdu chcete způsob dopravy odstranit?');
 		?></td>
 		<td><?php echo $this->Html->link($shipping['Shipping']['id'], array('controller' => 'shippings', 'action' => 'edit', $shipping['Shipping']['id']))?></td>
+		<td><?php echo $shipping['Shipping']['provider_name'] ?></td>
 		<td><?php echo $this->Html->link($shipping['Shipping']['name'], array('controller' => 'shippings', 'action' => 'edit', $shipping['Shipping']['id']))?></td>
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/up.png" alt="" />';
