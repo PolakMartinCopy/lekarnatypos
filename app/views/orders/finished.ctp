@@ -18,6 +18,24 @@
 <script type="text/javascript">
 	<?php echo $jscript_code ?>
 </script>
+	
+<!-- Merici kod pro Heureka.cz -->
+<script type="text/javascript">
+var _hrq = _hrq || [];
+    _hrq.push(['setKey', 'B07B416DBB1B526966038D02638F5E20']);
+    _hrq.push(['setOrderId', '<?php echo $order['Order']['id'] ?>']);
+
+<?php foreach ($order['OrderedProduct'] as $op) {?>
+    _hrq.push(['addProduct', '<?php echo $op['Product']['name'] ?>', '<?php echo $op['product_price_with_dph'] ?>', '<?php echo $op['product_quantity'] ?>']);
+<?php } ?>
+    _hrq.push(['trackOrder']);
+
+(function() {
+    var ho = document.createElement('script'); ho.type = 'text/javascript'; ho.async = true;
+    ho.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.heureka.cz/direct/js/cache/1-roi-async.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ho, s);
+})();
+</script>
 
 <?php if (false) { ?>
 <!--
