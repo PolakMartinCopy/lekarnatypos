@@ -1024,6 +1024,24 @@ class CustomersController extends AppController {
 		$this->set('customer_id', $customer_id);
 	}
 	
+	/**
+	 * otestuje, zda je prihlasen nejaky administrator
+	 * pouzivam v javascriptove metode, abych pred vykonanim nejake funkce vedel, ze je admin prihlaseny a ma opravneni
+	 * funkci vykonec
+	 */
+	function check_admin_logged() {
+		$data = array(
+			'success' => true,
+			'message' => null
+		);
+
+		if (!$this->Session->check('Administrator')) {
+			$data['message'] = 'Nejste přihlášen(a). Přihlašte se prosím znovu!';
+		}
+		echo json_encode($data);
+		die();
+	}
+	
 	function admin_import() {
 		$this->Customer->import();
 		die('here');

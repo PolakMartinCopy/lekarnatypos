@@ -13,25 +13,45 @@ $(function() {
 		var variableSymbol = $('#Order' + position + 'VariableSymbol').val();
 		var shippingNumber = $('#Order' + position + 'ShippingNumber').val();
 
+		var logged = true;
 		$.ajax({
-			url: '/admin/orders/edit_status',
+			url: '/customers/check_admin_logged',
 			type: 'post',
 			dataType: 'json',
-			data: {
-				id: id,
-				statusId: statusId,
-				variableSymbol: variableSymbol,
-				shippingNumber: shippingNumber
-			},
+			async: false,
 			success: function(data) {
-				alert(data.message);
-
-				location.reload(); 
+				if (data.message) {
+					alert(data.message);
+					logged = false;
+					window.location.href = '/<?php echo $this->params['url']['url']?>';
+				} 
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 				alert(textStatus);
-			}
-		});
+			} 
+		})
+
+		if (logged) {
+			$.ajax({
+				url: '/admin/orders/edit_status',
+				type: 'post',
+				dataType: 'json',
+				data: {
+					id: id,
+					statusId: statusId,
+					variableSymbol: variableSymbol,
+					shippingNumber: shippingNumber
+				},
+				success: function(data) {
+					alert(data.message);
+	
+					location.reload(); 
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					alert(textStatus);
+				}
+			});
+		}
 	});
 });
 </script>
