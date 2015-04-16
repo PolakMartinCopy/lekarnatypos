@@ -217,7 +217,7 @@ class SuppliersController extends AppController {
 		// ulozim si stazene xml pro pozdejsi kontrolu
 		$xml_file_suffix = date('Y-m-d-H-i-s');
 		$xml_file = 'files/uploads/xml-' . $id . '-' . $xml_file_suffix . '.xml';
-		file_put_contents($xml_file, $xml);
+//		file_put_contents($xml_file, $xml);
 		
 		$products = new SimpleXMLElement($xml);
 
