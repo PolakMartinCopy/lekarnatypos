@@ -330,11 +330,11 @@ class Order extends AppModel {
 		
 		// nactu si objednavku, protoze potrebuju vedet
 		// cislo baliku v kterem byla objednavka expedovana
-		$this->recursive = -1;
+		$this->contain('Shipping');
 		$order = $this->read(null, $id);
-		
+
 		// natvrdo definovane URL trackeru general parcel
-		$tracker_url = 'http://tt.geis.cz/TrackAndTrace/ZasilkaDetail.aspx?id=' . $order['Order']['shipping_number'];
+		$tracker_url = $order['Shipping']['tracker_prefix'] . trim($order['Order']['shipping_number']) . $order['Shipping']['tracker_postfix'];
 
 		// nactu si obsah trackovaci stranky
 		$contents = file_get_contents($tracker_url);

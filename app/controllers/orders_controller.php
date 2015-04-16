@@ -453,7 +453,7 @@ class OrdersController extends AppController {
 					$result = $this->Order->track_cpost($order['Order']['id']);
 					break;
 				break;
-				case "GENERAL_PARCEL":
+				case "GEIS":
 					// general parcel
 					$result = $this->Order->track_gparcel($order['Order']['id']);
 					break;
