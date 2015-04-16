@@ -686,7 +686,7 @@ class OrdersController extends AppController {
 						// to udelam tak, ze priznak v sesne, ktery mi rika, ze adresa byla vybrana pomoci pluginu, nastavim na false
 						if ($this->Session->check('Order.shipping_id')) {
 							$shipping_id = $this->Session->read('Order.shipping_id');
-							if ($shipping_id == $this->Order->Shipping->GP_shipping_id) {
+							if (in_array($shipping_id, $this->Order->Shipping->GP_shipping_id)) {
 								$this->Session->write('Address.plugin_check', false);
 							// pokud mam jiny zpusob dopravy nez GP a mam priznak								
 							} elseif ($this->Session->check('Address.plugin_check')) {
@@ -831,7 +831,7 @@ class OrdersController extends AppController {
 			// pokud je jako zpusob dopravy vybrano Geis Point (doruceni na odberne misto), presmeruju na plugin pro vyber odberneho
 			// mista s tim, aby se po navratu presmeroval na ulozeni informaci o vyberu odberneho mista
 			// zpusob dopravy GEIS POINT neni nastaven (id == false)
-			if ($this->data['Order']['shipping_id'] == $this->Order->Shipping->GP_shipping_id) {
+			if (in_array($this->data['Order']['shipping_id'], $this->Order->Shipping->GP_shipping_id)) {
 				if ($service_url = $this->Order->Shipping->geis_point_url($this->Session)) {
 					$this->redirect($service_url);
 				} else {
@@ -895,7 +895,7 @@ class OrdersController extends AppController {
 		
 		$shipping_id = $order['shipping_id'];
 		// pokud mam zvoleno dodani na vydejni misto geis point, nactu parametry pro doruceni (z GET nebo sesny)
-		if ($shipping_id == $this->Order->Shipping->GP_shipping_id) {
+		if (in_array($shipping_id, $this->Order->Shipping->GP_shipping_id)) {
 			// parametry jsou v GET
 			if (isset($this->params['url']['GPName']) && isset($this->params['url']['GPAddress']) && isset($this->params['url']['GPID'])) {
 				$gp_name = urldecode($this->params['url']['GPName']);
