@@ -337,7 +337,7 @@ class Order extends AppModel {
 		$tracker_url = $order['Shipping']['tracker_prefix'] . trim($order['Order']['shipping_number']) . $order['Shipping']['tracker_postfix'];
 
 		// nactu si obsah trackovaci stranky
-		$contents = file_get_contents($tracker_url);
+		$contents = download_url($tracker_url);
 		
 		if ( $contents !== false ){
 			$contents = eregi_replace("\r\n", "", $contents);
