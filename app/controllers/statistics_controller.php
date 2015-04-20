@@ -24,6 +24,7 @@ class StatisticsController extends AppController {
 		}
 		
 		if (isset($this->data)) {
+
 			$conditions = array();
 			$from = false;
 			if (isset($this->data['Statistic']['from']) && !empty($this->data['Statistic']['from'])) {
@@ -48,7 +49,7 @@ class StatisticsController extends AppController {
 			$this->Statistic->Order = &new Order;
 			$this->Statistic->Order->virtualFields['products_count'] = 'SUM(OrderedProduct.product_quantity)';
 			$this->Statistic->Order->virtualFields['price'] = 'Order.subtotal_with_dph + Order.shipping_cost';
-			$this->paginate['Order'] = array(
+/* 			$this->paginate['Order'] = array(
 				'conditions' => $conditions,
 				'contain' => array(),
 				'fields' => array(
@@ -68,10 +69,33 @@ class StatisticsController extends AppController {
 					),
 				),
 				'group' => array('Order.id'),
-				'order' => array('Order.products_count' => 'asc'),
+				'order' => array('Order.products_count' => 'desc'),
 				'show' => 'all'
 			);
-			$orders = $this->paginate('Order');
+			$orders = $this->paginate('Order'); */
+			$orders = $this->Statistic->Order->find('all', array(
+				'conditions' => $conditions,
+				'contain' => array(),
+				'fields' => array(
+						'Order.id',
+						'Order.created',
+						'Order.products_count',
+						'Order.subtotal_with_dph',
+						'Order.shipping_cost',
+						'Order.price'
+				),
+				'joins' => array(
+					array(
+						'table' => 'ordered_products',
+						'alias' => 'OrderedProduct',
+						'type' => 'LEFT',
+						'conditions' => array('OrderedProduct.order_id = Order.id')
+					),
+				),
+				'group' => array('Order.id'),
+				'order' => array('Order.products_count' => 'desc'),
+			));
+
 			unset($this->Statistic->Order->virtualFields['products_count']);
 			unset($this->Statistic->Order->virtualFields['price']);
 			$this->set('orders', $orders);
@@ -109,7 +133,7 @@ class StatisticsController extends AppController {
 					),
 				),
 				'group' => array('Product.id'),
-				'order' => array('Products.ordered_count' => 'asc'),
+				'order' => array('Products.ordered_count' => 'desc'),
 				'show' => 'all'
 			);
 			$products = $this->paginate('Product');

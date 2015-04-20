@@ -27,11 +27,11 @@
 <p>V daném období bylo uskutečněno <strong><?php echo count($orders) ?> objednávek</strong> v celkové hodnotě <strong><?=format_price($orders_income)?></strong>.</p>
 <table class="topHeading">
 	<tr>
-		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('ID objednávky', 'Order.id') : 'ID objednávky') ?></th>
-		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Datum objednávky', 'Order.created') : 'Datum objednávky') ?></th>
-		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Produktů na objednávce', 'Order.products_count') : 'Produktů na objednávce') ?></th>
-		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Cena bez dopravy', 'Order.subtotal_with_dph') : 'Cena bez dopravy') ?></th>
-		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Celková cena', 'Order.price') : 'Celková cena') ?></th>
+		<th><?php echo 'ID objednávky' ?></th>
+		<th><?php echo 'Datum objednávky' ?></th>
+		<th><?php echo 'Produktů na objednávce' ?></th>
+		<th><?php echo 'Cena bez dopravy' ?></th>
+		<th><?php echo 'Celková cena' ?></th>
 	</tr>
 	<?php if (empty($orders)) { ?>
 	<tr>
