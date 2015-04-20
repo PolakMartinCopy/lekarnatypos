@@ -6,10 +6,12 @@
 			<td>Cesta</td>
 			<td><?php echo $this->Form->input('Content.path', array('size' => '60', 'label' => false))?></td>
 		</tr>
-		<tr class="nutne">
+<?php if (false) { ?>
+ 	<tr class="nutne">
 			<td>Nadpis</td>
 			<td><?php echo $this->Form->input('Content.heading', array('size' => '60', 'label' => false))?></td>
 		</tr>
+<?php } ?>
 		<tr>
 			<td>Titulek</td>
 			<td><?php echo $this->Form->input('Content.title', array('size' => '60', 'label' => false))?></td>

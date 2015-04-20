@@ -10,6 +10,9 @@
 		<td>nebo celková částka objednávek nad:</td>
 		<td><?php echo $this->Form->input('Customer.orders_amount', array('label' => false))?></td>
 	</tr>
+	<tr>
+		<td>CSV</td>
+		<td><?php echo $this->Form->input('Customer.csv', array('label' => false, 'type' => 'checkbox'))?>
 </table>
 <br/>
 <?php echo $this->Form->submit('Zobrazit')?>
@@ -56,10 +59,25 @@ if (isset($this->data) && isset($this->Paginator)) {
 		<td><?php echo $customer['Customer']['company_name']?></td>
 		<td>
 			<?php echo $this->Html->link($customer['Customer']['name'], array('controller' => 'customers', 'action' => 'view', $customer['Customer']['id']))?><br/>
-			<?php echo $customer['Customer']['email']?>
+			<?php echo $customer['Customer']['email']?><br/>
+			<?php echo $customer['Customer']['phone']?>
 		</td>
 		<td><?php echo $customer['CustomerType']['name']?></td>
-		<td><?php echo (isset($customer['Address'][0]['city']) ? $customer['Address'][0]['city'] : '') ?></td>
+		<td><?php 
+			$address = '';
+			if (!empty($customer['Address'])) {
+				$address = $customer['Address'][0]['street'];
+				if (!empty($customer['Address'][0]['street_no'])) {
+					$address .= ' ' . $customer['Address'][0]['street_no'];
+				}
+				if (!empty($address)) {
+					$address .= '<br/>';
+				}
+				$address .= '<strong>' . $customer['Address'][0]['city'] . '</strong><br/>';
+				$address .= $customer['Address'][0]['zip'];
+			}
+			echo $address;
+		?></td>
 		<td><?php echo $customer['Customer']['login_count']?></td>
 		<td><?php echo $customer['Customer']['login_date']?></td>
 		<td><?php echo $customer['Customer']['orders_count']?><br/><?php echo format_price($customer['Customer']['orders_amount'])?></td>

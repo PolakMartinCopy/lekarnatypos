@@ -36,105 +36,92 @@ class CustomersController extends AppController {
 			$this->data['Customer']['orders_amount'] = $this->params['named']['orders_amount'];
 		}
 		
-		if (isset($this->data)) {
-			$conditions = array('Customer.active' => true);
-			
-			if (isset($this->data['Customer']['query']) && !empty($this->data['Customer']['query'])) {
-				$conditions[] = array(
-					'OR' => array(
-						array('Customer.first_name LIKE "%%' . $this->data['Customer']['query'] . '%%"'),
-						array('Customer.last_name LIKE "%%' . $this->data['Customer']['query'] . '%%"'),
-						array('Customer.email LIKE "%%' . $this->data['Customer']['query'] . '%%"')
-					)	
-				);
-			}
-			
-			$this->Customer->virtualFields['orders_amount'] = 'SUM(Order.subtotal_with_dph + Order.shipping_cost)';
-			$this->Customer->virtualFields['orders_count'] = 'COUNT(*)';
-			
-			$group = 'Customer.id';
-			if (isset($this->data['Customer']['orders_amount']) && !empty($this->data['Customer']['orders_amount'])) {
-				$group .= ' HAVING (' . $this->Customer->virtualFields['orders_amount'] . ' >= ' . $this->data['Customer']['orders_amount'] . ')';
-			}
-			
-			$paginate = array(
-				'conditions' => $conditions,
-				'contain' => array(
-					'CustomerType' => array(
-						'fields' => array('CustomerType.id', 'CustomerType.name')
-					),
-					'Address' => array(
-						'conditions' => array('Address.type' => 'f'),
-						'fields' => array('Address.id', 'Address.city')
-					)
-				),
-				'joins' => array(
-					array(
-						'table' => 'orders',
-						'alias' => 'Order',
-						'type' => 'LEFT',
-						'conditions' => array('Customer.id = Order.customer_id')
-					)
-				),
-				'group' => array($group),
-				'fields' => array(
-					'Customer.id',
-					'Customer.company_name',
-					'Customer.name',
-					'Customer.email',
-					'Customer.login_count',
-					'Customer.login_date',
-					'Customer.orders_amount',
-					'Customer.orders_count'
-				),
-				'order' => array('Customer.name' => 'asc')
-			);
-			
-			$this->paginate = array_merge($paginate, $this->paginate);
-			
-			$customers = $this->paginate();
-			
-/* 			$customers = $this->Customer->find('all', array(
-				'conditions' => $conditions,
-				'contain' => array(
-					'CustomerType' => array(
-						'fields' => array('CustomerType.id', 'CustomerType.name')
-					),
-					'Address' => array(
-						'conditions' => array('Address.type' => 'f'),
-						'fields' => array('Address.id', 'Address.city')
-					)
-				),
-				'joins' => array(
-					array(
-						'table' => 'orders',
-						'alias' => 'Order',
-						'type' => 'LEFT',
-						'conditions' => array('Customer.id = Order.customer_id')
-					)	
-				),
-				'group' => array($group),
-				'fields' => array(
-					'Customer.id',
-					'Customer.company_name',
-					'Customer.name',
-					'Customer.email',
-					'Customer.login_count',
-					'Customer.login_date',
-					'Customer.orders_amount',
-					'Customer.orders_count'
-				),
-				'order' => array('Customer.name' => 'asc')
-			)); */
-			
-			unset($this->Customer->virtualFields['orders_amount']);
-			unset($this->Customer->virtualFields['orders_count']);
 
+		$conditions = array('Customer.active' => true);
+			
+		if (isset($this->data['Customer']['query']) && !empty($this->data['Customer']['query'])) {
+			$conditions[] = array(
+				'OR' => array(
+					array('Customer.first_name LIKE "%%' . $this->data['Customer']['query'] . '%%"'),
+					array('Customer.last_name LIKE "%%' . $this->data['Customer']['query'] . '%%"'),
+					array('Customer.email LIKE "%%' . $this->data['Customer']['query'] . '%%"'),
+					array('Customer.phone LIKE "%%' . $this->data['Customer']['query'] . '%%"')
+				)	
+			);
 		}
-//debug($customers); die();
+			
+		$this->Customer->virtualFields['orders_amount'] = 'SUM(Order.subtotal_with_dph + Order.shipping_cost)';
+		$this->Customer->virtualFields['orders_count'] = 'COUNT(*)';
+			
+		$group = 'Customer.id';
+		if (isset($this->data['Customer']['orders_amount']) && !empty($this->data['Customer']['orders_amount'])) {
+			$group .= ' HAVING (' . $this->Customer->virtualFields['orders_amount'] . ' >= ' . $this->data['Customer']['orders_amount'] . ')';
+		}
+		
+			
+		$paginate = array(
+			'conditions' => $conditions,
+			'contain' => array(
+				'CustomerType' => array(
+					'fields' => array('CustomerType.id', 'CustomerType.name')
+				),
+				'Address' => array(
+					'conditions' => array('Address.type' => 'f'),
+					'fields' => array(
+						'Address.id',
+						'Address.street',
+						'Address.street_no',
+						'Address.city',
+						'Address.zip'
+					)
+				)
+			),
+			'joins' => array(
+				array(
+					'table' => 'orders',
+					'alias' => 'Order',
+					'type' => 'LEFT',
+					'conditions' => array('Customer.id = Order.customer_id')
+				)
+			),
+			'group' => array($group),
+			'fields' => array(
+				'Customer.id',
+				'Customer.company_name',
+				'Customer.name',
+				'Customer.email',
+				'Customer.phone',
+				'Customer.login_count',
+				'Customer.login_date',
+				'Customer.orders_amount',
+				'Customer.orders_count'
+			),
+			'order' => array('Customer.name' => 'asc')
+		);
+		
+		$this->paginate = array_merge($paginate, $this->paginate);
+		
+		// pokud chci vypsat csv
+		if (isset($this->data['Customer']['csv']) && $this->data['Customer']['csv'] == true) {
+			// chci tam vsechny vysledky (ne strankovani)
+			unset($this->paginate['limit']);
+			$this->paginate['show'] = 'all';
+		}
+
+		$customers = $this->paginate();
+		
+		unset($this->Customer->virtualFields['orders_amount']);
+		unset($this->Customer->virtualFields['orders_count']);
+
 		$this->set('customers', $customers);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
+		// pokud chci vypsat csv
+		if (isset($this->data['Customer']['csv']) && $this->data['Customer']['csv'] == true) {
+			// nastaveim pohled
+			$this->layout = REDESIGN_PATH . 'csv';
+			$this->render('admin_csv_index');
+		}
 	}
 	
 	function admin_view($id = null){
