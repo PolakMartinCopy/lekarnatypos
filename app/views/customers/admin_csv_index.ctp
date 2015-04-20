@@ -1,5 +1,6 @@
-ID;Jméno;Email;Telefon;Ulice;Město;PSČ
-<?php foreach ($customers as $customer) {
+<?php
+echo iconv('utf-8', 'Windows-1250', 'ID;Jméno;Email;Telefon;Ulice;Město;PSČ') . "\n";
+foreach ($customers as $customer) {
 	$customer_street = '';
 	if (!empty($customer['Address'])) {
 		$customer_street = $customer['Address'][0]['street'];
@@ -21,5 +22,5 @@ ID;Jméno;Email;Telefon;Ulice;Město;PSČ
 		$customer_zip
 	);
 	$line = implode(';', $line);
-	echo $line . "\n";
+	echo iconv('UTF-8', 'Windows-1250//IGNORE', $line) . "\n";
 } ?>

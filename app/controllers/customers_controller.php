@@ -120,6 +120,7 @@ class CustomersController extends AppController {
 		if (isset($this->data['Customer']['csv']) && $this->data['Customer']['csv'] == true) {
 			// nastaveim pohled
 			$this->layout = REDESIGN_PATH . 'csv';
+			$this->set('file_name', 'customers.csv');
 			$this->render('admin_csv_index');
 		}
 	}
