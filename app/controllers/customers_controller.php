@@ -119,9 +119,8 @@ class CustomersController extends AppController {
 		// pokud chci vypsat csv
 		if (isset($this->data['Customer']['csv']) && $this->data['Customer']['csv'] == true) {
 			// nastaveim pohled
-			$this->layout = REDESIGN_PATH . 'csv';
-			$this->set('file_name', 'customers.csv');
-			$this->render('admin_csv_index');
+			$this->Customer->csv_export($customers);
+			$this->redirect('/' . $this->Customer->export_file);
 		}
 	}
 	

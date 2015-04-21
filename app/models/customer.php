@@ -50,6 +50,8 @@ class Customer extends AppModel {
  		'name' => 'CONCAT(Customer.last_name, " ", Customer.first_name)'	
  	);
  	
+ 	var $export_file = 'files/customers.csv';
+ 	
  	function paginateCount($conditions = null, $recursive = 0, $extra = array()) {
  		$parameters = compact('conditions');
  		$this->recursive = $recursive;
@@ -402,6 +404,45 @@ class Customer extends AppModel {
 			$streetNumber = $matches[1];
 		}
 		return $streetNumber;
+	}
+	
+	function csv_export($customers) {
+		$file = fopen($this->export_file, 'w');
+		
+		$lines = array(
+//			0 => array('ID', 'Jmeno', 'Email', 'Telefon', 'Ulice', 'Mesto', 'PSC')
+		);
+		
+		foreach ($customers as $customer) {
+			$customer_street = '';
+			if (!empty($customer['Address'])) {
+				$customer_street = $customer['Address'][0]['street'];
+				if (!empty($customer_street) && !empty($customer['Address'][0]['street_no'])) {
+					$customer_street .= ' ' . $customer['Address'][0]['street_no'];
+				}
+			}
+	
+			$customer_city = (empty($customer['Address'][0]['city']) ? '' : $customer['Address'][0]['city']);
+			$customer_zip = (empty($customer['Address'][0]['zip']) ? '' : $customer['Address'][0]['zip']);
+	
+			$lines[] = array(
+				$customer['Customer']['id'],
+				$customer['Customer']['name'],
+				$customer['Customer']['email'],
+				$customer['Customer']['phone'],
+				$customer_street,
+				$customer_city,
+				$customer_zip
+			);
+		}
+		
+		foreach ($lines as $line) {
+			$row = implode(';', $line);
+			fwrite($file, iconv('utf-8', 'windows-1250', $row . "\r\n"));
+		}
+	
+		fclose($file);
+		return true;
 	}
 }
 ?>
