@@ -120,7 +120,7 @@ class SitemapsController extends AppController{
 			}
 			$string = '
 	<url>
-    		<loc>http://www.' . CUST_ROOT . '/' . $content['Content']['path'] . '.htm</loc>
+    		<loc>http://www.' . CUST_ROOT . '/' . $content['Content']['path'] . '</loc>
     		<changefreq>weekly</changefreq>
     		<priority>0.7</priority>
 	</url>';
