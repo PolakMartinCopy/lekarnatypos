@@ -83,7 +83,7 @@ class SitemapsController extends AppController{
 			
 		}
 		
-		// projdu vsechny vyrobce
+/* 		// projdu vsechny vyrobce
 		App::import('Model', 'Manufacturer');
 		$this->Sitemap->Manufacturer = new Manufacturer;
 		
@@ -102,7 +102,7 @@ class SitemapsController extends AppController{
     		<priority>0.8</priority>
 	</url>';
 			fwrite($fp, $string);
-		}
+		} */
 		
 		// projdu vsechny obsahove stranky
 		App::import('Model', 'Content');
