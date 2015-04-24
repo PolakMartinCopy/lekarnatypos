@@ -1506,7 +1506,11 @@ class ProductsController extends AppController {
 		
 		if (isset($this->data)) {
 			foreach ($this->data['Product'] as $product) {
-				if (!empty($product['supplier_product_id'])) {
+				if (!empty($product['supplier_product_id']) && !empty($product['supplier_product_name'])) {
+					$this->Product->save($product);
+				} elseif (empty($product['supplier_product_name']) && !empty($product['supplier_product_id'])) {
+					$product['supplier_product_name'] = null;
+					$product['supplier_product_id'] = null;
 					$this->Product->save($product);
 				}
 			}
