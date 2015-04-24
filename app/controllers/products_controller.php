@@ -1487,6 +1487,104 @@ class ProductsController extends AppController {
 		$this->redirect(array('controller' => 'products', 'action' => 'attributes_list', $id));
 	}
 	
+	function admin_syncare_pair() {
+		// url feedu
+		$url = 'https://www.syncare.cz/tools/vyrobky2.php';
+		// soubor s ulozenym feedem
+		$dir = 'files/uploads/';
+		$file = $dir . 'syncare.xml';
+		// pokud nemam stazeny feed, stahnu si ho
+		if (!file_exists($file) || (isset($this->params['named']['force']) && $this->params['named']['force'] == true)) {
+			$content = download_url_like_browser($url);
+			if (!$content) {
+				trigger_error('Nepodarilo se stahnout feed na adrese ' . $url, E_USER_ERROR);
+			}
+			if (!file_put_contents($file, $content)) {
+				trigger_error('Nepodarilo se ulozit feed do souboru ' . $file, E_USER_ERROR);
+			}
+		}
+		
+		if (isset($this->data)) {
+			foreach ($this->data['Product'] as $product) {
+				if (!empty($product['supplier_product_id'])) {
+					$this->Product->save($product);
+				}
+			}
+			$this->Session->setFlash('Přiřazení byla uložena.', REDESIGN_PATH . 'flash_success');
+			$this->redirect($this->params['url']);
+		} else {
+			// nactu produkty syncare, ktere mame v shopu
+			$db_products = $this->Product->find('all', array(
+				'conditions' => array(
+					'Product.manufacturer_id' => 127,
+				),
+				'contain' => array(),
+				'fields' => array('Product.id', 'Product.name', 'Product.url', 'Product.supplier_product_id')
+			));
+			
+			$file_url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $file;
+			$id_xpath = '//item/g:id';
+			$title_xpath = '//item/title';
+			$size_xpath = '//item/g:size';
+			if (!$xml_products_list = get_xml_products_list($file_url, $id_xpath, $title_xpath, $size_xpath)) {
+				trigger_error('Nepodarilo se vyparsovat ID a nazvy produktu z XML', E_USER_ERROR);
+			}
+
+			foreach ($db_products as &$db_product) {
+				$this->data['Product'][$db_product['Product']['id']]['id'] = $db_product['Product']['id'];
+				$this->data['Product'][$db_product['Product']['id']]['name'] = $db_product['Product']['name'];
+				$this->data['Product'][$db_product['Product']['id']]['supplier_product_id'] = $db_product['Product']['supplier_product_id'];
+				$this->data['Product'][$db_product['Product']['id']]['supplier_product_name'] = null;
+				if (isset($db_product['Product']['supplier_product_id']) && isset($xml_products_list[$db_product['Product']['supplier_product_id']])) {
+					$this->data['Product'][$db_product['Product']['id']]['supplier_product_name'] = $xml_products_list[$db_product['Product']['supplier_product_id']];
+				}
+				$this->data['Product'][$db_product['Product']['id']]['url'] = $db_product['Product']['url'];
+				// dodavatel je syncare
+				$this->data['Product'][$db_product['Product']['id']]['supplier_id'] = 2;
+			}
+ 		}
+
+		// layout
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function syncare_xml_autocomplete_list() {
+		$return = array(
+			'success' => false,
+			'message' => null,
+			'data' => array()
+		);
+		
+		// soubor s ulozenym feedem
+		$dir = 'files/uploads/';
+		$file = $dir . 'syncare.xml';
+		$file_url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $file;
+		$id_xpath = '//item/g:id';
+		$title_xpath = '//item/title';
+		$size_xpath = '//item/g:size';
+		if (!$xml_products_list = get_xml_products_list($file_url, $id_xpath, $title_xpath, $size_xpath)) {
+			$return['message'] = 'Nepodarilo se vyparsovat ID a nazvy produktu z XML';
+		} else {
+			foreach ($xml_products_list as $index => $name) {
+				$return['data'][] = array(
+					'label' => $name,
+					'value' => $index,
+					'name' => $name
+				);
+			}
+			$return['success'] = true;
+		}
+		
+		if (!function_exists('json_encode')) {
+			App::import('Vendor', 'Services_JSON', array('file' => 'JSON.php'));
+			$json = &new Services_JSON();
+			echo $json->encode($return);
+		} else {
+			echo json_encode($return);
+		}
+		die();
+	}
+	
 	function autocomplete_list() {
 		$term = '';
 		if (isset($_GET['term'])) {

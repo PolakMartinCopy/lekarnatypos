@@ -202,6 +202,52 @@ function download_url($url = null) {
 	return false;
 }
 
+function download_url_like_browser($url = null) {
+	$agent= 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)';
+	if ($url) {
+		$content = false;
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_VERBOSE, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $agent);
+		$content = curl_exec($ch);
+		curl_close($ch);
+		return $content;
+	}
+	return false;
+}
+
+function get_xml_products_list($file_url, $id_xpath, $title_xpath, $size_xpath) {
+	// nactu xml
+	if (!$xml = download_url($file_url)) {
+		trigger_error('Nepodarilo se natahnou ulozeny xml ze souboru ' . $file, E_USER_ERROR);
+	}
+	
+		
+	// vyparsuju pole nazvu produktu z feedu, indexovanych indexem produktu na syncaru
+	$xml_document = new SimpleXMLElement($xml);
+	$ids = $xml_document->xpath($id_xpath);
+	$names = $xml_document->xpath($title_xpath);
+	$sizes = $xml_document->xpath($size_xpath);
+		
+	if (count($ids) != count($names) || count($ids) != count($sizes)) {
+		debug(count($ids));
+		debug(count($names));
+		debug(count($sizes));
+		return false;
+	}
+		
+	$xml_products_list = array();
+	foreach ($ids as $index => $id) {
+		$id = $id->__toString();
+		$name = $names[$index]->__toString() . ' - ' . $sizes[$index]->__toString();
+		$xml_products_list[$id] = $name;
+	}
+	
+	return $xml_products_list;
+}
+
 define('REDESIGN_PATH', 'typos/');
 define('ROOT_CATEGORY_ID', 5);
 
