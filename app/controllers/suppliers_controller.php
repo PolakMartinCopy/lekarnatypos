@@ -455,18 +455,106 @@ class SuppliersController extends AppController {
 		die();
 	}
 	
-	function admin_repair_categories_products($id) {
-		$categories_products = $this->Supplier->Product->CategoriesProduct->find('all', array(
-			'conditions' => array(
-				'Product.supplier_id' => $id,
-			),
-			'contain' => array('Product'),
-			'fields' => array('CategoriesProduct.id')
-		));
-		foreach ($categories_products as $categories_product) {
-			$categories_product['CategoriesProduct']['is_supplier'] = true;
-			$this->Supplier->Product->CategoriesProduct->save($categories_product);
+	function admin_pair($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadán výrobce, jehož produkty chcete párovat', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
 		}
-		die('konec');
+		
+		$supplier = $this->Supplier->find('first', array(
+			'conditions' => array('Supplier.id' => $id),
+			'contain' => array()
+		));
+		
+		if (empty($supplier)) {
+			$this->Session->setFlash('Nepodařilo se najít výrobce, jehož produkty chcete párovat', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
+		}
+		
+		$this->set('supplier', $supplier);
+
+		// url feedu
+		$url = $supplier['Supplier']['url'];
+		// soubor s ulozenym feedem
+		if (!$file = $this->Supplier->get_local_xml_path($id)) {
+			trigger_error('Nepodarilo se sestavit URL lokalne ulozeneho XML vyrobce');
+		}
+		
+		// pokud nemam stazeny feed, stahnu si ho
+		if (!file_exists($file) || (isset($this->params['named']['force']) && $this->params['named']['force'] == true)) {
+			$content = download_url_like_browser($url);
+			if (!$content) {
+				trigger_error('Nepodarilo se stahnout feed na adrese ' . $url, E_USER_ERROR);
+			}
+			if (!file_put_contents($file, $content)) {
+				trigger_error('Nepodarilo se ulozit feed do souboru ' . $file, E_USER_ERROR);
+			}
+		}
+		
+		if (isset($this->data)) {
+			foreach ($this->data['Product'] as $product) {
+				if (!empty($product['supplier_product_id']) && !empty($product['supplier_product_name'])) {
+					$this->Supplier->Product->save($product);
+				} elseif (empty($product['supplier_product_name']) && !empty($product['supplier_product_id'])) {
+					$product['supplier_product_name'] = null;
+					$product['supplier_product_id'] = null;
+					$this->Supplier->Product->save($product);
+				}
+			}
+			$this->Session->setFlash('Přiřazení byla uložena.', REDESIGN_PATH . 'flash_success');
+			$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
+		} else {
+			$product_conditions = $this->Supplier->get_product_conditions($id);
+			// nactu produkty syncare, ktere mame v shopu
+			$db_products = $this->Supplier->Product->find('all', array(
+				'conditions' => $product_conditions,
+				'contain' => array(),
+				'fields' => array('Product.id', 'Product.name', 'Product.url', 'Product.supplier_product_id')
+			));
+			
+			$xml_products_list = $this->Supplier->get_xml_products_list($id);
+			foreach ($db_products as &$db_product) {
+				$this->data['Product'][$db_product['Product']['id']]['id'] = $db_product['Product']['id'];
+				$this->data['Product'][$db_product['Product']['id']]['name'] = $db_product['Product']['name'];
+				$this->data['Product'][$db_product['Product']['id']]['supplier_product_id'] = $db_product['Product']['supplier_product_id'];
+				$this->data['Product'][$db_product['Product']['id']]['supplier_product_name'] = null;
+				if (isset($db_product['Product']['supplier_product_id']) && isset($xml_products_list[$db_product['Product']['supplier_product_id']])) {
+					$this->data['Product'][$db_product['Product']['id']]['supplier_product_name'] = $xml_products_list[$db_product['Product']['supplier_product_id']];
+				}
+				$this->data['Product'][$db_product['Product']['id']]['url'] = $db_product['Product']['url'];
+				// dodavatel je syncare
+				$this->data['Product'][$db_product['Product']['id']]['supplier_id'] = $id;
+			}
+ 		}
+
+		// layout
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
+	
+	function xml_autocomplete_list($id) {
+		$return = array(
+			'success' => false,
+			'message' => null,
+			'data' => array()
+		);
+		
+		$xml_products_list = $this->Supplier->get_xml_products_list($id);
+		foreach ($xml_products_list as $index => $name) {
+			$return['data'][] = array(
+				'label' => $name,
+				'value' => $index,
+				'name' => $name
+			);
+		}
+		$return['success'] = true;
+		
+		if (!function_exists('json_encode')) {
+			App::import('Vendor', 'Services_JSON', array('file' => 'JSON.php'));
+			$json = &new Services_JSON();
+			echo $json->encode($return);
+		} else {
+			echo json_encode($return);
+		}
+		die();
 	}
 }

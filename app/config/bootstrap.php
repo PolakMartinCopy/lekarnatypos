@@ -218,7 +218,35 @@ function download_url_like_browser($url = null) {
 	return false;
 }
 
-function get_xml_products_list($file_url, $id_xpath, $title_xpath, $size_xpath) {
+function get_topvet_xml_products_list($file_url, $id_xpath, $title_xpath) {
+	// nactu xml
+	if (!$xml = download_url($file_url)) {
+		trigger_error('Nepodarilo se natahnou ulozeny xml ze souboru ' . $file, E_USER_ERROR);
+	}
+	
+	
+	// vyparsuju pole nazvu produktu z feedu, indexovanych indexem produktu na syncaru
+	$xml_document = new SimpleXMLElement($xml);
+	$ids = $xml_document->xpath($id_xpath);
+	$names = $xml_document->xpath($title_xpath);
+	
+	if (count($ids) != count($names)) {
+		debug(count($ids));
+		debug(count($names));
+		return false;
+	}
+	
+	$xml_products_list = array();
+	foreach ($ids as $index => $id) {
+		$id = $id->__toString();
+		$name = $names[$index]->__toString();
+		$xml_products_list[$id] = $name;
+	}
+	
+	return $xml_products_list;
+}
+
+function get_syncare_xml_products_list($file_url, $id_xpath, $title_xpath, $size_xpath) {
 	// nactu xml
 	if (!$xml = download_url($file_url)) {
 		trigger_error('Nepodarilo se natahnou ulozeny xml ze souboru ' . $file, E_USER_ERROR);

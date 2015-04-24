@@ -390,4 +390,52 @@ class Supplier extends AppModel {
 
 		return $category_id;
 	}
+	
+	function get_local_xml_path($id) {
+		$dir = 'files/uploads/';
+		
+		$supplier = $this->find('first', array(
+			'conditions' => array('Supplier.id' => $id),
+			'contain' => array()
+		));
+		
+		if (!isset($supplier) || empty($supplier)) {
+			return false;
+		}
+		
+		return $dir . strip_diacritic($supplier['Supplier']['name']) . '.xml';
+	}
+	
+	function get_product_conditions($id) {
+		$conditions = array();
+		switch ($id) {
+			case 1: $conditions = array('Product.manufacturer_id' => 159, 'Product.active' => true); break;
+			case 2: $conditions = array('Product.manufacturer_id' => 127, 'Product.active' => true); break;
+		}
+		return $conditions;
+	}
+	
+	function get_xml_products_list($id) {
+		$xml_products_list = array();
+		$file = $this->get_local_xml_path($id);
+		$file_url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $file;
+		switch ($id) {
+			case 1: 
+				$id_xpath = '//SHOPITEM/PRODUCTNO';
+				$title_xpath = '//SHOPITEM/PRODUCT';
+				if (!$xml_products_list = get_topvet_xml_products_list($file_url, $id_xpath, $title_xpath)) {
+					trigger_error('Nepodarilo se vyparsovat ID a nazvy produktu z XML', E_USER_ERROR);
+				}
+				break;
+			case 2: 
+				$id_xpath = '//item/g:id';
+				$title_xpath = '//item/title';
+				$size_xpath = '//item/g:size';
+				if (!$xml_products_list = get_syncare_xml_products_list($file_url, $id_xpath, $title_xpath, $size_xpath)) {
+					trigger_error('Nepodarilo se vyparsovat ID a nazvy produktu z XML', E_USER_ERROR);
+				}
+				break;
+		}
+		return $xml_products_list;
+	}
 }
