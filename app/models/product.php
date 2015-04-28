@@ -50,6 +50,9 @@ class Product extends AppModel {
 		),
 		'DiscountedProduct' => array(
 			'dependent' => true
+		),
+		'ProductPropertiesProduct' => array(
+			'dependent' => true
 		)
 	);
 
