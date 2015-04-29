@@ -153,7 +153,8 @@ class Image extends AppModel {
 				'contain' => array(),
 				'fields' => array('id')
 			));
-			foreach ( $images as $image ){
+
+			foreach ($images as $image) {
 				$this->deleteImage($image['Image']['id']);
 			}
 		}
