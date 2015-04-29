@@ -276,6 +276,37 @@ function get_syncare_xml_products_list($file_url, $id_xpath, $title_xpath, $size
 	return $xml_products_list;
 }
 
+/*
+ * zjisti, jestli existuje v SimpleXMLElementu potomek s danym nazvem
+ */
+function simpleXMLChildExists($simpleXMLElement, $childName) {
+	$namespaces = $simpleXMLElement->getNameSpaces(true);
+	// zkousim, jestli tam je povinny atribut
+	// musim zjistit, jestli nazev elementu s hodnotou atributu neobsahuje namespace
+	if (preg_match('/([^:]+):(.*)/', $childName, $matches)) {
+		$namespace_name = $matches[1];
+		$element_name = $matches[2];
+		$namespace = $simpleXMLElement->children($namespaces[$namespace_name]);
+	
+		return $namespace->$element_name;
+	}
+	return $simpleXMLElement->{$childName};
+}
+
+function simpleXMLChildValue($simpleXMLElement, $childName) {
+	$namespaces = $simpleXMLElement->getNameSpaces(true);
+	// zkousim, jestli tam je povinny atribut
+	// musim zjistit, jestli nazev elementu s hodnotou atributu neobsahuje namespace
+	if (preg_match('/([^:]+):(.*)/', $childName, $matches)) {
+		$namespace_name = $matches[1];
+		$element_name = $matches[2];
+		$namespace = $simpleXMLElement->children($namespaces[$namespace_name]);
+	
+		return $namespace->$element_name->__toString();
+	}
+	return $simpleXMLElement->{$childName}->__toString();
+}
+
 define('REDESIGN_PATH', 'typos/');
 define('ROOT_CATEGORY_ID', 5);
 
