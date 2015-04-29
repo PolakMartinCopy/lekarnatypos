@@ -209,7 +209,7 @@ class SuppliersController extends AppController {
 			die();
 		}
 		// stahnu feed (je tam vubec)
-		if (!$xml = download_url($supplier['Supplier']['url'])) {
+		if (!$xml = download_url_like_browser($supplier['Supplier']['url'])) {
 			trigger_error('Chyba při stahování URL ' . $supplier['Supplier']['url'], E_USER_ERROR);
 			die();
 		}
@@ -220,13 +220,17 @@ class SuppliersController extends AppController {
 //		file_put_contents($xml_file, $xml);
 		
 		$products = new SimpleXMLElement($xml);
-
-		// otestuju, jestli ma feed spravnou strukturu
-		if (!$this->Supplier->validate_feed($products, $supplier['Supplier']['price_field'])) {
-			trigger_error('Feed ' . $supplier['Supplier']['url'] . ' není validní', E_USER_ERROR);
-			die();
-		}
 		
+		if (!empty($supplier['Supplier']['catalog_root_field'])) {
+			$products = $products->xpath('//' . $supplier['Supplier']['catalog_root_field']);
+			if (empty($products)) {
+				triger_error('Nesedi název tagu, ve kterém jsou v XML data katalogu - zadny odpovidajici element', E_USER_ERROR);
+			} elseif (count($products) > 1) {
+				triger_error('Nesedi název tagu, ve kterém jsou v XML data katalogu - prilis mnoho odpovidajicich elementu', E_USER_ERROR);
+			}
+			$products = $products[0];
+		}
+
 		// otestuju, jestli se lisi od posledniho (porovnam otisky)
 		$hash = md5($xml);
 		// podivam se, jestli se jedna o vynuceny upload
@@ -238,8 +242,14 @@ class SuppliersController extends AppController {
 			// chci si pamatovat produkty, ktere jsou v aktualnim feedu, abych pak mohl ostatni produkty vyrobce deaktivovat
 			$supplier_product_ids = array();
 			// prochazim produkty - poskladam si save produktu
-			foreach ($products->SHOPITEM as $feed_product) {
-				$product = $this->Supplier->product($feed_product, $supplier['Supplier']['discount'], $supplier['Supplier']['price_field'], $id);
+			foreach ($products->{$supplier['Supplier']['product_field']} as $feed_product) {
+				// otestuju, jestli ma produkt ve fedu pozadovanou strukturu
+				if (!$this->Supplier->validate_feed($feed_product, $supplier['Supplier']['id_field'], $supplier['Supplier']['name_field'], $supplier['Supplier']['short_description_field'], $supplier['Supplier']['price_field'])) {
+					trigger_error('Produkt ' . $feed_product . ' není validní', E_USER_ERROR);
+					die();
+				}
+				
+				$product = $this->Supplier->product($feed_product, $supplier);
 
 				// produkt jsem v poradku vyparsoval
 				if ($product) {
@@ -255,6 +265,8 @@ class SuppliersController extends AppController {
 
 					$data_source = $this->Supplier->Product->getDataSource();
 					$data_source->begin($this->Supplier->Product);
+					// priznak, jestli jsem zakladal novy produkt
+					$product_created = false;
 					// produkt uz mam v databazi
 					if (!empty($db_product)) {
 						$product['Product']['id'] = $db_product['Product']['id'];
@@ -268,28 +280,16 @@ class SuppliersController extends AppController {
 							$product_active = $supplier_category['SupplierCategory']['active'];
 						}
 						$product['Product']['active'] = $product_active;
-/* 						// musim zkontrolovat, ze vyrobce nepresunul produkt do jine kategorie
-						if ($product['Product']['supplier_category_id'] != $db_product['Product']['supplier_category_id']) {
-							// smazu prirazeni do kategorii (ve stromu vyrobce i naparovane)
-							if (!$this->Supplier->Product->CategoriesProduct->deleteAll(array(
-								'product_id' => $db_product['Product']['id'],
-								'paired' => true	
-							))) {
-								trigger_error('Nepodarilo se odstranit stare prirazeni do naparovane kategorie', E_USER_NOTICE);
-								$data_source->rollback($this->Supplier->Product);
-								continue;
-							}
-							// ulozim prirazeni do kategorie podle naparovani kategorii (pokud to jde)
-							if ($product['Product']['supplier_category_id'] != $db_product['Product']['supplier_category_id']) {
-								if (!$this->Supplier->SupplierCategory->pair_product($product['Product']['supplier_category_id'], $product['Product']['id'])) {
-									trigger_error('nepodarilo se ulozit nove prirazeni produktu do kategorie podle naparovani kategorii', E_USER_NOTICE);
-									$data_source->rollback($this->Supplier->Product);
-									continue;
-								}
-							}
-						} */
+						// nechci prepisovat data u produktu syncare
+						if (!$product = $this->Supplier->product_required_properties($product)) {
+							debug($product);
+							trigger_error('Chyba pri vypousteni nechtenych vlastnosti produktu', E_USER_NOTICE);
+							$data_source->rollback($this->Supplier->Product);
+							continue;
+						}
 					} else {
 						$this->Supplier->Product->create();
+						$product_created = true;
 					}
 
 					// ulozim produkt
@@ -300,103 +300,117 @@ class SuppliersController extends AppController {
 						continue;
 					}
 					$product_id = $this->Supplier->Product->id;
-					
-					// ulozim url produktu
-					$product_url_update = array(
-						'Product' => array(
-							'id' => $product_id,
-							'url' => strip_diacritic($product['Product']['name']) . '-p' . $product_id
-						)
-					);
-					if (!$this->Supplier->Product->save($product_url_update)) {
-						debug($product_url_update);
-						trigger_error('Nepodarilo se ulozit URL produktu', E_USER_NOTICE);
-						$data_source->rollback($this->Supplier->Product);
-					}
-					
-					// OBRAZKY
-					// zjistim url obrazku
-					$image_url = $this->Supplier->image_url($feed_product);
 
-					// stahnu a ulozim obrazek, pokud je treba
-					$save_image_end = $this->Supplier->image_save($product_id, $image_url);
-
-					// pokud nenastala chyba pri ukladani obrazku, smazu vsechny obrazky u produktu, ktere jiz nejsou aktualni
-					if ($save_image_end) {
-						$del_images_conditions = array(
-							'Image.product_id' => $product_id,
-							'Image.supplier_url !=' => $image_url
+					if (isset($product['Product']['name']) && isset($db_product['Product']['name']) && $product['Product']['name'] != $db_product['Product']['name']) {
+						// ulozim url produktu
+						$product_url_update = array(
+							'Product' => array(
+								'id' => $product_id,
+								'url' => strip_diacritic($product['Product']['name']) . '-p' . $product_id
+							)
 						);
+						if (!$this->Supplier->Product->save($product_url_update)) {
+							debug($product_url_update);
+							trigger_error('Nepodarilo se ulozit URL produktu', E_USER_NOTICE);
+							$data_source->rollback($this->Supplier->Product);
+						}
+					}
 
-						$this->Supplier->Product->Image->deleteAllImages($del_images_conditions);
+					// OBRAZKY
+					// zjistim, jestli chci updatovat obrazky
+					if ($product_created || $this->Supplier->product_update_image($product_id, $id)) {
+						// zjistim url obrazku
+						$image_url = $this->Supplier->image_url($feed_product, $supplier['Supplier']['image_field']);
+	
+						// stahnu a ulozim obrazek, pokud je treba
+						$save_image_end = $this->Supplier->image_save($product_id, $image_url);
+	
+						// pokud nenastala chyba pri ukladani obrazku, smazu vsechny obrazky u produktu, ktere jiz nejsou aktualni
+						if ($save_image_end) {
+							$del_images_conditions = array(
+								'Image.product_id' => $product_id,
+								'OR' => array(
+									array('Image.supplier_url !=' => $image_url),
+									array('Image.supplier_url IS NULL')
+								)
+							);
+	
+							$this->Supplier->Product->Image->deleteAllImages($del_images_conditions);
+						}
 					}
 
 					// KATEGORIE
-					// zjistim kategorii pro produkt z feedu
-					$category_id = $this->Supplier->category_id($feed_product, $id);
-					if ($category_id) {
-						$categories_product = array(
-							'CategoriesProduct' => array(
-								'category_id' => $category_id,
-								'product_id' => $product_id,
-								'paired' => true
-							)
-						);
-						// podivam se, jestli mam dany produkt pridelen do dane naparovane kategorie
-						$db_categories_product = $this->Supplier->Product->CategoriesProduct->find('first', array(
-							'conditions' => $categories_product['CategoriesProduct'],
-							'contain' => array()
-						));
-						// pokud nemam produkt v te kategorii
-						if (empty($db_categories_product)) {
-							// vlozim ho tam
-							$this->Supplier->Product->CategoriesProduct->create();
-							if ($this->Supplier->Product->CategoriesProduct->save($categories_product)) {
-								// smazu vsechny ostatni prirazeni produktu do kategorii vznikle naparovanim produktu
-								$this->Supplier->Product->CategoriesProduct->deleteAll(array(
-									'CategoriesProduct.product_id' => $product_id,
-									'CategoriesProduct.paired' => true,
-									'CategoriesProduct.category_id !=' => $category_id
-								));
-							} else {
-								debug($categories_product);
-								trigger_error('Nepodarilo se ulozit prirazeni produktu do kategorie: ' . $product_id . ' - ' . $category_id, E_USER_NOTICE);
+					// zjistim, jestli chci updatovat kategorie
+					if ($product_created || $this->Supplier->product_update_categories($product_id, $id)) {
+						// zjistim kategorii pro produkt z feedu
+						$category_id = $this->Supplier->category_id($feed_product, $supplier['Supplier']['category_field'], $id);
+						if ($category_id) {
+							$categories_product = array(
+								'CategoriesProduct' => array(
+									'category_id' => $category_id,
+									'product_id' => $product_id,
+									'paired' => true
+								)
+							);
+							// podivam se, jestli mam dany produkt pridelen do dane naparovane kategorie
+							$db_categories_product = $this->Supplier->Product->CategoriesProduct->find('first', array(
+								'conditions' => $categories_product['CategoriesProduct'],
+								'contain' => array()
+							));
+							// pokud nemam produkt v te kategorii
+							if (empty($db_categories_product)) {
+								// vlozim ho tam
+								$this->Supplier->Product->CategoriesProduct->create();
+								if ($this->Supplier->Product->CategoriesProduct->save($categories_product)) {
+									// smazu vsechny ostatni prirazeni produktu do kategorii vznikle naparovanim produktu
+									$this->Supplier->Product->CategoriesProduct->deleteAll(array(
+										'CategoriesProduct.product_id' => $product_id,
+										'CategoriesProduct.paired' => true,
+										'CategoriesProduct.category_id !=' => $category_id
+									));
+								} else {
+									debug($categories_product);
+									trigger_error('Nepodarilo se ulozit prirazeni produktu do kategorie: ' . $product_id . ' - ' . $category_id, E_USER_NOTICE);
+								}
 							}
 						}
 					}
 					
 					// CENY V CENOVYCH SKUPINACH (naplnim jen cenu pro neprihlaseneho zakaznika, zbytek pouze zalozim)
-					$product_prices = array();
-					$customer_types = $this->Supplier->Product->CustomerTypeProductPrice->CustomerType->find('all', array(
-						'contain' => array()	
-					));
-					
-					foreach ($customer_types as $customer_type) {
-						$customer_type_product_price = array(
-							'customer_type_id' => $customer_type['CustomerType']['id'],
-							'product_id' => $product_id
-						);
-						
-						$db_unlogged_customer_price = $this->Supplier->Product->CustomerTypeProductPrice->find('first', array(
-							'conditions' => array($customer_type_product_price),
-							'contain' => array(),	
-							'fields' => array('CustomerTypeProductPrice.id')
+					// zjistim, jestli chci updatovat ceny
+					if ($product_created || $this->Supplier->product_update_prices($product_id, $id)) {
+						$product_prices = array();
+						$customer_types = $this->Supplier->Product->CustomerTypeProductPrice->CustomerType->find('all', array(
+							'contain' => array()	
 						));
-
-						if (!empty($db_unlogged_customer_price)) {
-							$customer_type_product_price['id'] = $db_unlogged_customer_price['CustomerTypeProductPrice']['id'];
-						}
 						
-						$customer_type_product_price['price'] = null;
-						if ($customer_type['CustomerType']['id'] == 2) {
-							$customer_type_product_price['price'] = $product['Product']['discount_common'];
+						foreach ($customer_types as $customer_type) {
+							$customer_type_product_price = array(
+								'customer_type_id' => $customer_type['CustomerType']['id'],
+								'product_id' => $product_id
+							);
+							
+							$db_unlogged_customer_price = $this->Supplier->Product->CustomerTypeProductPrice->find('first', array(
+								'conditions' => array($customer_type_product_price),
+								'contain' => array(),	
+								'fields' => array('CustomerTypeProductPrice.id')
+							));
+	
+							if (!empty($db_unlogged_customer_price)) {
+								$customer_type_product_price['id'] = $db_unlogged_customer_price['CustomerTypeProductPrice']['id'];
+							}
+							
+							$customer_type_product_price['price'] = null;
+							if ($customer_type['CustomerType']['id'] == 2) {
+								$customer_type_product_price['price'] = $product['Product']['discount_common'];
+							}
+							$product_prices[] = $customer_type_product_price;
 						}
-						$product_prices[] = $customer_type_product_price;
-					}
-
-					if (!$this->Supplier->Product->CustomerTypeProductPrice->saveAll($product_prices)) {
-						debug($product_prices);
-						trigger_error('Nepodarilo se ulozit ceny produktu', E_USER_NOTICE);
+	
+						if (!$this->Supplier->Product->CustomerTypeProductPrice->saveAll($product_prices)) {
+							debug($product_prices);
+							trigger_error('Nepodarilo se ulozit ceny produktu', E_USER_NOTICE);
+						}
 					}
 					
 					$data_source->commit($this->Supplier->Product);
