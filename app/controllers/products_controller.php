@@ -366,7 +366,8 @@ class ProductsController extends AppController {
 		} elseif (isset($this->data['Product']['name']) && !empty($this->data['Product']['name'])) {
 			$conditions['OR'] =  array(
 				array('Product.name LIKE "%%' . $this->data['Product']['name'] . '%%"'),
-				array('Product.id' => $this->data['Product']['name'])
+				array('Product.id' => $this->data['Product']['name']),
+				array('Manufacturer.name LIKE "%%' . $this->data['Product']['name'] . '%%"')
 			);
 		}
 
@@ -408,13 +409,14 @@ class ProductsController extends AppController {
 				'Product.active',
 				'Product.priority',
 				'Manufacturer.name',
-				'Availability.cart_allowed'
+				'Availability.cart_allowed',
+				'CategoriesProduct.id'
 			);
-			
+
 			$products = $this->paginate();
 		}
 		$this->set('products', $products);
-		
+
 		// pridam polozku pro zobrazeni produktu bez EANu
 		$categories['noEan'] = 'Bez EANu';
 		$categories_db = $this->Product->CategoriesProduct->Category->generateTreeList(null, null, '{n}.Category.name', ' - ', -1);

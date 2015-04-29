@@ -85,10 +85,14 @@ $(function() {
 		<td><?php echo $this->Html->link($product['Product']['id'], array('controller' => 'products', 'action' => 'view', 'admin' => false, $product['Product']['id'], (isset($category_id) ? $category_id : null)))?></td>
 		<td><?php
 			$style = '';
+			// neaktivni produkty vypisuju sede
 			if (!$product['Product']['active']) {
 				$style = 'color:grey;font-style:italic';
+			// produkty, ktere se nedaji objednat, vypisuju cervene
 			} elseif (!$product['Availability']['cart_allowed']) {
 				$style = 'color:red';
+			} elseif (!$product['CategoriesProduct']['id']) {
+				$style = ' color:orange';
 			}
 			echo $this->Html->link($product['Product']['name'], array('controller' => 'products', 'action' => 'edit_detail', $product['Product']['id'], (isset($category_id) ? $category_id : null)), array('style' => $style));
 		?></td>
