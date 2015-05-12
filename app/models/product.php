@@ -111,6 +111,40 @@ class Product extends AppModel {
 	
 	var $sorting_options = array(0 => 'Doporučujeme', 'Nejprodávánější', 'Nejlevnější', 'Nejdražší', 'Abecedy');
 	
+	var $search_properties = array(
+		0 => array(
+			'id' => 0,
+			'name' => 'Vše',
+			'conditions' => array()
+		),
+		array(
+			'id' => 1,
+			'name' => 'Bez EANu',
+			'conditions' => array('(Product.ean IS NULL OR Product.ean = "")')
+		),
+		array(
+			'id' => 2,
+			'name' => 'Neaktivní',
+			'conditions' => array(
+				'Product.active' => false
+			)
+		),
+		array(
+			'id' => 3,
+			'name' => 'Nelze vložit do košíku',
+			'conditions' => array(
+				'Availability.cart_allowed' => false
+			)
+		),
+		array(
+			'id' => 4,
+			'name' => 'Nezařazení v kategorii',
+			'conditions' => array(
+				'CategoriesProduct.id IS NULL'
+			)
+		)
+	);
+	
 	function __construct() {
 		parent::__construct();
 		$this->product_types = $this->ProductType->find('list', array(
@@ -816,25 +850,34 @@ class Product extends AppModel {
 	}
 	
 	function do_form_search($conditions, $data) {
-		if (isset($data['Product']['name']) && !empty($data['Product']['name'])) {
-			$conditions[] = array(
-				'OR' => array(
-					array('Product.name LIKE "%%' . $data['Product']['name'] . '%%"'),
-					array('Product.id' => $data['Product']['name']),
-					array('Manufacturer.name LIKE "%%' . $data['Product']['name'] . '%%"')
-				)
-			);
-		}
 		if (isset($data['Category']['id']) && !empty($data['Category']['id'])) {
-			if ($data['Category']['id'] == 'noEan') {
-				$conditions[] = '(Product.ean IS NULL OR Product.ean = "")';
-				$conditions['Product.active'] = true;
-				$conditions['Availability.cart_allowed'] = true;
-			} else {
-				$conditions['CategoriesProduct.category_id'] = $data['Category']['id'];
+			$conditions['CategoriesProduct.category_id'] = $this->CategoriesProduct->Category->subtree_ids($data['Category']['id']);
+		}
+		$fulltext_fields = array('fulltext1', 'fulltext2');
+		foreach ($fulltext_fields as $fulltext_field) {
+			if (isset($data['Product'][$fulltext_field]) && !empty($data['Product'][$fulltext_field])) {
+				$conditions[] = array(
+					'OR' => array(
+						array('Product.id' => $data['Product'][$fulltext_field]),
+						array('Product.name LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+						array('Manufacturer.name LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+						array('Product.short_description LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+						array('Product.description LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+						array('Product.ean LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+						array('Product.sukl LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+						array('Product.code LIKE "%%' . $data['Product'][$fulltext_field] . '%%"'),
+					)
+				);
 			}
 		}
-		
+		if (isset($data['Product']['search_property_id']) && !empty($data['Product']['search_property_id'])) {
+			foreach ($this->search_properties as $search_property) {
+				if ($search_property['id'] == $data['Product']['search_property_id']) {
+					$conditions[] = $search_property['conditions'];
+					break;
+				}
+			}
+		}
 		return $conditions;
 	}
 }

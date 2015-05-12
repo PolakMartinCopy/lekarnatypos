@@ -421,30 +421,22 @@ class ProductsController extends AppController {
 				'Product.priority',
 				'Manufacturer.name',
 				'Availability.cart_allowed',
-//				'CategoriesProduct.id'
+				'CategoriesProduct.id'
 			);
 
 			$products = $this->paginate();
-			foreach ($products as &$product) {
-				$categories_product = $this->Product->CategoriesProduct->find('first', array(
-					'conditions' => array('CategoriesProduct.product_id' => $product['Product']['id']),
-					'contain' => array(),
-					'fields' => array('CategoriesProduct.id')
-				));
-				if (!empty($categories_product)) {
-					$product['CategoriesProduct'] = $categories_product['CategoriesProduct'];
-				}
-			}
 		}
 		$this->set('products', $products);
 
-		// pridam polozku pro zobrazeni produktu bez EANu
-		$categories['noEan'] = 'Bez EANu';
 		$categories_db = $this->Product->CategoriesProduct->Category->generateTreeList(null, null, '{n}.Category.name', ' - ', -1);
 		foreach ($categories_db as $index => $value) {
 			$categories[$index] = $value;
 		}
 		$this->set('categories', $categories);
+		
+		$search_properties = $this->Product->search_properties;
+		$search_properties = Set::combine($search_properties, '{n}.id', '{n}.name');
+		$this->set('search_properties', $search_properties);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}

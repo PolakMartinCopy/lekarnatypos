@@ -52,7 +52,7 @@
 			} elseif (!$product['Availability']['cart_allowed']) {
 				$style = 'color:red';
 			// produkty, ktere nejsou prirazeny v kategorii vypisuju oranzove
-			} elseif (!isset($product['CategoriesProduct'])) {
+			} elseif (!$product['CategoriesProduct']['id']) {
 				$style = ' color:orange';
 			}
 			echo $this->Html->link($product['Product']['name'], array('controller' => 'products', 'action' => 'edit_detail', $product['Product']['id'], (isset($category_id) ? $category_id : null)), array('style' => $style));
