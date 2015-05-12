@@ -344,31 +344,44 @@ class ProductsController extends AppController {
 	}
 	
 	function admin_index() {
+		if (isset($this->params['named']['reset']) && $this->params['named']['reset'] == 'products') {
+			$this->Session->delete('Search.AdminProductForm');
+			$this->redirect(array('controller' => 'products', 'action' => 'index'));
+		}
+		
 		$products = array();
 		$conditions = null;
 
-		if (isset($this->params['named']['category_id'])) {
-			$this->data['Category']['id'] = $this->params['named']['category_id'];
+		if (isset($this->data['AdminProductForm']['Product']['search_form']) && $this->data['AdminProductForm']['Product']['search_form']) {
+			$this->Session->write('Search.AdminProductForm', $this->data['AdminProductForm']);
+			$conditions = $this->Product->do_form_search($conditions, $this->data['AdminProductForm']);
+		} elseif ($this->Session->check('Search.AdminProductForm')) {
+			$this->data['AdminProductForm'] = $this->Session->read('Search.AdminProductForm');
+			$conditions = $this->Product->do_form_search($conditions, $this->data['AdminProductForm']);
 		}
-		if (isset($this->params['named']['product_name'])) {
-			$this->data['Product']['name'] = $this->params['named']['product_name'];
+		
+		$page = 1;
+		if (isset($this->params['named']['page'])) {
+			$page = $this->params['named']['page'];
+			$this->Session->write('Search.AdminProductForm.page', $page);
+		} else {
+			$page = $this->Session->read('Search.AdminProductForm.page');
 		}
-
-		if (isset($this->data['Category']['id']) && !empty($this->data['Category']['id'])) {
-			if ($this->data['Category']['id'] == 'noEan') {
-				$conditions[] = '(Product.ean IS NULL OR Product.ean = "")';
-				$conditions['Product.active'] = true;
-				$conditions['Availability.cart_allowed'] = true;
-			} else {
-				$conditions['CategoriesProduct.category_id'] = $this->data['Category']['id'];
-			}
-			$this->set('category_id', $this->data['Category']['id']);
-		} elseif (isset($this->data['Product']['name']) && !empty($this->data['Product']['name'])) {
-			$conditions['OR'] =  array(
-				array('Product.name LIKE "%%' . $this->data['Product']['name'] . '%%"'),
-				array('Product.id' => $this->data['Product']['name']),
-				array('Manufacturer.name LIKE "%%' . $this->data['Product']['name'] . '%%"')
-			);
+		
+		$sort = false;
+		if (isset($this->params['named']['sort'])) {
+			$sort = $this->params['named']['sort'];
+			$this->Session->write('Search.AdminProductForm.sort', $sort);
+		} else {
+			$sort = $this->Session->read('Search.AdminProductForm.sort');
+		}
+		
+		$direction = 'asc';
+		if ($sort && isset($this->params['named']['direction'])) {
+			$direction = $this->params['named']['direction'];
+			$this->Session->write('Search.AdminProductForm.direction', $direction);
+		} else {
+			$direction = $this->Session->read('Search.AdminProductForm.direction');
 		}
 
 		if (isset($conditions)) {
@@ -393,13 +406,11 @@ class ProductsController extends AppController {
 				)
 			);
 
-			$products_count = $this->Product->find('count', array(
-				'conditions' => $conditions,
-				'contain' => array(),
-				'joins' => $joins
-			));
-
-			$this->paginate['limit'] = $products_count;
+			$this->paginate['show'] = 'all';
+			$this->pagiante['page'] = $page;
+			if ($sort && $direction) {
+				$this->paginate['order'] = array($sort => $direction);
+			}
 			$this->paginate['conditions'] = $conditions;
 			$this->paginate['contain'] = array();
 			$this->paginate['joins'] = $joins;
@@ -410,10 +421,20 @@ class ProductsController extends AppController {
 				'Product.priority',
 				'Manufacturer.name',
 				'Availability.cart_allowed',
-				'CategoriesProduct.id'
+//				'CategoriesProduct.id'
 			);
 
 			$products = $this->paginate();
+			foreach ($products as &$product) {
+				$categories_product = $this->Product->CategoriesProduct->find('first', array(
+					'conditions' => array('CategoriesProduct.product_id' => $product['Product']['id']),
+					'contain' => array(),
+					'fields' => array('CategoriesProduct.id')
+				));
+				if (!empty($categories_product)) {
+					$product['CategoriesProduct'] = $categories_product['CategoriesProduct'];
+				}
+			}
 		}
 		$this->set('products', $products);
 

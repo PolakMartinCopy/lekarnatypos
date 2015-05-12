@@ -814,5 +814,28 @@ class Product extends AppModel {
 		$image_name = $image_name[count($image_name) -1];
 		return $image_name;
 	}
+	
+	function do_form_search($conditions, $data) {
+		if (isset($data['Product']['name']) && !empty($data['Product']['name'])) {
+			$conditions[] = array(
+				'OR' => array(
+					array('Product.name LIKE "%%' . $data['Product']['name'] . '%%"'),
+					array('Product.id' => $data['Product']['name']),
+					array('Manufacturer.name LIKE "%%' . $data['Product']['name'] . '%%"')
+				)
+			);
+		}
+		if (isset($data['Category']['id']) && !empty($data['Category']['id'])) {
+			if ($data['Category']['id'] == 'noEan') {
+				$conditions[] = '(Product.ean IS NULL OR Product.ean = "")';
+				$conditions['Product.active'] = true;
+				$conditions['Availability.cart_allowed'] = true;
+			} else {
+				$conditions['CategoriesProduct.category_id'] = $data['Category']['id'];
+			}
+		}
+		
+		return $conditions;
+	}
 }
 ?>

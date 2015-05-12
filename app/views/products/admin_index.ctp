@@ -1,47 +1,7 @@
-<script type="text/javascript">
-$(function() {
-	$('#CategoryId').change(function() {
-		$('#ProductName').val('');
-		$('#ProductAdminIndexForm').submit();
-	});
-
-	$('#ProductNameButton').click(function(e) {
-		e.preventDefault();
-		$('#CategoryId option:selected').removeAttr('selected');
-		$('#ProductAdminIndexForm').submit();
-	});
-});
-</script>
-
 <h1>Produkty</h1>
-<?php echo $this->Form->create('Product', array('url' => array('controller' => 'products', 'action' => 'index')))?>
-<table class="tabulka">
-	<tr>
-		<th>Vyberte kategorii</th>
-		<td><?php echo $this->Form->input('Category.id', array('label' => false, 'type' => 'select', 'options' => $categories, 'empty' => true))?></td>
-	</tr>
-	<tr>
-		<th>nebo vyhledejte</th>
-		<td><?php
-			echo $this->Form->input('Product.name', array('label' => false, 'type' => 'text', 'div' => false, 'size' => 50));
-			echo $this->Form->submit('Vyhledat', array('div' => false, 'id' => 'ProductNameButton'));
-		?></td>
-	</tr>
-</table>
-<?php echo $this->Form->end()?>
+<?php echo $this->element(REDESIGN_PATH . 'search_forms/products')?>
 
-<?php
-	if (!empty($products)) { 
-		$options = array();
-		if (isset($category_id)) {
-			$options['category_id'] = $category_id;
-		}
-		if (isset($this->data['Product']['name']) && !empty($this->data['Product']['name'])) {
-			$options['product_name'] = $this->data['Product']['name'];
-		}
-		
-		$this->Paginator->options(array('url' => $options));
-?>
+<?php if (!empty($products)) { ?>
 <br/>
 <table class="tabulka">
 	<tr>
@@ -91,7 +51,8 @@ $(function() {
 			// produkty, ktere se nedaji objednat, vypisuju cervene
 			} elseif (!$product['Availability']['cart_allowed']) {
 				$style = 'color:red';
-			} elseif (!$product['CategoriesProduct']['id']) {
+			// produkty, ktere nejsou prirazeny v kategorii vypisuju oranzove
+			} elseif (!isset($product['CategoriesProduct'])) {
 				$style = ' color:orange';
 			}
 			echo $this->Html->link($product['Product']['name'], array('controller' => 'products', 'action' => 'edit_detail', $product['Product']['id'], (isset($category_id) ? $category_id : null)), array('style' => $style));
