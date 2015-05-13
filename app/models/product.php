@@ -850,7 +850,7 @@ class Product extends AppModel {
 	}
 	
 	function do_form_search($conditions, $data) {
-		if (isset($data['Category']['id']) && !empty($data['Category']['id'])) {
+		if (isset($data['Category']['id']) && !empty($data['Category']['id']) && $data['Category']['id'] != 0) {
 			$conditions['CategoriesProduct.category_id'] = $this->CategoriesProduct->Category->subtree_ids($data['Category']['id']);
 		}
 		$fulltext_fields = array('fulltext1', 'fulltext2');

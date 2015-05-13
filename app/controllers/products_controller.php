@@ -359,7 +359,7 @@ class ProductsController extends AppController {
 			$this->data['AdminProductForm'] = $this->Session->read('Search.AdminProductForm');
 			$conditions = $this->Product->do_form_search($conditions, $this->data['AdminProductForm']);
 		}
-		
+
 		$page = 1;
 		if (isset($this->params['named']['page'])) {
 			$page = $this->params['named']['page'];
@@ -428,11 +428,10 @@ class ProductsController extends AppController {
 		}
 		$this->set('products', $products);
 
-		$categories_db = $this->Product->CategoriesProduct->Category->generateTreeList(null, null, '{n}.Category.name', ' - ', -1);
-		foreach ($categories_db as $index => $value) {
-			$categories[$index] = $value;
-		}
+		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(true);
+		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
 		$this->set('categories', $categories);
+		
 		
 		$search_properties = $this->Product->search_properties;
 		$search_properties = Set::combine($search_properties, '{n}.id', '{n}.name');

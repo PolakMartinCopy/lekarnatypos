@@ -22,7 +22,7 @@ class Category extends AppModel {
 	);
 	
 	// id kategorii, ktere se nebudou brat v potaz pri generovani souvisejicich produktu
-	var $unactive_categories_ids = array();
+	var $unactive_categories_ids = array(304);
 	
 	// id kategorie s darky, jejiz produkty nechci vypisovat v seznamu produktu podle vyrobce
 	var $present_category_id = null;
@@ -646,6 +646,62 @@ class Category extends AppModel {
 		}
 		
 		return $categories;
+	}
+	
+	function generateAllPaths($setFirstEmpty) {
+		$unwanted_categories_ids = $this->unwanted_subtree_ids($this->unactive_categories_ids);
+		$conditions = array();
+		if (!empty($unwanted_categories_ids)) {
+			$conditions[] = 'Category.id NOT IN (' . implode(',', $unwanted_categories_ids) . ')';
+		}
+
+		$categories = $this->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array('Category.id'),
+			'order' => array('Category.lft' => 'asc')
+		));
+		
+		foreach ($categories as $index => &$category) {
+			if ($path = $this->pathToString($category['Category']['id'])) {
+				$category['Category']['path'] = $path;
+			} else {
+				unset($categories[$index]);
+			}
+		}
+		if ($setFirstEmpty) {
+			$empty = array(
+				0 => array(
+					'Category' => array(
+						'id' => 0,
+						'path' => '-- Všechny --'
+					)
+				)
+			);
+			$categories = array_merge($empty, $categories);
+		}
+
+		return $categories;
+	}
+	
+	function pathToString($id, $separator = ' > ') {
+		if ($path = $this->getPath($id)) {
+			$path = Set::extract('/Category/name', $path);
+			unset($path[0]);
+			if (!empty($path)) {
+				$path = implode($separator, $path);
+				return $path;
+			}
+		}
+		return false;
+	}
+	
+	function unwanted_subtree_ids($unwanted_ids) {
+		$unwanted_subtree_ids = array();
+		foreach ($unwanted_ids as $unwanted_id) {
+			$unwanted_subtree_ids = array_merge($unwanted_subtree_ids, $this->subtree_ids($unwanted_id));
+		}
+		return $unwanted_subtree_ids;
 	}
 }
 ?>
