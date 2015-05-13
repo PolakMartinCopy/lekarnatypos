@@ -47,7 +47,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		$url['category_id'] = $opened_category_id;
 	}
 	echo $this->Form->create('CategoriesProduct', array('url' => $url))?>
-<p>Nové přiřazení k: <?php echo $this->Form->input('CategoriesProduct.category_id', array('label' => false, 'type' => 'select', 'options' => $categories, 'empty' => true, 'div' => false))?>
+<p>Nové přiřazení k: <?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'CategoriesProduct.category_id', 'options' => $categories))?>
 <?php echo $this->Form->submit('Přiřadit', array('div' => false))?></p>
 <?php echo $this->Form->hidden('CategoriesProduct.product_id', array('value' => $product['Product']['id']))?>
 <?php echo $this->Form->end()?>

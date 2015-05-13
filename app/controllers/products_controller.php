@@ -866,7 +866,8 @@ class ProductsController extends AppController {
 			$this->set('opened_category_id', $category['Category']['id']);
 		}
 		
-		$categories = $this->Product->CategoriesProduct->Category->generateTreeList(null, null, '{n}.Category.name', ' - ', -1);
+		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(false);
+		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
 		$this->set('categories', $categories);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
