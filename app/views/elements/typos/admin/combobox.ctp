@@ -16,7 +16,13 @@
   .custom-combobox-input {
     margin: 0;
   }
-  </style>
+</style>
+
+<?php 
+	$name_arr = explode('.', $name);
+	$model = array_shift($name_arr);
+	$input_id = $model . join('', array_map(array('Inflector', 'camelize'), $name_arr));
+?>
 
 <script type="text/javascript">
 (function( $ ) {
@@ -153,7 +159,7 @@
   })( jQuery );
  
   $(function() {
-    $( "#AdminProductFormCategoryId" ).combobox();
+    $('#<?php echo $input_id?>').combobox();
   });
 </script>
 
