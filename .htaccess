@@ -44,7 +44,7 @@ RewriteRule ^domains/[^/]+/(.+[^/])$ /$1/ [R]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^subdom/[^/]+/(.+[^/])$ /$1/ [R]
 
-
+RewriteRule ^administrace/help.php	/admin/j_tips/view	[R=301,QSA,L]
 
 # presmerovani na kejk
 RewriteCond %{HTTP_HOST} !^dev\.lekarnatypos\.cz$
