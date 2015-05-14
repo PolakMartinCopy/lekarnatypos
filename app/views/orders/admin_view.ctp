@@ -9,7 +9,8 @@
 	
 		<h3>Objednávka č. <?=$order['Order']['id']?> (<?=strftime("%d.%m.%Y %H:%M", strtotime($order['Order']['created']))?>)</h3>
 		<ul>
-			<li><span class="smallText"><?=$html->link('editovat objednávku', array('controller' => 'ordered_products', 'action' => 'edit', $order['Order']['id'])) ?></span></li>
+			<li><?=$html->link('Editovat objednávku', array('controller' => 'ordered_products', 'action' => 'edit', $order['Order']['id'])) ?></li>
+			<li><?php echo $this->Html->link('Zpět na seznam objednávek', array('controller' => 'orders', 'action' => 'index'))?></li>
 		</ul>
 
 		<table id="productList"  class="tabulka">

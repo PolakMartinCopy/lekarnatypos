@@ -1314,5 +1314,37 @@ class Order extends AppModel {
 		
 		return array($shipping, $payment, $orderedProducts);
 	}
+	
+	function do_form_search($conditions, $data) {
+		if (isset($data['Order']['from']) && !empty($data['Order']['from'])) {
+			$from = cz2db_date($data['Order']['from']);
+			$conditions['DATE(Order.created) >='] = $from;
+		}
+
+		if (isset($data['Order']['to']) && !empty($data['Order']['to'])) {
+			$to = cz2db_date($data['Order']['to']);
+			$conditions['DATE(Order.created) <='] = $to;
+		}
+		$fulltext_fields = array('fulltext1', 'fulltext2');
+		foreach ($fulltext_fields as $fulltext_field) {
+			if (isset($data['Order'][$fulltext_field]) && !empty($data['Order'][$fulltext_field])) {
+				$conditions[] = array(
+					'OR' => array(
+						array('Order.id' => $data['Order'][$fulltext_field]),
+						array('OrderedProduct.product_name LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Order.customer_name LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Order.customer_email LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Order.customer_phone LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Order.customer_street LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Order.customer_city LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Order.customer_zip LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Shipping.name LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+						array('Payment.name LIKE "%%' . $data['Order'][$fulltext_field] . '%%"'),
+					)
+				);
+			}
+		}
+		return $conditions;
+	}
 } // konec tridy
 ?>

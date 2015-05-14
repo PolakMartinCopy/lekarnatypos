@@ -1,7 +1,7 @@
 <div id="admin_hlavni_menu">
 	<ul class="sf-menu">
 		<li>
-			<?php echo $this->Html->link('Objednávky', array('controller' => 'orders', 'action' => 'index'))?>
+			<?php echo $this->Html->link('Objednávky', array('controller' => 'orders', 'action' => 'index', 'status_id' => 'active'))?>
 			<?php if (isset($statuses_menu)) { ?>
 			<ul>
 				<?php foreach ($statuses_menu as $status) { ?>

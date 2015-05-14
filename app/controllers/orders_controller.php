@@ -11,23 +11,45 @@ class OrdersController extends AppController {
 				),
 		);
 
-	function admin_index(){
-		// implicitne si vyhledavam do seznamu "otevrene" statusy
-		$conditions = array('Status.closed' => false);
+	function admin_index() {
+		// reset filtru
+		if (isset($this->params['named']['reset']) && $this->params['named']['reset'] == 'orders') {
+			$this->Session->delete('Search.AdminOrderForm');
+			$passedArgs = array();
+			if (isset($this->passedArgs['status_id'])) {
+				$passedArgs = array('status_id' => $this->passedArgs['status_id']);
+			}
+			$this->redirect(array('controller' => 'orders', 'action' => 'index') + $passedArgs);
+		}
+
+		$status_id = 'all';
+		if (isset($this->params['named']['status_id'])) {
+			$status_id = $this->params['named']['status_id'];
+			// zapamatuju si status v sesne
+			$this->Session->write('Search.AdminOrderParams.status_id', $status_id);
+		} else {
+			// pokud nemam zadany status, podivam se, jestli nemam zapamatovany nejaky v sesne
+			if ($this->Session->check('Search.AdminOrderParams.status_id')) {
+				$status_id = $this->Session->read('Search.AdminOrderParams.status_id');
+			} else {
+				// a pokud ne, presmeruju na aktivni objednavky
+				$this->redirect(array('status_id' => 'active'));
+			}
+		}
+
+		// implicitne si vyhledavam do seznamu vsechny objednavky (status_id:all)
+		$conditions = array();
 		// kdyz chci omezit vypis na urcity status
 		$status = null;
 		$statuses = null;
-		if (isset($this->params['named']['status_id'])) {
-			if (is_numeric($this->params['named']['status_id'])) {
-				$status = $this->Order->Status->find('first', array(
-					'conditions' => array('Status.id' => $this->params['named']['status_id']),
-					'contain' => array(),
-					'fields' => array('Status.id', 'Status.name')	
-				));
-				$conditions = array('Order.status_id' => $this->params['named']['status_id']);
-			} elseif ($this->params['named']['status_id'] == 'all') {
-				$conditions = array();
-			}
+		if (is_numeric($status_id)) {
+			$status = $this->Order->Status->find('first', array(
+				'conditions' => array('Status.id' => $status_id),
+				'contain' => array(),
+				'fields' => array('Status.id', 'Status.name')	
+			));
+			$conditions = array('Order.status_id' => $status_id);
+		// pokud mam nektery z vyjmenovanych stavu
 		} else {
 			$this->Order->Status->recursive = -1;
 			$statuses = $this->Order->Status->find('all');
@@ -36,11 +58,86 @@ class OrdersController extends AppController {
 					'conditions' => array('Order.status_id' => $statuses[$key]['Status']['id'])
 				));
 			}
+			// aktivni objednavky - "otevrene statusy"
+			if ($status_id == 'active') {
+				$conditions = array('Status.closed' => false);
+			}
 		}
+		$this->set('status_id', $status_id);
 		$this->set('status', $status);
 		$this->set('statuses', $statuses);
 		
-		$this->paginate['conditions'] = $conditions;
+		if (isset($this->data['AdminOrderForm']['Order']['search_form']) && $this->data['AdminOrderForm']['Order']['search_form']) {
+			$this->Session->write('Search.AdminOrderForm', $this->data['AdminOrderForm']);
+			$conditions = $this->Order->do_form_search($conditions, $this->data['AdminOrderForm']);
+		} elseif ($this->Session->check('Search.AdminOrderForm')) {
+			$this->data['AdminOrderForm'] = $this->Session->read('Search.AdminOrderForm');
+			$conditions = $this->Order->do_form_search($conditions, $this->data['AdminOrderForm']);
+		}
+
+		$page = 1;
+		if (isset($this->params['named']['page'])) {
+			$page = $this->params['named']['page'];
+			$this->Session->write('Search.AdminOrderParams.page', $page);
+		} else {
+			$page = $this->Session->read('Search.AdminOrderParams.page');
+		}
+		
+		$sort = false;
+		if (isset($this->params['named']['sort'])) {
+			$sort = $this->params['named']['sort'];
+			$this->Session->write('Search.AdminOrderParams.sort', $sort);
+		} else {
+			$sort = $this->Session->read('Search.AdminOrderParams.sort');
+		}
+		
+		$direction = 'asc';
+		if ($sort && isset($this->params['named']['direction'])) {
+			$direction = $this->params['named']['direction'];
+			$this->Session->write('Search.AdminOrderParams.direction', $direction);
+		} else {
+			$direction = $this->Session->read('Search.AdminOrderParams.direction');
+		}
+
+		$joins = array(
+			array(
+				'table' => 'ordered_products',
+				'alias' => 'OrderedProduct',
+				'type' => 'LEFT',
+				'conditions' => array('Order.id = OrderedProduct.order_id')
+			),
+			array(
+				'table' => 'shippings',
+				'alias' => 'Shipping',
+				'type' => 'LEFT',
+				'conditions' => array('Shipping.id = Order.shipping_id')
+			),
+			array(
+				'table' => 'payments',
+				'alias' => 'Payment',
+				'type' => 'LEFT',
+				'conditions' => array('Payment.id = Order.payment_id')
+			),
+			array(
+				'table' => 'statuses',
+				'alias' => 'Status',
+				'type' => 'LEFT',
+				'conditions' => array('Status.id = Order.status_id')
+			)
+		);
+		
+		$fields = array('Order.id');
+		
+		$orders = $this->Order->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'joins' => $joins,
+			'fields' => $fields
+		));
+
+		$orders_ids = Set::extract('/Order/id', $orders);
+		$order_ids_conditions = array('Order.id' => $orders_ids);
+		$this->paginate['conditions'] = $order_ids_conditions;
 		$this->paginate['contain'] = array(
 			'OrderedProduct' => array(
 				'OrderedProductsAttribute' => array(
@@ -62,10 +159,16 @@ class OrdersController extends AppController {
 				'CustomerType'
 			)
 		);
+		$this->pagiante['page'] = $page;
+		if ($sort && $direction) {
+			$this->paginate['order'] = array($sort => $direction);
+		}
 
+		$this->Order->virtualFields['total_price'] = 'Order.shipping_cost + Order.subtotal_with_dph';
 		$this->Order->virtualFields['date'] = 'CONCAT(DATE_FORMAT(DATE(Order.created), "%d.%m.%Y"), " ", TIME(Order.created))';
-		$orders = $this->paginate('Order', $conditions);
+		$orders = $this->paginate('Order');
 		unset($this->Order->virtualFields['date']);
+		unset($this->Order->virtualFields['total_price']);
 
 		foreach ($orders as &$order) {
 			$order['Customer']['orders_count'] = $this->Order->Customer->orders_count($order['Customer']['id']);
@@ -80,7 +183,7 @@ class OrdersController extends AppController {
 		$this->Order->virtualFields['total_vat'] = 'SUM(Order.subtotal_with_dph + Order.shipping_cost)';	
 
 		$total_vat = $this->Order->find('first', array(
-			'conditions' => $conditions,
+			'conditions' => $order_ids_conditions,
 			'contain' => array('Status'),
 			'fields' => array('Order.total_vat')	
 		));

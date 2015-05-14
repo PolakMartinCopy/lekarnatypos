@@ -56,7 +56,7 @@ $(function() {
 });
 </script>
 
-<h1><?php echo (isset($status) ? 'Objednávky ' . $status['Status']['name'] : 'Seznam přijatých objednávek')?></h1>
+<h1><?php echo (isset($status) ? 'Objednávky ' . $status['Status']['name'] : ($status_id == 'active' ? 'Seznam přijatých objednávek' : 'Seznam všech objednávek'))?></h1>
 <a href='/administrace/help.php?width=500&id=1' class='jTip' id='1' name='Objednávky (1)'>
 	<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
 </a>
@@ -73,6 +73,7 @@ $(function() {
 		'format' => '<p>Strana <strong>%page%</strong> z <strong>%pages%</strong> stran celkem, zobrazuji %current% objednávek z %count% objednávek celkem (' . format_price($total_vat) . ').</p>'
 	));
 ?>
+<?php echo $this->element(REDESIGN_PATH . 'search_forms/orders')?>
 <div class="paging">
 <?
 	echo $this->Paginator->prev('<< Předchozí', array(), '<< Předchozí');
@@ -89,7 +90,7 @@ $(function() {
 		<th><?=$this->Paginator->sort('Datum', 'Order.created')?></th>
 		<th><?=$this->Paginator->sort('Odběratel', 'Order.customer_last_name')?></th>
 		<th>Položky</th>
-		<th><?=$this->Paginator->sort('Cena', 'Order.subtotal_with_dph')?></th>
+		<th><?=$this->Paginator->sort('Cena', 'Order.total_price')?></th>
 		<th>&nbsp;</th>
 	</tr>
 <? foreach ($orders as $index => $order) { ?>
