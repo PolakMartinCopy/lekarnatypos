@@ -27,11 +27,12 @@
 <p>V daném období bylo uskutečněno <strong><?php echo count($orders) ?> objednávek</strong> v celkové hodnotě <strong><?=format_price($orders_income)?></strong>.</p>
 <table class="topHeading">
 	<tr>
-		<th><?php echo 'ID objednávky' ?></th>
-		<th><?php echo 'Datum objednávky' ?></th>
-		<th><?php echo 'Produktů na objednávce' ?></th>
-		<th><?php echo 'Cena bez dopravy' ?></th>
-		<th><?php echo 'Celková cena' ?></th>
+		<th>ID objednávky</th>
+		<th>Zákazník</th>
+		<th>Datum objednávky</th>
+		<th>Produktů na objednávce</th>
+		<th>Cena bez dopravy</th>
+		<th>Celková cena</th>
 	</tr>
 	<?php if (empty($orders)) { ?>
 	<tr>
@@ -41,20 +42,22 @@
 		$total_products_count = 0;
 		$total_subtotal_with_dph = 0;
 		$total_price = 0;
-		foreach ($orders as $order) { 
+		foreach ($orders as $order) {
 			$total_products_count += $order[0]['Order__products_count'];
 			$total_subtotal_with_dph += $order['Order']['subtotal_with_dph'];
 			$total_price += $order[0]['Order__price'];
 	?>
 	<tr>
 		<td><?php echo $this->Html->link($order['Order']['id'], array('controller' => 'orders', 'action' => 'view', $order['Order']['id']), array('target' => '_blank'))?></td>
-		<td><?php echo cz_date_time($order['Order']['created']) ?></td>
+		<td><?php echo $this->Html->link($order['Order']['customer_name'], array('controller' => 'customers', 'action' => 'view', $order['Order']['customer_id']), array('target' => '_blank'))?></td>
+		<td><?php echo $order[0]['Order__date'] ?></td>
 		<td align="right"><?php echo $order[0]['Order__products_count']?></td>
 		<td align="right"><?php echo format_price($order['Order']['subtotal_with_dph']) ?></td>
 		<td align="right"><?php echo format_price($order[0]['Order__price']) ?></td>
 	</tr>
 <?php 	} ?>
 	<tr>
+		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th align="right"><?php echo $total_products_count ?></th>

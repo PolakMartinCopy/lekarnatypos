@@ -49,40 +49,19 @@ class StatisticsController extends AppController {
 			$this->Statistic->Order = &new Order;
 			$this->Statistic->Order->virtualFields['products_count'] = 'SUM(OrderedProduct.product_quantity)';
 			$this->Statistic->Order->virtualFields['price'] = 'Order.subtotal_with_dph + Order.shipping_cost';
-/* 			$this->paginate['Order'] = array(
-				'conditions' => $conditions,
-				'contain' => array(),
-				'fields' => array(
-					'Order.id',
-					'Order.created',
-					'Order.products_count',
-					'Order.subtotal_with_dph',
-					'Order.shipping_cost',
-					'Order.price'
-				),
-				'joins' => array(
-					array(
-						'table' => 'ordered_products',
-						'alias' => 'OrderedProduct',
-						'type' => 'LEFT',
-						'conditions' => array('OrderedProduct.order_id = Order.id')
-					),
-				),
-				'group' => array('Order.id'),
-				'order' => array('Order.products_count' => 'desc'),
-				'show' => 'all'
-			);
-			$orders = $this->paginate('Order'); */
+			$this->Statistic->Order->virtualFields['date'] = 'CONCAT(DATE_FORMAT(DATE(Order.created), "%d.%m.%Y"), " ", TIME(Order.created))';
 			$orders = $this->Statistic->Order->find('all', array(
 				'conditions' => $conditions,
 				'contain' => array(),
 				'fields' => array(
 						'Order.id',
-						'Order.created',
+						'Order.date',
 						'Order.products_count',
 						'Order.subtotal_with_dph',
 						'Order.shipping_cost',
-						'Order.price'
+						'Order.price',
+						'Order.customer_id',
+						'Order.customer_name'
 				),
 				'joins' => array(
 					array(
@@ -98,6 +77,8 @@ class StatisticsController extends AppController {
 
 			unset($this->Statistic->Order->virtualFields['products_count']);
 			unset($this->Statistic->Order->virtualFields['price']);
+			unset($this->Statistic->Order->virtualFields['date']);
+
 			$this->set('orders', $orders);
 
 			$orders_income = 0;
