@@ -160,7 +160,7 @@ class OrdersController extends AppController {
 				'CustomerType'
 			)
 		);
-		$this->pagiante['page'] = $page;
+		$this->paginate['page'] = $page;
 		if ($sort && $direction) {
 			$this->paginate['order'] = array($sort => $direction);
 		}
