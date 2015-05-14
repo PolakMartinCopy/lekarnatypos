@@ -346,6 +346,7 @@ class ProductsController extends AppController {
 	function admin_index() {
 		if (isset($this->params['named']['reset']) && $this->params['named']['reset'] == 'products') {
 			$this->Session->delete('Search.AdminProductForm');
+			$this->Session->delete('Search.AdminProductParams');
 			$this->redirect(array('controller' => 'products', 'action' => 'index'));
 		}
 		
@@ -363,75 +364,82 @@ class ProductsController extends AppController {
 		$page = 1;
 		if (isset($this->params['named']['page'])) {
 			$page = $this->params['named']['page'];
-			$this->Session->write('Search.AdminProductForm.page', $page);
+			$this->Session->write('Search.AdminProductParams.page', $page);
 		} else {
-			$page = $this->Session->read('Search.AdminProductForm.page');
+			$page = $this->Session->read('Search.AdminProductParams.page');
 		}
 		
 		$sort = false;
 		if (isset($this->params['named']['sort'])) {
 			$sort = $this->params['named']['sort'];
-			$this->Session->write('Search.AdminProductForm.sort', $sort);
+			$this->Session->write('Search.AdminProductParams.sort', $sort);
 		} else {
-			$sort = $this->Session->read('Search.AdminProductForm.sort');
+			$sort = $this->Session->read('Search.AdminProductParams.sort');
 		}
 		
 		$direction = 'asc';
 		if ($sort && isset($this->params['named']['direction'])) {
 			$direction = $this->params['named']['direction'];
-			$this->Session->write('Search.AdminProductForm.direction', $direction);
+			$this->Session->write('Search.AdminProductParams.direction', $direction);
 		} else {
-			$direction = $this->Session->read('Search.AdminProductForm.direction');
+			$direction = $this->Session->read('Search.AdminProductParams.direction');
 		}
 
-		if (isset($conditions)) {
-			$joins = array(
-				array(
-					'table' => 'categories_products',
-					'alias' => 'CategoriesProduct',
-					'type' => 'LEFT',
-					'conditions' => array('Product.id = CategoriesProduct.product_id')
-				),
-				array(
-					'table' => 'manufacturers',
-					'alias' => 'Manufacturer',
-					'type' => 'LEFT',
-					'conditions' => array('Manufacturer.id = Product.manufacturer_id')
-				),
-				array(
-					'table' => 'availabilities',
-					'alias' => 'Availability',
-					'type' => 'INNER',
-					'conditions' => array('Product.availability_id = Availability.id')
-				)
-			);
+		$joins = array(
+			array(
+				'table' => 'categories_products',
+				'alias' => 'CategoriesProduct',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CategoriesProduct.product_id')
+			),
+			array(
+				'table' => 'manufacturers',
+				'alias' => 'Manufacturer',
+				'type' => 'LEFT',
+				'conditions' => array('Manufacturer.id = Product.manufacturer_id')
+			),
+			array(
+				'table' => 'availabilities',
+				'alias' => 'Availability',
+				'type' => 'INNER',
+				'conditions' => array('Product.availability_id = Availability.id')
+			)
+		);
 
-			$this->paginate['show'] = 'all';
-			$this->pagiante['page'] = $page;
-			if ($sort && $direction) {
-				$this->paginate['order'] = array($sort => $direction);
+		$this->paginate['limit'] = 50;
+		$this->paginate['page'] = $page;
+		if ($sort && $direction) {
+			$this->paginate['order'] = array($sort => $direction);
+		}
+		$this->paginate['conditions'] = $conditions;
+		$this->paginate['contain'] = array();
+		$this->paginate['joins'] = $joins;
+		$this->paginate['fields'] = array(
+			'DISTINCT Product.id',
+			'Product.name',
+			'Product.active',
+			'Product.priority',
+			'Manufacturer.name',
+			'Availability.cart_allowed',
+		);
+		$products = $this->paginate();
+		// zjistim, jestli jsou produkty prirazeny do kategorii			
+		foreach ($products as &$product) {
+			$categories_product = $this->Product->CategoriesProduct->find('first', array(
+				'conditions' => array('CategoriesProduct.product_id' => $product['Product']['id']),
+				'contain' => array(),
+				'fields' => array('CategoriesProduct.id')
+			));
+			if (!empty($categories_product)) {
+				$product['CategoriesProduct'] = $categories_product['CategoriesProduct'];
 			}
-			$this->paginate['conditions'] = $conditions;
-			$this->paginate['contain'] = array();
-			$this->paginate['joins'] = $joins;
-			$this->paginate['fields'] = array(
-				'DISTINCT Product.id',
-				'Product.name',
-				'Product.active',
-				'Product.priority',
-				'Manufacturer.name',
-				'Availability.cart_allowed',
-				'CategoriesProduct.id'
-			);
-
-			$products = $this->paginate();
 		}
+
 		$this->set('products', $products);
 
 		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(true);
 		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
 		$this->set('categories', $categories);
-		
 		
 		$search_properties = $this->Product->search_properties;
 		$search_properties = Set::combine($search_properties, '{n}.id', '{n}.name');

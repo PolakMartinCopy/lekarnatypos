@@ -2,7 +2,13 @@
 <?php echo $this->element(REDESIGN_PATH . 'search_forms/products')?>
 
 <?php if (!empty($products)) { ?>
-<br/>
+<div class="paging">
+<?
+	echo $this->Paginator->prev('<< Předchozí', array(), '<< Předchozí');
+	echo '&nbsp;&nbsp;' . $this->Paginator->numbers() . '&nbsp;&nbsp;';
+	echo $this->Paginator->next('Další >>', array(), 'Další >>');
+?>
+</div>
 <table class="tabulka">
 	<tr>
 		<th>&nbsp;</th>
@@ -52,7 +58,7 @@
 			} elseif (!$product['Availability']['cart_allowed']) {
 				$style = 'color:red';
 			// produkty, ktere nejsou prirazeny v kategorii vypisuju oranzove
-			} elseif (!$product['CategoriesProduct']['id']) {
+				} elseif (!isset($product['CategoriesProduct'])) {
 				$style = ' color:orange';
 			}
 			echo $this->Html->link($product['Product']['name'], array('controller' => 'products', 'action' => 'edit_detail', $product['Product']['id'], (isset($category_id) ? $category_id : null)), array('style' => $style));
@@ -99,6 +105,13 @@
 	</tr>
 	<?php }?>
 </table>
+<div class="paging">
+<?
+	echo $this->Paginator->prev('<< Předchozí', array(), '<< Předchozí');
+	echo '&nbsp;&nbsp;' . $this->Paginator->numbers() . '&nbsp;&nbsp;';
+	echo $this->Paginator->next('Další >>', array(), 'Další >>');
+?>
+</div>
 <br/>
 <table class="legenda">
 	<tr>
