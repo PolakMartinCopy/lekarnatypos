@@ -12,16 +12,6 @@ class OrdersController extends AppController {
 		);
 
 	function admin_index() {
-		// reset filtru
-		if (isset($this->params['named']['reset']) && $this->params['named']['reset'] == 'orders') {
-			$this->Session->delete('Search.AdminOrderForm');
-			$passedArgs = array();
-			if (isset($this->passedArgs['status_id'])) {
-				$passedArgs = array('status_id' => $this->passedArgs['status_id']);
-			}
-			$this->redirect(array('controller' => 'orders', 'action' => 'index') + $passedArgs);
-		}
-
 		$status_id = 'all';
 		if (isset($this->params['named']['status_id'])) {
 			$status_id = $this->params['named']['status_id'];
@@ -35,6 +25,17 @@ class OrdersController extends AppController {
 				// a pokud ne, presmeruju na aktivni objednavky
 				$this->redirect(array('status_id' => 'active'));
 			}
+		}
+		
+		// reset filtru
+		if (isset($this->params['named']['reset']) && $this->params['named']['reset'] == 'orders') {
+			$this->Session->delete('Search.AdminOrderForm');
+			$this->Session->delete('Search.AdminOrderParams');
+			$redirect = array('controller' => 'orders', 'action' => 'index');
+			if ($status_id) {
+				$redirect['status_id'] = $status_id;
+			}
+			$this->redirect($redirect);
 		}
 
 		// implicitne si vyhledavam do seznamu vsechny objednavky (status_id:all)
@@ -53,7 +54,7 @@ class OrdersController extends AppController {
 		} else {
 			$this->Order->Status->recursive = -1;
 			$statuses = $this->Order->Status->find('all');
-			foreach ( $statuses as $key => $value ){
+			foreach ($statuses as $key => $value) {
 				$statuses[$key]['Status']['count'] = $this->Order->find('count', array(
 					'conditions' => array('Order.status_id' => $statuses[$key]['Status']['id'])
 				));
