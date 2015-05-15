@@ -129,12 +129,17 @@ table.tabulkaedit tr.nutne { background-color: #fe8900; color: #fff; font-weight
 table.tabulkaedit th { padding: 2px 5px 2px 5px; border: 1px solid #aaa; background-color: #fe8900; color: #fff; }
 table.tabulkaedit td { padding: 2px 5px 2px 5px; border: 0; }
 
-input, textarea, select { font-family: Arial, Tahoma, Verdana, Arial; font-size: 9pt; border: 1px solid #666; padding: 1px; }
+input, textarea, select, button { font-family: Arial, Tahoma, Verdana, Arial; font-size: 9pt; border: 1px solid #666; padding: 1px; }
 .input_velky { width: 600px; }
 .input_stredni { width: 400px; }
 .input_maly { width: 150px; }
 .textarea_velky { width: 600px; height: 100px; }
 .textarea_velky2 { width: 600px; height: 250px; }
+
+button {
+	margin: 3px 3px 3px 0;
+	padding: 2px;
+}
 
 .vyrazny { font-weight: bold; color: #fe8900; }
 
@@ -177,4 +182,11 @@ div.error-message {
 
 tr.nutne div.error-message {
 	color: white;
+}
+
+.product-bulk-operations-box {
+	margin:3px 5px;
+	float:left;
+	border:1px solid #ECECEC;
+	padding:3px;
 }

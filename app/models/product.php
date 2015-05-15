@@ -268,11 +268,11 @@ class Product extends AppModel {
 		return $discount_price;
 	}
 	
-	function copy_images($new_product_id, $images){
-		if ( !empty($images) ){
-			foreach ( $images as $image ){
+	function copy_images($new_product_id, $images) {
+		if (!empty($images)) {
+			foreach ($images as $image) {
 				// zkopiruju fyzicky na disku
-				if (file_exists('product-images/' . $image['name'])){
+				if (file_exists('product-images/' . $image['name'])) {
 					// zjistim si jmeno obrazku a musim ho prejmenovat
 					$image_name = explode('.', $image['name']);
 					$i = 1;
@@ -306,7 +306,7 @@ class Product extends AppModel {
 					'is_main' => $image['is_main']
 				);
 	
-				if ( !$this->Image->save($new_image_data) ){
+				if (!$this->Image->save($new_image_data)) {
 					return 'Nepodařilo se uložit nový obrázek ' . $new_image_data['name'] . ' do databáze.';
 				}
 			}
@@ -314,7 +314,7 @@ class Product extends AppModel {
 		return true;
 	}
 
-	function get_subproducts($id){
+	function get_subproducts($id) {
 		$options = $this->Subproduct->AttributesSubproduct->Attribute->Option->find('list');
 		
 		// projdu si existujici atributy a k nim si priradim subprodukty

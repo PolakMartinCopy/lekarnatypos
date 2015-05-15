@@ -9,12 +9,15 @@
 	echo $this->Paginator->next('Další >>', array(), 'Další >>');
 ?>
 </div>
+
+<?php echo $this->Form->create('Product', array('url' => array('controller' => 'products', 'action' => 'bulk_process'), 'id' => 'ProductBulkProcessForm'))?>
 <table class="tabulka">
 	<tr>
-		<th>&nbsp;</th>
+		<th><input type="checkbox" id="BulkOperationsCheckAll"/></th>
 		<th><?php echo (empty($products) ? 'ID' : $this->Paginator->sort('ID', 'Product.id'))?></th>
 		<th><?php echo (empty($products) ? 'Název' : $this->Paginator->sort('Název', 'Product.name'))?></th>
 		<th><?php echo (empty($products) ? 'Výrobce' : $this->Paginator->sort('Výrobce', 'Manufacturer.name'))?></th>
+		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
@@ -37,17 +40,7 @@
 	<?php }?>
 	<?php foreach ($products as $product) { ?>
 	<tr>
-		<td><?php 
-			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/delete.png" alt="" />';
-			$action = array('controller' => 'products', 'action' => 'delete', $product['Product']['id'], (isset($category_id) ? $category_id : null));
-			$notice = 'Opravdu chcete produkt deaktivovat?';
-			// pokud uz je produkt deaktivovan, dalsim pozadavkem jej smazu uplne ze systemu
-			if (!$product['Product']['active']) {
-				$action = array('controller' => 'products', 'action' => 'delete_from_db', $product['Product']['id'], (isset($category_id) ? $category_id : null));
-				$notice = 'Opravdu chcete produkt zcela odstranit ze systému?';
-			}
-			echo  $this->Html->link($icon, $action, array('escape' => false), $notice);
-		?></td>
+		<td style="text-align:center"><?php echo $this->Form->input('Product.check.' . $product['Product']['id'], array('label' => false, 'type' => 'checkbox', 'value' => $product['Product']['id'], 'class' => 'bulk-operations-checkbox'))?></td>
 		<td><?php echo $this->Html->link($product['Product']['id'], array('controller' => 'products', 'action' => 'view', 'admin' => false, $product['Product']['id'], (isset($category_id) ? $category_id : null)))?></td>
 		<td><?php
 			$style = '';
@@ -67,6 +60,17 @@
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
 			echo $this->Html->link($icon, array('controller' => 'products', 'action' => 'edit_detail', $product['Product']['id'], (isset($category_id) ? $category_id : null)), array('escape' => false));
+		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/delete.png" alt="" />';
+			$action = array('controller' => 'products', 'action' => 'delete', $product['Product']['id'], (isset($category_id) ? $category_id : null));
+			$notice = 'Opravdu chcete produkt deaktivovat?';
+			// pokud uz je produkt deaktivovan, dalsim pozadavkem jej smazu uplne ze systemu
+			if (!$product['Product']['active']) {
+				$action = array('controller' => 'products', 'action' => 'delete_from_db', $product['Product']['id'], (isset($category_id) ? $category_id : null));
+				$notice = 'Opravdu chcete produkt zcela odstranit ze systému?';
+			}
+			echo  $this->Html->link($icon, $action, array('escape' => false), $notice);
 		?></td>
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/money.png" alt="" />';
@@ -105,6 +109,8 @@
 	</tr>
 	<?php }?>
 </table>
+<?php echo $this->element(REDESIGN_PATH . 'admin/product_bulk_operations')?>
+<div style="clear:both"></div>
 <div class="paging">
 <?
 	echo $this->Paginator->prev('<< Předchozí', array(), '<< Předchozí');
@@ -174,3 +180,17 @@
 </table>
 <?php } ?>
 <div class="prazdny"></div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#BulkOperationsCheckAll').change(function() {
+			var check = false;
+			if ($(this).is(':checked')) {
+				// zaskrtnout vsechny checkboxy
+				check = true;
+			}
+			$('.bulk-operations-checkbox').each(function() {
+				$(this).prop('checked', check);
+			});
+		});
+	});
+</script>

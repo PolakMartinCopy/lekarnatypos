@@ -447,6 +447,248 @@ class ProductsController extends AppController {
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
+	
+	// zpracovani hromadnych operaci na seznamu produktu
+	function admin_bulk_process() {
+		if (isset($this->data)) {
+			// pro ktere produkty
+			$product_ids = array_filter($this->data['Product']['check']);
+			if (empty($product_ids)) {
+				$this->Session->setFlash('Vyberte produkty pro hromadné zpracování', REDESIGN_PATH . 'flash_failure');
+			} else {
+				// co chci delat
+				$action = $this->data['Product']['BulkProcess']['action'];
+				if (!$action) {
+					$this->Session->setFlash('Vyberte akci pro hromadné zpracování', REDESIGN_PATH . 'flash_failure');
+				} else {
+					switch ($action) {
+						// aktivovat vybrane produkty
+						case 'activate':
+							$products = array();
+							foreach ($product_ids as $product_id) {
+								$products[] = array(
+									'id' => $product_id,
+									'active' => true
+								);
+							}
+							if ($this->Product->saveAll($products)) {
+								$this->Session->setFlash('Produkty byly aktivovány', REDESIGN_PATH . 'flash_success');
+							} else {
+								$this->Session->setFlash('Produkty se nepodařilo aktivovat', REDESIGN_PATH . 'flash_failure');
+							}
+							break;
+						// deaktivovat vybrane produkty
+						case 'deactivate':
+							$products = array();
+							foreach ($product_ids as $product_id) {
+								$products[] = array(
+									'id' => $product_id,
+									'active' => false
+								);
+							}
+							if ($this->Product->saveAll($products)) {
+								$this->Session->setFlash('Produkty byly deaktivovány', REDESIGN_PATH . 'flash_success');
+							} else {
+								$this->Session->setFlash('Produkty se nepodařilo deaktivovat', REDESIGN_PATH . 'flash_failure');
+							}
+							break;
+						case 'delete':
+							$flashes = array();
+							foreach ($product_ids as $product_id) {
+								$subproducts = $this->Product->Subproduct->find('all', array(
+									'conditions' => array('Subproduct.product_id' => $product_id),
+									'contain' => array(),
+									'fields' => array('Subproduct.id')
+								));
+								
+								// musim vymazat vsechny subprodukty a obrazky
+								foreach ($subproducts as $subproduct) {
+									$this->Product->Subproduct->AttributesSubproduct->deleteAll(array('subproduct_id' => $subproduct['Subproduct']['id']));
+									$this->Product->Subproduct->delete($subproduct['Subproduct']['id']);
+								}
+								
+								$this->Product->Image->deleteAllImages($product_id);
+								$this->Product->ProductDocument->deleteAllDocuments($product_id);
+								
+
+								if (!$this->Product->delete($product_id)) {
+									$flashes[] = 'Produkt ' . $product_id . ' se nepodařilo smazat ze systému';
+								}
+							}
+							$flash_type = 'flash_failure';
+							if (empty($flashes)) {
+								$flashes[] = 'Produkty byly smazány ze systému';
+								$flash_type = 'flash_success';
+							}
+							$this->Session->setFlash(implode('<br/>', $flashes), REDESIGN_PATH . $flash_type);
+							break;
+						// presunout vybrane produkty (smaze vsechna puvodni prirazeni do kategorii a vytvori jedno nove do zadane kategorie
+						case 'move':
+							if (isset($this->data['Product']['BulkProcess']['category_id']) && !empty($this->data['Product']['BulkProcess']['category_id'])) {
+								$category_id = $this->data['Product']['BulkProcess']['category_id'];
+								$data_source = $this->Product->getDataSource();
+								$this->Product->begin($this->Product);
+								if ($this->Product->CategoriesProduct->deleteAll(array('product_id' => $product_ids))) {
+									foreach ($product_ids as $product_id) {
+										$categories_products[] = array(
+											'product_id' => $product_id,
+											'category_id' => $category_id
+										);
+									}
+
+									if ($this->Product->CategoriesProduct->saveAll($categories_products)) {
+										$this->Product->commit($this->Product);
+										$this->Session->setFlash('Produkty byly přesunuty', REDESIGN_PATH . 'flash_success');
+									} else {
+										$this->Product->rollback($this->Product);
+										$this->Session->setFlash('Produkty se nepodařilo přesunout', REDESIGN_PATH . 'flash_failure');
+									}
+								} else {
+									$this->Product->rollback($this->Product);
+									$this->Session->setFlash('Produkty se nepodařilo přesunout', REDESIGN_PATH . 'flash_failure');
+								}
+							} else {
+								$this->Session->setFlash('Není zadáno, do které kategorie chcete produkty přesunout', REDESIGN_PATH . 'flash_failure');
+							}
+							break;
+						// kopirovat vybrane produkty
+						case 'copy':
+							if (isset($this->data['Product']['BulkProcess']['category_id']) && !empty($this->data['Product']['BulkProcess']['category_id'])) {
+								$category_id = $this->data['Product']['BulkProcess']['category_id'];
+								$categories_products = array();
+								foreach ($product_ids as $product_id) {
+									$categories_products[] = array(
+										'product_id' => $product_id,
+										'category_id' => $category_id
+									);
+								}
+								if ($this->Product->CategoriesProduct->saveAll($categories_products)) {
+									$this->Session->setFlash('Produkty byly zkopírovány', REDESIGN_PATH . 'flash_success');
+								} else {
+									$this->Session->setFlash('Produkty se nepodařilo zkopírovat', REDESIGN_PATH . 'flash_failure');
+								}
+							} else {
+								$this->Session->setFlash('Není zadáno, do které kategorie chcete produkty zkopírovat', REDESIGN_PATH . 'flash_failure');
+							}
+							break;
+						// duplikovat vybrane produkty
+						case 'clon':
+							if (isset($this->data['Product']['BulkProcess']['category_id']) && !empty($this->data['Product']['BulkProcess']['category_id'])) {
+								$category_id = $this->data['Product']['BulkProcess']['category_id'];
+								$flashes = array();
+								foreach ($product_ids as $product_id) {
+									// nactu si data produktu
+									$product = $this->Product->find('first', array(
+										'conditions' => array('Product.id' => $product_id),
+										'contain' => array(
+											'CustomerTypeProductPrice',
+											'Subproduct' => array(
+												'AttributesSubproduct'
+											),
+											'Image'
+										)
+									));
+	
+									if (empty($product)) {
+										$flashes[] = 'Produkt s ID ' . $product_id . ', který chcete duplikovat, neexistuje';
+									} else {
+	
+										// zalozim produkt
+										unset($this->Product->id);
+										unset($product['Product']['id']);
+										// zalozim ho jako neaktivni, at mi hned neskace v obchode
+										$product['Product']['active'] = false;
+										
+										if ($this->Product->save($product)) {
+											// mam ulozeny produkt, musim zmenit URL produktu podle noveho ID
+											if ($new_url = $this->Product->buildUrl($product)) {
+												// ulozim URL pro duplikovany produkt
+												if ($this->Product->save(array('url' => $new_url), false)) {
+													// zduplikuju obrazky
+													if ($this->Product->copy_images($this->Product->id, $product['Image']) !== true) {
+														$flashes[] = $result;
+													} else {
+														// zaradim produkt do kategorie
+														$categories_product = array(
+															'CategoriesProduct' => array(
+																'product_id' => $this->Product->id,
+																'category_id' => $category_id
+															)
+														);
+														$this->Product->CategoriesProduct->create();
+														if (!$this->Product->CategoriesProduct->save($categories_product)) {
+															$flashes[] = 'Nepodařilo se zařadit produkt ' . $this->Product->id . ' do nové kategorie.';;
+														}
+														
+														// zduplikuju ceny produktu
+														foreach ($product['CustomerTypeProductPrice'] as $ctpp) {
+															unset($ctpp['id']);
+															$ctpp['product_id'] = $this->Product->id;
+															$this->Product->CustomerTypeProductPrice->create();
+															if (!$this->Product->CustomerTypeProductPrice->save($ctpp)) {
+																$flashes[] = 'Nepodařilo se vytvořit ceny u produktu' . $this->Product->id . '.';
+															}
+														}
+									
+														// zkopiruju si subprodukty
+														if ( !empty($product['Subproduct']) ){
+															foreach( $product['Subproduct'] as $sp ){
+																$sp_data = array(
+																	'product_id' => $this->Product->id,
+																	'price_with_dph' => $sp['price_with_dph'],
+																	'active' => $sp['active'],
+																	'availability_id' => $sp['availability_id']
+																);
+																unset($this->Product->Subproduct->id);
+																if ( !$this->Product->Subproduct->save($sp_data) ){
+																	$flashes[] = 'Nepodařilo se duplikovat subproduct ID ' . $sp['id'] . ' produktu ' . $this->Product->id . '.';
+																} else {
+																	// musim nakopirovat i vztahy mezi subprodukty a atributy
+																	foreach ($sp['AttributesSubproduct'] as $att_sp) {
+																		$att_sp_data = array(
+																			'attribute_id' => $att_sp['attribute_id'],
+																			'subproduct_id' => $this->Product->Subproduct->id
+																		);
+																		unset($this->Product->Subproduct->AttributesSubproduct->id);
+																		if (!$this->Product->Subproduct->AttributesSubproduct->save($att_sp_data)) {
+																			$flashes[] = 'Nepodařilo se duplikovat vztah mezi atributem a subproduktem ID ' . $att_sp['id'] . ' produktu ' . $this->Product->id;
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											} else {
+												$flashes[] = 'Nepodařilo se vygenerovat URL produktu ' . $this->Product->id;
+											}
+										} else {
+											debug($product);
+											$flashes[] = 'Chyba při zakládání produktu.';
+										}
+									}
+								}
+							} else {
+								$flashes[] = 'Není zadáno, do které kategorie chcete produkty zduplikovat';
+							}
+							$flash_type = 'flash_failure';
+							if (empty($flashes)) {
+								$flashes[] = 'Produkty byly úspěšně duplikovány';
+								$flash_type = 'flash_success';
+							}
+							$this->Session->setFlash(implode('<br/>', $flashes), REDESIGN_PATH . $flash_type);
+							break;
+						default:
+							$this->Session->setFlash('Není definována logika pro tuto operaci hromadného zpracování', REDESIGN_PATH . 'flash_failure');
+							break;
+					}
+				}
+			}
+		} else {
+			$this->Session->setFlash('Zadejte vstup pro hromadné zpracování', REDESIGN_PATH . 'flash_failure');
+		}
+		$this->redirect(array('controller' => 'products', 'action' => 'index'));
+	}
 
 	function admin_add($category_id = null) {
 		if (!isset($category_id)) {

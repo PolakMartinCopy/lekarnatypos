@@ -125,7 +125,7 @@ class Image extends AppModel {
 				'fields' => array('Image.id', 'Image.name')
 			));
 
-			if ( file_exists('product-images/' . $image['Image']['name']) ){
+			if (file_exists('product-images/' . $image['Image']['name'])){
 				unlink('product-images/' . $image['Image']['name']);
 			}
 			if ( file_exists('product-images/small/' . $image['Image']['name']) ){
@@ -146,7 +146,7 @@ class Image extends AppModel {
 			return false;
 		} else {
 			if (is_numeric($conditions)) {
-				$conditions = array('product_id' => $id);
+				$conditions = array('product_id' => $conditions);
 			}
 			$images = $this->find('all', array(
 				'conditions' => $conditions,
