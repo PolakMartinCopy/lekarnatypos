@@ -881,7 +881,7 @@ class Product extends AppModel {
 		return $conditions;
 	}
 	
-	function manage_product_property($id, $product_property_id, $update) {
+	function update_product_property($id, $product_property_id, $update) {
 		// nastavim si ukladanou hodnotu
 		$save = array(
 			'ProductPropertiesProduct' => array(

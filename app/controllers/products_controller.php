@@ -835,7 +835,7 @@ class ProductsController extends AppController {
 				foreach ($this->data['ProductProperty'] as $product_property) {
 					$product_property_id = $product_property['id'];
 					$update = $product_property['update'];
-					if (!$this->Product->manage_product_property($id, $product_property_id, $update)) {
+					if (!$this->Product->update_product_property($id, $product_property_id, $update)) {
 						trigger_error('Nepodarilo se ulozit data o tom, ktere vlastnosti chci u produktu updatovat feedem: product_id - ' . $product_id . ', product_property_id - ' . $product_property_id . ', update - ' . $update, E_USER_NOTICE);
 					}
 				}
