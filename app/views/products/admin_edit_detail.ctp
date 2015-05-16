@@ -22,6 +22,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 2;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $this->Form->input('Product.name', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top">
@@ -30,22 +35,47 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 3;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $form->input('Product.heading', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Breadcrumb:</td>
+		<td style="width:5%"><?php
+			$product_property_id = 4;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $form->input('Product.breadcrumb', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Název v souvisejících</td>
+		<td style="width:5%"><?php
+			$product_property_id = 5;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $form->input('Product.related_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Název - zbozi.cz</td>
+		<td style="width:5%"><?php
+			$product_property_id = 6;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $form->input('Product.zbozi_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Název - heureka.cz</td>
+		<td style="width:5%"><?php
+			$product_property_id = 7;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $form->input('Product.heureka_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top" class="nutne">
@@ -54,6 +84,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 9;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?=$form->input('Product.short_description', array('label' => false, 'type' => 'texrarea', 'style' => 'width:600px;height:40px;'))?></td>
 	</tr>
 	<tr valign="top">
@@ -62,6 +97,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 10;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?=$form->input('Product.description', array('label' => false, 'style' => 'width:600px;height:350px;'))?></td>
 	</tr>
 	<tr valign="top">
@@ -70,6 +110,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.active', array('label' => false))?></td>
 	</tr>
 	<tr valign="top">
@@ -78,14 +119,25 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 15;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $this->Form->input('Product.manufacturer_id', array('label' => false, 'empty' => true))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Dostupnost:</td>
+		<td style="width:5%"><?php
+			$product_property_id = 14;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?=$form->input('Product.availability_id', array('label' => false))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Poznámka:</td>
+		<td>&nbsp;</td>
 		<td>
 			<?=$form->input('Product.note', array(
 				'label' => false,
@@ -96,26 +148,36 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 	</tr>
 	<tr valign="top">
 		<td>Typ produktu (doplněk &times; výživa)</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.product_type_id', array('label' => false, 'empty' => true))?></td>
 	</tr>
 	<tr>
 		<td>Pohoda ID</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.pohoda_id', array('label' => false, 'type' => 'text'))?></td>
 	</tr>
 	<tr>
 		<td>EAN</td>
+		<td style="width:5%"><?php
+			$product_property_id = 10;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $this->Form->input('Product.ean', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>Kód</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.code', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>SUKL</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.sukl', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>Skupina</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.group', array('label' => false))?></td>
 	</tr>
 	<tr valign="top" class='nutne'>
@@ -124,6 +186,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 16;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?=$form->input('Product.tax_class_id', array('label' => false))?></td>
 	</tr>
 	<tr valign="top">
@@ -132,6 +199,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.recycle_fees', array('label' => false, 'after' => '&nbsp;Kč'))?></td>
 	</tr>
 	<tr valign="top">
@@ -140,6 +208,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.discount', array('label' => false, 'after' => '&nbsp;%'))?></td>
 	</tr>
 	<tr valign="top">
@@ -148,6 +217,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.guarantee', array('label' => false, 'after' => '&nbsp;měsíců (999 = doživotní)'))?></td>
 	</tr>
 	<tr valign="top">
@@ -156,10 +226,12 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.priority', array('label' => false, 'after' => '&nbsp;(0 = nejvyšší, 999 = nejnižší)'))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Váha:</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.weight', array('label' => false, 'after' => '&nbsp;kg'))?></td>
 	</tr>
 	<tr valign="top">
@@ -168,10 +240,12 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.video', array('label' => false, 'cols' => 100, 'rows' => 4))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Atributy:</td>
+		<td>&nbsp;</td>
 		<td>
 			<?php echo  $this->Form->input('Product.is_top_produkt', array('label' => false, 'div' => false))?>
 			TOP PRODUKT
@@ -225,6 +299,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 	</tr>
 	<tr valign="top">
 		<td>Generovat do feedů:</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.feed', array('label' => false))?></td>
 	</tr>
 	<tr valign="top">
@@ -233,6 +308,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td style="width:5%"><?php
+			$product_property_id = 8;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?=$form->input('Product.title', array('label' => false, 'size' => 60))?></td>
 	</tr>
 	<tr valign="top">
@@ -241,7 +321,35 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
+		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.keywords', array('label' => false, 'cols' => 70, 'rows' => 2))?></td>
+	</tr>
+	<tr valign="top">
+		<td>Ceny:</td>
+		<td style="width:5%"><?php
+			$product_property_id = 11;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr valign="top">
+		<td>Obrázky:</td>
+		<td style="width:5%"><?php
+			$product_property_id = 12;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr valign="top">
+		<td>Kategorie:</td>
+		<td style="width:5%"><?php
+			$product_property_id = 13;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
+		<td>&nbsp;</td>
 	</tr>
 </table>
 <?php

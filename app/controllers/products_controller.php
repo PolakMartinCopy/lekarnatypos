@@ -830,6 +830,16 @@ class ProductsController extends AppController {
 						$this->redirect($_SERVER['REQUEST_URI']);
 					}
 				}
+				
+				// ulozim si data o tom, ktere vlastnosti chci u daneho produktu updatovat feedem
+				foreach ($this->data['ProductProperty'] as $product_property) {
+					$product_property_id = $product_property['id'];
+					$update = $product_property['update'];
+					if (!$this->Product->manage_product_property($id, $product_property_id, $update)) {
+						trigger_error('Nepodarilo se ulozit data o tom, ktere vlastnosti chci u produktu updatovat feedem: product_id - ' . $product_id . ', product_property_id - ' . $product_property_id . ', update - ' . $update, E_USER_NOTICE);
+					}
+				}
+				
 				$this->Session->setFlash('Produkt byl upraven.', REDESIGN_PATH . 'flash_success');
 				$this->redirect($_SERVER['REQUEST_URI']);
 			} else {
@@ -837,6 +847,29 @@ class ProductsController extends AppController {
 			}
 		} else {
 			$this->data = $product;
+			
+			$product_properties = $this->Product->ProductPropertiesProduct->ProductProperty->find('all', array(
+				'contain' => array(),
+				'fields' => array('ProductProperty.id')
+			));
+			
+			foreach ($product_properties as $product_property) {
+				$product_properties_product = $this->Product->ProductPropertiesProduct->find('first', array(
+					'conditions' => array(
+						'ProductPropertiesProduct.product_id' => $id,
+						'ProductPropertiesProduct.product_property_id' => $product_property['ProductProperty']['id']
+					),
+					'contain' => array(),
+					'fields' => array('ProductPropertiesProduct.update')
+				));
+				// defaultne nastavim, ze chci updatovat vlastnost produktu
+				$update = true;
+				if (!empty($product_properties_product)) {
+					$update = $product_properties_product['ProductPropertiesProduct']['update'];
+				}
+				$this->data['ProductProperty'][$product_property['ProductProperty']['id']]['property_id'] = $product_property['ProductProperty']['id'];
+				$this->data['ProductProperty'][$product_property['ProductProperty']['id']]['update'] = $update;
+			}
 		}
 		
 		$productTypes = $this->Product->ProductType->find('list');

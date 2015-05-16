@@ -880,5 +880,35 @@ class Product extends AppModel {
 		}
 		return $conditions;
 	}
+	
+	function manage_product_property($id, $product_property_id, $update) {
+		// nastavim si ukladanou hodnotu
+		$save = array(
+			'ProductPropertiesProduct' => array(
+				'update' => $update
+			)
+		);
+		// mam v systemu pro danou property a produkt vztah?
+		$product_properties_product = $this->ProductPropertiesProduct->find('first', array(
+			'conditions' => array(
+				'ProductPropertiesProduct.product_id' => $id,
+				'ProductPropertiesProduct.product_property_id' => $product_property_id
+			),
+			'contain' => array(),
+			'fields' => array('ProductPropertiesProduct.id')
+		));
+		
+		// pokud ne, vytvorim novy
+		if (empty($product_properties_product)) {
+			$save['ProductPropertiesProduct']['product_id'] = $id;
+			$save['ProductPropertiesProduct']['product_property_id'] = $product_property_id;
+			$this->ProductPropertiesProduct->create();
+		// pokud ano, updatuju stavajici
+		} else {
+			$save['ProductPropertiesProduct']['id'] = $product_properties_product['ProductPropertiesProduct']['id'];
+		}
+		
+		return $this->ProductPropertiesProduct->save($save);
+	}
 }
 ?>
