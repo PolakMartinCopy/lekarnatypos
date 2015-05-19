@@ -353,6 +353,15 @@ class ProductsController extends AppController {
 		$products = array();
 		$conditions = null;
 
+		// z indexu kategorii se muzu prokliknout pres id kategorie, takze pokud to tak udelam, nastavim do fitru danou
+		// kategorii a ostatni hodnoty ve filtru vynuluju
+		if (isset($this->params['named']['category_id'])) {
+			$this->data['AdminProductForm']['Product']['search_form'] = true;
+			$this->data['AdminProductForm']['Category']['id'] = $this->params['named']['category_id'];
+			$this->Session->delete('Search.AdminProductForm');
+			$this->Session->delete('Search.AdminProductParams');
+		}
+
 		if (isset($this->data['AdminProductForm']['Product']['search_form']) && $this->data['AdminProductForm']['Product']['search_form']) {
 			$this->Session->write('Search.AdminProductForm', $this->data['AdminProductForm']);
 			$conditions = $this->Product->do_form_search($conditions, $this->data['AdminProductForm']);
@@ -690,11 +699,7 @@ class ProductsController extends AppController {
 		$this->redirect(array('controller' => 'products', 'action' => 'index'));
 	}
 
-	function admin_add($category_id = null) {
-		if (!isset($category_id)) {
-			$this->Session->setFlash('Není určena kategorie, do které chcete produkt vložit.', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('controller' => 'products', 'action' => 'index'));
-		}
+	function admin_add() {
 		
 		if (!empty($this->data)) {
 			// ukladam produkt
@@ -718,8 +723,6 @@ class ProductsController extends AppController {
 				$this->Session->setFlash('Produkt nemohl být uložen.', REDESIGN_PATH . 'flash_failure');
 			}
 		}
-
-		$this->set('opened_category_id', $category_id);
 
 		$manufacturers = $this->Product->Manufacturer->find('list', array('order' => array('Manufacturer.name' => 'asc')));
 		$taxClasses = $this->Product->TaxClass->find('list');
@@ -746,6 +749,10 @@ class ProductsController extends AppController {
 				)
 			);
 		}
+		
+		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(true);
+		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
+		$this->set('categories', $categories);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}

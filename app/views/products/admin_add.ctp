@@ -4,7 +4,7 @@
 	<img src='/img/help.png' width='16' height='16' />
 </a>
 
-<?php echo $form->create('Product', array('url' => array($opened_category_id)));?>
+<?php echo $form->create('Product');?>
 <table class="tabulkaedit">
 	<tr class="nutne" valign="top">
 		<td>Název:
@@ -62,6 +62,10 @@
 		</td>
 		<td><?php echo $this->Form->input('Product.active', array('label' => false))?></td>
 	</tr>
+	<tr valign="top">
+		<td>Kategorie:</td>
+		<td><?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'CategoriesProduct.0.category_id', 'options' => $categories))?></td>
+	</tr>	
 	<tr valign="top">
 		<td>Výrobce:
 			<a href='/administrace/help.php?width=500&id=21' class='jTip' id='21' name='Výrobce (21)'>
@@ -251,7 +255,6 @@
 	</tr>
 </table>
 <?php 
-	echo $this->Form->hidden('CategoriesProduct.0.category_id', array('value' => $opened_category_id));
 	echo $this->Form->submit('VLOŽIT');
 	echo $this->Form->end();
 ?>

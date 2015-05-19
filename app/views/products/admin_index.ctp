@@ -29,15 +29,13 @@
 		<th>&nbsp;</th>
 		<th><?php echo (empty($products) ? 'Priorita' : $this->Paginator->sort('Priorita', 'Product.priority'))?></th>
 	</tr>
-	<?php if (isset($this->data['Category']['id']) && !empty($this->data['Category']['id'])) { ?>
 	<tr>
-		<td><?php
+		<td style="text-align:center"><?php
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/add.png" alt="" />';
-			echo $this->Html->link($icon, array('controller' => 'products', 'action' => 'add', $this->data['Category']['id']), array('escape' => false));
+			echo $this->Html->link($icon, array('controller' => 'products', 'action' => 'add'), array('escape' => false));
 		?></td>
-		<td colspan="16">&nbsp;</td>
+		<td colspan="17">&nbsp;</td>
 	</tr>
-	<?php }?>
 	<?php foreach ($products as $product) { ?>
 	<tr>
 		<td style="text-align:center"><?php echo $this->Form->input('Product.check.' . $product['Product']['id'], array('label' => false, 'type' => 'checkbox', 'value' => $product['Product']['id'], 'class' => 'bulk-operations-checkbox'))?></td>
