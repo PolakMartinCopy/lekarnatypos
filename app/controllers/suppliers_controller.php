@@ -250,7 +250,6 @@ class SuppliersController extends AppController {
 				}
 				
 				$product = $this->Supplier->product($feed_product, $supplier);
-
 				// produkt jsem v poradku vyparsoval
 				if ($product) {
 					$product['Product']['supplier_id'] = $id;
@@ -282,7 +281,6 @@ class SuppliersController extends AppController {
 						$product['Product']['active'] = $product_active;
 						// nechci prepisovat data u produktu syncare
 						if (!$product = $this->Supplier->product_required_properties($product)) {
-							debug($product);
 							trigger_error('Chyba pri vypousteni nechtenych vlastnosti produktu', E_USER_NOTICE);
 							$data_source->rollback($this->Supplier->Product);
 							continue;
@@ -301,6 +299,7 @@ class SuppliersController extends AppController {
 					}
 					$product_id = $this->Supplier->Product->id;
 
+					// update URL produktu, pokud se zmenil nazev produktu
 					if (isset($product['Product']['name']) && isset($db_product['Product']['name']) && $product['Product']['name'] != $db_product['Product']['name']) {
 						// ulozim url produktu
 						$product_url_update = array(
@@ -325,7 +324,7 @@ class SuppliersController extends AppController {
 						// stahnu a ulozim obrazek, pokud je treba
 						$save_image_end = $this->Supplier->image_save($product_id, $image_url);
 	
-						// pokud nenastala chyba pri ukladani obrazku, smazu vsechny obrazky u produktu, ktere jiz nejsou aktualni
+						// pokud nenastala chyba pri ukladani obrazku, smazu vsechny obrazky u produktu, ktere mam z feedu a jiz nejsou aktualni
 						if ($save_image_end) {
 							$del_images_conditions = array(
 								'Image.product_id' => $product_id,
@@ -414,7 +413,7 @@ class SuppliersController extends AppController {
 					}
 					
 					$data_source->commit($this->Supplier->Product);
-					
+
 					$supplier_product_ids[] = $product_id;
 				} else {
 					debug($feed_product);
@@ -430,17 +429,21 @@ class SuppliersController extends AppController {
 					'conditions' => array(
 						'Product.supplier_id' => $id,
 						'Product.active' => true,
-						'Product.id NOT IN (' . implode(',', $supplier_product_ids) . ')'
+						'Product.id NOT IN (' . implode(',', $supplier_product_ids) . ')',
 					),
 					'contain' => array(),
 					'fields' => array('Product.id')
 				));
 				
 				foreach ($unactive_products as $unactive_product) {
-					$unactive_product['Product']['active'] = false;
-					if (!$this->Supplier->Product->save($unactive_product)) {
-						debug($unactive_product);
-						trigger_error('Nepodarilo se deaktivovat produkty', E_USER_NOTICE);
+					// deaktivuju jen ty produkty, ktere maji povolenou upravu atributu active daty z feedu
+					if ($this->Supplier->Product->is_product_property_editable($unactive_product['Product']['id'], 17, $id)) {
+						debug($unactive_product); die();
+						$unactive_product['Product']['active'] = false;
+						if (!$this->Supplier->Product->save($unactive_product)) {
+							debug($unactive_product);
+							trigger_error('Nepodarilo se deaktivovat produkty', E_USER_NOTICE);
+						}
 					}
 				}
 			}

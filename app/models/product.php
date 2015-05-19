@@ -910,5 +910,25 @@ class Product extends AppModel {
 		
 		return $this->ProductPropertiesProduct->save($save);
 	}
+	
+	function is_product_property_editable($id, $product_property_id, $supplier_id) {
+		// u produktu syncare nechci updatovat nic
+		$product_property = $this->ProductPropertiesProduct->find('first', array(
+			'conditions' => array(
+				'ProductPropertiesProduct.product_id' => $id,
+				'ProductPropertiesProduct.product_property_id' => $product_property_id
+			),
+			'contain' => array(),
+		));
+		// defaultne chci updatovat
+		$update = true;
+		if (!empty($product_property) && isset($product_property['ProductPropertiesProduct']['update'])) {
+			$update = $product_property['ProductPropertiesProduct']['update'];
+			// pokud neni zadano jinak, u produktu syncare nechci updatovat
+		} elseif ($supplier_id == 2 || $supplier_id == 1) {
+			$update = false;
+		}
+		return $update;
+	}
 }
 ?>

@@ -142,7 +142,6 @@ class Supplier extends AppModel {
 	 * @param SimpleXMLElement $feed_product
 	 */
 	function product($feed_product, $supplier) {
-
 		$product = array();
 		// atributy produktu
 		try {
@@ -228,7 +227,6 @@ class Supplier extends AppModel {
 				'tax_class_id' => $tax_class_id
 			)	
 		);
-
 		return $product;
 	}
 	
@@ -580,14 +578,14 @@ class Supplier extends AppModel {
 	 */
 	function product_required_properties($product) {
 		$id = $product['Product']['id'];
-	
+
 		$properties = $this->Product->ProductPropertiesProduct->find('all', array(
 			'conditions' => array('ProductPropertiesProduct.product_id' => $id),
 			'contain' => array('ProductProperty'),
 		));
-	
-		// u produktu SynCare nechci updatovat nic
-		if ($product['Product']['supplier_id'] == 2 || $product['Product']['supplier_id'] == 1) {
+
+		// pokud nemam zadano jinak, u produktu SynCare a TopVet nechci updatovat nic
+		if (empty($properties) && ($product['Product']['supplier_id'] == 2 || $product['Product']['supplier_id'] == 1)) {
 			foreach ($product['Product'] as $key => $value) {
 				if ($key != 'id') {
 					unset($product['Product'][$key]);
@@ -661,83 +659,34 @@ class Supplier extends AppModel {
 							unset($product['Product']['tax_class_id']);
 						}
 						break;
+					case 'Product.prices':
+						if (!$property['ProductPropertiesProduct']['update']) {
+							unset($product['Product']['retail_price_with_dph']);
+							unset($product['Product']['discount_common']);
+						}
+						break;
+					case 'Product.active':
+						if (!$property['ProductPropertiesProduct']['update']) {
+							unset($product['Product']['active']);
+						}
+						break;
 				}
 			}
 		}
-	
+
 		return $product;
 	}
 	
 	// zjisti, jestli chci u produktu updatovat data o obrazku daty z feedu
 	function product_update_image($product_id, $id) {
-		// u produktu syncare nechci updatovat nic
-		if ($id == 2 || $id == 1) {
-			$update = false;
-		} else {
-			// defaultne chci updatovat
-			$update = true;
-			
-			$product_property = $this->Product->ProductPropertiesProduct->find('first', array(
-				'conditions' => array(
-					'ProductPropertiesProduct.product_id' => $product_id,
-					'ProductProperty.name' => 'Product.images' 
-				),
-				'contain' => array('ProductProperty'),
-				'fields' => array('ProductPropertiesProduct.update')
-			));
-			if (isset($product_property['ProductPropertiesProduct']['update'])) {
-				$update = $product_property['ProductPropertiesProduct']['update'];
-			}
-		}
-		
-		return $update;
+		return $this->Product->is_product_property_editable($product_id, 16, $id);
 	}
 	
 	function product_update_categories($product_id, $id) {
-		// u produktu syncare nechci updatovat nic
-		if ($id == 2 || $id == 1) {
-			$update = false;
-		} else {
-			// defaultne chci updatovat
-			$update = true;
-				
-			$product_property = $this->Product->ProductPropertiesProduct->find('first', array(
-				'conditions' => array(
-					'ProductPropertiesProduct.product_id' => $product_id,
-					'ProductProperty.name' => 'Product.categories'
-				),
-				'contain' => array('ProductProperty'),
-				'fields' => array('ProductPropertiesProduct.update')
-			));
-			if (isset($product_property['ProductPropertiesProduct']['update'])) {
-				$update = $product_property['ProductPropertiesProduct']['update'];
-			}
-		}
-		
-		return $update;
+		return $this->Product->is_product_property_editable($product_id, 17, $id);
 	}
 	
 	function product_update_prices($product_id, $id) {
-		// u produktu syncare nechci updatovat nic
-		if ($id == 2 || $id == 1) {
-			$update = false;
-		} else {
-			// defaultne chci updatovat
-			$update = true;
-	
-			$product_property = $this->Product->ProductPropertiesProduct->find('first', array(
-				'conditions' => array(
-					'ProductPropertiesProduct.product_id' => $product_id,
-					'ProductProperty.name' => 'Product.prices'
-				),
-				'contain' => array('ProductProperty'),
-				'fields' => array('ProductPropertiesProduct.update')
-			));
-			if (isset($product_property['ProductPropertiesProduct']['update'])) {
-				$update = $product_property['ProductPropertiesProduct']['update'];
-			}
-		}
-	
-		return $update;
+		return $this->Product->is_product_property_editable($product_id, 11, $id);
 	}
 }
