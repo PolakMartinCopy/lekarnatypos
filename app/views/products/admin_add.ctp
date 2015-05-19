@@ -1,8 +1,9 @@
 <h1>Vložit nový produkt</h1>
 
-<a href='/administrace/help.php?width=500&id=13' class='jTip' id='13' name='Produkty (13)'>
-	<img src='/img/help.png' width='16' height='16' />
-</a>
+<?php 
+$back_link = array('controller' => 'products', 'action' => 'index');
+echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
+<br /><br />
 
 <?php echo $form->create('Product');?>
 <table class="tabulkaedit">
