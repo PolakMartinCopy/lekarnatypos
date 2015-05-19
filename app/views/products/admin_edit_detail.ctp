@@ -24,8 +24,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		</td>
 		<td style="width:5%"><?php
 			$product_property_id = 2;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $this->Form->input('Product.name', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -37,8 +37,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		</td>
 		<td style="width:5%"><?php
 			$product_property_id = 3;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $form->input('Product.heading', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -46,8 +46,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>Breadcrumb:</td>
 		<td style="width:5%"><?php
 			$product_property_id = 4;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $form->input('Product.breadcrumb', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -55,8 +55,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>Název v souvisejících</td>
 		<td style="width:5%"><?php
 			$product_property_id = 5;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $form->input('Product.related_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -64,8 +64,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>Název - zbozi.cz</td>
 		<td style="width:5%"><?php
 			$product_property_id = 6;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $form->input('Product.zbozi_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -73,8 +73,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>Název - heureka.cz</td>
 		<td style="width:5%"><?php
 			$product_property_id = 7;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $form->input('Product.heureka_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -86,8 +86,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		</td>
 		<td style="width:5%"><?php
 			$product_property_id = 9;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?=$form->input('Product.short_description', array('label' => false, 'type' => 'texrarea', 'style' => 'width:600px;height:40px;'))?></td>
 	</tr>
@@ -99,8 +99,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		</td>
 		<td style="width:5%"><?php
 			$product_property_id = 10;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?=$form->input('Product.description', array('label' => false, 'style' => 'width:600px;height:350px;'))?></td>
 	</tr>
@@ -110,7 +110,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/img/help.png' width='16' height='16' />
 			</a>
 		</td>
-		<td>&nbsp;</td>
+		<td style="width:5%"><?php
+			$product_property_id = 18;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $this->Form->input('Product.active', array('label' => false))?></td>
 	</tr>
 	<tr valign="top">
@@ -120,18 +124,18 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 			</a>
 		</td>
 		<td style="width:5%"><?php
-			$product_property_id = 15;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			$product_property_id = 14;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $this->Form->input('Product.manufacturer_id', array('label' => false, 'empty' => true))?></td>
 	</tr>
 	<tr valign="top">
 		<td>Dostupnost:</td>
 		<td style="width:5%"><?php
-			$product_property_id = 14;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			$product_property_id = 13;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?=$form->input('Product.availability_id', array('label' => false))?></td>
 	</tr>
@@ -159,9 +163,9 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 	<tr>
 		<td>EAN</td>
 		<td style="width:5%"><?php
-			$product_property_id = 10;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			$product_property_id = 12;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?php echo $this->Form->input('Product.ean', array('label' => false))?></td>
 	</tr>
@@ -187,9 +191,9 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 			</a>
 		</td>
 		<td style="width:5%"><?php
-			$product_property_id = 16;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			$product_property_id = 15;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?=$form->input('Product.tax_class_id', array('label' => false))?></td>
 	</tr>
@@ -310,8 +314,8 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		</td>
 		<td style="width:5%"><?php
 			$product_property_id = 8;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td><?=$form->input('Product.title', array('label' => false, 'size' => 60))?></td>
 	</tr>
@@ -328,26 +332,26 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>Ceny:</td>
 		<td style="width:5%"><?php
 			$product_property_id = 11;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr valign="top">
 		<td>Obrázky:</td>
 		<td style="width:5%"><?php
-			$product_property_id = 12;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			$product_property_id = 16;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr valign="top">
 		<td>Kategorie:</td>
 		<td style="width:5%"><?php
-			$product_property_id = 13;
-			echo $this->Form->hidden('ProductProperty.' . $product_property_id . ' .id', array('value' => $product_property_id));
-			echo $this->Form->input('ProductProperty.' . $product_property_id . ' .update', array('label' => false, 'type' => 'checkbox'));
+			$product_property_id = 17;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
 		<td>&nbsp;</td>
 	</tr>
