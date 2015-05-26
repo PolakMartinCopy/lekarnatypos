@@ -144,11 +144,12 @@ class Category extends AppModel {
 		$full_tree_conditions = $conditions;
 		$full_tree_conditions[] = 'parent_id = ' . ROOT_CATEGORY_ID;
 
-		$categories = $this->generateTree(ROOT_CATEGORY_ID, $order);
-		
+		$categories = $this->generateTree(397, $order);
+//debug($categories);
 		foreach ($categories as &$category) {
 			$subtree_path_ids = $path_ids;
 			unset($subtree_path_ids[0]);
+			unset($subtree_path_ids[1]);
 			if (in_array($category['Category']['id'], $path_ids)) {
 				$conditions[] = "parent_id IN ('" . implode("', '", $subtree_path_ids) . "')";
 				$subtree = $this->find('threaded', array(

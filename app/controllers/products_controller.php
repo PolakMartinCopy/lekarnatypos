@@ -275,6 +275,7 @@ class ProductsController extends AppController {
 		
 		// sestavim breadcrumbs
 		$path = $this->Product->CategoriesProduct->Category->getPath($opened_category_id);
+		unset($path[1]);
 		$breadcrumbs = array();
 		foreach ($path as $item) {
 			$breadcrumb = array('anchor' => $item['Category']['breadcrumb'], 'href' => '/' . $item['Category']['url']);

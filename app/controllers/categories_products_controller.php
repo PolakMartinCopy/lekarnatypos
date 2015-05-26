@@ -90,6 +90,7 @@ class CategoriesProductsController extends AppController {
 		$this->set('opened_category_id', $id);
 		
 		$path = $this->CategoriesProduct->Category->getPath($id);
+		unset($path[1]);
 		$breadcrumbs = array();
 		
 		if (!$path) {
