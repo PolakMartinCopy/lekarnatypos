@@ -100,7 +100,6 @@
 	echo $this->Form->hidden('Customer.id');
 	echo $this->Form->hidden('Customer.newsletter', array('value' => true));
 	echo $this->Form->hidden('Customer.customer_type_id', array('value' => 1));
-	echo $this->Form->hidden('Customer.active', array('value' => true));
 
 	echo $this->Form->hidden('Address.0.type', array('value' => (isset($customer['Address'][0]['type']) ? $customer['Address'][0]['type'] : 'f')));
 	echo $this->Form->hidden('Address.1.type', array('value' => (isset($customer['Address'][0]['type']) ? $customer['Address'][0]['type'] : 'd')));

@@ -1141,7 +1141,8 @@ class OrdersController extends AppController {
 			$customer['Customer']['confirmed'] = 1;
 			$customer['Customer']['registration_source'] = 'eshop';
 			$customer['Customer']['customer_type_id'] = 1;
-			
+			$customer['Customer']['active'] = true;
+
 			$c_dataSource = $this->Order->Customer->getDataSource();
 			$c_dataSource->begin($this->Order->Customer);
 			try {
