@@ -309,7 +309,7 @@ class ProductsController extends AppController {
 		$this->Product->virtualFields['price'] = $this->Product->price;
 		$this->Product->virtualFields['discount'] = $this->Product->discount;
 		$order = 'FIELD(Product.id, ' . implode(',', $stack_products_ids) . ')';
-		if (empty($stack_product_ids)) {
+		if (empty($stack_products_ids)) {
 			$order = array();
 		}
 		$last_visited_products = $this->Product->find('all', array(

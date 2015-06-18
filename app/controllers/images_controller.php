@@ -277,13 +277,13 @@ class ImagesController extends AppController {
 			'fields' => array('Image.name')
 		));
 		
-		$image_height = 118;
-		$image_width = 118;
+		$image_height = 250	;
+		$image_width = 250;
 		
 		foreach ($images as $image) {
 			$image_name = $image['Image']['name'];
 			$image_path = 'product-images/' . $image_name;
-			$target_path = 'product-images/small/' . $image_name;
+			$target_path = 'product-images/' . $image_name;
 			if (file_exists($image_path)) {
 				$this->Image->resize($image_path, $target_path, $image_width, $image_height);
 			}
