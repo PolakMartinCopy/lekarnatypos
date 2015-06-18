@@ -54,12 +54,9 @@ class Manufacturer extends AppModel {
 		return $description;
 	}
 	
-	function filter_manufacturers($opened_category_id) {
-		$conditions = array('Product.active' => true);
-		if (isset($opened_category_id)) {
-			// zjistim idcka kategorii v podstromu
-			$category_ids = $this->Product->CategoriesProduct->Category->subtree_ids($opened_category_id);
-			$conditions = array_merge($conditions, array('CategoriesProduct.category_id' => $category_ids));
+	function filter_manufacturers($conditions, $order = null) {
+		if (!$order) {
+			$order = array('Manufacturer.products_count' => 'desc', 'Manufacturer.name' => 'asc');
 		}
 		$limit = $this->filter_limit;
 		$this->virtualFields['products_count'] = 'COUNT(DISTINCT(Product.id))';
@@ -90,7 +87,7 @@ class Manufacturer extends AppModel {
 			'fields' => array('Manufacturer.id', 'Manufacturer.name', 'Manufacturer.products_count'),
 			'limit' => $limit,
 			'group' => array('Manufacturer.id'),
-			'order' => array('Manufacturer.products_count' => 'desc', 'Manufacturer.name' => 'asc')
+			'order' => $order
 		));
 		// odnastavim virtualni pole vytvorena za behu
 		unset($this->virtualFields['products_count']);

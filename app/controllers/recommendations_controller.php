@@ -16,7 +16,7 @@ class RecommendationsController extends AppController {
 		$challenge = (isset($_POST['recaptcha_challenge_field']) ? $_POST['recaptcha_challenge_field'] : '');
 		$response = (isset($_POST['recaptcha_response_field']) ? $_POST['recaptcha_response_field'] : '');
 		$resp = recaptcha_check_answer($privatekey, $_SERVER['REMOTE_ADDR'], $challenge, $response);
-		
+
 		$this->Recommendation->set($this->data);
 		$recommendation_valid = $this->Recommendation->validates();
 		$recaptcha_valid = $resp->is_valid;

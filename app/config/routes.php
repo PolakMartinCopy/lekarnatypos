@@ -46,15 +46,16 @@ if ( $_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz'){
 	exit();
 } */
 
-	Router::connect('/', array('controller' => 'contents', 'action' => 'view', 1));
+	Router::connect('/', array('controller' => 'pages', 'action' => 'home'));
 	Router::connect('/kosik', array('controller' => 'carts_products', 'action' => 'index'));
+	Router::connect('/objednavka', array('controller' => 'orders', 'action' => 'one_step_order'));
 	Router::connect('/vysypat-kosik', array('controller' => 'carts', 'action' => 'dump'));
 	Router::connect('/rekapitulace-objednavky', array('controller' => 'orders', 'action' => 'recapitulation'));
 	Router::connect('/vyhledavani-produktu', array('controller' => 'searches', 'action' => 'do_search'));
 	Router::connect('/registrace', array('controller' => 'customers', 'action' => 'add'));
 	Router::connect('/prihlaseni', array('controller' => 'customers', 'action' => 'login'));
 	Router::connect('/obnova-hesla', array('controller' => 'customers', 'action' => 'password'));
-
+	Router::connect('/aktuality', array('controller' => 'news', 'action' => 'index'));
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
 
 	$url = $_SERVER['REQUEST_URI'];

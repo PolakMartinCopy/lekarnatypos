@@ -82,6 +82,27 @@ class CategoriesProductsController extends AppController {
 		if (!$id) {
 			die('neni zvolena kategorie, kterou chcete zobrazit');
 		}
+
+		if (isset($_GET['filter']['reset_filter'])) {
+			$url = $this->params['url']['url'];
+			$params = $this->params['url']['filter'];
+			switch ($_GET['filter']['reset_filter']) {
+				case 'brand': 
+					unset($params['manufacturer_id']);
+					break;
+				case 'price':
+					unset($params['price']);
+					break;
+				case 'sorting':
+					unset($params['sorting']);
+					break;
+			}
+			unset($params['reset_filter']);
+			$params = array('filter' => $params);
+			$params = http_build_query($params);
+			$url = '/' . $url . '?' . $params;
+			$this->redirect($url);
+		}
 		
 		// navolim si layout, ktery se pouzije
 		$this->layout = REDESIGN_PATH . 'content';
@@ -90,13 +111,14 @@ class CategoriesProductsController extends AppController {
 		$this->set('opened_category_id', $id);
 		
 		$path = $this->CategoriesProduct->Category->getPath($id);
-		unset($path[1]);
 		$breadcrumbs = array();
 		
 		if (!$path) {
 			$this->cakeError('error404');
 		}
 		
+		// hned za korenem mam kategorie "KATEGORIE" a "PRIZNAKY", ktere ale nechci zobrazovat
+		unset($path[1]);
 		foreach ($path as $item) {
 			$breadcrumb = array('anchor' => $item['Category']['breadcrumb'], 'href' => '/' . $item['Category']['url']);
 			if ($item['Category']['id'] == 5) {
@@ -116,7 +138,7 @@ class CategoriesProductsController extends AppController {
 			$this->cakeError('error404');
 		}
 
-		// k informaci o kategorii pridam text o sleve pro registrovane
+		// k informaci o kategorii pridam univerzalni text
 		App::import('Model', 'Setting');
 		$this->Setting = &new Setting;
 		$category_text = $this->Setting->findValue('CATEGORYTEXT');
@@ -129,6 +151,7 @@ class CategoriesProductsController extends AppController {
 		$_description = $category['Category']['description'];
 		$this->set('_title', $_title);
 		$this->set('_description', $_description);
+		
 		// nejprodavanejsi produkty
 		App::import('Model', 'CustomerType');
 		$this->CustomerType = new CustomerType;
@@ -136,25 +159,48 @@ class CategoriesProductsController extends AppController {
 		$category_most_sold = $this->CategoriesProduct->Category->get_most_sold($id, $customer_type_id);
 		$this->set('category_most_sold_products', $category_most_sold);
 		
+		// podminky pro vypis produktu
 		$category_ids = $this->CategoriesProduct->Category->children($category['Category']['id']);
 		$category_ids = Set::extract('/Category/id', $category_ids);
 		$category_ids[] = $id;
-		
 		$conditions = array(
 			'CategoriesProduct.category_id' => $category_ids,
 			'Product.active' => true,
-			'Product.price >' => 0
 		);
-
-		if (isset($_GET['manufacturer_id']) && !empty($_GET['manufacturer_id'])) {
-			$manufacturer_id = $_GET['manufacturer_id'];
-			$manufacturer_id_arr = explode(',', $manufacturer_id);
-			if ($this->CategoriesProduct->Product->Manufacturer->filter_limit && count($manufacturer_id_arr) == $this->CategoriesProduct->Product->Manufacturer->filter_limit) {
-				$manufacturer_id = '';
-			} else {
-				$conditions = array_merge($conditions, array('Product.manufacturer_id' => $manufacturer_id_arr));
-				$this->data['CategoriesProduct']['manufacturer_id'] = $manufacturer_id;
-			}
+		
+		// DO TETO CHVILE MAM PODMINKY PRO VYBRANI PRODUKTU NEOMEZUJICI PODLE FILTRU
+		$filter_manufacturers_order = array('Manufacturer.name' => 'asc');
+		$filter_manufacturers = $this->CategoriesProduct->Product->Manufacturer->filter_manufacturers($conditions, $filter_manufacturers_order);
+		$this->set('filter_manufacturers', $filter_manufacturers);
+		
+		// musim tedy vybrat nejlevnejsi a nejdrazsi produkt v podle dosavadnich podminek, protoze jakmile tam prihodim podminky o cene, zkresli mi to hodnoty pro slider
+		// nejlevnejsi a nejdrazsi produkt pro ucely filtru podle ceny
+		$cheapest_product = $this->CategoriesProduct->Product->cheapest($conditions, $customer_type_id);
+		$cheapest_product_price = 0;
+		if (!empty($cheapest_product)) {
+			$cheapest_product_price = $cheapest_product['Product']['price'];
+		}
+		$this->set('cheapest_price', $cheapest_product_price);
+		
+		$most_expensive_product = $this->CategoriesProduct->Product->most_expensive($conditions, $customer_type_id);
+		$most_expensive_product_price = 1000;
+		if (!empty($most_expensive_product)) {
+			$most_expensive_product_price = $most_expensive_product['Product']['price'];
+		}
+		$this->set('most_expensive_price', $most_expensive_product_price);
+		
+		if (isset($_GET['filter']['price']['min']) && !empty($_GET['filter']['price']['min'])) {
+			$conditions['Product.price >='] = $_GET['filter']['price']['min'];
+		}
+		if (isset($_GET['filter']['price']['max']) && !empty($_GET['filter']['price']['max'])) {
+			$conditions['Product.price <='] = $_GET['filter']['price']['max'];
+		}
+		
+		// filtr podle vyrobcu
+		if (isset($_GET['filter']['manufacturer_id']) && !empty($_GET['filter']['manufacturer_id'])) {
+			$manufacturer_id_arr = $_GET['filter']['manufacturer_id'];
+			$conditions = array_merge($conditions, array('Product.manufacturer_id' => $manufacturer_id_arr));
+//			$this->data['CategoriesProduct']['manufacturer_id'] = $manufacturer_id;
 		}
 
 		$joins = array(
@@ -187,32 +233,14 @@ class CategoriesProductsController extends AppController {
 				'alias' => 'Availability',
 				'type' => 'INNER',
 				'conditions' => array('Availability.id = Product.availability_id')
+			),
+			array(
+				'table' => 'manufacturers',
+				'alias' => 'Manufacturer',
+				'type' => 'LEFT',
+				'conditions' => array('Manufacturer.id = Product.manufacturer_id')
 			)
 		);
-
-		if (isset($_GET['attribute_id']) && !empty($_GET['attribute_id'])) {
-			$attribute_id = $_GET['attribute_id'];
-			$attribute_id_arr = explode(',', $attribute_id);
-			$conditions = array_merge($conditions, array('AttributesSubproduct.attribute_id' => $attribute_id_arr));
-			$this->data['CategoriesProduct']['attribute_id'] = $attribute_id;
-			
-			$add_joins = array(
-				array(
-					'table' => 'subproducts',
-					'alias' => 'Subproduct',
-					'type' => 'LEFT',
-					'conditions' => array('Product.id = Subproduct.product_id'),
-				),
-				array(
-					'table' => 'attributes_subproducts',
-					'alias' => 'AttributesSubproduct',
-					'type' => 'LEFT',
-					'conditions' => array('Subproduct.id = AttributesSubproduct.subproduct_id')
-				)
-			);
-			
-			$joins = array_merge($joins, $add_joins);
-		}
 
 		$this->paginate['Product'] = array(
 			'conditions' => $conditions,
@@ -226,55 +254,61 @@ class CategoriesProductsController extends AppController {
 				'Product.discount_common',
 				'Product.sold',
 				'Product.price',
+				'Product.discount',
 				'Product.rate',
-					
+				'Product.is_akce',
+				'Product.is_novinka',
+				'Product.is_doprodej',
+				'Product.is_bestseller',
+				'Product.is_darek_zdarma',
+							
 				'Image.id',
 				'Image.name',
-				
+		
 				'Availability.id',
 				'Availability.cart_allowed'
-
+		
 			),
 			'joins' => $joins,
 			'group' => 'Product.id',
+//			'show' => 'all',
+			'limit' => 15
 		);
 
-		
-		$this->paginate['Product']['show'] = 'all';
-		
 		// sestavim podminku pro razeni podle toho, co je vybrano
 		$order = array('Availability.cart_allowed' => 'desc');
-		if (isset($this->data['CategoriesProduct']['sorting'])) {
-			switch ($this->data['CategoriesProduct']['sorting']) {
-				// vychozi razeni podle priority
-				case 0: $order = array_merge($order, array('Product.priority' => 'asc')); break;
-				// nastavim razeni podle prodejnosti
-				case 1: $order = array_merge($order, array('Product.sold' => 'desc')); break;
-				// nastavim razeni podle ceny
-				case 2: $order = array_merge($order, array('Product.price' => 'asc')); break;
-				case 3: $order = array_merge($order, array('Product.price' => 'desc')); break;
-				// nastavim razeni podle nazvu
-				case 4: $order = array_merge($order, array('Product.name' => 'asc')); break;
-				default: $order = array();
-			}
+		if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
+			$order = array_merge($order, $this->CategoriesProduct->Product->sorting_options[$_GET['filter']['sorting'][0]]['conditions']);
+		} else {
+			$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc'));
+			$_GET['filter']['sorting'][0] = 0;
 		}
-		
+
 		$this->paginate['Product']['order'] = $order;
 
 		$this->CategoriesProduct->Product->virtualFields['sold'] = 'SUM(OrderedProduct.product_quantity)';
 		// cenu produktu urcim jako cenu podle typu zakaznika, pokud je nastavena, pokud neni nastavena cena podle typu zakaznika, vezmu za cenu beznou slevu, pokud ani ta neni nastavena
 		// vezmu jako cenu produktu obycejnou cenu
 		$this->CategoriesProduct->Product->virtualFields['price'] = $this->CategoriesProduct->Product->price;
+		// sleva
+		$this->CategoriesProduct->Product->virtualFields['discount'] = $this->CategoriesProduct->Product->discount;
+
 		$products = $this->paginate('Product');
 
 		// opetovne vypnuti virtualnich poli, nastavenych za behu
 		unset($this->CategoriesProduct->Product->virtualFields['sold']);
 		unset($this->CategoriesProduct->Product->virtualFields['price']);
-
+		unset($this->CategoriesProduct->Product->virtualFields['discount']);
 		$this->set('products', $products);
-
-		$listing_style = 'products_listing_grid';
 		
+		// je zvoleny nejaky tab filtru, ktery ma byt zobrazeny?
+		$filter_tab = false;
+		if (isset($_GET['filter']['default_tab'])) {
+			$filter_tab = $_GET['filter']['default_tab'];
+		}
+		$this->set('filter_tab', $filter_tab);
+		
+		$listing_style = 'products_listing_grid';
 		$this->set('listing_style', $listing_style);
 		
 //		$action_products = $this->CategoriesProduct->Product->get_action_products($customer_type_id, 4);
@@ -298,15 +332,17 @@ class CategoriesProductsController extends AppController {
 			if (!empty($subcategory['Category']['image'])) {
 				$subcategory['Category']['image'] = $this->CategoriesProduct->Category->image_path . DS . $subcategory['Category']['image'];
 				if (!file_exists($subcategory['Category']['image'])) {
-					$subcategory['Category']['image'] = 'img' . REDESIGN_PATH . 'category_image_na_150x150.jpg';
+					$subcategory['Category']['image'] = 'img' . REDESIGN_PATH . 'category_image_na.jpg';
 				}
 			} else {
-				$subcategory['Category']['image'] = 'img' . DS . REDESIGN_PATH . 'category_image_na_150x150.jpg';
+				$subcategory['Category']['image'] = 'img' . DS . REDESIGN_PATH . 'category_image_na.jpg';
 			}
 				
 		}
 
 		$this->set('subcategories', $subcategories);
+		
+		$this->set('sorting_options', $this->CategoriesProduct->Product->sorting_options);
 	}
 	
 	function cancel_filter($id) {

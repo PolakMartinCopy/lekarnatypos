@@ -22,7 +22,7 @@ class ExportsController extends AppController{
 		$not_active_categories = $this->Product->CategoriesProduct->Category->find('all', array(
 			'conditions' => array('Category.active' => false),
 			'contain' => array(),
-			'fields' => array('Category.id')	
+			'fields' => array('Category.id')	
 		));
 		
 		$not_active_categories_ids = array();
@@ -262,6 +262,7 @@ class ExportsController extends AppController{
 				$path = $this->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
 				$keys = Set::extract('/Category/name', $path);
 				unset($keys[0]);
+				unset($keys[1]);
 				$products[$index]['CATEGORYTEXT'] = implode(' | ', $keys);
 			}
 		}

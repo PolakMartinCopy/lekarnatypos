@@ -175,16 +175,20 @@ class CartsProductsController extends AppController {
 		$this->redirect(array('action' => 'index'), null, true);
 	}
 
-	function delete($id){
+	function delete($id) {
 		// predpoklad ze se to nepodari
-		$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.', REDESIGN_PATH . 'flash_failure');
+		$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.', REDESIGN_PATH . 'flash_failure', array('type' => 'shopping_cart'));
 
 		// najdu si produkt a smazu ho
 		if ( $this->CartsProduct->findByIds($this->CartsProduct->cart_id, $id) ){
 			$this->CartsProduct->delete($id);
-			$this->Session->setFlash('Produkt byl z košíku vymazán.', REDESIGN_PATH . 'flash_success');
+			$this->Session->setFlash('Produkt byl z košíku vymazán.', REDESIGN_PATH . 'flash_success', array('type' => 'shopping_cart'));
 		}
-		$this->redirect(array('action' => 'index'), null, true);
+		$redirect = array('action' => 'index');
+		if (isset($this->params['named']['back'])) {
+			$redirect = base64_decode($this->params['named']['back']);
+		}
+		$this->redirect($redirect, null, true);
 	}
 	
 	function stats(){

@@ -16,10 +16,10 @@ class ProductPropertiesProductsController extends AppController {
 			'fields' => array('Product.id')
 		));
 		$product_ids = Set::extract('/Product/id', $products);
-/*		// pokud mam neco pro dane produkty nadefinovane, tak to smazu
+		// pokud mam neco pro dane produkty nadefinovane, tak to smazu
 		$this->ProductPropertiesProduct->deleteAll(array(
 			'ProductPropertiesProduct.product_id' =>  $product_ids 	
-		)); */
+		)); 
 		
 		// natahnu si vsechny sledovane vlastnosti
 		$properties = $this->ProductPropertiesProduct->ProductProperty->find('all', array(

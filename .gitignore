@@ -4,5 +4,9 @@ tmp
 /.settings/org.eclipse.php.core.prefs
 /.settings
 /app/webroot/product-images
+/app/webroot/images/categories
+/app/webroot/images/most_sold_products
+/app/webroot/images/news
+/app/webroot/files
 /.externalToolBuilders
 /app/webroot/files/*.log

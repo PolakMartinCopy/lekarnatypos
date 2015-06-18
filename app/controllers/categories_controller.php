@@ -133,6 +133,10 @@ class CategoriesController extends AppController {
 		
 		$this->set('tinyMceElement', 'CategoryContent');
 		
+		// "rootove" kategorie v menu (abych u nich mohl zadavat homepage class kvuli ikone)
+		$pseudo_root_categories_ids = $this->Category->pseudo_root_categories_ids();
+		$this->set('pseudo_root_categories_ids', $pseudo_root_categories_ids);
+		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
@@ -219,6 +223,11 @@ class CategoriesController extends AppController {
 		
 		$this->set('tinyMceElement', 'CategoryContent');
 		$this->set('category', $category);
+		
+		// "rootove" kategorie v menu (abych u nich mohl zadavat homepage class kvuli ikone)
+		$pseudo_root_categories_ids = $this->Category->pseudo_root_categories_ids();
+		$this->set('pseudo_root_categories_ids', $pseudo_root_categories_ids);
+		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -477,6 +486,34 @@ class CategoriesController extends AppController {
 					debug($old_categories);
 					die();
 				}
+			}
+		}
+		die('hotovo');
+	}
+	
+
+	function admin_resize_images() {
+		$categories = $this->Category->find('all', array(
+			'conditions' => array(
+				'Category.image IS NOT NULL',
+				'Category.image !=' => ''
+			),
+			'contain' => array(),
+			'fields' => array('Category.image')
+		));
+	
+		$image_height = 88;
+		$image_width = 88;
+		
+		App::import('Model', 'Image');
+		$this->Image = &new Image;
+	
+		foreach ($categories as $category) {
+			$image_name = $category['Category']['image'];
+			$image_path = $this->Category->image_path . '/' . $image_name;
+			$target_path = $this->Category->image_path . '/' . $image_name;
+			if (file_exists($image_path)) {
+				$this->Image->resize($image_path, $target_path, $image_width, $image_height);
 			}
 		}
 		die('hotovo');

@@ -1,101 +1,171 @@
-<?php 
+<?php
+// pokud ma varianty, skryju pole pro vlozeni ks do kosiku
+// tlacitko se bude chovat jako odkaz na kotvu, ktera se nachazi u formulare pro vlozeni produktu s variantami
+if (!empty($subproducts) && $product['Availability']['cart_allowed']) { ?>
+<script type="text/javascript">
+	window.onload = function(){
+		$('#ProductQuantity').hide();
+		$('#AddToCartButton').click(function(e) {
+			e.preventDefault();
+			$('html, body').animate({
+		        scrollTop: $("#AddProductWithVariantsForm").offset().top
+		    }, 1000);
+		});
+	};
+</script>
+<?php } ?>
+
+<?php
 $image = '/img/' . REDESIGN_PATH . 'na_250_250.jpg';
 $has_image = false;
 if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
-	$path = 'product-images/medium/' . $product['Image'][0]['name'];
+	$path = 'product-images/' . $product['Image'][0]['name'];
 	//				if (file_exists($path) && is_file($path) && getimagesize($path)) {
 	$image = '/' . $path;
 	$has_image = true;
 	//				}
 }
 ?>
-<div class="product-image">
-	<?php if ($has_image) { ?>
-    <a href="/product-images/<?php echo $product['Image'][0]['name']?>" data-lightbox="product-image" data-title="<?php echo $product['Product']['name']?>" class="product-image-link">
-    <?php } ?>
-        <img src="<?php echo $image?>" />
-    <?php if ($has_image) { ?>
-    </a>
-    <?php } ?>
-</div>
-<div class="product-desc">
-    <h1><?php echo $product['Product']['heading']?></h1>
-    <p class="manufacturer">Výrobce: <?php echo $product['Manufacturer']['name']?></p>
-    <?php 
-    $product['Product']['note'] = trim($product['Product']['note']);
-    if (!empty($product['Product']['note'])) { ?>
-    	<p class="note"><span class="header">Poznámka: </span><?php echo $product['Product']['note']?></p>
-    <?php } ?>
-	<p class="availability"><span class="header">Dostupnost:</span>
-		<?php if ($product['Product']['active']) { ?>
-			<?php echo $product['Availability']['name']?><?php if ($product['Availability']['cart_allowed']) { ?> (<a href="/cenik-dopravy">kdy zboží dostanu</a>)<?php  } ?></p>
-		<?php } else { ?>
-			Nyní nelze objednat
-		<?php } ?>
 
-	<div class="fb-like" data-href="http://www.<?php echo CUST_ROOT?>/<?php echo $product['Product']['url']?>" data-action="like" data-layout="button_count" data-width="450" data-show-faces="false"></div>
-	<p class="price"><span class="header">Cena:</span> <span class="nominal"><?php echo round($product['Product']['price'])?>,-</span></p>
-	
-	<?php // form pro vlozeni do kosiku
-		if ($product['Availability']['cart_allowed'] && $product['Product']['active']) {
-			echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'id' => 'cart', 'encoding' => false, 'class' => 'form-inline'));
-			echo $this->element(REDESIGN_PATH . 'subproducts_choices', $this->requestAction('/subproducts/control/' . $product['Product']['id']));
-		?>
-		<div class="input-group">
-			<?php echo $this->Form->input('Subproduct.quantity', array('type' => 'text', 'value' => 1, 'label' => false, 'div' => false, 'class' => 'form-control input-lg product-quantity'));?>
-		</div>
-		<button class="btn btn-success btn-lg" type="submit"><i class="fa fa-shopping-cart"></i>&nbsp;Koupit produkt</button>
-		<?php echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id'])); ?>
-		<?php echo $this->Form->end();
-		}
-	?>
-	
-    <div class="product-shop-info">
-        <div class="col-3">
-            <strong>778 437 811</strong><br />
-            Po - Čt 7:30 - 18:00<br />
-            Pá: 7:30 - 16:30
+<div class="module-product-detail">
+    <h1><?php echo $product['Product']['heading']?></h1>
+    <div class="product-image">
+        <img src="<?php echo $image ?>" title="<?php echo $product['Product']['name']?>" alt="Obrázek <?php echo $product['Product']['name']?>" />
+		<?php echo $this->element(REDESIGN_PATH . 'product_labels', array('product' => $product))?>
+    </div>
+    <div class="product-details">
+        <div class="product-short-desc">
+            <p><?php echo $product['Product']['short_description']?> <a href="#popis">Celý popis</a></p>
         </div>
-        <div class="col-3">
-            <strong>info@lekarnatypos.cz</strong><br />
-            Na e-maily reagujeme zpravidla do 24 hodin.
+        <?php if (isset($product['Product']['ean']) && !empty($product['Product']['ean'])) { ?>
+        <div class="product-code">
+            <div class="param-horizontal">
+                <span>EAN:</span>
+                <span><?php echo $product['Product']['ean']?></span>
+            </div>
+        </div>
+        <?php } ?>
+        <div class="product-parameters">
+            <?php if (isset($product['Manufacturer']['name']) && !empty($product['Manufacturer']['name'])) { ?>
+            <div class="param-horizontal">
+                <span>Výrobce:</span>
+                <span><?php echo $product['Manufacturer']['name']?></span>
+            </div>
+            <?php } ?>
+            <div class="param-horizontal">
+                <span>Dostupnost:</span>
+                <span><a href="/cenik-dopravy"><?php echo ucfirst($product['Availability']['name'])?></a></span>
+            </div>
+        </div>
+        <div class="price-box">
+        	<?php if (isset($product['Product']['discount']) && $product['Product']['discount']) { ?>
+            <div class="param-horizontal"><span>Běžná cena:</span> <span class="standard-price"><?php echo front_end_display_price($product['Product']['retail_price_with_dph'])?> Kč</span> (ušetříte <span class="discount"><?php echo $product['Product']['discount']?> %</span>)</div>
+            <?php } ?>
+            <div class="param-horizontal"><span>Naše cena:</span> <span class="price"><?php echo front_end_display_price($product['Product']['price'])?> Kč</span></div>
+
+<!-- VLOZENI DO KOSIKU -->
+<?php
+	if (empty($subproducts) && $product['Availability']['cart_allowed'] && $product['Product']['active']) {
+		echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'encoding' => false));
+?>
+	<div class="count-input">
+<?php echo $this->Form->input('Product.quantity', array('label' => false, 'div' => false, 'value' => 1, 'maxlength' => 4)); ?>
+		<div class="count-add">+</div>
+		<div class="count-remove">-</div>
+	</div>
+	<span class="count-unit">ks</span>
+<?php 
+		echo $this->Form->button('Přidat do košíku', array('id' => 'AddToCartButton', 'class' => 'btn btn-warning btn-lg'));
+		echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id']));
+		echo $this->Form->end();
+	// produkt ma varianty
+	} elseif (!empty($subproducts) && $product['Availability']['cart_allowed']) {
+		echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'encoding' => false));
+		echo $this->Form->button('Přidat do košíku', array('id' => 'AddToCartButton', 'class' => 'btn btn-warning btn-lg'));
+		echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id']));
+		echo $this->Form->end();
+	}
+?>
         </div>
     </div>
-</div>
-<div class="clearfix"></div>
+    
+    
+<!-- VLOZENI DO KOSIKU, KDYZ PRODUKT MA VARIANTY -->
+<?php if (!empty($subproducts) && $product['Availability']['cart_allowed'] && $product['Product']['active']) { ?>
+<div class="product-variants row">
+	<div class="col-xs-12">
+		<h4 class="headline">Zvolte si variantu</h4>
 
-<div class="product-detail">
+<?php echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'encoding' => false, 'id' => 'AddProductWithVariantsForm')); ?>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Varianta</th>
+					<th>Naše cena</th>
+					<th class="hidden-xs hidden-sm">Množství</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+<?php 
+foreach ($subproducts as $subproduct) {
+	$information = '';
+	foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
+		$information .= $attributes_subproduct['Attribute']['Option']['name'] . ': ' . $attributes_subproduct['Attribute']['value'] . '<br/>';
+	}
+	
+	$subproduct['Subproduct']['price_with_dph'] += $product['Product']['price']; 
+?>
+				<tr>
+					<td><?php echo $information ?></td>
+					<td class="center"><span class="price"><?php echo $subproduct['Subproduct']['price_with_dph']?>&nbsp;Kč</span></td>
+					<td class="hidden-xs hidden-sm">
+						<div class="count-input">
+							<?php echo $this->Form->input('Subproduct.' . $subproduct['Subproduct']['id'] . '.quantity', array('label' => false, 'div' => false, 'value' => 1))?>
+							<div class="count-add">+</div><div class="count-remove">-</div>
+						</div>
+						<span class="count-unit">ks</span>
+						<?php echo $this->Form->hidden('Subproduct.' . $subproduct['Subproduct']['id'] . '.id', array('value' => $subproduct['Subproduct']['id']))?>
+					</td>
+					<td class="center"><button name="data[Subproduct][<?php echo $subproduct['Subproduct']['id'] ?>][chosen]" value="1" class="btn btn-warning">Do košíku</button></td>
+				</tr>
+<?php } ?>
+			</tbody>
+		</table>
+<?php echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id']))?>
+<?php echo $this->Form->end()?>
+	</div>
+</div>
+<?php } ?>
+
+
+    <div class="product-shop-info clearfix">
+        <div class="col-xs-12 col-sm-12 col-md-6">
+            <div class="headline">Máte rádi toto zboží? Dejte to všem vědět!</div>
+            <div class="share-buttons">
+                <div class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-action="like" data-show-faces="false" data-share="true"></div>
+                <a href="https://twitter.com/share" class="twitter-share-button" data-via="lekarnatypos" data-count="none">Tweet</a>
+                <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + '://platform.twitter.com/widgets.js'; fjs.parentNode.insertBefore(js, fjs); } }(document, 'script', 'twitter-wjs');</script>
+                <div class="g-plusone" data-size="medium" data-annotation="none"></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6">
+            <div class="headline">Potřebujete pomoci?</div>
+            <span class="contact"><i class="fa fa-fw fa-phone"></i> <strong>778 437 811</strong></span> (Po - Čt 7:30 - 18:00, Pá: 7:30 - 16:30)<br />
+            <span class="contact"><i class="fa fa-fw fa-envelope"></i> <strong>info@lekarnatypos.cz</strong></span> Na e-maily reagujeme zpravidla do 24 hodin.
+        </div>
+    </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#popis" data-toggle="tab">Detailní popis produktu</a></li>
-        <li><a href="#komentare" data-toggle="tab">Komentáře / dotazy</a></li>
-        <li><a href="#poslat" data-toggle="tab">Poslat známému</a></li>
+        <li class="hidden-xs"><a href="#komentare" data-toggle="tab">Komentáře / dotazy</a></li>
+        <li class="hidden-xs"><a href="#poslat" data-toggle="tab">Poslat známému</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="popis">
-<?php // vypisuju podminene atributy - pokud obsahuji hodnotu, vypisu je
-	if ($product['Product']['product_type_id'] || $product['Product']['code'] || $product['Product']['ean'] || $product['Product']['sukl'] || $product['Product']['group']) { ?>
-		<ul>
-	<?php if ($product['Product']['product_type_id']) { ?>
-			<li>Skupina: <?php echo $product['ProductType']['name']?></li>
-	<?php } ?>
-	<?php if ($product['Product']['ean']) { ?>
-			<li>EAN: <?php echo $product['Product']['ean']?></li>
-	<?php } ?>
-	<?php if ($product['Product']['code']) { ?>
-			<li>Kód zboží: <?php echo $product['Product']['code']?></li>
-	<?php } ?>
-	<?php if ($product['Product']['sukl']) { ?>
-			<li>Kód SÚKL: <?php echo $product['Product']['sukl']?></li>
-	<?php } ?>
-	<?php if ($product['Product']['group']) { ?>
-			<li>Farmakoterapeutická skupina: <?php echo $product['Product']['group']?></li>
-	<?php } ?>
-		</ul>
-<?php } ?>
-			<?php echo $product['Product']['description']?>
+            <?php echo $product['Product']['description']?>
         </div>
         <div class="tab-pane" id="komentare">
-        	<?php echo $this->Form->create('Comment', array('url' => array('controller' => 'comments', 'action' => 'add'), 'id' => 'CommentAddForm', 'encoding' => false, 'role' => 'form'))?>
+            <?php echo $this->Form->create('Comment', array('url' => array('controller' => 'comments', 'action' => 'add'), 'id' => 'CommentAddForm', 'encoding' => false, 'role' => 'form'))?>
 			<div class="form-group">
 				<label>Jméno:</label>
 				<?php echo $this->Form->input('Comment.author', array('label' => false, 'size' => 50, 'class' => 'form-control'))?>
@@ -171,3 +241,5 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
         </div>
     </div>
 </div>
+<?php echo $this->element(REDESIGN_PATH . 'product_carousel', array('module_class' => 'module-last-visited', 'element_id' => 'last-visited-products', 'title' => 'Naposledy prohlížené zboží', 'products' => $last_visited_products))?>
+<?php echo $this->element(REDESIGN_PATH . 'product_carousel', array('module_class' => 'module-related', 'element_id' => 'related-products', 'title' => 'Související zboží', 'products' => $similar_products))?>

@@ -87,41 +87,57 @@
 			// data o kosiku
 			$this->set('carts_stats', $this->Product->CartsProduct->getStats($this->Product->CartsProduct->Cart->get_id()));
 
-			// menu hlavni kategorie
-			// $this->set('categories_menu', $this->Product->CategoriesProduct->Category->getSubcategoriesMenuList($opened_category_id, $this->Session->check('Customer')));
-			$this->set('categories_menu', $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), true));
-			
-			// submenu kategorii
+/*			// submenu kategorii
 			$this->set('categories_submenu', $this->Product->CategoriesProduct->Category->getSubmenuCategories());
-			
-			// vyrobci do selectu
+*/
+/*			// vyrobci do selectu
 			$manufacturers_list = $this->Product->Manufacturer->find('list', array(
 				'conditions' => array('Manufacturer.active' => true)	
 			));
 			$this->set('manufacturers_list', $manufacturers_list);
-			
-			// nastaveni aktivniho tabu v login boxu, defaultne prihlaseni
-			$login_box_tab = 'basket';
-			if ($this->Session->check('login_box_tab')) {
+*/			
+			// nastaveni aktivniho tabu (kategorie / priznaky), defaultne kategorie
+			$categories_bothers_tab = 'categories';
+			if ($this->Session->check('categories_bothers_tab')) {
 				// jinak nactu ze sesny
-				$login_box_tab = $this->Session->read('login_box_tab');
+				$categories_bothers_tab = $this->Session->read('categories_bothers_tab');
 			}
-			$this->set('login_box_tab', $login_box_tab);
+			$this->set('categories_bothers_tab', $categories_bothers_tab);
 			
+			// je zakaznik zalgovany
+			$is_logged_in = false;
+			if ($this->Session->check('Customer')) {
+				$customer = $this->Session->read('Customer');
+				if (isset($customer['id']) && !empty($customer['id']) && !isset($customer['noreg'])) {
+					$is_logged_in = true;
+				}
+			}
+			$this->set('is_logged_in', $is_logged_in);
+			
+			$categories_menu = array();
+			$bothers_menu = array();
 			if ($this->layout == REDESIGN_PATH . 'content') {
 				// nejprodavanejsi produkty
 				App::import('Model', 'CustomerType');
 				$this->CustomerType = new CustomerType;
 				$customer_type_id = $this->CustomerType->get_id($this->Session->read());
-
+				// na obsahove strance chci pouze seznam rootovych kategorii s otevrenym aktualnim podstromem
+				$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, 397);
+				$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, 398);
 			} elseif ($this->layout == REDESIGN_PATH . 'homepage') {
-				App::import('Model', 'CustomerType');
-				$this->CustomerType = new CustomerType;
-				$customer_type_id = $this->CustomerType->get_id($this->Session->read());
-				// discounted - newest, recommended, most_sold - favourite
-				$this->set('newest', $this->Product->DiscountedProduct->hp_list($customer_type_id));
-				$this->set('favourite', $this->Product->MostSoldProduct->hp_list($customer_type_id));
+				if ($_SERVER['REQUEST_URI'] == '/') {
+					// uplny strom kategorii - vypisuje se pouze na HP
+					$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, 397);
+					$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, 398);
+				}
 			}
+			$this->set('categories_menu', $categories_menu);
+			$this->set('bothers_menu', $bothers_menu);
+			
+			App::import('Model', 'News');
+			$this->News = &new News;
+			$newest_actualities = $this->News->hp_list();
+			$this->set('newest_actualities', $newest_actualities);
 		} elseif (isset($this->params['admin']) && $this->params['admin'] == 1) {
 			App::import('Model', 'Status');
 			$this->Status = &new Status;

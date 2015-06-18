@@ -1,9 +1,13 @@
 <h1>Nová aktualita</h1>
-<?php echo $this->Form->create('News')?>
+<?php echo $this->Form->create('News', array('type' => 'file'))?>
 <table class="tabulkaedit">
 	<tr class="nutne">
 		<td>Titulek</td>
 		<td><?php echo $this->Form->input('News.title', array('label' => false, 'size' => 50))?></td>
+	</tr>
+	<tr>
+		<td>Obrázek</td>
+		<td><?php echo $this->Form->input('News.image', array('label' => false, 'type' => 'file'))?></td>
 	</tr>
 	<tr class="nutne">
 		<td colspan="2">Text</td>

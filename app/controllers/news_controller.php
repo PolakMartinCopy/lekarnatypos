@@ -8,7 +8,7 @@ class NewsController extends AppController {
 		$news = $this->News->find('all', array(
 			'conditions' => array(),
 			'contain' => array(),
-			'fields' => array('News.id', 'News.title', 'News.first_sentence'),
+			'fields' => array('News.id', 'News.title', 'News.first_sentence', 'News.image'),
 			'order' => array('News.order' => 'desc')
 		));
 		
@@ -19,15 +19,25 @@ class NewsController extends AppController {
 	
 	function admin_add() {
 		if (isset($this->data)) {
-			if ($this->News->save($this->data)) {
-				$this->Session->setFlash('Aktualita byla úspěšně uložena.', REDESIGN_PATH . 'flash_success');
-				$this->redirect(array('action' => 'index'));
+			// zvaliduju data
+			$this->News->set($this->data);
+			if ($this->News->validates()) {
+				// nahraju obrazek na disk
+				$this->data['News']['image'] = $this->News->loadImage($this->data['News']['image']);
+				if ($this->data['News']['image'] !== false) {
+					// ulozim data
+					$this->News->save($this->data['News']);
+					$this->Session->setFlash('Aktualita byla uložena!', REDESIGN_PATH . 'flash_success');
+					$this->redirect(array('action' => 'index'));
+				} else {
+					$this->Session->setFlash('Aktualita nebyla vložena, nepodařilo se nahrát obrázek.', REDESIGN_PATH . 'flash_failure');
+				}
 			} else {
 				$this->Session->setFlash('Aktualitu se nepodařilo uložit. Opravte chyby ve formuláři a opakujte akci.', REDESIGN_PATH . 'flash_failure');
 			}
 		}
 		
-		$this->set('tiny_mce_elements', 'NewsText');
+		$this->set('tinyMceElement', 'NewsText');
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -40,7 +50,7 @@ class NewsController extends AppController {
 		$actuality = $this->News->find('first', array(
 			'conditions' => array('News.id' => $id),
 			'contain' => array(),
-			'fields' => array('News.id', 'News.title', 'News.text')
+			'fields' => array('News.id', 'News.title', 'News.text', 'News.image')
 		));
 		
 		if (empty($actuality)) {
@@ -49,18 +59,37 @@ class NewsController extends AppController {
 		}
 		
 		if (isset($this->data)) {
-			if ($this->News->save($this->data)) {
-				$this->Session->setFlash('Aktualita ' . $this->data['News']['id'] . ' byla úspěšně uložena.', REDESIGN_PATH . 'flash_success');
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash('Aktualitu se nepodařilo uložit, opravte chyby ve formuláři a opakujte akci.', REDESIGN_PATH . 'flash_failure');
+			$this->News->set($this->data);
+			if ($this->News->validates()) {
+				// pokud nahravam novy obrazek, updatuju info o obrazku
+				$old_image = null;
+				if ($this->data['News']['image']['tmp_name']) {
+					if (!empty($actuality['News']['image'])) {
+						$old_image = $actuality['News']['image'];
+					}
+					$this->data['News']['image'] = $this->News->loadImage($this->data['News']['image']);
+				}
+				// pokud mam natazeny obrazek
+				if (!isset($this->data['News']['image']) || $this->data['News']['image'] !== false) {
+
+					if ($this->News->save($this->data)) {
+						if ($old_image && file_exists($old_image)) {
+							unlink($old_image);
+						}
+						$this->Session->setFlash('Aktualita byla upravena.', REDESIGN_PATH . 'flash_success');
+						$this->redirect(array('action' => 'index'));
+					} else {
+						$this->Session->setFlash('Ukládání aktuality se nezdařilo!', REDESIGN_PATH . 'flash_failure');
+					}					
+				}
 			}
 		} else {
 			$this->data = $actuality;
+			unset($this->data['News']['image']);
 		}
 		
 		$this->set('actuality', $actuality);
-		$this->set('tiny_mce_elements', 'NewsText');
+		$this->set('tinyMceElement', 'NewsText');
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -111,13 +140,14 @@ class NewsController extends AppController {
 			'limit' => 25,
 			'conditions' => array(),
 			'contain' => array(),
-			'fields' => array('News.id', 'News.title', 'News.first_sentence', 'News.czech_date'),
 			'order' => array('News.order' => 'desc')
 		);
 		
 		$news = $this->paginate();
-		
+
 		$this->set('news', $news);
+		$this->set('image_path', $this->News->image_path);
+		
 		$this->layout = REDESIGN_PATH . 'content';
 		
 		// nastaveni meta tagu
@@ -128,6 +158,10 @@ class NewsController extends AppController {
 		
 		// breadcrumbs
 		$breadcrumbs = array(
+			array(
+				'anchor' => 'Domů',
+				'href' => '/'
+			),
 			array(
 				'anchor' => 'Aktuality',
 				'href' => '/aktuality'
@@ -155,8 +189,26 @@ class NewsController extends AppController {
 		$this->layout = REDESIGN_PATH . 'content';
 		
 		$this->set('actuality', $actuality);
+		$this->set('image_path', $this->News->image_path);
 		$this->set('_title', $actuality['News']['title']);
 		$this->set('_description', $actuality['News']['first_sentence']);
+		
+		// breadcrumbs
+		$breadcrumbs = array(
+			array(
+				'anchor' => 'Domů',
+				'href' => '/'
+			),
+			array(
+				'anchor' => 'Aktuality',
+				'href' => '/aktuality'
+			),
+			array(
+				'anchor' => $actuality['News']['title'],
+				'href' => array('controller' => 'news', 'action' => 'view', $id)
+			)
+		);
+		$this->set('breadcrumbs', $breadcrumbs);
 	}
 }
 ?>

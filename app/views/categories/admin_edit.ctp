@@ -24,6 +24,12 @@
 		<td>Breadcrumb</td>
 		<td><?php echo $form->input('Category.breadcrumb', array('label' => false, 'size' => 60))?></td>
 	</tr>
+	<?php if (in_array($category['Category']['parent_id'], $pseudo_root_categories_ids)) { ?>
+	<tr>
+		<td>Homepage class</td>
+		<td><?php echo $this->Form->input('Category.homepage_class', array('label' => false, 'size' => 20))?></td>
+	</tr>
+	<?php } ?>
 	<tr>
 		<td>Popis</td>
 		<td><?php echo $form->input('Category.content', array('label' => false, 'style' => 'width:600px;height:350px;'))?></td>

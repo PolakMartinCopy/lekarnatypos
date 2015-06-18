@@ -273,7 +273,7 @@ class SuppliersController extends AppController {
 						$product_active = false;
 						$supplier_category = $this->Supplier->SupplierCategory->find('first', array(
 							'conditions' => array('SupplierCategory.id' => $product['Product']['supplier_category_id']),
-							'contain' => array(),
+							'contain' => array(),
 						));
 						if (!empty($supplier_category)) {
 							$product_active = $supplier_category['SupplierCategory']['active'];

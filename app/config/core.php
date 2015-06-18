@@ -40,7 +40,13 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	$admin_ids = array('213.194.204.132', '85.132.201.158', '127.0.0.1');
+	$admin_ids = array(
+		'213.194.204.132', // brko doma
+		'85.132.201.158', // brko u laziho v hospe
+		'127.0.0.1', // localhost
+		'94.112.86.184', // brko u matky
+		'85.132.202.160' // brko u laziho doma
+	);
 
 	Configure::write('debug', 0);
 	if (in_array($_SERVER['REMOTE_ADDR'], $admin_ids)) {

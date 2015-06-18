@@ -49,7 +49,7 @@ class CartsProduct extends AppModel {
 			'CartsProduct.cart_id' => $cart_id,
 			'CartsProduct.id' => $product_id
 		);
-		if ( $this->find($conditions) ){
+		if ($this->find($conditions)) {
 			return true;
 		}
 		return false;
@@ -66,15 +66,21 @@ class CartsProduct extends AppModel {
 			'fields' => array('quantity', 'price_with_dph')
 
 		));
-		foreach ( $contents as $item ){
+		foreach ($contents as $item) {
 			$products_count = $products_count + $item['CartsProduct']['quantity'];
 			$total_price = $total_price + $item['CartsProduct']['price_with_dph'] * $item['CartsProduct']['quantity'];
 		}
+		
+		// zjistim dopravu, kde zacina doprava zdarma na nejnizsi hodnote objednavky
+		$cheapest_shipping['Shipping']['id'] = 30;
 
 		// vratim pole s vysledkem
 		$carts_stats = array(
 			'products_count' => $products_count,
-			'total_price' => $total_price
+			'total_price' => $total_price,
+			// TODO - zjistit cenu dopravy z kosiku
+			'free_shipping' => $this->Cart->isFreeShipping($total_price),
+			'free_shipping_remaining' => $this->Cart->freeShippingRemaining($total_price)
 		);
 
 		return $carts_stats;

@@ -5,11 +5,11 @@ class OrdersController extends AppController {
 	var $helpers = array('Form');
 
 	var $paginate = array(
-				'limit' => 20,
-				'order' => array(
-					'Order.created' => 'desc'
-				),
-		);
+		'limit' => 20,
+		'order' => array(
+			'Order.created' => 'desc'
+		),
+	);
 
 	function admin_index() {
 		$status_id = 'all';
@@ -1087,6 +1087,275 @@ class OrdersController extends AppController {
 		$payment = $this->Order->Payment->get_data($order['payment_id']);
 		$this->set(compact(array('shipping', 'payment')));
 	}
+	
+	function one_step_order() {
+		App::import('Model', 'Cart');
+		$this->Order->Cart = &new Cart;
+	
+		$cart_id = $this->Order->Cart->get_id();
+		// vytahnu si vsechny produkty, ktere patri
+		// do zakaznikova kose
+		$cart_products = $this->Order->Cart->CartsProduct->find('all', array(
+			'conditions' => array('CartsProduct.cart_id' => $cart_id),
+			'contain' => array(
+				'Product' => array(
+					'Image' => array(
+						'conditions' => array('Image.is_main' => true)
+					),
+					'fields' => array(
+						'Product.id',
+						'Product.name',
+						'Product.url'
+					)
+				)
+			)
+		));
+
+		// podivam se, jestli je zakaznik prihlaseny
+		if ($this->Session->check('Customer.id')) {
+			// pokud ano, predvyplnim formular jeho udaji
+			$customer = $this->Order->Customer->find('first', array(
+				'conditions' => array('Customer.id' => $this->Session->read('Customer.id')),
+				'contain' => array(
+					'Address' => array(
+						// seradim adresy tak, aby prvni byla fakturacni
+						'conditions' => array('Address.type' => 'f')
+					)
+				)
+			));
+		}
+	
+		if (isset($this->data)) {
+			if (isset($this->data['Order']['action'])) {
+				switch ($this->data['Order']['action']) {
+					// upravuju obsah kosiku
+					case 'cart_edit':
+						// najdu si produkt a upravim ho
+						$cart_product = $this->Order->Cart->CartsProduct->find('first', array(
+						'conditions' => array(
+						'CartsProduct.id' => $this->data['CartsProduct']['id'],
+						'CartsProduct.cart_id' => $cart_id
+						),
+						'contain' => array(),
+						'fields' => array('CartsProduct.id')
+						));
+						if (!empty($cart_product)) {
+							$cart_product['CartsProduct']['quantity'] = $this->data['CartsProduct']['quantity'];
+							// nastavil jsem nulove mnozstvi, smazu produkt z kosiku
+							if ($cart_product['CartsProduct']['quantity'] == 0) {
+								if ($this->Order->Cart->CartsProduct->delete($this->data['CartsProduct']['id'])) {
+									$this->Session->setFlash('Zboží bylo z košíku odstraněno.', REDESIGN_PATH . 'flash_success', array('type' => 'shopping_cart'));
+								} else {
+									$this->Session->setFlash('Zboží se nepodařilo z košíku odstranit, zkuste to prosím ještě jednou', REDESIGN_PATH . 'flash_failure', array('type' => 'shopping_cart'));
+								}
+							} else {
+								if ($this->Order->Cart->CartsProduct->save($cart_product)) {
+									$this->Session->setFlash('Množství zboží bylo upraveno', REDESIGN_PATH . 'flash_success', array('type' => 'shopping_cart'));
+								} else {
+									$this->Session->setFlash('Nepodařilo se upravit množství zboží v košíku, zkuste to prosím ještě jednou.', REDESIGN_PATH . 'flash_failure', array('type' => 'shopping_cart'));
+								}
+							}
+						} else {
+							$this->Session->setFlash('Košík daný produkt neobsahuje, nelze jej proto vymazat.', REDESIGN_PATH . 'flash_failure', array('type' => 'shopping_cart'));
+						}
+						$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order', '#ShoppingCart'));
+						break;
+					case 'customer_login':
+						$conditions = array(
+						'CustomerLogin.login' => $this->data['Customer']['login'],
+						'CustomerLogin.password' => md5($this->data['Customer']['password']),
+						'Customer.active' => true
+						);
+	
+						// pokus o zalogovani podle SNV - existuje v SNV pro dane prihlasovaci udaje zakaznik?
+						$customer = $this->Order->Customer->CustomerLogin->find('first', array(
+							'conditions' => $conditions,
+							'contain' => array('Customer'),
+						));
+							
+						if (empty($customer)) {
+							$this->Session->setFlash('Neplatný login nebo heslo!', REDESIGN_PATH . 'flash_failure', array('type' => 'customer_login'));
+							$this->data['Customer']['is_registered'] = 1;
+						} else {
+							// ulozim si info o zakaznikovi do session
+							$this->Session->write('Customer', $customer['Customer']);
+								
+							// ze session odstranim data o objednavce,
+							// pokud se snazil zakaznik pred prihlasenim neco
+							// vyplnovat v objednavce, delalo by mi to bordel
+							$this->Session->delete('Order');
+								
+							// na pocitadle si inkrementuju pocet prihlaseni
+							$customer_update = array(
+								'Customer' => array(
+									'id' => $customer['Customer']['id'],
+									'login_count' => $customer['Customer']['login_count'] + 1,
+									'login_date' => date('Y-m-d H:i:s')
+								)
+							);
+							$this->Order->Customer->save($customer_update);
+								
+							// presmeruju
+							$this->Session->setFlash('Jste přihlášen(a) jako ' . $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . '.', REDESIGN_PATH . 'flash_success', array('type' => 'customer_login'));
+							$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order'));
+						}
+	
+						break;
+					case 'order_finish':
+						// nechci kontrolovat, jestli je zakaznikuv email unikatni (aby i zakaznik, ktery neni prihlaseny, ale jeho email je v systemu, mohl dokoncit objednavku
+						if (isset($this->data['Customer']['id']) && empty($this->data['Customer']['id'])) {
+							unset($this->data['Customer']['id']);
+						}
+	
+						// jsou data o zakaznikovi validni?
+						unset($this->Order->Customer->validate['email']['isUnique']);
+	
+						// dogeneruju si nazev do adresy
+						$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+						$this->data['Address'][1]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+						// pokud mam zadano, ze dodaci adresa je shodna s fakturacni, nakopiruju hodnoty
+						if (!$this->data['Customer']['is_delivery_address_different']) {
+							$this->data['Address'][1]['name'] = $this->data['Address'][0]['name'];
+							$this->data['Address'][1]['street'] = $this->data['Address'][0]['street'];
+							$this->data['Address'][1]['street_no'] = $this->data['Address'][0]['street_no'];
+							$this->data['Address'][1]['city'] = $this->data['Address'][0]['city'];
+							$this->data['Address'][1]['zip'] = $this->data['Address'][0]['zip'];
+							$this->data['Address'][1]['state'] = $this->data['Address'][0]['state'];
+						}
+	
+						$customer_data['Customer'] = $this->data['Customer'];
+						$customer_data['Address'] = $this->data['Address'];
+	
+						// jestlize jsou data o zakaznikovy validni
+						if ($this->Order->Customer->saveAll($customer_data, array('validate' => 'only'))) {
+							// jestli neni zakaznik prihlaseny a zaroven existuje zakaznik se zadanou emailovou adresou
+							if (!$this->Session->check('Customer.id')) {
+								$customer = $this->Order->Customer->find('first', array(
+									'conditions' => array('Customer.email' => $this->data['Customer']['email']),
+									'contain' => array(),
+									'fields' => array('Customer.id')
+								));
+								// pokud existuje, priradim k objednavce zakaznikovo idcko (at nezakladam noveho a nevznikaji mi ucty s duplicitnim emailem
+								if (!empty($customer)) {
+									$this->data['Customer']['id'] = $customer['Customer']['id'];
+								}
+								// pamatuju si, ze zakaznik neni prihlaseny v objednavce (protoze to vsude testuju z historickych duvodu
+								// pres customer id v sesne a to je mi ted na nic
+								$this->data['Customer']['noreg'] = true;
+							}
+								
+							$this->Session->write('Customer', $this->data['Customer']);
+							$this->Session->write('Address', $this->data['Address'][0]);
+							$this->Session->write('Address_payment', $this->data['Address'][1]);
+							
+							$this->data['Order']['payment_id'] =  $this->Order->Shipping->get_payment_id($this->data['Order']['shipping_id']);
+							$this->Session->write('Order', $this->data['Order']);
+							// pokud je jako zpusob dopravy vybrano Geis Point (doruceni na odberne misto), presmeruju na plugin pro vyber odberneho
+							// mista s tim, aby se po navratu presmeroval na ulozeni informaci o vyberu odberneho mista
+							if (in_array($this->data['Order']['shipping_id'], $this->Order->Shipping->GP_shipping_id)) {
+								if ($service_url = $this->Order->Shipping->geis_point_url($this->Session, true)) {
+									$this->redirect($service_url);
+								} else {
+									$this->Session->setFlash('Zadejte prosím Vaši doručovací adresu');
+									$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order', '#' => 'OrderDetailsCustomer'));
+								}
+							}
+								
+							// presmeruju do finalizace objednavky, kde se data ulozena v sesne ulozi do systemu
+							$this->redirect(array('controller' => 'orders', 'action' => 'finalize'));
+	
+						} else {
+							// pokud jsem nakopiroval dorucovaci adresu pred ulozenim, protoze zakaznik nerekl, ze je jina, nez fakturacni, tak ji zase vynuluju
+							if (!$this->data['Customer']['is_delivery_address_different']) {
+								unset($this->data['Address'][1]);
+							}
+							$this->Session->setFlash('Údaje o zákazníkovi obsahují chybu, opravte ji prosím a formulář uložte znovu.', REDESIGN_PATH . 'flash_failure', array('type' => 'customer_info'));
+							//$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order', '#' => 'OrderDetailsCustomer'));
+						}
+	
+	
+						break;
+				}
+			}
+		} else {
+			if (isset($customer)) {
+				$this->data = $customer;
+			}
+			$this->data['Customer']['is_registered'] = 0;
+		}
+	
+		// data o zbozi v kosiku
+		foreach ($cart_products as $index => $cart_product) {
+			// u produktu si pridam jmenne atributy
+			// chci tam dostat pole napr (barva -> bila, velikost -> S) ... takze (option_name -> value)
+			// pokud znam id subproduktu, tak ma produkt varianty a muzu si je jednoduse vytahnout
+			$cart_products[$index]['CartsProduct']['product_attributes'] = array();
+			if (!empty($cart_product['CartsProduct']['subproduct_id'])) {
+				$subproduct = $this->Order->Cart->CartsProduct->Product->Subproduct->find('first', array(
+					'conditions' => array('Subproduct.id' => $cart_product['CartsProduct']['subproduct_id']),
+					'contain' => array(
+						'AttributesSubproduct' => array(
+							'Attribute' => array(
+								'Option'
+							)
+						)
+					)
+				));
+				$product_attributes = array();
+				if (!empty($subproduct)) {
+					foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
+						$product_attributes[$attributes_subproduct['Attribute']['Option']['name']] = $attributes_subproduct['Attribute']['value'];
+					}
+				}
+				$cart_products[$index]['CartsProduct']['product_attributes'] = $product_attributes;
+			}
+		}
+		$this->set('cart_products', $cart_products);
+	
+		// data pro volbu dopravy a platby
+		$providers = $this->Order->Shipping->find('all', array(
+			'conditions' => array('Shipping.active'),
+			'contain' => array(),
+			'fields' => array('DISTINCT Shipping.provider_name'),
+			'order' => array('Shipping.order' => 'asc')
+		));
+		
+		foreach ($providers as &$provider) {
+			$provider['shippings'] = $this->Order->Shipping->find('all', array(
+				'conditions' => array('Shipping.active' => true, 'Shipping.provider_name' => $provider['Shipping']['provider_name']),
+				'contain' => array(),
+				'order' => array('Shipping.order' => 'asc'),
+			));
+			foreach ($provider['shippings'] as &$shipping) {
+				$shipping['Shipping']['price'] = $this->Order->get_shipping_cost($shipping['Shipping']['id']);
+			}
+		}
+		
+		$this->set(compact('providers'));
+	
+		if (!isset($this->data['Order']['payment_id']) && $this->Session->check('Order.payment_id')) {
+			$this->data['Order']['payment_id'] = $this->Session->read('Order.payment_id');
+		}
+	
+		if (!isset($this->data['Order']['shipping_id']) && $this->Session->check('Order.shipping_id')) {
+			$this->data['Order']['shipping_id'] = $this->Session->read('Order.shipping_id');
+		}
+	
+		if (!isset($this->data['Order']['comments']) && $this->Session->check('Order.comments')) {
+			$this->data['Order']['comments'] = $this->Session->read('Order.comments');
+		}
+	
+		// nastavim si titulek stranky
+		$this->set('page_heading', 'Objednávka');
+		$this->set('_title', 'Objednávka');
+		$this->set('_description', 'Objednávka');
+		$breadcrumbs = array(array('anchor' => 'Objednávka', 'href' => '/objednavka'));
+		$this->set('breadcrumbs', $breadcrumbs);
+	
+		// layout
+		$this->layout = REDESIGN_PATH . 'homepage';
+	
+	}
 
 	function shipping_edit(){
 		// navolim si layout, ktery se pouzije
@@ -1119,7 +1388,7 @@ class OrdersController extends AppController {
 		}
 	}
 	
-	function finalize(){
+	function finalize() {
 		if (!$this->Session->check('Order.shipping_id')) {
 			$this->Session->setFlash('Není zvolena doprava pro Vaši objednávku', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'carts_products', 'action' => 'index'));
@@ -1127,6 +1396,48 @@ class OrdersController extends AppController {
 		
 		$sess_customer = $this->Session->read('Customer');
 		$customer['Customer'] = $sess_customer;
+		
+		$order = $this->Session->read('Order');
+		$shipping_id = $order['shipping_id'];
+		// pokud mam zvoleno dodani na vydejni misto geis point, nactu parametry pro doruceni (z GET nebo sesny)
+		if (in_array($shipping_id, $this->Order->Shipping->GP_shipping_id)) {
+			// parametry jsou v GET
+			if (isset($this->params['url']['GPName']) && isset($this->params['url']['GPAddress']) && isset($this->params['url']['GPID'])) {
+				$gp_name = urldecode($this->params['url']['GPName']);
+				$gp_address = urldecode($this->params['url']['GPAddress']);
+				$gp_address = explode(';', $gp_address);
+				$gp_street = '';
+				if (isset($gp_address[0])) {
+					$gp_street = $gp_address[0];
+				}
+				$gp_city = '';
+				if (isset($gp_address[1])) {
+					$gp_city = $gp_address[1];
+				}
+				$gp_zip = '';
+				if (isset($gp_address[2])) {
+					$gp_zip = $gp_address[2];
+				}
+				$gp_id = urldecode($this->params['url']['GPID']);
+				// ulozim do sesny jako dorucovaci adresu
+				$this->Session->write('Address.name', $gp_name . ', ' . $gp_id);
+				$this->Session->write('Address.street', $gp_street);
+				$this->Session->write('Address.street_no', '');
+				$this->Session->write('Address.city', $gp_city);
+				$this->Session->write('Address.zip', $gp_zip);
+				// poznacim si, ze adresa je vybrana pomoci pluginu
+				$this->Session->write('Address.plugin_check', true);
+			} elseif (!$this->Session->check('Address') || !$this->Session->check('Address.plugin_check') || !$this->Session->read('Address.plugin_check')) {
+				// nemam data pro vydejni misto ani v sesne ani v GET, ale potrebuju je, takze presmeruju znova na plugin
+				// pro vyber vydejniho mista a z nej se sem vratim
+				if ($service_url = $this->Order->Shipping->geis_point_url($this->Session)) {
+					$this->redirect($service_url);
+				} else {
+					$this->Session->setFlash('Zadejte prosím Vaši doručovací adresu.');
+					$this->redirect(array('controller' => 'customers', 'action' => 'order_personal_info'));
+				}
+			}
+		}
 
 		// pridam adresy
 		$customer['Address'][] = $this->Session->read('Address');
@@ -1141,8 +1452,7 @@ class OrdersController extends AppController {
 			$customer['Customer']['confirmed'] = 1;
 			$customer['Customer']['registration_source'] = 'eshop';
 			$customer['Customer']['customer_type_id'] = 1;
-			$customer['Customer']['active'] = true;
-
+			
 			$c_dataSource = $this->Order->Customer->getDataSource();
 			$c_dataSource->begin($this->Order->Customer);
 			try {
@@ -1203,7 +1513,7 @@ class OrdersController extends AppController {
 		
 		$this->Order->notifyCustomer($customer['Customer']);
 
-		$this->Order->notifyAdmin();
+//		$this->Order->notifyAdmin();
 
 		// uklidim promenne
 		$this->Session->delete('Order');
@@ -1315,7 +1625,7 @@ class OrdersController extends AppController {
 				$variations[] = $opa['Attribute']['Option']['name'] . ': ' . $opa['Attribute']['value'];
 			}
 			
-			if ( !empty($variations) ){
+			if (!empty($variations)) {
 				$sku .= ' / ' . implode(' - ', $variations);
 				$variations = implode(' - ', $variations);
 			}

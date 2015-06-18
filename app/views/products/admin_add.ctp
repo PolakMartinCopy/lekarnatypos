@@ -184,21 +184,9 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 	<tr valign="top">
 		<td>Atributy:</td>
 		<td>
-			<?php echo  $this->Form->input('Product.is_top_produkt', array('label' => false, 'div' => false))?>
-			TOP PRODUKT
-			<a href='/administrace/help.php?width=500&id=30' class='jTip' id='30' name='TOP PRODUKT (30)'>
-				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
-			</a>
-			<br />
 			<?php echo $this->Form->input('Product.is_akce', array('label' => false, 'div' => false))?>
 			AKCE
 			<a href='/administrace/help.php?width=500&id=31' class='jTip' id='31' name='AKCE (31)'>
-				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
-			</a>
-			<br />
-			<?php echo $this->Form->input('Product.is_doprava_zdarma', array('label' => false, 'div' => false))?>
-			DOPRAVA ZDARMA
-			<a href='/administrace/help.php?width=500&id=32' class='jTip' id='32' name='DOPRAVA ZDARMA (32)'>
 				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
 			</a>
 			<br />
@@ -208,29 +196,17 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
 			</a>
 			<br />
-			<?php echo $this->Form->input('Product.is_sleva', array('label' => false, 'div' => false))?>
-			SLEVA
-			<a href='/administrace/help.php?width=500&id=34' class='jTip' id='34' name='SLEVA (34)'>
-				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
-			</a>
-			<br />
 			<?php echo $this->Form->input('Product.is_doprodej', array('label' => false, 'div' => false))?>
-			DOPRODEJ
+			VÝPRODEJ
 			<a href='/administrace/help.php?width=500&id=35' class='jTip' id='35' name='DOPRODEJ (35)'>
 				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
 			</a>
 			<br />
-			<?php echo $this->Form->input('Product.is_montaz', array('label' => false, 'div' => false))?>
-			SLEVA NA MONTÁŽ + OSOBNÍ ODBĚR
-			<a href='/administrace/help.php?width=500&id=36' class='jTip' id='36' name='SLEVA NA MONTÁŽ + OSOBNÍ ODBĚR (36)'>
-				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
-			</a>
+			<?php echo $this->Form->input('Product.is_bestseller', array('label' => false, 'div' => false))?>
+			BESTSELLER
 			<br />
-			<?php echo $this->Form->input('Product.is_firmy_cz', array('label' => false, 'div' => false))?>
-			ZOBRAZENÍ NA FIRMY.CZ
-			<br />
-			<?php echo $this->Form->input('Product.is_slide_akce', array('label' => false, 'div' => false))?>
-			SLIDE AKCE
+			<?php echo $this->Form->input('Product.is_darek_zdarma', array('label' => false, 'div' => false))?>
+			DÁREK ZDARMA
 			<br />
 		</td>
 	</tr>

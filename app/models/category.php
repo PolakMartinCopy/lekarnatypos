@@ -91,7 +91,16 @@ class Category extends AppModel {
 		return $result;
 	}
 	
-	function getSidebarMenu($opened_category_id, $logged = false, $order_by_opened = true, $show_all = false) {
+	/**
+	 * Vrati strom kategorii pro vypis
+	 * @param unknown $opened_category_id - aktualni otevrena kategorie
+	 * @param string $logged - je zakaznik zalogovany?
+	 * @param string $order_by_opened - aktualne otevrenou kategorii posunout v seznamu nahoru?
+	 * @param string $show_all - zaradit i neaktivni a neverejne kategorie (pro admin nastavit na true)
+	 * @param unknown $only_active_subtree - vratit jen rootove kategorie s otevrenou aktualni vetvi nebo kompletni strom
+	 * @return multitype:string unknown
+	 */
+	function getSidebarMenu($opened_category_id, $logged = false, $order_by_opened = true, $show_all = false, $only_active_subtree = false, $root_category_id = ROOT_CATEGORY_ID) {
 		$horizontal_categories_tree_ids = $this->get_horizontal_categories_tree_ids();
 		if (in_array($opened_category_id, $horizontal_categories_tree_ids)) {
 			$opened_category_id = ROOT_CATEGORY_ID;
@@ -104,21 +113,22 @@ class Category extends AppModel {
 		$path_ids = Set::extract('/Category/id', $path);
 		$order = array();
 		
+		// pokud chci aktualne otevrenou kategorii vypsat ve strome na prvnim miste
 		if ($order_by_opened) {
-			// aktualne otevrenou kategorii chci vypsat ve strome na prvnim miste
+			// nastavim razeni
 			if ($opened_category_id) {
 				if (isset($path_ids[1])) {
 					$lead_id = $path_ids[1];
 					$order[] = 'FIELD (Category.id, ' . $lead_id . ') DESC';
 				}
-				// pokud nemam nastavenou aktualne otevrenou kategorii, chci mit rozbalenou kategorii "sportovni vyziva" s id 9
-/*			} else {
-				$path_ids[] = 9; */
 			}
 		}
 
 		$order['Category.lft'] = 'asc';
-		$path_ids[] = ROOT_CATEGORY_ID;
+		// pridam kategorii s KATEGORIEMI
+		$path_ids[] = 397;
+		// pridam kategorii PODLE PRIZNAKU
+		$path_ids[] = 398;
 		
 		// mozne duplicity smazu
 		$path_ids = array_unique($path_ids);
@@ -132,35 +142,21 @@ class Category extends AppModel {
 		}
 		
 		if (!$show_all) {
-			$conditions['active'] = true;
-			$conditions['public'] = true;
+			$conditions['Category.active'] = true;
+			$conditions['Category.public'] = true;
 		}
 		
 		// pokud je uzivatel prihlaseny, vypisu i kategorie, ktere jsou urceny pouze prihlasenym
 		if ($logged) {
 			unset($conditions['public']);
 		}
-		
-		$full_tree_conditions = $conditions;
-		$full_tree_conditions[] = 'parent_id = ' . ROOT_CATEGORY_ID;
 
-		$categories = $this->generateTree(397, $order);
-//debug($categories);
-		foreach ($categories as &$category) {
-			$subtree_path_ids = $path_ids;
-			unset($subtree_path_ids[0]);
-			unset($subtree_path_ids[1]);
-			if (in_array($category['Category']['id'], $path_ids)) {
-				$conditions[] = "parent_id IN ('" . implode("', '", $subtree_path_ids) . "')";
-				$subtree = $this->find('threaded', array(
-					'conditions' => $conditions,
-					'contain' => array(),
-					'fields' => array('Category.id', 'Category.lft', 'Category.url', 'Category.name', 'Category.parent_id'),
-					'order' => $order,
-				));
-				$category['subtree'] = $subtree;
-			}
+		$path_ids_conditions = array();
+		if ($only_active_subtree) {
+			$path_ids_conditions = $path_ids;
 		}
+
+		$categories = $this->generateTree($root_category_id, $order, $path_ids_conditions);
 
 		// ke kazde kategorii si zjistim kolik ma v sobe produktu
 		$categories = $this->countProducts($categories);
@@ -201,19 +197,8 @@ class Category extends AppModel {
 		$conditions = array();
 		
 		$path_condition = "parent_id IN ('" . implode("', '", $path_ids) . "')";
-		
-		// pokud jsem v podkategorii "sportovni obleceni", chci vykreslit cely jeji podstrom
-		$fitness_clothes_cat_ids = $this->subtree_ids(11);
-		if (in_array($opened_category_id, $fitness_clothes_cat_ids)) {
-			$conditions[] = array(
-				'OR' => array(
-					$path_condition,
-					'id IN (' . implode(',', $fitness_clothes_cat_ids) . ')'
-				)
-			);
-		} else {
-			$conditions[] = $path_condition;
-		}
+
+		$conditions[] = $path_condition;
 		
 		// idcka kategorii, ktere nechci ve vertikalnim menu zobrazit
 		$unwanted_category_ids = array();
@@ -443,8 +428,8 @@ class Category extends AppModel {
 		}
 
 		$tmp_name = $image_data['tmp_name'];
-		$width = 150;
-		$height = 150;
+		$width = 88;
+		$height = 88;
 		
 		// zmenim velikost obrazku
 		App::import('Model', 'Image');
@@ -519,7 +504,7 @@ class Category extends AppModel {
 		// zjistim idcka kategorii v podstromu
 		$category_ids = $this->subtree_ids($id);
 		$this->CategoriesProduct->Product->virtualFields['price'] = $this->CategoriesProduct->Product->price;
-
+		$this->CategoriesProduct->Product->virtualFields['discount'] = $this->CategoriesProduct->Product->discount;
 		$products = $this->CategoriesProduct->Product->find('all', array(
 			'conditions' => array(
 				'Product.active' => true
@@ -532,6 +517,7 @@ class Category extends AppModel {
 				'Product.retail_price_with_dph',
 				'Product.discount_common',
 				'Product.price',
+				'Product.discount',
 					
 				'Image.id',
 				'Image.name'
@@ -589,7 +575,7 @@ class Category extends AppModel {
 				'Product.retail_price_with_dph',
 				'Product.discount_common',
 				'Product.price',
-				'Product.rate',
+				'Product.discount',
 					
 				'Image.id',
 				'Image.name'
@@ -625,11 +611,19 @@ class Category extends AppModel {
 			));
 			$products = array_merge($products, $complement_products);
 		}
+		unset($this->CategoriesProduct->Product->virtualFields['price']);
+		unset($this->CategoriesProduct->Product->virtualFields['discount']);
 
 		return $products;
 	}
 	
-	function generateTree($parent_id, $order) {
+	function generateTree($parent_id, $order, $path_ids = array()) {
+		if (!empty($path_ids)) {
+			if (!in_array($parent_id, $path_ids)) {
+				return array();
+			}
+		}
+		
 		$conditions = array(
 			'active' => true,
 			'public' => true,
@@ -639,11 +633,11 @@ class Category extends AppModel {
 		$categories = $this->find('all', array(
 			'conditions' => $conditions,
 			'contain' => array(),
-			'fields' => array('Category.id', 'Category.lft', 'Category.url', 'Category.name', 'Category.parent_id'),
+			'fields' => array('Category.id', 'Category.lft', 'Category.url', 'Category.name', 'Category.parent_id', 'Category.homepage_class'),
 			'order' => $order,
 		));
 		foreach ($categories as &$category) {
-			$category['children'] = $this->generateTree($category['Category']['id'], $order);
+			$category['children'] = $this->generateTree($category['Category']['id'], $order, $path_ids);
 		}
 		
 		return $categories;
@@ -703,6 +697,17 @@ class Category extends AppModel {
 			$unwanted_subtree_ids = array_merge($unwanted_subtree_ids, $this->subtree_ids($unwanted_id));
 		}
 		return $unwanted_subtree_ids;
+	}
+	
+	function pseudo_root_categories_ids() {
+		$categories = $this->find('all', array(
+			'conditions' => array('parent_id' => ROOT_CATEGORY_ID),
+			'contain' => array(),
+			'fields' => array('Category.id')
+		));
+		
+		$categories_ids = Set::extract('/Category/id', $categories);
+		return $categories_ids;
 	}
 }
 ?>

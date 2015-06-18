@@ -307,7 +307,24 @@ function simpleXMLChildValue($simpleXMLElement, $childName) {
 	return $simpleXMLElement->{$childName}->__toString();
 }
 
-define('REDESIGN_PATH', 'typos/');
+// sestavi HTML breadcrumbs linku z pole
+function build_breadcrumbs($breadcrumbs_arr) {
+	$breadcrumbs_link = array();
+	$i = 0;
+	foreach ($breadcrumbs_arr as $breadcrumbs_arr_item) {
+		$breadcrumb_link = '<a href="' . $breadcrumbs_arr_item['href'] . '">' . $breadcrumbs_arr_item['anchor'] . '</a>';
+		// posledni prvek nebude odkaz
+		if ($i == (count($breadcrumbs_arr) - 1)) {
+			$breadcrumb_link = $breadcrumbs_arr_item['anchor'];
+		}
+		$breadcrumbs_link[] = $breadcrumb_link;
+		$i++;
+	}
+	$breadcrumbs_link = implode('<i class="fa fa-fw fa-angle-double-right"></i>', $breadcrumbs_link);
+	return $breadcrumbs_link;
+}
+
+define('REDESIGN_PATH', 'redesign_2015/');
 define('ROOT_CATEGORY_ID', 5);
 
 define('HP_URI', '/');

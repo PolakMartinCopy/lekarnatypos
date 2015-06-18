@@ -3,6 +3,34 @@ class MostSoldProductsController extends AppController {
 	var $name = 'MostSoldProducts';
 	
 	function admin_index() {
+		if (isset($this->data)) {
+			$this->data['MostSoldProduct']['image'] = $this->MostSoldProduct->loadImage($this->data['MostSoldProduct']['image']);
+			if ($this->data['MostSoldProduct']['image'] !== false) {
+				$old_image = $this->MostSoldProduct->find('first', array(
+					'conditions' => array('MostSoldProduct.id' => $this->data['MostSoldProduct']['id']),
+					'contain' => array(),
+					'fields' => array('MostSoldProduct.id', 'MostSoldProduct.image')
+				));
+				$old_image = $old_image['MostSoldProduct']['image'];
+				if ($this->MostSoldProduct->save($this->data)) {
+					// smazu puvodni obrazek
+					if ($old_image) {
+						$old_image = $this->MostSoldProduct->image_path . '/' . $old_image;
+						if (file_exists($old_image)) {
+							unlink($this->MostSoldProduct->image_path . '/' . $old_image);
+						}
+					}
+					
+					$this->Session->setFlash('Obrázek byl úspěšně nahrán', REDESIGN_PATH . 'flash_success');
+				} else {
+					$this->Session->setFlash('Obrázek se nepodařilo uložit do systému', REDESIGN_PATH . 'flash_success');
+				}
+			} else {
+				$this->Session->setFlash('Nepodařilo se nahrát obrázek', REDESIGN_PATH . 'flash_failure');
+			}
+			$this->redirect(array('controller' => 'most_sold_products', 'action' => 'index'));
+		}
+		
 		$most_sold = $this->MostSoldProduct->find('all', array(
 			'contain' => array(
 				'Product' => array(
@@ -20,6 +48,11 @@ class MostSoldProductsController extends AppController {
 			),
 		));
 
+		foreach ($most_sold as &$product) {
+			$product['MostSoldProduct']['image'] = $this->MostSoldProduct->getImage($product['MostSoldProduct']['id']);
+			$product['MostSoldProduct']['has_image'] = strstr($product['MostSoldProduct']['image'], $this->MostSoldProduct->image_path);
+		}
+
 		$this->set('most_sold', $most_sold);
 		$this->set('limit', $this->MostSoldProduct->limit);
 		
@@ -35,9 +68,9 @@ class MostSoldProductsController extends AppController {
 		if (!empty($_POST) && isset($_POST['product_id'])) {
 			$product_id = $_POST['product_id'];
 			if ($this->MostSoldProduct->isMaxReached()) {
-				$result['message'] = 'Produkt se nepodařilo označit jako nejprodávanější. V systému může být maximálně ' . $this->MostSoldProduct->limit . ' nejprodávanějších produktů.';
+				$result['message'] = 'Produkt se nepodařilo přidat do seznamu. V seznamu může být maximálně ' . $this->MostSoldProduct->limit . ' produktů.';
 			} elseif ($this->MostSoldProduct->isIncluded($product_id)) {
-				$result['message'] = 'Produkt se nepodařilo označit jako nejprodávanější, protože už je tak označený.';
+				$result['message'] = 'Produkt se nepodařilo přidat do seznamu, protože už tam je.';
 			} else {
 				$data = array(
 					'MostSoldProduct' => array(
@@ -47,7 +80,7 @@ class MostSoldProductsController extends AppController {
 				if ($this->MostSoldProduct->save($data)) {
 					$result['success'] = true;
 				} else {
-					$result['message'] = 'Produkt se nepodařilo označit jako nejprodávanější.';
+					$result['message'] = 'Produkt se nepodařilo  přidat do seznamu.';
 				}
 			}
 		} else {
@@ -60,14 +93,14 @@ class MostSoldProductsController extends AppController {
 	
 	function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Není zadáno, který produkt chcete odstranit z nejprodávanějších.', REDESIGN_PATH . 'flash_failure');
+			$this->Session->setFlash('Není zadáno, který produkt chcete odstranit ze seznamu.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action' => 'index'));
 		}
 		
 		if ($this->MostSoldProduct->delete($id)) {
-			$this->Session->setFlash('Produkt byl úspěšně odstraněn z nejprodávanějších.', REDESIGN_PATH . 'flash_success');
+			$this->Session->setFlash('Produkt byl úspěšně odstraněn ze seznamu.', REDESIGN_PATH . 'flash_success');
 		} else {
-			$this->Session->setFlash('Produkt se nepodařilo odstranit z nejprodávanějších.', REDESIGN_PATH . 'flash_failure');
+			$this->Session->setFlash('Produkt se nepodařilo odstranit ze seznamu.', REDESIGN_PATH . 'flash_failure');
 		}
 		$this->redirect(array('action' => 'index'));
 	}
@@ -83,14 +116,23 @@ class MostSoldProductsController extends AppController {
 			$order = 1;
 			
 			if (isset($_POST['prevId'])) {
+				$moved = $this->MostSoldProduct->find('first', array(
+					'conditions' => array('MostSoldProduct.id' => $moved_id),
+					'contain' => array(),
+					'fields' => array('MostSoldProduct.id', 'MostSoldProduct.order')
+				));
 				$rec = $this->MostSoldProduct->find('first', array(
 					'conditions' => array('MostSoldProduct.id' => $_POST['prevId']),
 					'contain' => array(),
 					'fields' => array('MostSoldProduct.id', 'MostSoldProduct.order')
 				));
-				
+
 				if (!empty($rec)) {
 					$order = $rec['MostSoldProduct']['order'];
+					// pokud posoouvam nahoru, k poradi elementu na predchozim radku pricitam jednicku
+					if ($rec['MostSoldProduct']['order'] < $moved['MostSoldProduct']['order']) {
+						$order = $rec['MostSoldProduct']['order'] + 1;
+					}
 				}
 			}
 

@@ -28,18 +28,17 @@ class ProductsController extends AppController {
 		// osetruju pokus o vlozeni do kosiku
 		if (isset($this->data['Product'])) {
 			// vkladam vyberem z vypisu vsech moznosti
-			if (isset($this->data['Subproduct']['id'])) {
-				$subproduct = $this->Product->Subproduct->find('first', array(
-					'conditions' => array('Subproduct.id' => $this->data['Subproduct']['id']),
-					'contain' => array(
-						'AttributesSubproduct' => array(
-							'Attribute'
-						)
-					)
-				));
-				$new_data['CartsProduct']['quantity'] = $this->data['Subproduct']['quantity'];
+			if (isset($this->data['Subproduct']) && !empty($this->data['Subproduct'])) {
+				// zjistim, kterou variantu produktu vlastne do kosiku vkladam
+				foreach ($this->data['Subproduct'] as $index => $subproduct) {
+					if (isset($subproduct['chosen'])) {
+						break;
+					}
+				}
+				
+				$new_data['CartsProduct']['quantity'] = $this->data['Subproduct'][$index]['quantity'];
 				$new_data['CartsProduct']['product_id'] = $this->data['Product']['id'];
-				$new_data['CartsProduct']['subproduct_id'] = $this->data['Subproduct']['id'];
+				$new_data['CartsProduct']['subproduct_id'] = $this->data['Subproduct'][$index]['id'];
 			} elseif (isset($this->data['Subproduct']['quantity'])) {
 				// vkladam do kosiku produkt bez variant
 				$new_data['CartsProduct']['product_id'] = $this->data['Product']['id'];
@@ -51,8 +50,8 @@ class ProductsController extends AppController {
 					$new_data['CartsProduct']['product_id'] = $this->data['Product']['id'];
 					$new_data['CartsProduct']['quantity'] = $this->data['Product']['quantity'];
 				} else {
-					$this->Session->setFlash('Produkt se nepodařilo vložit do košíku. Nejprve prosím <a href="' . $this->here . '#AddProductWithVariantsForm">vyberte variantu produktu</a>.', REDESIGN_PATH . 'flash_failure');
-					$this->redirect($this->here);
+					$this->Session->setFlash('Produkt se nepodařilo vložit do košíku. Nejprve prosím <a href="' . $_SERVER['REQUEST_URI'] . '#AddProductWithVariantsForm">vyberte variantu produktu</a>.', REDESIGN_PATH . 'flash_failure');
+					$this->redirect($_SERVER['REQUEST_URI']);
 				}
 			}
 			
@@ -79,6 +78,7 @@ class ProductsController extends AppController {
 		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
 		
 		$this->Product->virtualFields['price'] = $this->Product->price;
+		$this->Product->virtualFields['discount'] = $this->Product->discount;
 		// vyhledam si info o produktu
 		$product = $this->Product->find('first', array(
 			'conditions' => array(
@@ -139,7 +139,9 @@ class ProductsController extends AppController {
 				'Product.short_description',
 				'Product.product_type_id',
 				'Product.note',
+				'Product.retail_price_with_dph',
 				'Product.price',
+				'Product.discount',
 				'Product.rate',
 				'Product.video',
 				'Product.note',
@@ -147,7 +149,12 @@ class ProductsController extends AppController {
 				'Product.code',
 				'Product.ean',
 				'Product.sukl',
-				'Product.group'
+				'Product.group',
+				'Product.is_akce',
+				'Product.is_novinka',
+				'Product.is_doprodej',
+				'Product.is_bestseller',
+				'Product.is_darek_zdarma',
 				
 			),
 			'joins' => array(
@@ -161,6 +168,7 @@ class ProductsController extends AppController {
 			'group' => array('Product.id')
 		));
 		unset($this->Product->virtualFields['price']);
+		unset($this->Product->virtualFields['discount']);
 
 		if (empty($product)) {
 			$this->Session->setFlash('Neexistující produkt.');
@@ -288,21 +296,65 @@ class ProductsController extends AppController {
 		$this->set('breadcrumbs', $breadcrumbs);
 		
 		// zapnu fancybox
-		$this->set('fancybox', true);
+		// $this->set('fancybox', true);
 		
-		// PRODUKTY, KTERE NEJCASTEJI KUPUJI LIDE S TIMTO PRODUKTEM
+		// SOUVISEJICI PRODUKTY
 		$similar_products = $this->Product->similar_products($id, $customer_type_id);
 		$this->set('similar_products', $similar_products);
 		
-		// updatuju zasobnik v sesne, kde mam ulozenych x naposled navstivenych produktu
+		// naposledy navstivene produkty
 		$stack = $this->Session->read('ProductStack');
-		$stack = $this->Product->update_stack($stack, $id);
+		$stack_products_ids = Set::extract('/Product/id', $stack);
+		// najdu produkt, ktery zakaznik navstivil
+		$this->Product->virtualFields['price'] = $this->Product->price;
+		$this->Product->virtualFields['discount'] = $this->Product->discount;
+		$order = 'FIELD(Product.id, ' . implode(',', $stack_products_ids) . ')';
+		if (empty($stack_product_ids)) {
+			$order = array();
+		}
+		$last_visited_products = $this->Product->find('all', array(
+			'conditions' => array('Product.id' => $stack_products_ids),
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.url',
+				'Product.retail_price_with_dph',
+				'Product.discount_common',
+				'Product.price',
+				'Product.discount',
+							
+				'Image.id',
+				'Image.name'
+			),
+			'joins' => array(
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Image.product_id = Product.id AND Image.is_main = 1')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+			),
+			'order' => $order
+		));
+		unset($this->Product->virtualFields['price']);
+		unset($this->Product->virtualFields['discount']);
+		$this->set('last_visited_products', $last_visited_products);
+		
+		// updatuju zasobnik v sesne, kde mam ulozenych x naposled navstivenych produktu
+		$stack = $this->Product->update_stack($stack, $id, $customer_type_id);
 		$this->Session->write('ProductStack', $stack);
 		
-		if (!empty($product['CategoriesProduct'])) {
-			$right_sidebar_products = $this->Product->right_sidebar_products($id, $customer_type_id);
-			$this->set('right_sidebar_products', $right_sidebar_products);
-		}
+		//if (!empty($product['CategoriesProduct'])) {
+		//	$right_sidebar_products = $this->Product->right_sidebar_products($id, $customer_type_id);
+		//	$this->set('right_sidebar_products', $right_sidebar_products);
+		//}
 	}
 	
 	/**
@@ -789,15 +841,11 @@ class ProductsController extends AppController {
 				'Product.priority',
 				'Product.weight',
 				'Product.video',
-				'Product.is_top_produkt',
 				'Product.is_akce',
-				'Product.is_doprava_zdarma',
 				'Product.is_novinka',
-				'Product.is_sleva',
 				'Product.is_doprodej',
-				'Product.is_montaz',
-				'Product.is_firmy_cz',
-				'Product.is_slide_akce',
+				'Product.is_bestseller',
+				'Product.is_darek_zdarma',
 				'Product.feed',
 				'Product.title',
 				'Product.keywords',
@@ -1054,27 +1102,6 @@ class ProductsController extends AppController {
 			$this->data['Category']['id'] = $this->params['named']['related_category_id'];
 		}
 		
-		if (isset($this->data))  {
-			$categories_products = $this->Product->CategoriesProduct->find('all', array(
-				'conditions' => array(
-					'CategoriesProduct.category_id' => $this->data['Category']['id'],
-					'Product.active' => true
-				),
-				'contain' => array('Product'),
-				'fields' => array(
-					'Product.id',
-					'Product.name',
-					'Product.url'
-				)
-			));
-
-			$this->set('categories_products', $categories_products);
-		} else {
-			$this->data['Product']['id'] = $id;
-		}
-		
-		$this->set('product', $product);
-		
 		$related_products = $this->Product->RelatedProduct->find('all', array(
 			'conditions' => array('RelatedProduct.product_id' => $id),
 			'contain' => array(),
@@ -1093,8 +1120,36 @@ class ProductsController extends AppController {
 				'Product.url'
 			)
 		));
-		
 		$this->set('related_products', $related_products);
+		
+		if (isset($this->data))  {
+			$products_conditions = array(
+				'CategoriesProduct.category_id' => $this->data['Category']['id'],
+				'Product.active' => true,
+				'Product.id !=' => $id
+			);
+			
+			if (!empty($related_products)) {
+				$related_products_ids = Set::extract('/Product/id', $related_products);
+				$products_conditions[] = 'CategoriesProduct.product_id NOT IN (' . implode(',', $related_products_ids) . ')';
+			}
+			
+			$categories_products = $this->Product->CategoriesProduct->find('all', array(
+				'conditions' => $products_conditions,
+				'contain' => array('Product'),
+				'fields' => array(
+					'Product.id',
+					'Product.name',
+					'Product.url'
+				)
+			));
+
+			$this->set('categories_products', $categories_products);
+		} else {
+			$this->data['Product']['id'] = $id;
+		}
+		
+		$this->set('product', $product);
 		
 		if (isset($opened_category_id)) {
 			$category = $this->Product->CategoriesProduct->Category->find('first', array(
@@ -1106,7 +1161,8 @@ class ProductsController extends AppController {
 			$this->set('opened_category_id', $category['Category']['id']);
 		}
 		
-		$categories = $this->Product->CategoriesProduct->Category->generateTreeList(null, null, '{n}.Category.name', ' - ', -1);
+		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(true);
+		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
 		$this->set('categories', $categories);
 		
 		$this->layout = REDESIGN_PATH . 'admin';

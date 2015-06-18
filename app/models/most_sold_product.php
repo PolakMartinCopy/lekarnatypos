@@ -12,10 +12,13 @@ class MostSoldProduct extends AppModel {
 	
 	var $belongsTo = array('Product');
 	
-	var $limit = 9;
+	var $limit = 3;
+	
+	var $image_path = 'images/most_sold_products';
 	
 	function isMaxReached() {
-		return ($this->find('count') >= $this->limit);
+		$count = $this->find('count');
+		return ($count >= $this->limit);
 	}
 	
 	function isIncluded($product_id) {
@@ -27,6 +30,7 @@ class MostSoldProduct extends AppModel {
 	 */
 	function hp_list($customer_type_id) {
 		$this->Product->virtualFields['price'] = $this->Product->price;
+		$this->Product->virtualFields['discount'] = $this->Product->discount;
 		$most_sold = $this->Product->find('all', array(
 			'conditions' => array('Product.active' => true),
 			'contain' => array(),
@@ -36,12 +40,15 @@ class MostSoldProduct extends AppModel {
 				'Product.title',
 				'Product.short_description',
 				'Product.price',
+				'Product.discount',
 				'Product.url',
 				'Product.rate',
 				'Product.retail_price_with_dph',
 					
 				'Image.id',
-				'Image.name'
+				'Image.name',
+				
+				'MostSoldProduct.id'
 			),
 			'joins' => array(
 				array(
@@ -63,9 +70,15 @@ class MostSoldProduct extends AppModel {
 					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
 				),
 			),
-			'order' => array('MostSoldProduct.order' => 'asc')
+			'order' => array('MostSoldProduct.order' => 'asc'),
+			'limit' => 3
 		));
 		unset($this->Product->virtualFields['price']);
+		unset($this->Product->virtualFields['discount']);
+		
+		foreach ($most_sold as &$product) {
+			$product['MostSoldProduct']['image'] = $this->getImage($product['MostSoldProduct']['id']);
+		}
 
 		return $most_sold;
 	}
@@ -111,6 +124,86 @@ class MostSoldProduct extends AppModel {
 		);
 	
 		return $product;
+	}
+	
+	function getImage($id = null) {
+		if (!$id) {
+			return false;
+		}
+		$item = $this->find('first', array(
+			'conditions' => array('MostSoldProduct.id' => $id),
+			'contain' => array(),
+			'fields' => array('MostSoldProduct.id', 'MostSoldProduct.product_id', 'MostSoldProduct.image')
+		));
+
+		if (empty($item)) {
+			debug('nemam item s id ' . $id);
+			return false;
+		}
+		
+		$res_image = false;
+
+		if (!$item['MostSoldProduct']['image']) {
+			$image = $this->Product->Image->find('first', array(
+				'conditions' => array(
+					'Image.product_id' => $item['MostSoldProduct']['product_id'],
+					'Image.is_main' => true
+				),
+				'contain' => array()
+			));
+
+			if (empty($image)) {
+				return false;
+			}
+			
+			$res_image = 'product-images/small/' . $image['Image']['name'];
+		} else {
+			$res_image = $this->image_path . '/' . $item['MostSoldProduct']['image'];
+		}
+		return $res_image;
+	}
+	
+	function loadImage($image_data) {
+		// pokud neni zadan obrazek, nahraje se bez nej
+		if (empty($image_data['name']) && empty($image_data['tmp_name'])) {
+			return false;
+		}
+
+		$tmp_name = $image_data['tmp_name'];
+		
+		// vychozi obrazek musi byt 118 x 118
+		$default_weight = 118;
+		$default_height = 118;
+		if (!$imagesize = getimagesize($tmp_name)) {
+			debug('"' . $tmp_name . '"');
+			return false;
+		}
+		
+		if ($imagesize[0] != $default_weight || $imagesize[1] != $default_height) {
+			debug('Rozmery obrazku pro doporuceny produkt musi byt 118 x 118');
+			return false;
+		}
+		
+		$file_name = $this->image_path . DS . $image_data['name'];
+		$file_name_arr = explode('.', $file_name);
+		$file_name_ext = $file_name_arr[count($file_name_arr)-1];
+		unset($file_name_arr[count($file_name_arr)-1]);
+		$file_name_prefix = implode('.' , $file_name_arr);
+		$counter = '';
+		$file_name = $file_name_prefix . $counter . '.' . $file_name_ext;
+		$i = 1;
+		while (file_exists($file_name)) {
+			$counter = '_' . $i;
+			$file_name = $file_name_prefix . $counter . '.' . $file_name_ext;
+			$i++;
+		}
+
+		// musim nakopirovat soubor z tmp do slozky
+		if (move_uploaded_file($tmp_name, $file_name)) {
+			$file_name = str_replace($this->image_path . DS, '', $file_name);
+			return $file_name;
+		}
+		return false;
 	}
 }
 ?>

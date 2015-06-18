@@ -559,7 +559,7 @@ class Order extends AppModel {
 		$free_shipping = false;
 
 		$cp_count = 0;
-		foreach ( $cart_products as $cart_product ){
+		foreach ($cart_products as $cart_product) {
 			// projdu vsechny priznaky
 			foreach ( $cart_product['Product']['Flag'] as $flags_product ){
 				// priznak pro dopravu zdarma je "1"

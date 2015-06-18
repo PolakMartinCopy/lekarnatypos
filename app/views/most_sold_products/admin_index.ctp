@@ -79,7 +79,7 @@
 <p><small>Pozn: V systému může být <?php echo $limit?> oblíbených produktů.</small></p>
 
 <?php if (empty($most_sold)) { ?>
-<p><em>Nejsou zvoleny žádné produkty jako nejprodávanější.</em></p>
+<p><em>Nejsou zvoleny žádné produkty jako oblíbené.</em></p>
 <?php } else { ?>
 <a href='/administrace/help.php?width=500&id=105' class='jTip' id='105' name='Seznam produktů (105)'>
 	<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
@@ -89,6 +89,7 @@
 		<tr>
 			<th>&nbsp;</th>
 			<th>ID</th>
+			<th>Obrázek</th>
 			<th>Název</th>
 			<th>Aktivní?</th>
 			<th>MO cena s DPH</th>
@@ -110,6 +111,23 @@
 			echo $html->link($icon, array('controller' => 'most_sold_products', 'action' => 'delete', $product['MostSoldProduct']['id']), array('escape' => false, 'title' => 'Odstranit ze seznamu'));
 		?></td>
 		<td><?=$product['Product']['id']?></td>
+		<td nowrap>
+			<div style="float:left;width:150px">
+				<img src="/<?php echo $product['MostSoldProduct']['image']?>" />
+				<?php if (!$product['MostSoldProduct']['has_image']) {?>
+				<br/><em>Obrázek byl získán z miniatury.</em>
+				<?php } ?>
+			</div>
+			<div style="float:left;margin: 10px 0">
+			<span>Obrázek musí mít v rozměry 118px &times; 118px</span><br/><br/>
+		<?php 
+			echo $this->Form->create('MostSoldProduct', array('type' => 'file'));
+			echo $this->Form->input('MostSoldProduct.image', array('label' => false, 'type' => 'file', 'div' => false));
+			echo $this->Form->hidden('MostSoldProduct.id', array('value' => $product['MostSoldProduct']['id']));
+			echo $this->Form->submit('Změnit', array('div' => false));
+			echo $this->Form->end();
+		?></div>
+		</td>
 		<td><?=$product['Product']['name']?></td>
 		<td><?php echo ($product['Product']['active'] ? 'ano' : 'ne') ?></td>
 		<td><?=$product['Product']['retail_price_with_dph']?></td>

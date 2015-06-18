@@ -63,7 +63,7 @@ class PagesController extends AppController{
  * @access public
  */
 	function display() {
-		$this->layout = REDESIGN_PATH . 'default';
+		$this->layout = REDESIGN_PATH . 'homepage';
 
 		if (!func_num_args()) {
 			$this->redirect('/');
@@ -100,37 +100,37 @@ class PagesController extends AppController{
 	
 	function home() {
 		$this->layout = REDESIGN_PATH . 'homepage';
-		$title = 'Online Lékárna';
-		$description = 'Léky a doplňky stravy online od LékárnaTypos CZ. Přípravky proti bolesti, nachlazení a mnohé další.';
-		$keywords = 'online lékárna, Lékárna Typos';
+		$title = 'Online lékárna Brno střed';
+		$description = 'Internetová lékárna přímo v centru Brna. Odborně vyškolený personál a široká nabídka produktů. Léky si můžete osobně vyzvednout ve středu Brna.';
 		
 		$this->set('_title', $title);
 		$this->set('_description', $description);
-		$this->set('_keywords', $keywords);
-		
-		App::import('Model', 'News');
-		$this->News = new News;
-		$hp_news = $this->News->hp_list();
-		$this->set('hp_news', $hp_news);
 		
 		App::import('Model', 'CustomerType');
 		$this->CustomerType = new CustomerType;
 		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
 		
-		App::import('Model', 'RecommendedProduct');
-		$this->RecommendedProduct = new RecommendedProduct;
-		$hp_recommended = $this->RecommendedProduct->hp_list($customer_type_id);
-		$this->set('hp_recommended', $hp_recommended);
+		App::import('Model', 'MostSoldProduct');
+		$this->MostSoldProduct = new MostSoldProduct;
+		$hp_most_sold = $this->MostSoldProduct->hp_list($customer_type_id);
+		$this->set('hp_most_sold', $hp_most_sold);
+
+/*		App::import('Model', 'News');
+		$this->News = new News;
+		$hp_news = $this->News->hp_list();
+		$this->set('hp_news', $hp_news);
 		
 		App::import('Model', 'DiscountedProduct');
 		$this->DiscountedProduct = new DiscountedProduct;
 		$hp_discounted = $this->DiscountedProduct->hp_list($customer_type_id);
 		$this->set('hp_discounted', $hp_discounted);
 		
-		App::import('Model', 'MostSoldProduct');
-		$this->MostSoldProduct = new MostSoldProduct;
-		$hp_most_sold = $this->MostSoldProduct->hp_list($customer_type_id);
-		$this->set('hp_most_sold', $hp_most_sold);
+		App::import('Model', 'RecommendedProduct');
+		$this->RecommendedProduct = new RecommendedProduct;
+		$hp_recommended = $this->RecommendedProduct->hp_list($customer_type_id);
+		$this->set('hp_recommended', $hp_recommended);		
+
+*/
 	}
 }
 ?>

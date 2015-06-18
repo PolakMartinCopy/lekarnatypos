@@ -21,7 +21,7 @@ class CustomersController extends AppController {
 		);
 		
 		if ( !$this->Session->check('Customer') && !in_array($this->params['action'], $allowed_actions) && !eregi("admin_", $this->params['action'])  ){
-			$this->Session->setFlash('Pro zobrazení této stránky se musíte přihlásit.');
+			$this->Session->setFlash('Pro zobrazení této stránky se musíte přihlásit.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action' => 'login'), null, true);
 		}
 	}

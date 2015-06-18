@@ -14,5 +14,13 @@ class ToolsController extends AppController {
 		phpinfo();
 		die();
 	}
+	
+	// zapise do sesny zvoleny tab (kategorie / priznaky)
+	function categories_bothers_tab() {
+		if (isset($_POST['tab'])) {
+			$this->Session->write('categories_bothers_tab', $_POST['tab']);
+		}
+		die();
+	}
 }
 ?>

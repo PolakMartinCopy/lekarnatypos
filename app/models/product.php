@@ -102,14 +102,23 @@ class Product extends AppModel {
 	);
 	
 	var $price = 'FLOOR(IF(CustomerTypeProductPrice.price, CustomerTypeProductPrice.price, IF(Product.discount_common, Product.discount_common, Product.retail_price_with_dph)))';
-	
+		
 	var $virtualFields = array(
 		'rate' => 'ROUND(COALESCE(Product.overall_rate / Product.voted_count))'	
 	);
 	
 	var $product_types = null;
 	
-	var $sorting_options = array(0 => 'Doporučujeme', 'Nejprodávánější', 'Nejlevnější', 'Nejdražší', 'Abecedy');
+	var $sorting_options = array(
+		0 => array('name' => 'Doporučujeme', 'conditions' => array('Product.is_akce' => 'desc', 'Product.priority' => 'asc')),
+			array('name' => 'Od nejnovějšího', 'conditions' => array('Product.created' => 'desc')),
+			array('name' => 'Od nejlevnějšího', 'conditions' => array('Product.price' => 'asc')),
+			array('name' => 'Od nejdražšího', 'conditions' => array('Product.price' => 'desc')),
+			array('name' => 'Abecedně A-Z', 'conditions' => array('Product.name' => 'asc')),
+			array('name' => 'Abecedně Z-A', 'conditions' => array('Product.name' => 'desc')),
+			array('name' => 'Abecedně dle výrobce A-Z', 'conditions' => array('Manufacturer.name' => 'asc')),
+			array('name' => 'Abecedně dle výrobce Z-A', 'conditions' => array('Manufacturer.name' => 'desc'))
+	);
 	
 	var $search_properties = array(
 		0 => array(
@@ -150,6 +159,7 @@ class Product extends AppModel {
 		$this->product_types = $this->ProductType->find('list', array(
 			'fields' => array('ProductType.id', 'ProductType.text')
 		));
+		$this->discount = '100 - ROUND(100 * ' . $this->price . '/ Product.retail_price_with_dph)';
 	}
 	
 	function beforeValidate() {
@@ -452,8 +462,8 @@ class Product extends AppModel {
 	 * @return multitype:array
 	 */
 	function update_stack($stack, $product_id) {
-		// v zasobniku muze byt max 7 produktu
-		$stack_size = 7;
+		// v zasobniku muze byt max 2 produktu
+		$stack_size = 8;
 		// najdu produkt, ktery zakaznik navstivil
 		$product = $this->find('first', array(
 			'conditions' => array('Product.id' => $product_id),
@@ -483,72 +493,29 @@ class Product extends AppModel {
 	}
 	
 	/**
-	 * Vrati 4 nejvice prodavane produkty k zadanemu
+	 * Vrati 10 podobnych produktu:
+	 * 	a) vybere souvisejici produkty k danemu produktu
+	 * 	b) zbytek budou produkty nejvice prodavane s danym produktem, ktere nejsou oznacene jako related 
 	 * @param int $id
 	 */
 	function similar_products($id, $customer_type_id) {
-		// idcka kategorii, ktere chci vyloucit
-		$categories_products_conditions = '';
-		if (!empty($category_ids)) {
-			$categories_products_conditions = ' AND CategoriesProduct.category_id NOT IN (' . implode(',', $category_ids) . ')';
-		}
+		$limit = 10;
 		
-		$products = $this->OrderedProduct->find('all', array(
-			'conditions' => array('OrderedProduct.product_id' => $id),
-			'contain' => array(),
-			'fields' => array(
-				'Product.id',
-				'Product.name',
-				'Product.url',
-				$this->price . ' AS price',
-				'Product.retail_price_with_dph',
-				'SUM(OtherOrderedProduct.product_quantity) AS ordered_quantity',
-				'Image.id',
-				'Image.name',
-				'CategoriesProduct.*'
-			),
-			'joins' => array(
-				array(
-					'table' => 'orders',
-					'alias' => 'Order',
-					'type' => 'INNER',
-					'conditions' => array('Order.id = OrderedProduct.order_id')
-				),
-				array(
-					'table' => 'ordered_products',
-					'alias' => 'OtherOrderedProduct',
-					'type' => 'INNER',
-					'conditions' => array('Order.id = OtherOrderedProduct.order_id AND OtherOrderedProduct.product_id != OrderedProduct.product_id')
-				),
-				array(
-					'table' => 'products',
-					'alias' => 'Product',
-					'type' => 'INNER',
-					'conditions' => array('Product.id = OtherOrderedProduct.product_id AND Product.active = 1')
-				),
-				array(
-					'table' => 'images',
-					'alias' => 'Image',
-					'type' => 'LEFT',
-					'conditions' => array('Product.id = Image.product_id AND Image.is_main = "1"')
-				),
-				array(
-					'table' => 'customer_type_product_prices',
-					'alias' => 'CustomerTypeProductPrice',
-					'type' => 'LEFT',
-					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
-				),
-				array(
-					'table' => 'categories_products',
-					'alias' => 'CategoriesProduct',
-					'type' => 'LEFT',
-					'conditions' => array('Product.id = CategoriesProduct.product_id' . $categories_products_conditions)
-				)
-			),
-			'group' => array('OtherOrderedProduct.product_id'),
-			'order' => array('ordered_quantity' => 'desc'),
-			'limit' => 4
-		));
+		// natahnu souvisejici produkty
+		$related_products = $this->related_products($id, $customer_type_id);
+		// snizim limit o pocet souvisejicich produktu
+		$limit -= count($related_products);
+		// dohledam si zbytek produktu podle toho, ze byly nejprodavanejsi s danym produktem za posledni mesic
+		$excluded_ids = Set::extract('/Product/id', $related_products);
+		$range = '-2 months';
+		$options = array(
+			'excluded_ids' => $excluded_ids,
+			'range' => $range,
+			'limit' => $limit
+		);
+		$most_sold_with_products = $this->most_sold_with_products($id, $customer_type_id, $options);
+		
+		$products = array_merge($related_products, $most_sold_with_products);
 
 		return $products;
 	}
@@ -929,6 +896,231 @@ class Product extends AppModel {
 			$update = false;
 		}
 		return $update;
+	}
+	
+	function related_products($id, $customer_type_id) {
+		$conditions = array('RelatedProduct.product_id' => $id);
+		$products = $this->RelatedProduct->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.related_name',
+				'Product.url',
+				$this->price . ' AS price',
+				$this->discount . ' AS discount',
+				'Product.retail_price_with_dph',
+				'Image.id',
+				'Image.name'
+			),
+			'joins' => array(
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = RelatedProduct.related_product_id AND Product.active = 1')
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = Image.product_id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				)
+			),
+			'order' => array('RelatedProduct.order' => 'asc')
+		));
+
+		foreach ($products as &$product) {
+			$product['Product']['price'] = $product[0]['price'];
+			$product['Product']['discount'] = $product[0]['discount'];
+		}
+		
+		return $products;
+	}
+	
+	function most_sold_with_products($id, $customer_type_id, $options) {
+		$limit = 10;
+		if (isset($options['limit'])) {
+			$limit = $options['limit'];
+		}
+		
+		$conditions = array('OrderedProduct.product_id' => $id);
+		if (isset($options['excluded_ids']) && !empty($options['excluded_ids'])) {
+			$conditions[] = 'OtherOrderedProduct.product_id NOT IN (' . implode(',', $options['excluded_ids']) . ')';
+		}
+		if (isset($options['range'])) {
+			$from = date('Y-m-d', strtotime($options['range']));
+			$conditions[] = 'DATE(OrderedProduct.created) > "' . $from . '"';
+		}
+
+		$products = $this->OrderedProduct->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.related_name',
+				'Product.url',
+				$this->price . ' AS price',
+				$this->discount . ' AS discount',
+				'Product.retail_price_with_dph',
+				'SUM(OtherOrderedProduct.product_quantity) AS ordered_quantity',
+				'Image.id',
+				'Image.name'
+			),
+			'joins' => array(
+				array(
+					'table' => 'orders',
+					'alias' => 'Order',
+					'type' => 'INNER',
+					'conditions' => array('Order.id = OrderedProduct.order_id')
+				),
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OtherOrderedProduct',
+					'type' => 'INNER',
+					'conditions' => array('Order.id = OtherOrderedProduct.order_id AND OtherOrderedProduct.product_id != OrderedProduct.product_id')
+				),
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = OtherOrderedProduct.product_id AND Product.active = 1')
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = Image.product_id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				)
+			),
+			'group' => array('OtherOrderedProduct.product_id'),
+			'order' => array('ordered_quantity' => 'desc'),
+			'limit' => $limit
+		));
+		foreach ($products as &$product) {
+			$product['Product']['price'] = $product[0]['price'];
+			$product['Product']['discount'] = $product[0]['discount'];
+		}
+
+		return $products;
+	}
+	
+	// z produktu odpovidajicich podminkam, vybere nejlevnejsi
+	function cheapest($conditions, $customer_type_id) {
+		$joins = array(
+			array(
+				'table' => 'categories_products',
+				'alias' => 'CategoriesProduct',
+				'type' => 'INNER',
+				'conditions' => array('CategoriesProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPrice',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+			),
+			array(
+				'table' => 'availabilities',
+				'alias' => 'Availability',
+				'type' => 'INNER',
+				'conditions' => array('Availability.id = Product.availability_id')
+			),
+			array(
+				'table' => 'manufacturers',
+				'alias' => 'Manufacturer',
+				'type' => 'LEFT',
+				'conditions' => array('Manufacturer.id = Product.manufacturer_id')
+			)
+		);
+
+		// vezmu jako cenu produktu obycejnou cenu
+		$this->virtualFields['price'] = $this->CategoriesProduct->Product->price;
+		$cheapest = $this->find('first', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.price',
+				
+				'Availability.id',
+				'Availability.cart_allowed'
+
+			),
+			'joins' => $joins,
+			'group' => 'Product.id',
+			'order' => array('Product.price' => 'asc')
+		));
+		unset($this->virtualFields['price']);
+		return $cheapest;
+	}
+	
+	// z produktu odpovidajicich podminkam, vybere nejdrazsi
+	function most_expensive($conditions, $customer_type_id) {
+		// z podminek musim odstranit ty, ktere mi omezuji vyber produktu podle ceny
+		
+		$joins = array(
+			array(
+				'table' => 'categories_products',
+				'alias' => 'CategoriesProduct',
+				'type' => 'INNER',
+				'conditions' => array('CategoriesProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPrice',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+			),
+			array(
+				'table' => 'availabilities',
+				'alias' => 'Availability',
+				'type' => 'INNER',
+				'conditions' => array('Availability.id = Product.availability_id')
+			),
+			array(
+				'table' => 'manufacturers',
+				'alias' => 'Manufacturer',
+				'type' => 'LEFT',
+				'conditions' => array('Manufacturer.id = Product.manufacturer_id')
+			)
+		);
+
+		// vezmu jako cenu produktu obycejnou cenu
+		$this->virtualFields['price'] = $this->CategoriesProduct->Product->price;
+		$most_sold = $this->find('first', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.price',
+				
+				'Availability.id',
+				'Availability.cart_allowed'
+
+			),
+			'joins' => $joins,
+			'group' => 'Product.id',
+			'order' => array('Product.price' => 'desc')
+		));
+		unset($this->virtualFields['price']);
+		return $most_sold;
 	}
 }
 ?>

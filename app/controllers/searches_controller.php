@@ -85,6 +85,28 @@ class SearchesController extends AppController {
 	 * @param string $id
 	 */
 	function do_search() {
+		
+		if (isset($_GET['filter']['reset_filter'])) {
+			$url = $this->params['url']['url'];
+			$params = $this->params['url']['filter'];
+			switch ($_GET['filter']['reset_filter']) {
+				case 'brand':
+					unset($params['manufacturer_id']);
+					break;
+				case 'price':
+					unset($params['price']);
+					break;
+				case 'sorting':
+					unset($params['sorting']);
+					break;
+			}
+			unset($params['reset_filter']);
+			$params = array('filter' => $params);
+			$params = http_build_query($params);
+			$url = '/' . $url . '?' . $params;
+			$this->redirect($url);
+		}
+		
 		App::import('Model', 'Product');
 		$this->Search->Product = new Product;
 		
@@ -102,9 +124,15 @@ class SearchesController extends AppController {
 		$products = array();
 		$customer_type_id = 2;
 		
+		$query = '';
 		if (!empty($_GET) && isset($_GET['q']) && !empty($_GET['q'])) {
-			$this->data['Search']['q'] = $_GET['q'];
+			$query = $_GET['q'];
+		} elseif (!empty($_GET) && isset($_GET['filter']['query']) && !empty($_GET['filter']['query'])) {
+			$query = $_GET['filter']['query'];
 		}
+		
+		$this->set('query', $query);
+		$this->data['Search']['q'] = $query;
 
 		if (!empty($this->data) && isset($this->data['Search']['q'])){
 			// hledany vyraz musim ocistit
@@ -148,6 +176,40 @@ class SearchesController extends AppController {
 			App::import('Model', 'CustomerType');
 			$this->CustomerType = new CustomerType;
 			$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+			
+			// DO TETO CHVILE MAM PODMINKY PRO VYBRANI PRODUKTU NEOMEZUJICI PODLE FILTRU
+			$filter_manufacturers_order = array('Manufacturer.name' => 'asc');
+			$filter_manufacturers = $this->Search->Product->Manufacturer->filter_manufacturers($conditions, $filter_manufacturers_order);
+			$this->set('filter_manufacturers', $filter_manufacturers);
+			// musim tedy vybrat nejlevnejsi a nejdrazsi produkt v podle dosavadnich podminek, protoze jakmile tam prihodim podminky o cene, zkresli mi to hodnoty pro slider
+			// nejlevnejsi a nejdrazsi produkt pro ucely filtru podle ceny
+			$cheapest_product = $this->Search->Product->cheapest($conditions, $customer_type_id);
+			$cheapest_product_price = 0;
+			if (!empty($cheapest_product)) {
+				$cheapest_product_price = $cheapest_product['Product']['price'];
+			}
+			$this->set('cheapest_price', $cheapest_product_price);
+			
+			$most_expensive_product = $this->Search->Product->most_expensive($conditions, $customer_type_id);
+			$most_expensive_product_price = 1000;
+			if (!empty($most_expensive_product)) {
+				$most_expensive_product_price = $most_expensive_product['Product']['price'];
+			}
+			$this->set('most_expensive_price', $most_expensive_product_price);
+			
+			if (isset($_GET['filter']['price']['min']) && !empty($_GET['filter']['price']['min'])) {
+				$conditions['Product.price >='] = $_GET['filter']['price']['min'];
+			}
+			if (isset($_GET['filter']['price']['max']) && !empty($_GET['filter']['price']['max'])) {
+				$conditions['Product.price <='] = $_GET['filter']['price']['max'];
+			}
+			
+			// filtr podle vyrobcu
+			if (isset($_GET['filter']['manufacturer_id']) && !empty($_GET['filter']['manufacturer_id'])) {
+				$manufacturer_id_arr = $_GET['filter']['manufacturer_id'];
+				$conditions = array_merge($conditions, array('Product.manufacturer_id' => $manufacturer_id_arr));
+				// $this->data['CategoriesProduct']['manufacturer_id'] = $manufacturer_id;
+			}
 			
 			$joins = array(
 				array(
@@ -199,7 +261,13 @@ class SearchesController extends AppController {
 					'Product.retail_price_with_dph',
 					'Product.discount_common',
 					'Product.price',
+					'Product.discount',
 					'Product.rate',
+					'Product.is_akce',
+					'Product.is_novinka',
+					'Product.is_doprodej',
+					'Product.is_bestseller',
+					'Product.is_darek_zdarma',
 						
 					'Image.id',
 					'Image.name',
@@ -209,25 +277,16 @@ class SearchesController extends AppController {
 				),
 				'joins' => $joins,
 				'group' => 'Product.id',
+				'limit' => 15
 			);
-			
-			$this->paginate['Product']['show'] = 'all';
 			
 			// sestavim podminku pro razeni podle toho, co je vybrano
 			$order = array('Availability.cart_allowed' => 'desc');
-			if (isset($this->data['Search']['sorting'])) {
-				switch ($this->data['Search']['sorting']) {
-					// vychozi razeni podle priority
-					case 0: $order = array_merge($order, array('Product.priority' => 'asc')); break;
-					// nastavim razeni podle prodejnosti
-					case 1: $order = array_merge($order, array('Product.sold' => 'desc')); break;
-					// nastavim razeni podle ceny
-					case 2: $order = array_merge($order, array('Product.price' => 'asc')); break;
-					case 3: $order = array_merge($order, array('Product.price' => 'desc')); break;
-					// nastavim razeni podle nazvu
-					case 4: $order = array_merge($order, array('Product.name' => 'asc')); break;
-					default: $order = array();
-				}
+			if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
+				$order = array_merge($order, $this->Search->Product->sorting_options[$_GET['filter']['sorting'][0]]['conditions']);
+			} else {
+				$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc'));
+				$_GET['filter']['sorting'][0] = 0;
 			}
 			
 			$this->paginate['Product']['order'] = $order;
@@ -236,14 +295,19 @@ class SearchesController extends AppController {
 			// cenu produktu urcim jako cenu podle typu zakaznika, pokud je nastavena, pokud neni nastavena cena podle typu zakaznika, vezmu za cenu beznou slevu, pokud ani ta neni nastavena
 			// vezmu jako cenu produktu obycejnou cenu
 			$this->Search->Product->virtualFields['price'] = $this->Search->Product->price;
+			// sleva
+			$this->Search->Product->virtualFields['discount'] = $this->Search->Product->discount;
 
 			$products = $this->paginate('Product');
 
 			// opetovne vypnuti virtualnich poli, nastavenych za behu
 			unset($this->Search->Product->virtualFields['sold']);
 			unset($this->Search->Product->virtualFields['price']);
+			unset($this->Search->Product->virtualFields['discount']);
 		}
 		$this->set('products', $products);
+		
+		$this->set('sorting_options', $this->Search->Product->sorting_options);
 		
 		$this->set('listing_style', 'products_listing_grid');
 	}

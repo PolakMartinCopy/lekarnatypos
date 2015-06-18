@@ -95,7 +95,6 @@ class Image extends AppModel {
 	    	$off_y = ceil(($max_y - $height) / 2);
 	    }
 	    
-	    
 	    $img2 = imagecreatetruecolor($max_x, $max_y);
 	    $bg = imagecolorallocate($img2, 255, 255, 255);
 	    imagefill($img2, 0, 0, $bg);
@@ -173,7 +172,8 @@ class Image extends AppModel {
 		$file_out_medium = 'product-images/medium/' . $file_out;
 		
 		// vytvorim si maly nahledovy obrazek
-		$result = $this->resize($file_in, $file_out_small, 206, 100);
+		//$result = $this->resize($file_in, $file_out_small, 206, 100);
+		$result = $this->resize($file_in, $file_out_small, 118, 118);
 
 		// vytvorim si stredni nahledovy obrazek
 		$this->resize($file_in, $file_out_medium, 250, 250);
