@@ -1513,7 +1513,7 @@ class OrdersController extends AppController {
 		
 		$this->Order->notifyCustomer($customer['Customer']);
 
-//		$this->Order->notifyAdmin();
+		$this->Order->notifyAdmin();
 
 		// uklidim promenne
 		$this->Session->delete('Order');
