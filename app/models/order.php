@@ -538,7 +538,7 @@ class Order extends AppModel {
 			}
 			$cp_count++;
 		}
-
+		$order['Order']['shipping_cost'] = $this->get_shipping_cost($order['Order']['shipping_id']);
 		$order['Order']['shipping_tax_class'] = $this->Shipping->get_tax_class_description($order['Order']['shipping_id']);
 		// cena produktu v kosiku, bez dopravneho
 		$order['Order']['subtotal_with_dph'] = $order_total_with_dph;
