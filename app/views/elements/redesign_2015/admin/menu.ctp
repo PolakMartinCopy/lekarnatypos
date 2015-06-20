@@ -16,6 +16,7 @@
 		<li><a href="#">Zboží</a>
 			<ul>
 				<li><?php echo $this->Html->link('Produkty', array('controller' => 'products', 'action' => 'index'))?></li>
+				<li><?php echo $this->Html->link('Produkty na HP', array('controller' => 'most_sold_products', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Kategorie', array('controller' => 'categories', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Dodavatelé', array('controller' => 'suppliers', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Výrobci', array('controller' => 'manufacturers', 'action' => 'index'))?></li>
@@ -42,7 +43,6 @@
 				<li><?php echo $this->Html->link('Doporučujeme', array('controller' => 'recommended_products', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Nové produkty', array('controller' => 'discounted_products', 'action' => 'index'))?></li>
 <?php } ?>
-				<li><?php echo $this->Html->link('Produkty na HP', array('controller' => 'most_sold_products', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Typy produktů', array('controller' => 'product_types', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Dostupnosti produktů', array('controller' => 'availabilities', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Vlastnosti produktů', array('controller' => 'product_properties', 'action' => 'index'))?></li>
