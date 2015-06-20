@@ -193,7 +193,7 @@
 ?>
 	<?php if ($this->Paginator->hasNext() || $this->Paginator->hasPrev()) { ?>
 	<div class="module-pagination">
-        <ul class="pagination hidden-xs">
+        <ul class="pagination">
         	<?php if ($this->Paginator->hasPrev()) {?>
             <li><?php echo $this->Paginator->prev('<span aria-hidden="true">&laquo;</span>', array('aria-label' => 'Previous', 'escape' => false), null, array('class' => 'disabled', 'escape' => false)); ?></li>
             <?php } ?>
@@ -202,7 +202,7 @@
             <li><?php echo $this->Paginator->next('<span aria-hidden="true">&raquo;</span>', array('aria-label' => 'Next', 'escape' => false), null, array('class' => 'disabled', 'escape' => false)); ?></li>
             <?php } ?>
         </ul>
-        <a href="#" class="btn btn-primary hidden-md hidden-lg hidden-sm"><i class="fa fa-fw  fa-arrow-circle-down"></i>Načíst další produkty</a>
+        <a href="#" class="btn btn-primary hidden-md hidden-lg hidden-sm hidden-xs"><i class="fa fa-fw  fa-arrow-circle-down"></i>Načíst další produkty</a>
     </div>
     <?php } ?>
 </div>
