@@ -4,10 +4,16 @@ foreach ($products as $product) {
 	if (empty($name)) {
 		$name = $product['Product']['name'];
 	}
+	
+	$extended_name = $product['Product']['heureka_extended_name'];
+	if (empty($extended_name)) {
+		$extended_name = $name;
+	}
 ?>
 	<SHOPITEM>
 		<ITEM_ID><?php echo $product['Product']['id']?></ITEM_ID>
-		<PRODUCT><![CDATA[<?php echo $name ?>]]></PRODUCT>
+		<PRODUCTNAME><![CDATA[<?php echo $name ?>]]></PRODUCTNAME>
+		<PRODUCT><![CDATA[<?php echo $extended_name ?>]]></PRODUCT>
 		<DESCRIPTION><![CDATA[<?php echo $product['Product']['short_description']?>]]></DESCRIPTION>
 		<URL><![CDATA[http://www.<?php echo CUST_ROOT?>/<?=$product['Product']['url']?>]]></URL>
 		<IMGURL><![CDATA[http://www.<?php echo CUST_ROOT ?>/product-images/<?=(empty($product['Image']['name']) ? '' : str_replace(" ", "%20", $product['Image']['name']))?>]]></IMGURL>

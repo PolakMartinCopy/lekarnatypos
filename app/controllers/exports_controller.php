@@ -98,6 +98,7 @@ class ExportsController extends AppController{
 				'Product.url',
 				'Product.zbozi_name',
 				'Product.heureka_name',
+				'Product.heureka_extended_name',
 				'Product.price',
 				'Product.ean',
 				

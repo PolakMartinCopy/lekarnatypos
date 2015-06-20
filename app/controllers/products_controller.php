@@ -827,6 +827,7 @@ class ProductsController extends AppController {
 				'Product.related_name',
 				'Product.zbozi_name',
 				'Product.heureka_name',
+				'Product.heureka_extended_name',
 				'Product.short_description',
 				'Product.description',
 				'Product.active',

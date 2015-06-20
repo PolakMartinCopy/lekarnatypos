@@ -78,6 +78,11 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		?></td>
 		<td><?php echo $form->input('Product.heureka_name', array('label' => false, 'size' => 60))?></td>
 	</tr>
+	<tr valign="top">
+		<td>Rozšířený název - heureka.cz</td>
+		<td style="width:5%">&nbsp;</td>
+		<td><?php echo $form->input('Product.heureka_extended_name', array('label' => false, 'size' => 60))?></td>
+	</tr>
 	<tr valign="top" class="nutne">
 		<td>Krátký popis: 
 			<a href='/administrace/help.php?width=500&id=8' class='jTip' id='8' name='SEO Description (8)'>
