@@ -5,6 +5,8 @@ class MailTemplatesController extends AppController{
 	function admin_index(){
 		$mail_templates = $this->MailTemplate->find('all');
 		$this->set('mail_templates', $mail_templates);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_add(){
@@ -15,6 +17,9 @@ class MailTemplatesController extends AppController{
 			}
 			$this->Session->setFlash('Šablona nebyla uložena kvuli chybám ve formuláři, zkontrolujte prosím data.');
 		}
+		
+		$this->set('tinyMceElement', 'MailTemplateContent');
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_edit($id){
@@ -29,6 +34,9 @@ class MailTemplatesController extends AppController{
 			}
 			$this->Session->setFlash('Šablona nebyla uložena kvuli chybám ve formuláři, zkontrolujte prosím data.');
 		}
+		
+		$this->set('tinyMceElement', 'MailTemplateContent');
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_del($id){
