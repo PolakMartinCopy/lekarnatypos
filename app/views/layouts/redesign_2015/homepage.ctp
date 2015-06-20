@@ -10,7 +10,11 @@
 		<?php echo $this->element(REDESIGN_PATH . 'benefits_row')?>
 
         <div class="content row">
- 			<?php 
+        	<?php if (isset($breadcrumbs)) { ?>
+            <div class="breadcrumbs">
+            <?php echo build_breadcrumbs($breadcrumbs); ?>
+			</div>
+			<?php }
  			// flash, pokud neni definovano, ze se bude zobrazovat nekde uvnitr stranky
 	 			if ($this->Session->check('Message.flash')) {
  					$flash = $this->Session->read('Message.flash');

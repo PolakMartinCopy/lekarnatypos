@@ -1349,7 +1349,10 @@ class OrdersController extends AppController {
 		$this->set('page_heading', 'Objednávka');
 		$this->set('_title', 'Objednávka');
 		$this->set('_description', 'Objednávka');
-		$breadcrumbs = array(array('anchor' => 'Objednávka', 'href' => '/objednavka'));
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Objednávka', 'href' => '/objednavka')
+		);
 		$this->set('breadcrumbs', $breadcrumbs);
 	
 		// layout
@@ -1550,7 +1553,11 @@ class OrdersController extends AppController {
 		$this->layout = REDESIGN_PATH . 'content';
 		$this->set('_title', 'Potvrzení objednávky');
 		$this->set('_description', 'Potvrzení odeslání objednávky do systému ' . CUST_NAME);
-		$breadcrumbs = array(array('anchor' => 'Potvrzení objednávky', 'href' => '/orders/finished'));
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Potvrzení objednávky', 'href' => '/orders/finished')
+
+		);
 		$this->set('breadcrumbs', $breadcrumbs);
 
 		// nastavim si pro menu zakladni idecko

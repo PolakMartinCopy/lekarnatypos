@@ -25,7 +25,7 @@
 			
 			<div class="hidden-xs basket-info-box">
 			<?php if ($carts_stats['products_count']) { ?>
-			    V košíku máte<br />
+			    V <?php echo $this->Html->link('košíku', array('controller' => 'orders', 'action' => 'one_step_order'))?></a> máte<br />
                 <strong><?php echo $carts_stats['products_count']?> ks</strong> zboží za <strong><?php echo number_format($carts_stats['total_price'], 0, ',', ' ')?> Kč</strong><br />
                 <?php if ($carts_stats['free_shipping']) { ?>
 				<span class="small"><strong>Doprava je zdarma!</strong></span>

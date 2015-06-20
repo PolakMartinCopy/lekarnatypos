@@ -42,8 +42,7 @@
                 <div class="content-section">
                 	<?php if (isset($breadcrumbs)) { ?>
                 	<div class="breadcrumbs">
-                		<?php echo build_breadcrumbs($breadcrumbs);
-                		?>
+                		<?php echo build_breadcrumbs($breadcrumbs); ?>
                 	</div>
                 	<?php }
 						if ($this->Session->check('Message.flash')) {
