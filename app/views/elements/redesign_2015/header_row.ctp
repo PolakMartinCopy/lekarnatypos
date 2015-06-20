@@ -38,9 +38,9 @@
 			<?php } ?>
              </div>
          </div>
-         <!--<button type="button" class="categories-toggle hidden-md hidden-lg" data-toggle="collapse" data-target="#categories-navigation">
-             <i class="fa fa-fw fa-bars"></i>
-         </button>-->
+		<button type="button" class="categories-toggle hidden-md hidden-lg" data-toggle="collapse" data-target="#categories-navigation">
+        	<i class="fa fa-fw fa-bars"></i>
+		</button>
      </div>
      <div class="search-box">
      	<?php echo $this->Form->create('Search', array('url' => array('controller' => 'searches', 'action' => 'do_search'), 'encoding' => false, 'type' => 'get', 'id' => 'SearchViewForm', 'class' => 'form-inline floating-labels'));?>
