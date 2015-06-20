@@ -126,6 +126,7 @@ class Status extends AppModel {
 			$ppm->Subject = $template['MailTemplate']['subject'];
 			$ppm->AddAddress($customer['Customer']['email'], $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']);
 //			$ppm->AddAddress('brko11@gmail.com', $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']);
+			$ppm->IsHtml(true);
 			
 			return $ppm->Send();
 			
