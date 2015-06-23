@@ -58,7 +58,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
             </div>
             <?php if (isset($product['Product']['note']) && !empty($product['Product']['note'])) { ?>
             <div class="param-horizontal">
-                <span style="color:red"><strong>Poznámka:</strong></span>
+                <span style="color:red"><strong>Poznámka:</strong></span><br/>
                 <span><?php echo $product['Product']['note']?></span>
             </div>
             <?php } ?>
