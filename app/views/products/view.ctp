@@ -64,8 +64,12 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
             <?php } ?>
         </div>
         <div class="price-box">
-        	<?php if (isset($product['Product']['discount']) && $product['Product']['discount']) { ?>
-            <div class="param-horizontal"><span>Běžná cena:</span> <span class="standard-price"><?php echo front_end_display_price($product['Product']['retail_price_with_dph'])?> Kč</span> (ušetříte <span class="discount"><?php echo $product['Product']['discount']?> %</span>)</div>
+        	<?php if (isset($product['Product']['retail_price_with_dph']) && isset($product['Product']['price']) && $product['Product']['retail_price_with_dph'] != $product['Product']['price']) { ?>
+            <div class="param-horizontal"><span>Běžná cena:</span> <span class="standard-price"><?php echo front_end_display_price($product['Product']['retail_price_with_dph'])?> Kč</span>
+            <?php if (isset($product['Product']['discount']) && $product['Product']['discount']) { ?>
+            (ušetříte <span class="discount"><?php echo $product['Product']['discount']?> %</span>)
+            <?php } ?>
+            </div>
             <?php } ?>
             <div class="param-horizontal"><span>Naše cena:</span> <span class="price"><?php echo front_end_display_price($product['Product']['price'])?> Kč</span></div>
 

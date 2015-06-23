@@ -133,13 +133,17 @@
                     <div class="param-horizontal"><span>Naše cena:</span><span class="price"><?php echo front_end_display_price($product['Product']['price'])?> Kč</span></div>
                     
                     <?php
-                    $visibility = ' style="visibility:hidden"';
-                    if (isset($product['Product']['discount']) && $product['Product']['discount']) {
-						$visibility = '';
+                    $common_price_visibility = ' style="visibility:hidden"';
+                    $discount_visibility = ' style="visibility:hidden"';
+                    if (isset($product['Product']['retail_price_with_dph']) && isset($product['Product']['price']) && $product['Product']['retail_price_with_dph'] != $product['Product']['price']) {
+						$common_price_visibility = '';
+						if (isset($product['Product']['discount']) && $product['Product']['discount']) {
+							$discount_visibility = '';
+						}
                     }
                     ?>
-                    <div class="param-horizontal"<?php echo $visibility?>><span>Běžná cena:</span><span class="standard-price"><?php echo front_end_display_price($product['Product']['retail_price_with_dph'])?> Kč</span></div>
-                    <div class="param-horizontal"<?php echo $visibility?>><span>Ušetříte:</span><span class="discount"><?php echo front_end_display_price($product['Product']['discount'])?> %</span></div>
+                    <div class="param-horizontal"<?php echo $common_price_visibility?>><span>Běžná cena:</span><span class="standard-price"><?php echo front_end_display_price($product['Product']['retail_price_with_dph'])?> Kč</span></div>
+                    <div class="param-horizontal"<?php echo $discount_visibility?>><span>Ušetříte:</span><span class="discount"><?php echo front_end_display_price($product['Product']['discount'])?> %</span></div>
                     
                     <?php // form pro vlozeni do kosiku
                     	echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'encoding' => false));
