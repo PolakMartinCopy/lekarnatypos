@@ -56,6 +56,12 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
                 <span>Dostupnost:</span>
                 <span><a href="/cenik-dopravy"><?php echo ucfirst($product['Availability']['name'])?></a></span>
             </div>
+            <?php if (isset($product['Product']['note']) && !empty($product['Product']['note'])) { ?>
+            <div class="param-horizontal">
+                <span style="color:red"><strong>Poznámka:</strong></span>
+                <span><?php echo $product['Product']['note']?></span>
+            </div>
+            <?php } ?>
         </div>
         <div class="price-box">
         	<?php if (isset($product['Product']['discount']) && $product['Product']['discount']) { ?>
