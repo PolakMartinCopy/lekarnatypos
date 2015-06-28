@@ -25,7 +25,7 @@ class CategoriesController extends AppController {
 				'contain' => array(),
 				'order' => array('Category.lft' => 'asc')
 			));
-			
+			$subcategories = $this->Category->countProducts($subcategories);
 			$main_category['categories'] = $subcategories;
 		}
 

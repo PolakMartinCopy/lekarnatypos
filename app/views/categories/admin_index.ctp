@@ -82,7 +82,8 @@ function draw_table($object, $categories, $prefix) {
 			if (!$category['Category']['active']) {
 				$style = 'color:grey;font-style:italic';
 			}
-			echo $prefix . $object->Html->link($category['Category']['name'], array('controller' => 'categories', 'action' => 'edit', $category['Category']['id']), array('style' => $style, 'title' => 'Upravit kategorii'))
+			$anchor = $category['Category']['name'] . ' (' . $category['Category']['activeProductCount'] . '/' . $category['Category']['productCount'] . ')';
+			echo $prefix . $object->Html->link($anchor, array('controller' => 'categories', 'action' => 'edit', $category['Category']['id']), array('style' => $style, 'title' => 'Upravit kategorii'))
 		?></td>
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/add.png" alt="" />';
