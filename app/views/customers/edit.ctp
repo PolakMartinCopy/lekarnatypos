@@ -1,7 +1,6 @@
 <h1><?php echo $page_heading?></h1>
 <?=$form->Create('Customer', array('url' => array('action' => 'edit')))?>
 <fieldset>
-	<legend>Změna údajů zákazníka</legend>
 	<div class="form-group">
 		<label>Jméno</label>
 		<?=$form->input('Customer.first_name', array('label'=> false, 'class' => 'form-control'))?>

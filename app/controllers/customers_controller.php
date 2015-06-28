@@ -541,15 +541,15 @@ class CustomersController extends AppController {
 			
 			$this->data['Address']['customer_id'] = $this->Session->read('Customer.id');
 			if ( $this->Customer->Address->save($this->data) ){
-				$this->Session->setFlash('Adresa byla uložena.');
+				$this->Session->setFlash('Adresa byla uložena.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('controller' => 'customers', 'action' => 'index'));
 			} else {
-				$this->Session->setFlash('Adresa nebyla vyplněna správně, zkontrolujte prosím formulář.');
+				$this->Session->setFlash('Adresa nebyla vyplněna správně, zkontrolujte prosím formulář.', REDESIGN_PATH . 'flash_failure');
 			}
 		}
 	}
 	
-	function edit(){
+	function edit() {
 		// nastavim nadpis
 		$this->set('page_heading', 'Editace zákazníka');
 
@@ -594,17 +594,17 @@ class CustomersController extends AppController {
 				} else {
 					// pokud se shoduje stare heslo s tim, co mam v db a pokud je nove heslo v obou polich shodne, ulozim zmenu hesla
 					if (md5($customer_login['old_password']) != $customer_login['password']) {
-						$this->Session->setFlash('Vyplnil(a) jste špatně původní heslo! Zkuste to prosím znovu.');
+						$this->Session->setFlash('Vyplnil(a) jste špatně původní heslo! Zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
 						$this->redirect(array('controller' => 'customers', 'action' => 'edit'), null, true);
 					}
 					
 					if ($customer_login['new_password'] != $customer_login['new_password_rep']) {
-						$this->Session->setFlash('Pole pro nové heslo a zopakování hesla jsou rozdílná! Zkuste to prosím znovu.');
+						$this->Session->setFlash('Pole pro nové heslo a zopakování hesla jsou rozdílná! Zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
 						$this->redirect(array('controller' => 'customers', 'action' => 'edit'), null, true);
 					}
 					
 					if ($customer_login['new_password'] == '') {
-						$this->Session->setFlash('Nové heslo nesmí zůstat prázdné, zadejte nové heslo');
+						$this->Session->setFlash('Nové heslo nesmí zůstat prázdné, zadejte nové heslo', REDESIGN_PATH . 'flash_failure');
 						$this->redirect(array('controller' => 'customers', 'action' => 'edit'), null, true);
 					}
 
@@ -612,10 +612,10 @@ class CustomersController extends AppController {
 				}
 
 				if ($this->Customer->saveAll($this->data)) {
-					$this->Session->setFlash('Vaše údaje byly upraveny.');
+					$this->Session->setFlash('Vaše údaje byly upraveny.', REDESIGN_PATH . 'flash_success');
 					$this->redirect(array('controller' => 'customers', 'action' => 'edit'), null, true);
 				} else {
-					$this->Session->setFlash('Vaše údaje se nepodařilo upravit. Opravte chyby ve formuláři a opakujte prosím akci');
+					$this->Session->setFlash('Vaše údaje se nepodařilo upravit. Opravte chyby ve formuláři a opakujte prosím akci', REDESIGN_PATH . 'flash_failure');
 				}
 			}
 		} else {
@@ -669,8 +669,10 @@ class CustomersController extends AppController {
 		);
 		$this->set('breadcrumbs', $breadcrumbs);
 		
+		$customer_id = $this->Session->read('Customer.id');
+		
 		$customer = $this->Customer->find('first', array(
-			'conditions' => array('Customer.id' => $this->Session->read('Customer.id')),
+			'conditions' => array('Customer.id' => $customer_id),
 			'contain' => array(
 				'Address' => array(
 					'fields' => array('Address.id', 'Address.type', 'Address.name', 'Address.street', 'Address.street_no', 'Address.zip', 'Address.city', 'Address.state')
@@ -687,10 +689,22 @@ class CustomersController extends AppController {
 					'fields' => array('CustomerLogin.id', 'CustomerLogin.login', 'CustomerLogin.password')
 				)
 			),
-			'fields' => array('Customer.id', 'Customer.first_name', 'Customer.last_name', 'Customer.phone', 'Customer.email', '')
+			'fields' => array(
+				'Customer.id',
+				'Customer.first_name',
+				'Customer.last_name',
+				'Customer.phone',
+				'Customer.email',
+				''
+			)
 		));
 
 		$this->set('customer', $customer);
+		
+		$customer_orders_count = $this->Customer->Order->find('count', array(
+			'conditions' => array('Order.customer_id' => $customer_id),
+		));
+		$this->set('customer_orders_count', $customer_orders_count);
 	}
 	
 	/*

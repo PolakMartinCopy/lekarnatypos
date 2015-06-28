@@ -1,5 +1,5 @@
-<h2><span><?php echo $page_heading?></span></h2>
-<table class="topHeading" width="100%">
+<h1><?php echo $page_heading?></h1>
+<table class="table">
 	<tr>
 		<th>název</th>
 		<th>jedn. cena</th>
@@ -46,7 +46,7 @@
 	<?php } ?>
 </table>
 <br/><br/>
-<table style="width:100%" class="topHeading">
+<table class="table">
 	<tr>
 		<th style="width:50%">Fakturační adresa</th>
 		<th style="width:50%">Doručovací adresa</th>

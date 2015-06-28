@@ -1,6 +1,6 @@
-<h2><?php echo $page_heading?></h2>
-<h3>Informace o zákazníkovi</h3>
-<table class="topHeading" style="width:100%">
+<h1><?php echo $page_heading?></h1>
+<h2>Informace</h2>
+<table class="table">
 	<tr>
 		<th>Jméno a příjmení:</th>
 		<td><?=$customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']?></td>
@@ -26,14 +26,14 @@
 </table>
 <?=$html->link('editovat', array('controller' => 'customers', 'action' => 'edit'))?><br/><br/>
 
-<h3>Zákazníkovy objednávky</h3>
+<h2>Objednávky</h2>
 <?
 	if (empty($customer['Order'])){
 		echo 'Nevytvořil(a) jste zatím žádnou objednávku.';
 	} else {
 		$count = count($customer['Order']);
 ?>
-<table class="topHeading" style="width:100%">
+<table class="table">
 	<tr>
 		<th>číslo</th>
 		<th>vytvořena</th>
@@ -42,7 +42,7 @@
 		<th>&nbsp;</th>
 	</tr>
 	<?
-		for ($i = 0; ( $i < 3 && $i < $count ); $i++ ){
+		for ($i = 0; ($i < 3 && $i < $count); $i++ ){
 	?>
 
 	<tr>
@@ -64,15 +64,15 @@
 	<? } ?>
 </table>
 <?
-	if ( $count > 3 ){
-		echo 'Zobrazeny jsou poslední tři objednávky z ' . $count . ' celkem.<br />';
+	if ($customer_orders_count > 3){
+		echo 'Zobrazeny jsou poslední tři objednávky z ' . $customer_orders_count . ' celkem.<br />';
 	}
 	echo $html->link('zobrazit seznam objednávek', array('controller' => 'customers', 'action' => 'orders_list'));
 ?>
 <? } ?>
 <br/><br/>
-<h3>Adresář zákazníka</h3>
-<table class="topHeading" width="100%">
+<h2>Adresář</h2>
+<table class="table">
 	<tr>
 		<th>Fakturační adresa</th>
 		<th>Doručovací adresa</th>

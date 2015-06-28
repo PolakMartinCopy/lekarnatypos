@@ -1,4 +1,5 @@
 <div class="mainContentWrapper">
+<h1>Upravit adresu</h1>
 	<?=$form->create('Address', array('url' => array('controller' => 'customers', 'action' => 'address_edit', 'type' => $this->params['named']['type']), '')) ?>
 	<div class="form-group">
 		<label>jméno a příjmení / název společnosti</label>

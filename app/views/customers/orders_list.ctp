@@ -1,5 +1,5 @@
-<h2><span><?php echo $page_heading?></span></h2>
-<table class="topHeading" width="100%">
+<h1><?php echo $page_heading?></h1>
+<table class="table">
 	<tr>
 		<th>číslo</th>
 		<th>vytvořena</th>
