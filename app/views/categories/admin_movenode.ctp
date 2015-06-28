@@ -4,8 +4,8 @@
 </ul>
 <p>Zvolte do kterého uzlu chcete kategorii <strong><?=$this->data['Category']['name']?></strong> přesunout.</p>
 <?
-	echo $form->create('Category', array('url' => array('action' => 'movenode', $this->data['Category']['id'])));
-	echo $form->select('Category.target_id', $categories, null, array('empty' => false));
+	echo $form->create('Category', array('url' => array('controller' => 'categories', 'action' => 'movenode')));
+	echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'Category.parent_id', 'options' => $categories));
 	echo $form->hidden('Category.id');
 	echo $form->submit('Přesunout');
 	echo $form->end();

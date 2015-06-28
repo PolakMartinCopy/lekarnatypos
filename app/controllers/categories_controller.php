@@ -366,24 +366,22 @@ class CategoriesController extends AppController {
 	}
 
 	function admin_movenode($id) {
-		if (!isset($this->data)) { // formular jeste nebyl odeslan
+		if (isset($this->data)) {
+			if ($this->Category->save($this->data)) {
+				$this->Session->setFlash('Kategorie byla přesunuta do nového uzlu.', REDESIGN_PATH . 'flash_success');
+				$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)), null, true);
+			} else {
+				$this->Session->setFlash('Kategorii se nepodařilo přesunout, zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
+			}
+		} else {
 			// nactu si data o kategorii, s kterou chci pracovat
 			$this->Category->recursive = -1;
 			$this->data = $this->Category->read(null, $id);
-
-			// nahraju si strukturovany seznam kategorii, vynecham kategorii, kterou chci presunout
-			$categories = $this->Category->generatetreelist(array('not' => array('id' => array($id))), '{n}.Category.id', '{n}.Category.name', ' - ');
-			$this->set(compact(array('categories')));
-		} else {
-			$this->Category->id = $id;
-			$data = array(
-				'parent_id' => $this->data['Category']['target_id']
-			);
-			$this->Category->save($data, false, array('parent_id'));
-
-			$this->Session->setFlash('Kategorie byla přesunuta do nového uzlu.', REDESIGN_PATH . 'flash_success');
-			$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)), null, true);
 		}
+		
+		$categories = $this->Category->generateAllPaths(false);
+		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
+		$this->set('categories', $categories);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
