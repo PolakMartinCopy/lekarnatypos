@@ -128,11 +128,11 @@ div#flash {
 	padding: 5px;
 }
 
-div.flash_success {
+div.alert-success {
 	color: green;
 }
 
-div.flash_failure {
+div.alert-danger {
 	color: red;
 }
 

@@ -162,24 +162,6 @@ th#orderId {
 	text-align: center;
 }
 
-div#flash {
-	border: 1px solid;
-	padding: 5px;
-}
-
-div.flash_success {
-	color: green;
-}
-
-div.flash_failure {
-	color: red;
-}
-
-div.error-message {
-	color: red;
-	font-size: 12px;
-}
-
 tr.nutne div.error-message {
 	color: white;
 }
