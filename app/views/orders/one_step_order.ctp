@@ -297,13 +297,13 @@ if ($this->Session->check('Message.flash')) {
 			<div class="col-xs-6 col-md-6">
 				<div class="form-group">
 					<label>IČ</label>
-					<?=$form->input('Customer.ICO', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+					<?=$form->input('Customer.company_ico', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
 				</div>
 			</div>
 			<div class="col-xs-6 col-md-6">
 				<div class="form-group">
 					<label>DIČ</label>
-					<?=$form->input('Customer.dic', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+					<?=$form->input('Customer.company_dic', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
 				</div>
 			</div>
 		</div>

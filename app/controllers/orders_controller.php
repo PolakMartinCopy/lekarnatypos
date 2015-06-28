@@ -1124,7 +1124,7 @@ class OrdersController extends AppController {
 				)
 			));
 		}
-	
+
 		if (isset($this->data)) {
 			if (isset($this->data['Order']['action'])) {
 				switch ($this->data['Order']['action']) {
@@ -1209,10 +1209,19 @@ class OrdersController extends AppController {
 	
 						// jsou data o zakaznikovi validni?
 						unset($this->Order->Customer->validate['email']['isUnique']);
+						
+						if (!$this->data['Customer']['is_company']) {
+							unset($this->data['Customer']['company_name']);
+							unset($this->data['Customer']['company_ico']);
+							unset($this->data['Customer']['company_dic']);
+						}
 	
 						// dogeneruju si nazev do adresy
-						$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
-						$this->data['Address'][1]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+						$customer_name = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+						if (isset($this->data['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
+							$customer_name = $this->data['Customer']['company_name'] . ' - ' . $customer_name;
+						}
+						$this->data['Address'][0]['name'] = $this->data['Address'][1]['name'] = $customer_name;
 						// pokud mam zadano, ze dodaci adresa je shodna s fakturacni, nakopiruju hodnoty
 						if (!$this->data['Customer']['is_delivery_address_different']) {
 							$this->data['Address'][1]['name'] = $this->data['Address'][0]['name'];
@@ -1222,7 +1231,7 @@ class OrdersController extends AppController {
 							$this->data['Address'][1]['zip'] = $this->data['Address'][0]['zip'];
 							$this->data['Address'][1]['state'] = $this->data['Address'][0]['state'];
 						}
-	
+						
 						$customer_data['Customer'] = $this->data['Customer'];
 						$customer_data['Address'] = $this->data['Address'];
 	
@@ -1282,6 +1291,11 @@ class OrdersController extends AppController {
 				$this->data = $customer;
 			}
 			$this->data['Customer']['is_registered'] = 0;
+			
+			// pokud mam nastaveny firemni udaje, zobrazim element pro jejich zadani / upravu
+			if (!empty($customer['Customer']['company_name']) || !empty($customer['Customer']['company_ico']) || !empty($customer['Customer']['company_dic'])) {
+				$this->data['Customer']['is_company'] = true;
+			}
 		}
 	
 		// data o zbozi v kosiku
@@ -1344,7 +1358,7 @@ class OrdersController extends AppController {
 		if (!isset($this->data['Order']['comments']) && $this->Session->check('Order.comments')) {
 			$this->data['Order']['comments'] = $this->Session->read('Order.comments');
 		}
-	
+		
 		// nastavim si titulek stranky
 		$this->set('page_heading', 'Objednávka');
 		$this->set('_title', 'Objednávka');

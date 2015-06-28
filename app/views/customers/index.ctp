@@ -27,7 +27,7 @@
 <?php } ?>
 <?php if (isset($customer['Customer']['company_dic']) && !empty($customer['Customer']['company_dic'])) { ?>
 	<tr>
-		<th>IČ:</th>
+		<th>DIČ:</th>
 		<td><?php echo $customer['Customer']['company_dic']?></td>
 	</tr>
 <?php } ?>
