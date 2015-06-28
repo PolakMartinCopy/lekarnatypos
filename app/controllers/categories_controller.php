@@ -5,12 +5,38 @@ class CategoriesController extends AppController {
 	var $helpers = array('Html', 'Form', 'Javascript' );
 
 	function admin_index() {
-		$categories = $this->Category->find('threaded', array(
+		$main_categories_ids = $this->Category->pseudo_root_categories_ids();
+		// natahnu hlavni kategorie (parent je root)
+		$main_categories = $this->Category->find('all', array(
+			'conditions' => array(
+				'Category.id' => $main_categories_ids,
+			),
 			'contain' => array(),
+			'fields' => array('Category.id', 'Category.name', 'Category.lft', 'Category.rght'),
 			'order' => array('Category.lft' => 'asc')
 		));
 
-		$this->set('categories', $categories);
+		foreach ($main_categories as &$main_category) {
+			$subcategories = $this->Category->find('threaded', array(
+				'conditions' => array(
+					'Category.lft >' => $main_category['Category']['lft'],
+					'Category.rght <' => $main_category['Category']['rght']
+				),
+				'contain' => array(),
+				'order' => array('Category.lft' => 'asc')
+			));
+			
+			$main_category['categories'] = $subcategories;
+		}
+
+		$this->set('main_categories', $main_categories);
+		
+		// nastaveni kvuli otevreni spravneho tabu
+		$pseudo_root_category_id = null;
+		if (isset($this->params['named']['pseudo_root_category_id']) && !empty($this->params['named']['pseudo_root_category_id'])) {
+			$pseudo_root_category_id = $this->params['named']['pseudo_root_category_id'];
+		}
+		$this->set('pseudo_root_category_id', $pseudo_root_category_id);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
@@ -114,7 +140,7 @@ class CategoriesController extends AppController {
 					}
 	
 					$this->Session->setFlash('Kategorie byla vložena!', REDESIGN_PATH . 'flash_success');
-					$this->redirect(array('action' => 'index'));
+					$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($this->Category->id)));
 				} else {
 					$this->Session->setFlash('Kategorie nebyla vložena, nepodařilo se nahrát obrázek kategorie.', REDESIGN_PATH . 'flash_failure');
 				}
@@ -204,7 +230,7 @@ class CategoriesController extends AppController {
 							unlink($old_image);
 						}
 						$this->Session->setFlash('Kategorie byla upravena.', REDESIGN_PATH . 'flash_success');
-						$this->redirect(array('action' => 'index'));
+						$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)));
 					} else {
 						$this->Session->setFlash('Ukládání kategorie se nezdařilo!', REDESIGN_PATH . 'flash_failure');
 					}					
@@ -255,7 +281,7 @@ class CategoriesController extends AppController {
 		} else {
 			$this->Session->setFlash('Kategorii se nepodařilo deaktivovat.', REDESIGN_PATH . 'flash_failure');
 		}
-		$this->redirect(array('controller' => 'categories', 'action' => 'index'));
+		$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)));
 	}
 
 	// natvrdo smaze kategorii ze systemu
@@ -269,14 +295,14 @@ class CategoriesController extends AppController {
 		$children = $this->Category->childcount($id);
 		$productCount = $this->Category->countAllProducts($id);
 
-		if ( $children != 0 ){
+		if ($children != 0) {
 			// jestlize obsahuje podkategorie, nedovolim mazat a vypisu hlasku
 			$this->Session->setFlash('Kategorii nelze vymazat, protože není prázdná, obsahuje jiné podkategorie!', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('action' => 'index'));
-		} elseif ( $productCount != 0 ){
+			$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)));
+		} elseif ($productCount != 0) {
 			// obsahuje produkty, nedovolim mazat
 			$this->Session->setFlash('Kategorii nelze vymazat, protože není prázdná, obsahuje produkty!', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)));
 		}
 
 		$this->Category->id = $id;
@@ -286,7 +312,7 @@ class CategoriesController extends AppController {
 		} else {
 			$this->Session->setFlash('Kategorii se nepodařilo vymazat.', REDESIGN_PATH . 'flash_failure');
 		}
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($category['Category']['parent_id'])));
 	}
 
 	function getCategoriesList($active_id = ROOT_CATEGORY_ID){
@@ -311,11 +337,10 @@ class CategoriesController extends AppController {
 		if ( isset($id) && $id != ROOT_CATEGORY_ID ){
 			if ( $this->Category->moveup($id) ){
 				$this->Session->setFlash('Kategorie byla posunuta nahoru.', REDESIGN_PATH . 'flash_success');
-				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash('Kategorii nelze posunout, je na nejvyssi možné pozici.', REDESIGN_PATH . 'flash_failure');
-				$this->redirect(array('action' => 'index'));
 			}
+			$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)));
 		} else {
 			// presmeruju na zakladni stranku
 			$this->Session->setFlash('Kategorie neexistuje, nebo se snažíte posunout zakladni kategorii..', REDESIGN_PATH . 'flash_failure');
@@ -326,18 +351,17 @@ class CategoriesController extends AppController {
 	function admin_movedown($id){
 		// otestuju si, jestli je nastavene id
 		// a je ruzne od id korenove kategorie
-		if ( isset($id) && $id != ROOT_CATEGORY_ID ){
+		if (isset($id) && $id != ROOT_CATEGORY_ID){
 			if ( $this->Category->movedown($id) ){
 				$this->Session->setFlash('Kategorie byla posunuta dolů.', REDESIGN_PATH . 'flash_success');
-				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash('Kategorii nelze posunout, je na nejnižší možné pozici.', REDESIGN_PATH . 'flash_failure');
-				$this->redirect(array('action' => 'index'));
 			}
+			$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)));
 		} else {
 			// presmeruju na zakladni stranku
-			$this->Session->setFlash('Kategorie neexistuje, nebo se snažíte posunout zakladni kategorii..', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash('Kategorie neexistuje, nebo se snažíte posunout zakladní kategorii..', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'categories', 'action' => 'index'));
 		}
 	}
 
@@ -358,7 +382,7 @@ class CategoriesController extends AppController {
 			$this->Category->save($data, false, array('parent_id'));
 
 			$this->Session->setFlash('Kategorie byla přesunuta do nového uzlu.', REDESIGN_PATH . 'flash_success');
-			$this->redirect(array('controller' => 'categories', 'action' => 'index'), null, true);
+			$this->redirect(array('controller' => 'categories', 'action' => 'index', 'pseudo_root_category_id' => $this->Category->pseudo_root_category_id($id)), null, true);
 		}
 		
 		$this->layout = REDESIGN_PATH . 'admin';

@@ -1,26 +1,59 @@
-<h2>Hlavní kategorie:</h2>
-<?php echo $this->Html->link('Přidat hlavní kategorii', array('controller' => 'categories', 'action' => 'add', ROOT_CATEGORY_ID))?>
-<br /><br />
+<script>
+	$(function() {
+		var selectedTab = 0;
+		var pseudoRootCategoryId = false;
+<?php 	if (isset($pseudo_root_category_id)) {?>
+		pseudoRootCategoryId = parseInt(<?php echo $pseudo_root_category_id?>);
+<?php 	} ?>
+		if (pseudoRootCategoryId) {
+			// potrebuju pole IDcek tabu a z nej pak zjistit pozici daneho indexu
+			var tabIndexes = $('#tabs .tab-header');
+			$.each(tabIndexes, function(index, value) {
+				tabId = $(value).attr('id');
+				tabId = tabId.replace('tabs-', '');
+				// dodelat, ze podle aktualne otevrene hlavni kategorie se vykresli jeji tab
+				if (tabId == pseudoRootCategoryId) {
+					selectedTab = index;
+				}
+			});
+		}
+		$("#tabs").tabs({
+			selected: selectedTab
+		});
+	});
+</script>
 
-<?php if (!empty($categories)) { ?>
-<div id='katalog_eshopu'>
-<table class="tabulka">
-	<tr>
-		<th>&nbsp;</th>
-		<th>&nbsp;</th>
-		<th>ID</th>
-		<th>Název</th>
-		<th>&nbsp;</th>
-		<th>&nbsp;</th>
-		<th>&nbsp;</th>
-		<th>&nbsp;</th>
-		<th>&nbsp;</th>
-	</tr>
-	<?php
-		$prefix = '';
-		draw_table($this, $categories, $prefix);
-	?>
-</table>
+<h2>Hlavní kategorie:</h2>
+<?php if (!empty($main_categories)) { ?>
+<div id="tabs">
+	<ul>
+<?php 	foreach ($main_categories as $main_category) { ?>
+		<li><a href="#tabs-<?php echo $main_category['Category']['id']?>"><?php echo $main_category['Category']['name']?></a></li>
+<?php 	} ?>
+	</ul>
+<?php 	foreach ($main_categories as $main_category) { ?>
+	<div id="tabs-<?php echo $main_category['Category']['id']?>" class="tab-header">
+	<?php echo $this->Html->link('Přidat hlavní kategorii', array('controller' => 'categories', 'action' => 'add', $main_category['Category']['id']), array('style' => 'color:blue;text-decoration:underline'))?>
+	<br /><br />
+		<table class="tabulka">
+			<tr>
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
+				<th>ID</th>
+				<th>Název</th>
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
+			</tr>
+<?php
+			$prefix = '';
+			draw_table($this, $main_category['categories'], $prefix);
+?>
+		</table>
+	</div>
+<?php } ?>
 </div>
 <?php } else { ?>
 <p><em>V systému nejsou žádné kategorie.</em></p>

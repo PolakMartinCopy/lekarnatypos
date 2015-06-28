@@ -14,7 +14,6 @@
 		<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH ?>admin/jquery.js"></script>
 		<script type="text/javascript" src="/plugins/jquery-ui/jquery-ui.js"></script>
 		<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH ?>admin/jquery.ui.datepicker-cs.js"></script>
-		<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH?>katalog.js"></script>
 		<script type="text/javascript" src="/plugins/jtip/jtip.js"></script>
 		<script type="text/javascript" src="/plugins//superfish/superfish.js"></script>
 		<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH ?>hoverIntent.js"></script>

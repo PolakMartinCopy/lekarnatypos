@@ -709,5 +709,17 @@ class Category extends AppModel {
 		$categories_ids = Set::extract('/Category/id', $categories);
 		return $categories_ids;
 	}
+	
+	function pseudo_root_category_id($id) {
+		$path = $this->getPath($id);
+		if (!empty($path)) {
+			if (count($path) > 2) {
+				$pseudo_root_category_id = $path[1];
+				$pseudo_root_category_id = $pseudo_root_category_id['Category']['id'];
+				return $pseudo_root_category_id;
+			}
+		}
+		return false;
+	}
 }
 ?>
