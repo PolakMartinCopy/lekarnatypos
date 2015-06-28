@@ -521,6 +521,7 @@ class CustomersController extends AppController {
 		// nastavim layout
 		$this->layout = REDESIGN_PATH . 'content';
 		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
 			array('anchor' => 'Zákaznický panel', 'href' => '/customers'),
 			array('anchor' => 'Upravit adresu', 'href' => '/' . $this->params['url']['url'])	
 		);
@@ -557,6 +558,7 @@ class CustomersController extends AppController {
 		$this->layout = REDESIGN_PATH . 'content';
 
 		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
 			array('anchor' => 'Zákaznický panel', 'href' => '/customers'),
 			array('anchor' => 'Upravit zákazníka', 'href' => '/customers/edit')
 		);
@@ -571,7 +573,16 @@ class CustomersController extends AppController {
 					'fields' => array('CustomerLogin.id', 'CustomerLogin.login', 'CustomerLogin.password')
 				)
 			),
-			'fields' => array('Customer.id', 'Customer.first_name', 'Customer.last_name', 'Customer.phone', 'Customer.email')
+			'fields' => array(
+				'Customer.id',
+				'Customer.first_name',
+				'Customer.last_name',
+				'Customer.phone',
+				'Customer.email',
+				'Customer.company_name',
+				'Customer.company_ico',
+				'Customer.company_dic'
+			)
 		));
 		
 		// pokud se mi nepodari vytahnout zakaznika, zakaznik neexistuje
@@ -695,7 +706,9 @@ class CustomersController extends AppController {
 				'Customer.last_name',
 				'Customer.phone',
 				'Customer.email',
-				''
+				'Customer.company_name',
+				'Customer.company_ico',
+				'Customer.company_dic'
 			)
 		));
 

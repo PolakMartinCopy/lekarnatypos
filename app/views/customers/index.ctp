@@ -6,20 +6,38 @@
 		<td><?=$customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']?></td>
 	</tr>
 	<tr>
-		<th>telefon:</th>
+		<th>Telefon:</th>
 		<td><?=$customer['Customer']['phone']?></td>
 	</tr>
 	<tr>
-		<th>email:</th>
+		<th>Email:</th>
 		<td><?=ife( $customer['Customer']['email'], $customer['Customer']['email'], 'neuveden' )?></td>
 	</tr>
+<?php if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) { ?>
+	<tr>
+		<th>Název firmy:</th>
+		<td><?php echo $customer['Customer']['company_name']?></td>
+	</tr>
+<?php } ?>
+<?php if (isset($customer['Customer']['company_ico']) && !empty($customer['Customer']['company_ico'])) { ?>
+	<tr>
+		<th>IČ:</th>
+		<td><?php echo $customer['Customer']['company_ico']?></td>
+	</tr>
+<?php } ?>
+<?php if (isset($customer['Customer']['company_dic']) && !empty($customer['Customer']['company_dic'])) { ?>
+	<tr>
+		<th>IČ:</th>
+		<td><?php echo $customer['Customer']['company_dic']?></td>
+	</tr>
+<?php } ?>
 	<?php foreach ($customer['CustomerLogin'] as $customer_login) { ?>
 	<tr>
-		<th>login:</th>
+		<th>Login:</th>
 		<td><?=$customer_login['login']?></td>
 	</tr>
 	<tr>
-		<th>heslo:</th>
+		<th>Heslo:</th>
 		<td>********</td>
 	</tr>
 	<?php } ?>
@@ -35,10 +53,10 @@
 ?>
 <table class="table">
 	<tr>
-		<th>číslo</th>
-		<th>vytvořena</th>
-		<th>cena</th>
-		<th>stav</th>
+		<th>Číslo</th>
+		<th>Vytvořena</th>
+		<th>Cena</th>
+		<th>Stav</th>
 		<th>&nbsp;</th>
 	</tr>
 	<?

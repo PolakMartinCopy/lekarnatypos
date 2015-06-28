@@ -18,6 +18,26 @@
 		<?=$form->input('Customer.email', array('label'=> false, 'class' => 'form-control'))?>
 	</div>
 </fieldset>
+<?php echo $this->Form->submit('Uložit', array('class' => 'btn btn-success'))?>
+<br/><br/>
+
+<fieldset>
+	<legend>Firemní údaje</legend>
+	<div class="form-group">
+		<label>Název</label>
+		<?=$form->input('Customer.company_name', array('label'=> false, 'class' => 'form-control'))?>
+	</div>
+	<div class="form-group">
+		<label>IČ</label>
+		<?=$form->input('Customer.company_ico', array('label'=> false, 'class' => 'form-control'))?>
+	</div>
+	<div class="form-group">
+		<label>DIČ</label>
+		<?=$form->input('Customer.company_dic', array('label'=> false, 'class' => 'form-control'))?>
+	</div>
+</fieldset>
+<?php echo $this->Form->submit('Uložit', array('class' => 'btn btn-success'))?>
+<br/><br/>
 
 <fieldset>
 	<legend>Přístupové údaje</legend>
