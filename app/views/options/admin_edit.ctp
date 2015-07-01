@@ -1,4 +1,4 @@
-﻿<h2>Vložit nový název atributu</h2>
+﻿<h2>Upravit třídu atributů</h2>
 <?php echo $form->create('Option');?>
 <table class="tabulkaedit">
 	<tr class="nutne">

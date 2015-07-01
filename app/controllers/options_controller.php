@@ -58,7 +58,7 @@ class OptionsController extends AppController {
 				$this->Session->setFlash('Třída atributů byla upravena.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('action'=>'index'), null, true);
 			} else {
-				$this->Session->setFlash('Název nemohl být uložen, vyplňte prosím správně všechna pole.', REDESIGN_PATH . 'flash_failure');
+				$this->Session->setFlash('Třída atributů nemohla být uložena, vyplňte prosím správně všechna pole.', REDESIGN_PATH . 'flash_failure');
 			}
 		} else {
 			$this->data = $option;
@@ -69,14 +69,17 @@ class OptionsController extends AppController {
 
 	function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Neexistující název.');
+			$this->Session->setFlash('Neexistující třída atributů.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'), null, true);
 		}
 
 		if ($this->Option->delete($id)) {
-			$this->Session->setFlash('Název byl vymazán.');
-			$this->redirect(array('action'=>'index'), null, true);
+			$this->Session->setFlash('Třída atributů byla vymazán.', REDESIGN_PATH . 'flash_success');
+		} else {
+			$this->Session->setFlash('Třídu atributů se napodařilo vymazat, zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
 		}
+		
+		$this->redirect(array('action'=>'index'), null, true);
 	}
 
 	function list_opt(){
