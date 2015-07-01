@@ -11,10 +11,9 @@ class OrderedProductsController extends AppController {
 		$count = $this->OrderedProduct->find('count', array('conditions' => array('OrderedProduct.order_id' => $order['OrderedProduct']['order_id'])));
 		if ( $count > 1 ){
 			$this->OrderedProduct->delete($id, true);
-			$this->Session->setFlash('Produkt byl z objednavky odstranen.');
+			$this->Session->setFlash('Produkt byl z objednávky odstraněn.', REDESIGN_PATH . 'flash_success');
 		} else {
-			$this->Session->setFlash('Objednávka obsahuje pouze jeden produkt, chcete-li smazat celou objednávku,
-			učiňte tak v seznamu objednávek, nebo nejprve přidejte jiný produkt.');
+			$this->Session->setFlash('Objednávka obsahuje pouze jeden produkt, chcete-li smazat celou objednávku, učiňte tak v seznamu objednávek, nebo nejprve přidejte jiný produkt.', REDESIGN_PATH . 'flash_failure');
 		}
 		$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $order['OrderedProduct']['order_id']));
 	}
@@ -25,16 +24,7 @@ class OrderedProductsController extends AppController {
 		// nactu si objednavku
 		$order = $this->OrderedProduct->Order->read(null, $id);
 		
-		// seznam stavu objednavky, kdy je povoleno editovat ji
-		$allowed_edit_statuses = array(0 => '1', '2');
-		
-		// neni-li povoleno editovat, odeslu na detail objednavky a vypisu hlasku
-		if ( !in_array($order['Order']['status_id'], $allowed_edit_statuses) AND $this->Session->read('Administrator.id') != 3 ){
-			$this->Session->setFlash('Objednávka je ve stavu, který nepovoluje její editaci.', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('controller' => 'orders', 'action' => 'view', $id), null, true);
-		}
-		
-		if ( isset($this->data) ){
+		if (isset($this->data)) {
 			switch( $this->data['OrderedProduct']['change_switch'] ){
 				// pridavam produkt do objednavky
 				case "add_product":
@@ -205,6 +195,7 @@ class OrderedProductsController extends AppController {
 		$shipping_choices = $this->OrderedProduct->Order->Shipping->find('list', array(
 			'conditions' => array('Shipping.active' => true)
 		));
+		$shipping_choices = array_map('html_entity_decode', $shipping_choices);
 		$this->set('shipping_choices', $shipping_choices);
 		
 		// vytahnu si list pro select payments
@@ -220,23 +211,14 @@ class OrderedProductsController extends AppController {
 	
 
 	function sort_by_option_id($a, $b) {
-
 		if ($a['Attribute']['option_id'] == $b['Attribute']['option_id']) {
-
 			return 0;
-
 		}
 
 		if ($a['Attribute']['option_id'] < $b['Attribute']['option_id']) {
-
 			return -1;
-
 		}
-
 		return 1;
-
 	}
-
-	
 }
 ?>

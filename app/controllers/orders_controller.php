@@ -436,18 +436,20 @@ class OrdersController extends AppController {
 		}
 	}
 
+	// zmenu zpusobu platby v editaci objednavky
 	function admin_edit_payment($id = null){
 		$this->Order->id = $id;
 		$this->Order->save($this->data, false, array('payment_id'));
-		$this->Session->setFlash('Způsob platby byl změněn.');
+		$this->Session->setFlash('Způsob platby byl změněn.', REDESIGN_PATH . 'flash_success');
 		$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id));
 	}
-	
+
+	// zmenu zpusobu doruceni v editaci objednavky
 	function admin_edit_shipping($id = null){
 		$this->Order->id = $id;
 		$this->Order->save($this->data, false, array('shipping_id'));
 		$this->Order->reCount($id);
-		$this->Session->setFlash('Způsob dopravy byl změněn.');
+		$this->Session->setFlash('Způsob dopravy byl změněn.', REDESIGN_PATH . 'flash_success');
 		$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $id));
 	}
 	
