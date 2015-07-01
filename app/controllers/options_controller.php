@@ -6,7 +6,17 @@ class OptionsController extends AppController {
 
 	function admin_index() {
 		$this->Option->recursive = 0;
-		$this->set('options', $this->paginate('Option'));
+		$this->paginate = array(
+			'conditions' => array('Option.active' => true),
+			'contain' => array(),
+			'show_all' => true
+		);
+		
+		$options = $this->paginate();
+
+		$this->set('options', $options);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_add() {
@@ -16,31 +26,45 @@ class OptionsController extends AppController {
 			} else {
 				$this->Option->create();
 				if ($this->Option->save($this->data)) {
-					$this->Session->setFlash('Název byl uložen.');
+					$this->Session->setFlash('Třída atributů byla uložena.', REDESIGN_PATH . 'flash_success');
 					$this->redirect(array('action'=>'index'), null, true);
 				} else {
-					$this->Session->setFlash('Název nemohl být uložen, vyplňte prosím správně všechna pole.');
+					$this->Session->setFlash('Třída atributů nebyla uložena, vyplňte prosím správně všechna pole.', REDESIGN_PATH . 'flash_failure');
 				}
 			}
 		}
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_edit($id = null) {
-		if (!$id && empty($this->data)) {
-			$this->Session->setFlash('Invalid Option');
+		if (!$id) {
+			$this->Session->setFlash('Není zadána třída atributů, kterou chcete upravit.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'), null, true);
 		}
+		
+		$option = $this->Option->find('first', array(
+			'conditions' => array('Option.id' => $id),
+			'contain' => array()
+		));
+		
+		if (empty($option)) {
+			$this->Session->setFlash('Třída atributů, kterou chcete upravit, neexistuje.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action'=>'index'), null, true);
+		}
+		
 		if (!empty($this->data)) {
 			if ($this->Option->save($this->data)) {
-				$this->Session->setFlash('Název byl upraven.');
+				$this->Session->setFlash('Třída atributů byla upravena.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('action'=>'index'), null, true);
 			} else {
-				$this->Session->setFlash('Název nemohl být uložen, vyplňte prosím správně všechna pole.');
+				$this->Session->setFlash('Název nemohl být uložen, vyplňte prosím správně všechna pole.', REDESIGN_PATH . 'flash_failure');
 			}
+		} else {
+			$this->data = $option;
 		}
-		if (empty($this->data)) {
-			$this->data = $this->Option->read(null, $id);
-		}
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_delete($id = null) {

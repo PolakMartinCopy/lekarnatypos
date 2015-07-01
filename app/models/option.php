@@ -6,11 +6,27 @@ class Option extends AppModel {
 	
 	var $validate = array(
 		'name' => array(
-			'rule' => array('minLength', 1)
-		),
+			'notEmpty' => array(
+				'rule' => 'notEmpty',
+				'message' => 'Zadejte název třídy atributů'
+			)
+		)
 	);
 	
 	var $hasMany = array('Attribute');
+	
+	function delete($id) {
+		if ($this->hasAny(array('Option.id' => $id))) {
+			$save = array(
+				'Option' => array(
+					'id' => $id,
+					'active' => false
+				)
+			);
+			return $this->save($save);
+		}
+		return false;
+	}
 	
 	/*
 	 * Natahne sportnutrition data
