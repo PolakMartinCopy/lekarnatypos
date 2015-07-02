@@ -685,7 +685,7 @@ class Order extends AppModel {
 		$customer_mail = $this->order_mail($this->id);
 		
 		$mail->Body .= $customer_mail;
-debug($mail); die();
+
 		if (!$mail->Send()) {
 			App::import('Model', 'Tool');
 			$this->Tool = &new Tool;
