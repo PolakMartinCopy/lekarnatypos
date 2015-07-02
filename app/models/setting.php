@@ -63,7 +63,11 @@ class Setting extends AppModel {
 	}
 	
 	function init() {
-		foreach ($this->shop_keys as $constant) {
+		$settings = $this->find('all', array(
+			'contain' => array()
+		));
+		foreach ($settings as $setting) {
+			$constant = $setting['Setting']['name'];
 			if (!defined($constant)) {
 				define($constant, $this->findValue($constant));
 			}
