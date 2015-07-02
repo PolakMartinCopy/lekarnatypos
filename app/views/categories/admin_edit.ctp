@@ -31,6 +31,10 @@
 	</tr>
 	<?php } ?>
 	<tr>
+		<td>Krátký popis</td>
+		<td><?php echo $form->input('Category.short_description', array('label' => false, 'cols' => '70'))?></td>
+	</tr>
+	<tr>
 		<td>Popis</td>
 		<td><?php echo $form->input('Category.content', array('label' => false, 'style' => 'width:600px;height:350px;'))?></td>
 	</tr>
