@@ -257,6 +257,105 @@ class CategoriesController extends AppController {
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
+	function admin_sort() {
+		$result = array(
+			'success' => false,
+			'message' => ''
+		);
+	
+		if (!empty($_POST) && isset($_POST['movedId']) && isset($_POST['prevId']) && isset($_POST['nextId'])) {
+			$moved_id = $_POST['movedId'];
+			$prev_id = $_POST['prevId'];
+			$next_id = $_POST['nextId'];
+				
+			$moved = $this->Category->find('first', array(
+				'conditions' => array('Category.id' => $moved_id),
+				'contain' => array(),
+				'fields' => array('Category.id', 'Category.parent_id', 'Category.lft', 'Category.rght')
+			));
+			
+			$prev = $this->Category->find('first', array(
+				'conditions' => array('Category.id' => $prev_id),
+				'contain' => array(),
+				'fields' => array('Category.id', 'Category.parent_id', 'Category.lft', 'Category.rght')
+			));
+			
+			$next = $this->Category->find('first', array(
+				'conditions' => array('Category.id' => $next_id),
+				'contain' => array(),
+				'fields' => array('Category.id', 'Category.parent_id', 'Category.lft', 'Category.rght')
+			));
+
+			$important = null;
+			// musim zjistit, jestli ma neco okolo stejneho rodice, jako presouvany uzel
+			if (isset($prev['Category']['parent_id']) && $prev['Category']['parent_id'] == $moved['Category']['parent_id']) {
+				$important = $prev;
+			} elseif (isset($next['Category']['parent_id']) && $next['Category']['parent_id'] == $moved['Category']['parent_id']) {
+				$important = $next;
+			// a pokud okolo zadny uzel nema stejneho parenta, jako presouvany, koncim s chybou
+			} else {
+				$result['message'] = 'Chyba při řazení. Okolní uzly nejsou v postromu na stejné úrovni jako přesouvaný';
+			}
+
+			// mam uzel, podle ktereho se budu rozhodovat
+			if ($important) {
+				// zjistim pocet pozic mezi presouvanou a rozhodujici pro presun
+				// kategorie na stejne urovni, serazene
+				$level_categories = $this->Category->find('all', array(
+					'conditions' => array('Category.parent_id' => $moved['Category']['parent_id']),
+					'contain' => array(),
+					'order' => array('Category.lft' => 'asc')
+				));
+
+				$interval = 0;
+				$start = false;
+				foreach ($level_categories as $level_category) {
+					// narazil jsem na zacatek intervalu
+					if (($level_category['Category']['id'] == $moved['Category']['id'] || $level_category['Category']['id'] == $important['Category']['id']) && !$start) {
+						$start = true;
+					// narazil jsem na konec intervalu
+					} elseif (($level_category['Category']['id'] == $moved['Category']['id'] || $level_category['Category']['id'] == $important['Category']['id']) && $start) {
+						break;
+					// jsem uvnitr intevalu, pocitam velikost intervalu 
+					} elseif ($start) {
+						$interval++;
+					}
+				}
+			
+				// musim zjistit, kterym smerem presovam
+				// dolu?
+				if ($important['Category']['lft'] > $moved['Category']['lft']) {
+					// rozhodoval jsem podle prev?
+					if ($important['Category']['id'] == $prev['Category']['id']) {
+						$interval++;
+					}
+					if (!$this->Category->movedown($moved['Category']['id'], $interval)) {
+						$result['message'] = 'Kategorii se nepodařilo přesunout, opakujte prosím akci - ' . $interval;
+					} else {
+						$result['success'] = true;
+						$result['message'] = 'Kategorie byly seřazeny';
+					}
+				// nahoru
+				} else {
+					// rozhodoval jsem podle next?
+					if ($important['Category']['id'] == $next['Category']['id']) {
+						$interval++;
+					}
+					if (!$this->Category->moveup($moved['Category']['id'], $interval)) {
+						$result['message'] = 'Kategorii se nepodařilo přesunout, opakujte prosím akci';
+					} else {
+						$result['success'] = true;
+						$result['message'] = 'Kategorie byly seřazeny';
+					}
+				}
+			}
+		} else {
+			$result['message'] = 'Chyba při řazení. Neznám potřebné informace pro řazení';
+		}
+		echo json_encode_result($result);
+		die();
+	}
+	
 	// soft delete kategorie
 	function admin_delete($id = null) {
 		if (!$id) {

@@ -1,4 +1,4 @@
-<script>
+<script type="text/javascript">
 	$(function() {
 		var selectedTab = 0;
 		var pseudoRootCategoryId = false;
@@ -20,6 +20,50 @@
 		$("#tabs").tabs({
 			selected: selectedTab
 		});
+
+		//Return a helper with preserved width of cells
+		var fixHelper = function(e, ui) {
+			ui.children().each(function() {
+				$(this).width($(this).width());
+			});
+			return ui;
+		};
+
+		var body = $("body");
+		$("#categories > tbody").sortable({
+			helper: fixHelper,
+			update: function(event, ui) {
+				var movedId = ui.item.attr('rel');
+				var prevId = ui.item.prev().attr('rel');
+				var nextId = ui.item.next().attr('rel');
+				$.ajax({
+					url: '/admin/categories/sort',
+					type: 'POST',
+					data: {
+						movedId : movedId,
+						prevId : prevId,
+						nextId : nextId
+					},
+					dataType: 'json',
+					success: function(data) {
+						if (data.success) {
+							// zobrazim loading spinner
+							body.addClass("loading");
+							location.reload();
+						} else {
+							alert(data.message);
+							// zobrazim loading spinner
+							body.addClass("loading");
+							location.reload();
+						}
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert(textStatus);
+					}
+				});
+			}
+		}).disableSelection();
+		
 	});
 </script>
 
@@ -35,22 +79,26 @@
 	<div id="tabs-<?php echo $main_category['Category']['id']?>" class="tab-header">
 	<?php echo $this->Html->link('Přidat hlavní kategorii', array('controller' => 'categories', 'action' => 'add', $main_category['Category']['id']), array('style' => 'color:blue;text-decoration:underline'))?>
 	<br /><br />
-		<table class="tabulka">
-			<tr>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-				<th>ID</th>
-				<th>Název</th>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-			</tr>
+		<table class="tabulka" id="categories">
+			<thead>
+				<tr>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>ID</th>
+					<th>Název</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
 <?php
 			$prefix = '';
 			draw_table($this, $main_category['categories'], $prefix);
 ?>
+			</tbody>
 		</table>
 	</div>
 <?php } ?>
@@ -63,7 +111,7 @@
 <?php 
 function draw_table($object, $categories, $prefix) {
 	foreach ($categories as $category) { ?>
-	<tr>
+	<tr rel="<?php echo $category['Category']['id']?>">
 		<td><?php
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
 			echo $object->Html->link($icon, array('controller' => 'categories', 'action' => 'edit', $category['Category']['id']), array('escape' => false, 'title' => 'Upravit kategorii'));
