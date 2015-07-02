@@ -80,5 +80,6 @@
 		</div>
 		<div class='prazdny'></div>
 		<?php echo $this->element('sql_dump')?>
+		<div class="modal"><!-- Place at bottom of page --></div>
 	</body>
 </html>
