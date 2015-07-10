@@ -1204,6 +1204,7 @@ class OrdersController extends AppController {
 	
 						break;
 					case 'order_finish':
+						$shipping_id = $this->data['Order']['shipping_id'];
 						// nechci kontrolovat, jestli je zakaznikuv email unikatni (aby i zakaznik, ktery neni prihlaseny, ale jeho email je v systemu, mohl dokoncit objednavku
 						if (isset($this->data['Customer']['id']) && empty($this->data['Customer']['id'])) {
 							unset($this->data['Customer']['id']);
@@ -1218,24 +1219,35 @@ class OrdersController extends AppController {
 							unset($this->data['Customer']['company_dic']);
 						}
 	
-						// dogeneruju si nazev do adresy
-						$customer_name = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
-						if (isset($this->data['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
-							$customer_name = $this->data['Customer']['company_name'] . ' - ' . $customer_name;
-						}
-						$this->data['Address'][0]['name'] = $this->data['Address'][1]['name'] = $customer_name;
-						// pokud mam zadano, ze dodaci adresa je shodna s fakturacni, nakopiruju hodnoty
-						if (!$this->data['Customer']['is_delivery_address_different']) {
-							$this->data['Address'][1]['name'] = $this->data['Address'][0]['name'];
-							$this->data['Address'][1]['street'] = $this->data['Address'][0]['street'];
-							$this->data['Address'][1]['street_no'] = $this->data['Address'][0]['street_no'];
-							$this->data['Address'][1]['city'] = $this->data['Address'][0]['city'];
-							$this->data['Address'][1]['zip'] = $this->data['Address'][0]['zip'];
-							$this->data['Address'][1]['state'] = $this->data['Address'][0]['state'];
+						$address_data = null;
+						// pokud je zvolena doprava osobnim odberem
+						if ($shipping_id == PERSONAL_PURCHASE_SHIPPING_ID) {
+							// nechci adresy
+							unset($this->data['Address']);
+						// jinak
+						} else {
+							// dogeneruju si nazev do adresy
+							$customer_name = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+							if (isset($this->data['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
+								$customer_name = $this->data['Customer']['company_name'] . ' - ' . $customer_name;
+							}
+							$this->data['Address'][0]['name'] = $this->data['Address'][1]['name'] = $customer_name;
+							// pokud mam zadano, ze dodaci adresa je shodna s fakturacni, nakopiruju hodnoty
+							if (!$this->data['Customer']['is_delivery_address_different']) {
+								$this->data['Address'][1]['name'] = $this->data['Address'][0]['name'];
+								$this->data['Address'][1]['street'] = $this->data['Address'][0]['street'];
+								$this->data['Address'][1]['street_no'] = $this->data['Address'][0]['street_no'];
+								$this->data['Address'][1]['city'] = $this->data['Address'][0]['city'];
+								$this->data['Address'][1]['zip'] = $this->data['Address'][0]['zip'];
+								$this->data['Address'][1]['state'] = $this->data['Address'][0]['state'];
+							}
+							$address_data = $this->data['Address'];
 						}
 						
 						$customer_data['Customer'] = $this->data['Customer'];
-						$customer_data['Address'] = $this->data['Address'];
+						if ($address_data) {
+							$customer_data['Address'] = $address_data;
+						}
 	
 						// jestlize jsou data o zakaznikovy validni
 						if ($this->Order->Customer->saveAll($customer_data, array('validate' => 'only'))) {
@@ -1256,8 +1268,12 @@ class OrdersController extends AppController {
 							}
 								
 							$this->Session->write('Customer', $this->data['Customer']);
-							$this->Session->write('Address', $this->data['Address'][0]);
-							$this->Session->write('Address_payment', $this->data['Address'][1]);
+							if (isset($this->data['Address'][0])) {
+								$this->Session->write('Address', $this->data['Address'][1]);
+							}
+							if (isset($this->data['Address'][1])) {
+								$this->Session->write('Address_payment', $this->data['Address'][0]);
+							}
 							
 							$this->data['Order']['payment_id'] =  $this->Order->Shipping->get_payment_id($this->data['Order']['shipping_id']);
 							$this->Session->write('Order', $this->data['Order']);
@@ -1459,8 +1475,12 @@ class OrdersController extends AppController {
 		}
 
 		// pridam adresy
-		$customer['Address'][] = $this->Session->read('Address');
-		$customer['Address'][] = $this->Session->read('Address_payment');
+		if ($this->Session->check('Address')) {
+			$customer['Address'][] = $this->Session->read('Address');
+		}
+		if ($this->Session->check('Address_payment')) {
+			$customer['Address'][] = $this->Session->read('Address_payment');
+		}
 		
 		// jedna se o neprihlaseneho a nezaregistrovaneho zakaznika
 		if (!isset($customer['Customer']['id']) || empty($customer['Customer']['id'])) {
@@ -1505,7 +1525,6 @@ class OrdersController extends AppController {
 		$dataSource = $this->Order->getDataSource();
 		$dataSource->begin($this->Order);
 		try {
-
 			if (!$this->Order->save($order[0])) {
 				$dataSource->rollback($this->Order);
 				debug($this->Order->validationErrors);
@@ -1692,51 +1711,6 @@ class OrdersController extends AppController {
 
 	}
 
-	function admin_create_addresses(){
-		$orders = $this->Order->find('all');
-
-		foreach ( $orders as $order ){
-			// inicializace
-			$payment_address = array();
-			$shipping_address = array();
-			unset($this->Order->Customer->Address->id);
-			
-			$payment_address = array(
-				'customer_id' => $order['Customer']['id'],
-				'name' => $order['Order']['customer_first_name'] . ' ' . $order['Order']['customer_last_name'],
-				'street' => $order['Order']['customer_street'],
-				'city' => $order['Order']['customer_city'],
-				'zip' => $order['Order']['customer_zip'],
-				'state' => $order['Order']['customer_state']
-			);
-
-			$shipping_address = array(
-				'customer_id' => $order['Customer']['id'],
-				'name' => $order['Order']['delivery_first_name'] . ' ' . $order['Order']['delivery_last_name'],
-				'street' => $order['Order']['delivery_street'],
-				'city' => $order['Order']['delivery_city'],
-				'zip' => $order['Order']['delivery_zip'],
-				'state' => $order['Order']['delivery_state']
-			);
-
-			$same = true;
-			foreach ( $payment_address as $key => $value ){
-				if ( $payment_address[$key] != $shipping_address[$key] ){
-					$same = false;
-				}
-			}
-
-			$result = $this->Order->Customer->Address->save($payment_address);
-			debug($result);
-
-			if ( !$same ){
-				unset($this->Order->Customer->Address->id);
-				$result = $this->Order->Customer->Address->save($shipping_address);
-			}
-		}
-		die();
-	}
-	
 	function import() {
 		$this->Order->import();
 		die('here');

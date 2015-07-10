@@ -123,37 +123,43 @@ $(function() {
 		<td><?php 
 			echo $order['Order']['customer_name'] . ' <strong>(' . $order['Customer']['orders_count'] . ')</strong> - ' . $order['Customer']['CustomerType']['name'] . '';
 			echo '<br/>';
-			// dorucovaci adresa
-			$address_info = 'DA: ';
-			$address_info .= $order['Order']['delivery_name'] . ', ' . $order['Order']['delivery_street'];
-			if (!empty($order['Order']['delivery_street'])) {
-				$address_info .= ', ';
-			}
-			$address_info .= $order['Order']['delivery_zip'];
-			if (!empty($order['Order']['delivery_zip'])) {
-				$address_info .= ' ';
-			}
-			$address_info .= $order['Order']['delivery_city'];
-			if (!empty($address_info)) {
-				$address_info .= '<br/>';
-			}
-			$address_info = '<strong>' . $address_info . '</strong>';
-			echo $address_info;
+			$address_info = '<br/>';
 			
 			// fakturacni adresa
-			$delivery_address_info = '<strong>FA:</strong> ';
-			$delivery_address_info .= $order['Order']['customer_name'] . ', ' . $order['Order']['customer_street'];
-			if (!empty($order['Order']['customer_street'])) {
-				$delivery_address_info .= ', ';
+			$delivery_address_info = '<br/>';
+			
+			if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
+				$address_info = 'DA: ';
+				$address_info .= $order['Order']['delivery_name'] . ', ' . $order['Order']['delivery_street'];
+				if (!empty($order['Order']['delivery_street'])) {
+					$address_info .= ', ';
+				}
+				$address_info .= $order['Order']['delivery_zip'];
+				if (!empty($order['Order']['delivery_zip'])) {
+					$address_info .= ' ';
+				}
+				$address_info .= $order['Order']['delivery_city'];
+				if (!empty($address_info)) {
+					$address_info .= '<br/>';
+				}
+				$address_info = '<strong>' . $address_info . '</strong>';
+
+				$delivery_address_info = '<strong>FA:</strong> ';
+				$delivery_address_info .= $order['Order']['customer_name'] . ', ' . $order['Order']['customer_street'];
+				if (!empty($order['Order']['customer_street'])) {
+					$delivery_address_info .= ', ';
+				}
+				$delivery_address_info .= $order['Order']['customer_zip'];
+				if (!empty($order['Order']['customer_zip'])) {
+					$delivery_address_info .= ' ';
+				}
+				$delivery_address_info .= $order['Order']['customer_city'];
+				if (!empty($address_info)) {
+					$delivery_address_info .= '<br/>';
+				}
 			}
-			$delivery_address_info .= $order['Order']['customer_zip'];
-			if (!empty($order['Order']['customer_zip'])) {
-				$delivery_address_info .= ' ';
-			}
-			$delivery_address_info .= $order['Order']['customer_city'];
-			if (!empty($address_info)) {
-				$delivery_address_info .= '<br/>';
-			}
+			
+			echo $address_info;
 			echo $delivery_address_info;
 			
 			$contact_info = '';

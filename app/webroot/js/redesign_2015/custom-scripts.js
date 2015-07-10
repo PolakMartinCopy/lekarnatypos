@@ -159,40 +159,6 @@ jQuery(document).ready(function ($) {
     $(".count-add").click(addCount);
     $(".count-remove").click(removeCount);
     
-    // JEDNOKROKOVA OBJEDNAVKA
-	if ($('#CustomerIsRegistered1').is(':checked')) {
-		$('#CustomerOneStepOrderDiv').show();
-	}
-	$('input.customer-is-registered').change(function() {
-		if (this.id == 'CustomerIsRegistered1') {
-			$('#CustomerOneStepOrderDiv').show();
-		} else {
-			$('#CustomerOneStepOrderDiv').hide();
-		}
-	});
-
-	$('#isDifferentAddressCheckbox').change(function() {
-		// pokud mam dorucovaci adresu ruznou od fakturacni
-		if ($(this).is(':checked')) {
-			// zobrazim tabulku pro dorucovaci adresu
-			$('#InvoiceAddressTable').show();
-		} else {
-			// schovam tabulku pro dorucovaci adresu
-			$('#InvoiceAddressTable').hide();
-		}
-	});
-	
-	$('#isCompany').change(function() {
-		// pokud mam dorucovaci adresu ruznou od fakturacni
-		if ($(this).is(':checked')) {
-			// zobrazim tabulku pro dorucovaci adresu
-			$('#companyTable').show();
-		} else {
-			// schovam tabulku pro dorucovaci adresu
-			$('#companyTable').hide();
-		}
-	});
-
     // slider pro vyber rozmezi podle ceny definuju pouze, pokud je na strance spravny element
 	if ($('.slider').length) {
 	    $('.slider').slider()

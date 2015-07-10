@@ -20,12 +20,24 @@
 			<br />
 			<strong></strong><br />
 			<strong><?php echo $order['Order']['customer_first_name']?> <?php echo $order['Order']['customer_last_name']?></strong><br />
-			<?php echo $order['Order']['customer_street'] . ', ' . $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . ', ' . $order['Order']['customer_state'] ?><br />
+<?php 
+			$invoice_address = '';
+			if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
+				$invoice_address = $order['Order']['customer_street'] . ', ' . $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . ', ' . $order['Order']['customer_state'];
+			}
+			echo $invoice_address;
+?><br />
 			IČ: <?php echo $order['Order']['customer_ico']?><br />
 			DIČ: <?php echo $order['Order']['customer_dic']?><br /> <br />
 			Telefon: <?php echo $order['Order']['customer_phone']?><br />
 			E-mail: <a href="mailto:<?php echo $order['Order']['customer_email']?>"><?php echo $order['Order']['customer_email']?></a><br /> <br />
-			Dodací adresa: <?php echo $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state']?><br />
+<?php 
+			$delivery_address = '';
+			if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
+				$delivery_address = 'Dodací adresa: ' . $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state'];
+			}
+			echo $delivery_address;
+?><br />
 		</td>
 	</tr>
 </table>

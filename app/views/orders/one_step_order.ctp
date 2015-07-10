@@ -229,45 +229,47 @@ if ($this->Session->check('Message.flash')) {
 	</div>
 </fieldset>
 
-<fieldset id="DeliveryAddressTable">
-	<legend>Doručovací adresa</legend>
-	<div class="row">
-		<div class="col-xs-8 col-md-8">
-			<div class="form-group">
-				<label><sup>*</sup>Ulice</label>
-				<?=$form->input('Address.0.street', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+<div id="DeliveryAddressBox">
+	<fieldset id="DeliveryAddressTable">
+		<legend>Doručovací adresa</legend>
+		<div class="row">
+			<div class="col-xs-8 col-md-8">
+				<div class="form-group">
+					<label><sup>*</sup>Ulice</label>
+					<?=$form->input('Address.0.street', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-4">
+				<div class="form-group">
+					<label><sup>*</sup>Číslo popisné</label>
+					<?=$form->input('Address.0.street_no', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
 			</div>
 		</div>
-		<div class="col-xs-4 col-md-4">
-			<div class="form-group">
-				<label><sup>*</sup>Číslo popisné</label>
-				<?=$form->input('Address.0.street_no', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+		<div class="row">
+			<div class="col-xs-8 col-md-8">
+				<div class="form-group">
+					<label><sup>*</sup>Město</label>
+					<?=$form->input('Address.0.city', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-4">
+				<div class="form-group">
+					<label><sup>*</sup>PSČ</label>
+					<?=$form->input('Address.0.zip', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-xs-8 col-md-8">
-			<div class="form-group">
-				<label><sup>*</sup>Město</label>
-				<?=$form->input('Address.0.city', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<div class="form-group">
+					<label><sup>*</sup>Stát</label>
+					<?=$form->input('Address.0.state', array('label' => false, 'div' => false, 'type' => 'select', 'options' => array('Česká republika' => 'Česká republika'), 'class' => 'form-control'))?>
+				</div>
 			</div>
 		</div>
-		<div class="col-xs-4 col-md-4">
-			<div class="form-group">
-				<label><sup>*</sup>PSČ</label>
-				<?=$form->input('Address.0.zip', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-xs-12 col-md-12">
-			<div class="form-group">
-				<label><sup>*</sup>Stát</label>
-				<?=$form->input('Address.0.state', array('label' => false, 'div' => false, 'type' => 'select', 'options' => array('Česká republika' => 'Česká republika'), 'class' => 'form-control'))?>
-			</div>
-		</div>
-	</div>
-</fieldset>
+	</fieldset>
+</div>
 
 <fieldset style="display:block">
 	<legend>
@@ -311,13 +313,13 @@ if ($this->Session->check('Message.flash')) {
 </fieldset>
 
 
-
-<div class="input checkbox" style="margin: 0;border-bottom: 1px solid #e5e5e5;margin-bottom:20px">
-	<label>
-		<?php echo $this->Form->input('Customer.is_delivery_address_different', array('label' => false, 'type' => 'checkbox', 'id' => 'isDifferentAddressCheckbox', 'div' => false)); ?>
-		<span style="font-size:21px">Fakturační adresa není stejná jako doručovací</span>
-	</label>
-</div>
+<div id="InvoiceAddressBox">
+	<div class="input checkbox" style="margin: 0;border-bottom: 1px solid #e5e5e5;margin-bottom:20px">
+		<label>
+			<?php echo $this->Form->input('Customer.is_delivery_address_different', array('label' => false, 'type' => 'checkbox', 'id' => 'isDifferentAddressCheckbox', 'div' => false)); ?>
+			<span style="font-size:21px">Fakturační adresa není stejná jako doručovací</span>
+		</label>
+	</div>
 
 <?php 
 	$style = ' style="display:none"';
@@ -325,44 +327,45 @@ if ($this->Session->check('Message.flash')) {
 		$style = '';
 	}
 ?>
-<fieldset id="InvoiceAddressTable"<?php echo $style?>>
-	<div class="row">
-		<div class="col-xs-8 col-md-8">
-			<div class="form-group">
-				<label><sup>*</sup>Ulice</label>
-				<?=$form->input('Address.1.street', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+	<fieldset id="InvoiceAddressTable"<?php echo $style?>>
+		<div class="row">
+			<div class="col-xs-8 col-md-8">
+				<div class="form-group">
+					<label><sup>*</sup>Ulice</label>
+					<?=$form->input('Address.1.street', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-4">
+	    		<div class="form-group">
+					<label><sup>*</sup>Číslo popisné</label>
+					<?=$form->input('Address.1.street_no', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
 			</div>
 		</div>
-		<div class="col-xs-4 col-md-4">
-    		<div class="form-group">
-				<label><sup>*</sup>Číslo popisné</label>
-				<?=$form->input('Address.1.street_no', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+		<div class="row">
+			<div class="col-xs-8 col-md-8">
+				<div class="form-group">
+					<label><sup>*</sup>Město</label>
+					<?=$form->input('Address.1.city', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-4">
+	    		<div class="form-group">
+	    			<label><sup>*</sup>PSČ</label>
+					<?=$form->input('Address.1.zip', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-xs-8 col-md-8">
-			<div class="form-group">
-				<label><sup>*</sup>Město</label>
-				<?=$form->input('Address.1.city', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<div class="form-group">
+					<label><sup>*</sup>Stát</label>
+					<?=$form->input('Address.1.state', array('label' => false, 'div' => false, 'type' => 'select', 'options' => array('Česká republika' => 'Česká republika'), 'class' => 'form-control'))?>
+				</div>
 			</div>
-		</div>
-		<div class="col-xs-4 col-md-4">
-    		<div class="form-group">
-    			<label><sup>*</sup>PSČ</label>
-				<?=$form->input('Address.1.zip', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-xs-12 col-md-12">
-			<div class="form-group">
-				<label><sup>*</sup>Stát</label>
-				<?=$form->input('Address.1.state', array('label' => false, 'div' => false, 'type' => 'select', 'options' => array('Česká republika' => 'Česká republika'), 'class' => 'form-control'))?>
-			</div>
-		</div>
-	</div>		
-</fieldset>
+		</div>		
+	</fieldset>
+</div>
 
 <?php 
 	echo $this->Form->hidden('Customer.id');

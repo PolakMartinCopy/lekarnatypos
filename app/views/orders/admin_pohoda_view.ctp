@@ -13,10 +13,17 @@
 				<ord:partnerIdentity>
 					<typ:address>
 						<typ:company><?php echo $order['Order']['customer_name'] ?></typ:company>
+<?php if ($order['Order']['shipping_id'] == PERSONAL_PURCHASE_SHIPPING_ID) { ?>
+						<typ:name></typ:name>
+						<typ:city></typ:city>
+						<typ:street></typ:street>
+						<typ:zip></typ:zip>
+<?php } else { ?>
 						<typ:name><?php echo $order['Order']['customer_name'] ?></typ:name>
 						<typ:city><?php echo $order['Order']['customer_city'] ?></typ:city>
 						<typ:street><?php echo $order['Order']['customer_street'] ?></typ:street>
 						<typ:zip><?php echo $order['Order']['customer_zip'] ?></typ:zip>
+<?php } ?>
 						<typ:ico><?php echo $order['Order']['customer_ico'] ?></typ:ico>
 						<typ:dic><?php echo $order['Order']['customer_dic'] ?></typ:dic>
 						<typ:phone><?php echo $order['Order']['customer_phone'] ?></typ:phone>
