@@ -514,7 +514,7 @@ class CustomersController extends AppController {
 		$this->layout = REDESIGN_PATH . 'content';
 	}
 
-	function address_edit(){
+	function address_edit() {
 		// nastavim nadpis
 		$this->set('page_heading', ($this->params['named']['type'] == 'd' ? 'Doručovací' : 'Fakturační' ) . ' adresa');
 
@@ -527,25 +527,44 @@ class CustomersController extends AppController {
 		);
 		$this->set('breadcrumbs', $breadcrumbs);
 				
-		$address = $this->Customer->Address->find(array('Address.customer_id' => $this->Session->read('Customer.id'), 'Address.type' => $this->params['named']['type']));
-		if ( empty($this->data) ){
-			$this->data = $address;
-			if ( empty($address) ){
-				$this->data['Address']['type'] = $this->params['named']['type'];
-			}
-		} else {
-			// znamena to, ze clovek ma uz adresu daneho typu v db,
-			// jen ji chce upravit
-			if ( !empty($address) ){
-				$this->data['Address']['id'] = $address['Address']['id'];
+		$customer = $this->Customer->find('first', array(
+			'conditions' => array(
+				'Customer.id' => $this->Session->read('Customer.id')
+			),
+			'contain' => array(
+				'Address' => array(
+					'conditions' => array('Address.type' => $this->params['named']['type'])
+				)
+			)
+		));
+
+		$this->set('type', $this->params['named']['type']);
+		
+		if (!empty($this->data)) {
+			if (is_null($this->data['Address'][0]['id'])) {
+				unset($this->data['Address'][0]['id']);
+				$this->Customer->Address->create();
 			}
 			
-			$this->data['Address']['customer_id'] = $this->Session->read('Customer.id');
-			if ( $this->Customer->Address->save($this->data) ){
+			// pokud edituju firemni udaje a nemam vubec zadanou adresu, musim vsechny adresova pole unsetnout
+			if (
+				empty($this->data['Address'][0]['id']) && empty($this->data['Address'][0]['name']) && empty($this->data['Address'][0]['street'])
+				&& empty($this->data['Address'][0]['street_no']) && empty($this->data['Address'][0]['city']) && empty($this->data['Address'][0]['zip'])
+			) {
+				unset($this->data['Address']);
+			}			
+			
+			if ($this->Customer->saveAll($this->data)) {
 				$this->Session->setFlash('Adresa byla uložena.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('controller' => 'customers', 'action' => 'index'));
 			} else {
 				$this->Session->setFlash('Adresa nebyla vyplněna správně, zkontrolujte prosím formulář.', REDESIGN_PATH . 'flash_failure');
+			}
+			
+		} else {
+			$this->data = $customer;
+			if (empty($customer['Address'])) {
+				$this->data['Address'][0]['type'] = $this->params['named']['type'];
 			}
 		}
 	}

@@ -1,7 +1,8 @@
 <?php
 class Address extends AppModel {
-
 	var $name = 'Address';
+	
+	var $actsAs = array('Containable');
 
 	var $belongsTo = array('Customer');
 

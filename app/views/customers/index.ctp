@@ -13,24 +13,6 @@
 		<th>Email:</th>
 		<td><?=ife( $customer['Customer']['email'], $customer['Customer']['email'], 'neuveden' )?></td>
 	</tr>
-<?php if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) { ?>
-	<tr>
-		<th>Název firmy:</th>
-		<td><?php echo $customer['Customer']['company_name']?></td>
-	</tr>
-<?php } ?>
-<?php if (isset($customer['Customer']['company_ico']) && !empty($customer['Customer']['company_ico'])) { ?>
-	<tr>
-		<th>IČ:</th>
-		<td><?php echo $customer['Customer']['company_ico']?></td>
-	</tr>
-<?php } ?>
-<?php if (isset($customer['Customer']['company_dic']) && !empty($customer['Customer']['company_dic'])) { ?>
-	<tr>
-		<th>DIČ:</th>
-		<td><?php echo $customer['Customer']['company_dic']?></td>
-	</tr>
-<?php } ?>
 	<?php foreach ($customer['CustomerLogin'] as $customer_login) { ?>
 	<tr>
 		<th>Login:</th>
@@ -96,14 +78,28 @@
 		<th>Doručovací adresa</th>
 	</tr>
 	<tr>
-		<td>
-			<?
+		<td><?
 			foreach ( $customer['Address'] as $address ){
 				if ( $address['type'] == 'f' ){
 					echo $address['name'] . '<br />' . $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
 				}
 			}
-			?>
+			if (
+				isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])
+				|| isset($customer['Customer']['company_ico']) && !empty($customer['Customer']['company_ico'])
+				|| isset($customer['Customer']['company_dic']) && !empty($customer['Customer']['company_dic'])
+			) { ?>
+			<br/><br/>
+			 <?php }
+			if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) { ?>
+			<strong>Název firmy:</strong> <?php echo $customer['Customer']['company_name']?><br/>
+			<?php }
+			if (isset($customer['Customer']['company_ico']) && !empty($customer['Customer']['company_ico'])) { ?>
+			<strong>IČ:</strong> <?php echo $customer['Customer']['company_ico']?><br/>
+			<?php }
+			if (isset($customer['Customer']['company_dic']) && !empty($customer['Customer']['company_dic'])) { ?>
+			<strong>DIČ:</strong> <?php echo $customer['Customer']['company_dic']?>
+			<?php } ?>
 		</td>
 		<td>
 			<?
