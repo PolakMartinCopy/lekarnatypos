@@ -34,9 +34,9 @@
                         <a href="http://obchody.heureka.cz/lekarnatypos-cz/recenze/" target="_blank">
                             <img src="/img/<?php echo REDESIGN_PATH?>heureka-overeno-zakazniky.png" alt="Heureka.cz - Ověřeno zákazníky" />
                         </a>
-                        <a href="http://www.sukl.cz/lekarna/72995264000" target="_blank">
-                            <img src="/img/<?php echo REDESIGN_PATH?>sukl.gif" alt="Ověřit lékárnu" />
-                        </a>
+                        <a href="http://www.sukl.cz/lekarna/72995264000?verify" target="_blank">
+		    				<img src="/images/<?php echo REDESIGN_PATH?>sukl-overeni.png" alt="Ověřit lékárnu" title="Ověřit lékárnu" width="234px" height="195px"/> 
+	    				</a>
                     </div>
                 </div>
                 <div class="content-section">

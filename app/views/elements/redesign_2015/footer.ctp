@@ -10,6 +10,9 @@
                 <li><a href="/osobni-odber">Osobní odběr</a></li>
                 <li><a href="/obchodni-podminky">Obchodní podmínky</a></li>
             </ul>
+			<a href="/statni-ustav-pro-kontrolu-leciv">
+   				<img src="/images/<?php echo REDESIGN_PATH?>sukl-logo.jpg" alt="Státní ústav pro kontrolu léčiv" title="Státní ústav pro kontrolu léčiv" width="132px" height="43px"  style="margin:10px 10px 0 0"/> 
+			</a>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 hidden-xs">
             <div class="footer-headline">
@@ -51,6 +54,11 @@
                 DIČ: CZ29248400<br />
                 tel.: 778 437 811
             </p>
-        </div>
+<?php if ($_SERVER['REQUEST_URI'] == '/') { ?>
+			<a href="http://www.sukl.cz/lekarna/72995264000?verify">
+		    	<img src="/images/<?php echo REDESIGN_PATH?>sukl-overeni.png" alt="Ověřit lékárnu" title="Ověřit lékárnu" width="132px" height="110px"  style="margin:10px 10px 0 0"/> 
+	    	</a>
+<?php } ?>
+	    </div>
     </div>
 </div>
