@@ -545,15 +545,20 @@ class CustomersController extends AppController {
 				unset($this->data['Address'][0]['id']);
 				$this->Customer->Address->create();
 			}
-			
+
 			// pokud edituju firemni udaje a nemam vubec zadanou adresu, musim vsechny adresova pole unsetnout
 			if (
-				empty($this->data['Address'][0]['id']) && empty($this->data['Address'][0]['name']) && empty($this->data['Address'][0]['street'])
+				empty($this->data['Address'][0]['id']) && empty($this->data['Address'][0]['street'])
 				&& empty($this->data['Address'][0]['street_no']) && empty($this->data['Address'][0]['city']) && empty($this->data['Address'][0]['zip'])
 			) {
 				unset($this->data['Address']);
 			}			
-			
+
+			$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+			if (isset($this->data['Customer']['company_name']) && !empty($this->data['Customer']['company_name'])) {
+				$this->data['Address'][0]['name'] = $this->data['Customer']['company_name'];
+			}
+
 			if ($this->Customer->saveAll($this->data)) {
 				$this->Session->setFlash('Adresa byla uložena.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('controller' => 'customers', 'action' => 'index'));
