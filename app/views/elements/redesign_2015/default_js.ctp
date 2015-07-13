@@ -51,6 +51,7 @@
 	if ($('#OrderShippingId' + PERSONAL_PURCHASE_SHIPPING_ID).is(':checked')) {
 		$('#InvoiceAddressBox').hide();
 		$('#DeliveryAddressBox').hide();
+		$('#IsCompanyBox').hide();
 	}
 
 	// pri zmene dopravy
@@ -60,9 +61,11 @@
 		if (shippingId == PERSONAL_PURCHASE_SHIPPING_ID) {
 			$('#InvoiceAddressBox').hide();
 			$('#DeliveryAddressBox').hide();
+			$('#IsCompanyBox').hide();
 		} else {
 			$('#InvoiceAddressBox').show();
-			$('#DeliveryAddressBox').show();			
+			$('#DeliveryAddressBox').show();
+			$('#IsCompanyBox').show();			
 		}
  	});
  });

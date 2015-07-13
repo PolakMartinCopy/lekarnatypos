@@ -271,7 +271,7 @@ if ($this->Session->check('Message.flash')) {
 	</fieldset>
 </div>
 
-<fieldset style="display:block">
+<fieldset id="IsCompanyBox" style="display:block">
 	<legend>
 		<div class="input checkbox" style="margin: 0;">
 			<label>
