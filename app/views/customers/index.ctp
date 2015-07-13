@@ -79,9 +79,13 @@
 	</tr>
 	<tr>
 		<td><?
-			foreach ( $customer['Address'] as $address ){
-				if ( $address['type'] == 'f' ){
-					echo $address['name'] . '<br />' . $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
+			foreach ($customer['Address'] as $address) {
+				if ($address['type'] == 'f') {
+					if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
+						echo $customer['Customer']['company_name'] . '<br/>';
+					}
+					echo $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . '<br/>';
+					echo $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
 				}
 			}
 			if (
@@ -105,7 +109,11 @@
 			<?
 			foreach ( $customer['Address'] as $address ){
 				if ( $address['type'] == 'd' ){
-					echo $address['name'] . '<br />' . $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
+					if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
+						echo $customer['Customer']['company_name'] . '<br/>';
+					}
+					echo $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . '<br/>';
+					echo $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
 				}
 			}
 			?>
