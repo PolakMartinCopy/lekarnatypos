@@ -28,9 +28,8 @@
 		<?=$form->hidden('Address.0.state', array('value' => 'Česká Republika'))?>
 	</div>
 </fieldset>
-<?php echo $this->Form->submit('Uložit', array('class' => 'btn btn-success')) ?>
-<br/><br/>
 <?php if (isset($type) && $type == 'f') { ?>
+<br/><br/>
 <fieldset>
 	<legend>Firemní údaje</legend>
 	<div class="form-group">
@@ -48,7 +47,6 @@
 </fieldset>
 <?php echo $this->Form->hidden('Customer.id')?>
 <?php } ?>
-<br/><br/>
 <?php 
 	echo $this->Form->hidden('Address.0.id');
 	echo $this->Form->hidden('Address.0.type');
