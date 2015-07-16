@@ -38,7 +38,7 @@
 		<customer>
 		  	<company><?php echo $order['Order']['customer_name']?></company>
 			<division></division>
-			<name><?php echo $order['Order']['customer_name']?></name>
+			<name><?php echo full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name'])?></name>
 			<street><?php echo $order['Order']['customer_street']?></street>
 			<city><?php echo $order['Order']['customer_city']?></city>
 			<psc><?php echo $order['Order']['customer_zip']?></psc>

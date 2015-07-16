@@ -36,22 +36,10 @@
 		}
 	});
 	
-	$('#isCompany').change(function() {
-		// pokud mam dorucovaci adresu ruznou od fakturacni
-		if ($(this).is(':checked')) {
-			// zobrazim tabulku pro dorucovaci adresu
-			$('#companyTable').show();
-		} else {
-			// schovam tabulku pro dorucovaci adresu
-			$('#companyTable').hide();
-		}
-	});
-
 	// pokud je rovnou vybrana doprava osobnim odberem
 	if ($('#OrderShippingId' + PERSONAL_PURCHASE_SHIPPING_ID).is(':checked')) {
 		$('#InvoiceAddressBox').hide();
 		$('#DeliveryAddressBox').hide();
-		$('#IsCompanyBox').hide();
 	}
 
 	// pri zmene dopravy
@@ -61,13 +49,11 @@
 		if (shippingId == PERSONAL_PURCHASE_SHIPPING_ID) {
 			$('#InvoiceAddressBox').hide();
 			$('#DeliveryAddressBox').hide();
-			$('#IsCompanyBox').hide();
 		} else {
 			$('#InvoiceAddressBox').show();
 			$('#DeliveryAddressBox').show();
-			$('#IsCompanyBox').show();			
 		}
  	});
- });
+});
 </script>
 <?php } ?>

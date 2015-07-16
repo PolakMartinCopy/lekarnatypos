@@ -19,11 +19,15 @@
 		<td width="50%">
 			<br />
 			<strong></strong><br />
-			<strong><?php echo $order['Order']['customer_first_name']?> <?php echo $order['Order']['customer_last_name']?></strong><br />
+			<strong><?php echo $order['Order']['customer_name']?></strong><br />
 <?php 
-			$invoice_address = '';
+			$invoice_name = full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name']);
+			if (!empty($invoice_name) && $invoice_name != $order['Order']['customer_name']) {
+				echo $invoice_name = $invoice_name . '<br/>';
+			}
+			$invoice_address = '';			
 			if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
-				$invoice_address = $order['Order']['customer_street'] . ', ' . $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . ', ' . $order['Order']['customer_state'];
+				$invoice_address .= $order['Order']['customer_street'] . ', ' . $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . ', ' . $order['Order']['customer_state'];
 			}
 			echo $invoice_address;
 ?><br />
@@ -34,7 +38,13 @@
 <?php 
 			$delivery_address = '';
 			if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
-				$delivery_address = 'Dodací adresa: ' . $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state'];
+				
+				$delivery_address = 'Dodací adresa: ' . $order['Order']['delivery_name'];
+				$delivery_name = full_name($order['Order']['delivery_first_name'], $order['Order']['delivery_last_name'], ', ');
+				if (!empty($delivery_name) && $delivery_name != $order['Order']['delivery_name']) {
+					$delivery_address .= ', ' . $delivery_name;
+				}
+				$delivery_address .= ', ' . $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state'];
 			}
 			echo $delivery_address;
 ?><br />

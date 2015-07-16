@@ -5,22 +5,22 @@
 	<div class="row">
 		<div class="col-xs-12 col-md-12">
 			<div class="form-group">
-				<label>Název společnosti</label>
-				<?=$form->input('Customer.company_name', array('label'=> false, 'class' => 'form-control'))?>
+				<label><sup>*</sup>Jméno / Název společnosti</label>
+				<?=$form->input('Address.0.name', array('label'=> false, 'class' => 'form-control'))?>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-xs-12 col-sm-6 col-md-6">
 			<div class="form-group">
-				<label><sup>*</sup>Jméno</label>
-				<?=$form->input('Customer.first_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
+				<label>Jméno kontakní osoby</label>
+				<?=$form->input('Address.0.contact_first_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
 			</div>
 		</div>
 		<div class="col-xs-12 col-sm-6 col-md-6">
 			<div class="form-group">
-				<label><sup>*</sup>Příjmení</label>
-				<?=$form->input('Customer.last_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
+				<label>Příjmení kontakní osoby</label>
+				<?=$form->input('Address.0.contact_last_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
 			</div>
 		</div>
 	</div>

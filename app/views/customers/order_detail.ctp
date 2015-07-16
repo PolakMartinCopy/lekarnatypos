@@ -55,12 +55,20 @@
 	<tr>
 		<td><?php
 			echo $order['Order']['customer_name'] . '<br />';
+			$full_name = full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name']);
+			if ($full_name) {
+				echo $full_name . '<br/>';
+			}
 			echo $order['Order']['customer_street']  . '<br />';
 			echo $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . '<br />';
 			echo $order['Order']['customer_state'];
 		?></td>
 		<td><?php 
 			echo $order['Order']['delivery_name'] . '<br />';
+			$full_name = full_name($order['Order']['delivery_first_name'], $order['Order']['delivery_last_name']);
+			if ($full_name) {
+				echo $full_name . '<br/>';
+			}
 			echo $order['Order']['delivery_street'] . '<br />';
 			echo $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . '<br />';
 			echo $order['Order']['delivery_state'];

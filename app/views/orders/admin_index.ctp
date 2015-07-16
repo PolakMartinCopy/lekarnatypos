@@ -121,46 +121,56 @@ $(function() {
 			<img src="/images/<?php echo REDESIGN_PATH?>icons/cz.gif" width="18" height="12" alt="" />
 		</td>
 		<td><?php 
-			echo $order['Order']['customer_name'] . ' <strong>(' . $order['Customer']['orders_count'] . ')</strong> - ' . $order['Customer']['CustomerType']['name'] . '';
+			echo $order['Customer']['first_name'] . ' ' . $order['Customer']['last_name'] . ' <strong>(' . $order['Customer']['orders_count'] . ')</strong> - ' . $order['Customer']['CustomerType']['name'] . '';
 			echo '<br/>';
-			$address_info = '<br/>';
-			
-			// fakturacni adresa
+			// dorucovaci adresa
 			$delivery_address_info = '<br/>';
+			// fakturacni adresa
+			$invoice_address_info = '<br/>';
 			
 			if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
-				$address_info = 'DA: ';
-				$address_info .= $order['Order']['delivery_name'] . ', ' . $order['Order']['delivery_street'];
+				$delivery_address_info = 'DA: ';
+				$delivery_address_info .= $order['Order']['delivery_name'];
+				$delivery_name = full_name($order['Order']['delivery_first_name'], $order['Order']['delivery_last_name'], ', ');
+				if (!empty($delivery_name) && $delivery_name != $order['Order']['delivery_name']) {
+					$delivery_address_info .= ', ' . $delivery_name;
+				}
+				$delivery_address_info .= ', ' . $order['Order']['delivery_street'];
 				if (!empty($order['Order']['delivery_street'])) {
-					$address_info .= ', ';
-				}
-				$address_info .= $order['Order']['delivery_zip'];
-				if (!empty($order['Order']['delivery_zip'])) {
-					$address_info .= ' ';
-				}
-				$address_info .= $order['Order']['delivery_city'];
-				if (!empty($address_info)) {
-					$address_info .= '<br/>';
-				}
-				$address_info = '<strong>' . $address_info . '</strong>';
-
-				$delivery_address_info = '<strong>FA:</strong> ';
-				$delivery_address_info .= $order['Order']['customer_name'] . ', ' . $order['Order']['customer_street'];
-				if (!empty($order['Order']['customer_street'])) {
 					$delivery_address_info .= ', ';
 				}
-				$delivery_address_info .= $order['Order']['customer_zip'];
-				if (!empty($order['Order']['customer_zip'])) {
+				$delivery_address_info .= $order['Order']['delivery_zip'];
+				if (!empty($order['Order']['delivery_zip'])) {
 					$delivery_address_info .= ' ';
 				}
-				$delivery_address_info .= $order['Order']['customer_city'];
-				if (!empty($address_info)) {
+				$delivery_address_info .= $order['Order']['delivery_city'];
+				if (!empty($delivery_address_info)) {
 					$delivery_address_info .= '<br/>';
+				}
+				$delivery_address_info = '<strong>' . $delivery_address_info . '</strong>';
+
+				$invoice_address_info = '<strong>FA:</strong> ';
+				$invoice_address_info .= $order['Order']['customer_name'];
+				$invoice_name = full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name']);
+				if (!empty($invoice_name) && $invoice_name != $order['Order']['customer_name']) {
+					$invoice_address_info .= ', ' . $invoice_name;
+				}
+				$invoice_address_info .= ', ' . $order['Order']['customer_street'];
+				if (!empty($order['Order']['customer_street'])) {
+					$invoice_address_info .= ', ';
+				}
+				$invoice_address_info .= $order['Order']['customer_zip'];
+				if (!empty($order['Order']['customer_zip'])) {
+					$invoice_address_info .= ' ';
+				}
+				$invoice_address_info .= $order['Order']['customer_city'];
+				if (!empty($invoice_address_info)) {
+					$invoice_address_info .= '<br/>';
 				}
 			}
 			
-			echo $address_info;
 			echo $delivery_address_info;
+			echo $invoice_address_info;
 			
 			$contact_info = '';
 			if (!empty($order['Order']['customer_phone'])) {

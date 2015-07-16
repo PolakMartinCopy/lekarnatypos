@@ -471,6 +471,12 @@ class Order extends AppModel {
 		// doplnim data o fakturacni adrese
 		if (isset($customer['Address'][1]['name']) && isset($customer['Address'][1]['street']) && isset($customer['Address'][1]['street_no']) && isset($customer['Address'][1]['city']) && isset($customer['Address'][1]['zip']) && isset($customer['Address'][1]['state'])) {	
 			$order['Order']['customer_name'] = $customer['Address'][1]['name'];
+			if (isset($customer['Address'][1]['contact_first_name'])) {
+				$order['Order']['customer_first_name'] = $customer['Address'][1]['contact_first_name'];
+			}
+			if (isset($customer['Address'][1]['contact_last_name'])) {
+				$order['Order']['customer_last_name'] = $customer['Address'][1]['contact_last_name'];
+			}
 			$order['Order']['customer_street'] = $customer['Address'][1]['street'] . ' ' . $customer['Address'][1]['street_no'];
 			$order['Order']['customer_city'] = $customer['Address'][1]['city'];
 			$order['Order']['customer_zip'] = $customer['Address'][1]['zip'];
@@ -480,7 +486,13 @@ class Order extends AppModel {
 		}
 		// doplnim data o dorucovaci adrese
 		if (isset($customer['Address'][0]['name']) && isset($customer['Address'][0]['street']) && isset($customer['Address'][0]['street_no']) && isset($customer['Address'][0]['city']) && isset($customer['Address'][0]['zip']) && isset($customer['Address'][0]['state'])) {
-			$order['Order']['delivery_name'] = $customer['Address'][0]['name'];		
+			$order['Order']['delivery_name'] = $customer['Address'][0]['name'];
+			if (isset($customer['Address'][0]['contact_first_name'])) {
+				$order['Order']['delivery_first_name'] = $customer['Address'][0]['contact_first_name'];
+			}
+			if (isset($customer['Address'][0]['contact_last_name'])) {
+				$order['Order']['delivery_last_name'] = $customer['Address'][0]['contact_last_name'];
+			}		
 			$order['Order']['delivery_street'] = $customer['Address'][0]['street'] . ' ' . $customer['Address'][0]['street_no'];
 			$order['Order']['delivery_city'] = $customer['Address'][0]['city'];
 			$order['Order']['delivery_zip'] = $customer['Address'][0]['zip'];
@@ -723,8 +735,10 @@ class Order extends AppModel {
 		$customer_invoice_address = '&nbsp;';
 		$customer_delivery_address = '&nbsp;';
 		if ($order['Order']['shipping_id'] != PERSONAL_PURCHASE_SHIPPING_ID) {
-			$customer_invoice_address = 'Fakturační adresa: ' . $order['Order']['customer_street'] . ', ' . $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . ' ' . $order['Order']['customer_state'];
-			$customer_delivery_address = 'Dodací adresa: ' . $order['Order']['delivery_name'] . ', ' . $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state'];
+			$invoice_full_name = full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name']);
+			$delivery_full_name = full_name($order['Order']['delivery_first_name'], $order['Order']['delivery_last_name']);
+			$customer_invoice_address = 'Fakturační adresa: ' . (!empty($invoice_full_name) ? $invoice_full_name . ', ' : '') . $order['Order']['customer_street'] . ', ' . $order['Order']['customer_zip'] . ' ' . $order['Order']['customer_city'] . ' ' . $order['Order']['customer_state'];
+			$customer_delivery_address = 'Dodací adresa: ' . $order['Order']['delivery_name'] . ', ' . (!empty($delivery_full_name) ? $delivery_full_name . ', ' : '') . $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state'];
 		}
 
 		App::import('Model', 'MailTemplate');
@@ -783,7 +797,7 @@ class Order extends AppModel {
 			$content = str_replace('%Order.customer_info%', $customer_info, $content);
 			$content = str_replace('%Order.total_price%', $total_price, $content);
 			$content = str_replace('%Order.note%', $note, $content);
-			
+
 			return $content;
 			
 		} else {	
@@ -823,7 +837,7 @@ class Order extends AppModel {
 			if (!empty($order['Order']['comments'])) {
 				$customer_mail .= '<p><strong>Poznámka: ' . $order['Order']['comments'] . '</strong></p>' . "\n";
 			}
-	
+
 			return $customer_mail; 
 		}
 	}
@@ -870,24 +884,7 @@ class Order extends AppModel {
 				)
 			),
 			'fields' => array(
-				'Order.id',
-				'Order.created',
-				'Order.customer_name',
-				'Order.customer_dic',
-				'Order.customer_ico',
-				'Order.customer_street',
-				'Order.customer_city',
-				'Order.customer_zip',
-				'Order.customer_phone',
-				'Order.customer_email',
-				'Order.delivery_name',
-				'Order.delivery_city',
-				'Order.delivery_street',
-				'Order.delivery_zip',
-				'Order.shipping_cost',
-				'Order.shipping_tax_class',
-				'Order.comments',
-				'Order.invoice',
+				'Order.*',
 		
 				'Payment.id',
 				'Payment.name',
@@ -918,7 +915,7 @@ class Order extends AppModel {
 				<ord:partnerIdentity>
 					<typ:address>
 						<typ:company><![CDATA[' . $order['Order']['customer_name'] . ']]></typ:company>
-						<typ:name><![CDATA[' . $order['Order']['customer_name'] . ']]></typ:name>
+						<typ:name><![CDATA[' . full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name']) . ']]></typ:name>
 						<typ:city><![CDATA['. $order['Order']['customer_city'] . ']]></typ:city>
 						<typ:street><![CDATA[' . $order['Order']['customer_street'] . ']]></typ:street>
 						<typ:zip><![CDATA[' . $order['Order']['customer_zip'] . ']]></typ:zip>

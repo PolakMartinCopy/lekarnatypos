@@ -385,17 +385,20 @@ class CustomersController extends AppController {
 		}
 		
 		// nastavim si meta udaje
-		$this->set('page_heading', 'Registrace nového účtu');
-		$this->set('_title', 'registrace nového uživatele');
+		$this->set('page_heading', 'Registrace nového uživatele');
+		$this->set('_title', 'Registrace nového uživatele');
 		$this->set('_description	', 'Zaregistrujte se a získáte přehled o výhodnějších cenách pro registrované uživatele.');
-		$breadcrumbs = array(array('anchor' => 'Registrace účtu', 'href' => '/registrace'));
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Registrace uživatele', 'href' => '/registrace')
+		);
 		$this->set('breadcrumbs', $breadcrumbs);
 		
 		// nastavim layout
 		$this->layout = REDESIGN_PATH . 'content';
 		
 		// formular byl vyplnen
-		if ( isset($this->data) ){
+		if (isset($this->data)) {
 			// pro zakaznika si preddefinuju login a heslo
 			$this->data['CustomerLogin'][0]['login'] = $this->Customer->generateLogin($this->data['Customer']);
 
@@ -407,7 +410,9 @@ class CustomersController extends AppController {
 			$this->data['Customer']['confirmed'] = true;
 			$this->data['Customer']['active'] = true;
 			$this->data['Customer']['registration_source'] = 'eshop - registrace';
-			
+
+			// chci ukladat take adresu???
+			// NE
 			if (
 				empty($this->data['Address'][0]['street']) &&
 				empty($this->data['Address'][0]['street_no']) &&
@@ -415,9 +420,18 @@ class CustomersController extends AppController {
 				empty($this->data['Address'][0]['city'])
 			) {
 				unset($this->data['Address']);
+			// ANO
 			} else {
-				// dogeneruju si jmeno k adrese
-				$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+				// je firma???
+				// NE
+				if (empty($this->data['Customer']['company_name'])) {
+					$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+				// ANO
+				} else {
+					$this->data['Address'][0]['name'] = $this->data['Customer']['company_name'];
+					$this->data['Address'][0]['contact_first_name'] = $this->data['Customer']['first_name'];
+					$this->data['Address'][0]['contact_last_name'] = $this->data['Customer']['last_name'];
+				}
 				// podle zadane adresy pridam i fakturacni
 				$this->data['Address'][1] = $this->data['Address'][0];
 				$this->data['Address'][1]['type'] = 'f';
@@ -552,11 +566,15 @@ class CustomersController extends AppController {
 				&& empty($this->data['Address'][0]['street_no']) && empty($this->data['Address'][0]['city']) && empty($this->data['Address'][0]['zip'])
 			) {
 				unset($this->data['Address']);
-			}			
+			}
 
-			$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
-			if (isset($this->data['Customer']['company_name']) && !empty($this->data['Customer']['company_name'])) {
-				$this->data['Address'][0]['name'] = $this->data['Customer']['company_name'];
+			// edituju fakturacni adresu
+			if ($this->data['Address'][0]['type'] == 'f') {
+				// mam zadano ico nebo dic
+				if ((isset($this->data['Customer']['company_ico']) && !empty($this->data['Customer']['company_ico']))|| (isset($this->data['Customer']['company_dic']) && !empty($this->data['Customer']['company_dic']))) {
+					// nazev spolecnosti v adrese edituje i nazev firmy u zakaznika
+					$this->data['Customer']['company_name'] = $this->data['Address'][0]['name'];
+				}
 			}
 
 			if ($this->Customer->saveAll($this->data)) {
@@ -570,6 +588,13 @@ class CustomersController extends AppController {
 			$this->data = $customer;
 			if (empty($customer['Address'])) {
 				$this->data['Address'][0]['type'] = $this->params['named']['type'];
+				if (empty($customer['Customer']['company_name']) && empty($customer['Customer']['company_ico']) && empty($customer['Customer']['company_dic'])) {
+					$this->data['Address'][0]['name'] = $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'];
+				} else {
+					$this->data['Address'][0]['name'] = $customer['Customer']['company_name'];
+					$this->data['Address'][0]['contact_first_name'] = $customer['Customer']['first_name'];
+					$this->data['Address'][0]['contact_last_name'] = $customer['Customer']['last_name'];
+				}
 			}
 		}
 	}
@@ -709,9 +734,7 @@ class CustomersController extends AppController {
 		$customer = $this->Customer->find('first', array(
 			'conditions' => array('Customer.id' => $customer_id),
 			'contain' => array(
-				'Address' => array(
-					'fields' => array('Address.id', 'Address.type', 'Address.name', 'Address.street', 'Address.street_no', 'Address.zip', 'Address.city', 'Address.state')
-				),
+				'Address',
 				'Order' => array(
 					'fields' => array('Order.id', 'Order.created', 'Order.subtotal_with_dph', 'Order.shipping_cost'),
 					'order' => array('Order.created' => 'DESC'),
@@ -873,23 +896,6 @@ class CustomersController extends AppController {
 				'Payment' => array(
 					'fields' => array('Payment.id', 'Payment.name')
 				)
-			),
-			'fields' => array(
-				'Order.id',
-				'Order.subtotal_with_dph',
-				'Order.shipping_cost',
-				'Order.customer_name',
-				'Order.customer_street',
-				'Order.customer_zip',
-				'Order.customer_city',
-				'Order.customer_state',
-				'Order.delivery_name',
-				'Order.delivery_street',
-				'Order.delivery_zip',
-				'Order.delivery_city',
-				'Order.delivery_state',
-				'Order.comments',
-				'Order.shipping_id'
 			)
 		));
 

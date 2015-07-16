@@ -126,7 +126,9 @@
 		?>
 		<h3>Fakturační adresa</h3>
 		<?
+			$full_name =  full_name($order['Order']['customer_first_name'], $order['Order']['customer_last_name']);
 			echo $order['Order']['customer_name'] . '<br />'
+			. ife ($full_name && $full_name != $order['Order']['customer_name'], $full_name . '<br/>', '')
 			. ife( $order['Order']['customer_ico'], 'IČO: ' . $order['Order']['customer_ico'] . '<br />', '' )
 			. ife( $order['Order']['customer_dic'], 'DIČ: ' . $order['Order']['customer_dic'] . '<br />', '' )
 			. $order['Order']['customer_street'] . '<br />'
@@ -136,7 +138,9 @@
 		?>
 		<h3>Doručovací adresa</h3>
 		<?
+			$full_name =  full_name($order['Order']['delivery_first_name'], $order['Order']['delivery_last_name']);
 			echo $order['Order']['delivery_name'] . '<br />'
+			. ife ($full_name && $full_name != $order['Order']['delivery_name'], $full_name . '<br/>', '')
 			. $order['Order']['delivery_street'] . '<br />'
 			. $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . '<br />'
 			. $order['Order']['delivery_state'] . '<br />

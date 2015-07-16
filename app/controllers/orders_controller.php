@@ -243,7 +243,6 @@ class OrdersController extends AppController {
 					)
 				)	
 			),
-			'fields' => array('Order.id', 'Order.created', 'Order.comments', 'Order.subtotal_with_dph', 'Order.shipping_cost', 'Order.status_id', 'Order.customer_id', 'Order.customer_phone', 'Order.customer_email', 'Order.customer_name', 'Order.customer_ico', 'Order.customer_dic', 'Order.customer_street', 'Order.customer_city', 'Order.customer_zip', 'Order.customer_state', 'Order.delivery_name', 'Order.delivery_street', 'Order.delivery_city', 'Order.delivery_zip', 'Order.delivery_state', 'Order.shipping_number', 'Order.variable_symbol')
 		));
 
 		// pokud je zadano spatne id, nic se nenacte,
@@ -740,20 +739,7 @@ class OrdersController extends AppController {
 				)
 			),
 			'fields' => array(
-				'Order.id',
-				'Order.created',
-				'Order.customer_name',
-				'Order.customer_dic',
-				'Order.customer_ico',
-				'Order.customer_street',
-				'Order.customer_city',
-				'Order.customer_zip',
-				'Order.customer_phone',
-				'Order.customer_email',
-				'Order.shipping_cost',
-				'Order.shipping_tax_class',
-				'Order.comments',
-				'Order.invoice',
+				'Order.*',
 		
 				'Payment.id',
 				'Payment.name',
@@ -1120,8 +1106,7 @@ class OrdersController extends AppController {
 				'conditions' => array('Customer.id' => $this->Session->read('Customer.id')),
 				'contain' => array(
 					'Address' => array(
-						// seradim adresy tak, aby prvni byla fakturacni
-						'conditions' => array('Address.type' => 'f')
+						'order' => array('FIELD(Address.type, "d", "f")')
 					)
 				)
 			));
@@ -1212,12 +1197,6 @@ class OrdersController extends AppController {
 	
 						// jsou data o zakaznikovi validni?
 						unset($this->Order->Customer->validate['email']['isUnique']);
-						
-						if (!$this->data['Customer']['is_company']) {
-							unset($this->data['Customer']['company_name']);
-							unset($this->data['Customer']['company_ico']);
-							unset($this->data['Customer']['company_dic']);
-						}
 	
 						$address_data = null;
 						// pokud je zvolena doprava osobnim odberem
@@ -1226,21 +1205,24 @@ class OrdersController extends AppController {
 							unset($this->data['Address']);
 						// jinak
 						} else {
-							// dogeneruju si nazev do adresy
-							$customer_name = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
-							if (isset($this->data['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
-								$customer_name = $this->data['Customer']['company_name'] . ' - ' . $customer_name;
+							if (empty($this->data['Address'][0]['name'])) {
+								$this->data['Address'][0]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
 							}
-							$this->data['Address'][0]['name'] = $this->data['Address'][1]['name'] = $customer_name;
+							if (empty($this->data['Address'][1]['name'])) {
+								$this->data['Address'][1]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
+							}
 							// pokud mam zadano, ze dodaci adresa je shodna s fakturacni, nakopiruju hodnoty
 							if (!$this->data['Customer']['is_delivery_address_different']) {
 								$this->data['Address'][1]['name'] = $this->data['Address'][0]['name'];
+								$this->data['Address'][1]['contact_first_name'] = $this->data['Address'][0]['contact_first_name'];
+								$this->data['Address'][1]['contact_last_name'] = $this->data['Address'][0]['contact_last_name'];
 								$this->data['Address'][1]['street'] = $this->data['Address'][0]['street'];
 								$this->data['Address'][1]['street_no'] = $this->data['Address'][0]['street_no'];
 								$this->data['Address'][1]['city'] = $this->data['Address'][0]['city'];
 								$this->data['Address'][1]['zip'] = $this->data['Address'][0]['zip'];
 								$this->data['Address'][1]['state'] = $this->data['Address'][0]['state'];
 							}
+							
 							$address_data = $this->data['Address'];
 						}
 						
@@ -1248,7 +1230,7 @@ class OrdersController extends AppController {
 						if ($address_data) {
 							$customer_data['Address'] = $address_data;
 						}
-	
+
 						// jestlize jsou data o zakaznikovy validni
 						if ($this->Order->Customer->saveAll($customer_data, array('validate' => 'only'))) {
 							// jestli neni zakaznik prihlaseny a zaroven existuje zakaznik se zadanou emailovou adresou
@@ -1269,10 +1251,10 @@ class OrdersController extends AppController {
 								
 							$this->Session->write('Customer', $this->data['Customer']);
 							if (isset($this->data['Address'][0])) {
-								$this->Session->write('Address', $this->data['Address'][1]);
+								$this->Session->write('Address', $this->data['Address'][0]);
 							}
 							if (isset($this->data['Address'][1])) {
-								$this->Session->write('Address_payment', $this->data['Address'][0]);
+								$this->Session->write('Address_payment', $this->data['Address'][1]);
 							}
 							
 							$this->data['Order']['payment_id'] =  $this->Order->Shipping->get_payment_id($this->data['Order']['shipping_id']);
@@ -1310,9 +1292,17 @@ class OrdersController extends AppController {
 			}
 			$this->data['Customer']['is_registered'] = 0;
 			
-			// pokud mam nastaveny firemni udaje, zobrazim element pro jejich zadani / upravu
-			if (!empty($customer['Customer']['company_name']) || !empty($customer['Customer']['company_ico']) || !empty($customer['Customer']['company_dic'])) {
-				$this->data['Customer']['is_company'] = true;
+			// pokud se lisi adresy, zobrazim element pro fakturacni adresu
+			if (
+				isset($customer) && (
+					$customer['Address'][0]['name'] != $customer['Address'][1]['name'] ||
+					$customer['Address'][0]['street'] != $customer['Address'][1]['street'] ||
+					$customer['Address'][0]['street_no'] != $customer['Address'][1]['street_no'] ||
+					$customer['Address'][0]['city'] != $customer['Address'][1]['city'] ||
+					$customer['Address'][0]['zip'] != $customer['Address'][1]['zip']
+				)
+			) {
+				$this->data['Customer']['is_delivery_address_different'] = true;
 			}
 		}
 	
@@ -1431,7 +1421,7 @@ class OrdersController extends AppController {
 		
 		$sess_customer = $this->Session->read('Customer');
 		$customer['Customer'] = $sess_customer;
-		
+
 		$order = $this->Session->read('Order');
 		$shipping_id = $order['shipping_id'];
 		// pokud mam zvoleno dodani na vydejni misto geis point, nactu parametry pro doruceni (z GET nebo sesny)
@@ -1481,7 +1471,7 @@ class OrdersController extends AppController {
 		if ($this->Session->check('Address_payment')) {
 			$customer['Address'][] = $this->Session->read('Address_payment');
 		}
-		
+
 		// jedna se o neprihlaseneho a nezaregistrovaneho zakaznika
 		if (!isset($customer['Customer']['id']) || empty($customer['Customer']['id'])) {
 			// musim vytvorit novy zakaznicky ucet, takze vygeneruju login a heslo

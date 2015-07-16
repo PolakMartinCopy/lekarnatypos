@@ -233,6 +233,28 @@ if ($this->Session->check('Message.flash')) {
 	<fieldset id="DeliveryAddressTable">
 		<legend>Doručovací adresa</legend>
 		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<div class="form-group">
+					<label>Jméno / Název společnosti</label>
+					<?=$form->input('Address.0.name', array('label'=> false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<div class="form-group">
+					<label>Jméno kontakní osoby</label>
+					<?=$form->input('Address.0.contact_first_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<div class="form-group">
+					<label>Příjmení kontakní osoby</label>
+					<?=$form->input('Address.0.contact_last_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
+				</div>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-xs-8 col-md-8">
 				<div class="form-group">
 					<label><sup>*</sup>Ulice</label>
@@ -268,50 +290,22 @@ if ($this->Session->check('Message.flash')) {
 				</div>
 			</div>
 		</div>
-	</fieldset>
-</div>
-
-<fieldset id="IsCompanyBox" style="display:block">
-	<legend>
-		<div class="input checkbox" style="margin: 0;">
-			<label>
-<?php echo $this->Form->input('Customer.is_company', array('label' => false, 'type' => 'checkbox', 'id' => 'isCompany', 'div' => false)); ?> Jste firma?
-			</label>
-		</div>
-	</legend>
-
-<?php 
-	$style = ' style="display:none"';
-	if (isset($this->data['Customer']) && array_key_exists('is_company', $this->data['Customer']) && $this->data['Customer']['is_company']) {
-		$style = '';
-	}
-?>
-	<div id="companyTable"<?php echo $style?>>
 		<div class="row">
-			<div class="col-xs-12 col-md-12">
-				<div class="form-group">
-					<label>Firma</label>
-					<?=$form->input('Customer.company_name', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-6 col-md-6">
+			<div class="col-xs-12 col-sm-6 col-md-6">
 				<div class="form-group">
 					<label>IČ</label>
-					<?=$form->input('Customer.company_ico', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+					<?=$form->input('Customer.company_ico', array('label'=> false, 'class' => 'form-control'))?>
 				</div>
 			</div>
-			<div class="col-xs-6 col-md-6">
+			<div class="col-xs-12 col-sm-6 col-md-6">
 				<div class="form-group">
 					<label>DIČ</label>
-					<?=$form->input('Customer.company_dic', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+					<?=$form->input('Customer.company_dic', array('label'=> false, 'class' => 'form-control'))?>
 				</div>
 			</div>
 		</div>
-	</div>
-</fieldset>
-
+	</fieldset>
+</div>
 
 <div id="InvoiceAddressBox">
 	<div class="input checkbox" style="margin: 0;border-bottom: 1px solid #e5e5e5;margin-bottom:20px">
@@ -328,6 +322,28 @@ if ($this->Session->check('Message.flash')) {
 	}
 ?>
 	<fieldset id="InvoiceAddressTable"<?php echo $style?>>
+		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<div class="form-group">
+					<label>Jméno / Název společnosti</label>
+					<?=$form->input('Address.1.name', array('label'=> false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<div class="form-group">
+					<label>Jméno kontakní osoby</label>
+					<?=$form->input('Address.1.contact_first_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<div class="form-group">
+					<label>Příjmení kontakní osoby</label>
+					<?=$form->input('Address.1.contact_last_name', array('label' => false, 'div' => false, 'class' => 'form-control')) ?>
+				</div>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-xs-8 col-md-8">
 				<div class="form-group">

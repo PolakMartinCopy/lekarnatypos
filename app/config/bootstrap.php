@@ -324,6 +324,20 @@ function build_breadcrumbs($breadcrumbs_arr) {
 	return $breadcrumbs_link;
 }
 
+function full_name($first_name = null, $last_name = null) {
+	$full_name = '';
+	if (!empty($first_name)) {
+		$full_name .= $first_name;
+	}
+	if (!empty($full_name)) {
+		$full_name .= ' ';
+	}
+	if (!empty($last_name)) {
+		$full_name .= $last_name;
+	}
+	return $full_name;
+}
+
 define('REDESIGN_PATH', 'redesign_2015/');
 define('ROOT_CATEGORY_ID', 5);
 

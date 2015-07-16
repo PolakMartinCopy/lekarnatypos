@@ -81,10 +81,11 @@
 		<td><?
 			foreach ($customer['Address'] as $address) {
 				if ($address['type'] == 'f') {
-					if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
-						echo $customer['Customer']['company_name'] . '<br/>';
+					echo $address['name'] . '<br/>';
+					$name = full_name($address['contact_first_name'], $address['contact_last_name']);
+					if (!empty($name)) {
+						echo $name . '<br/>';
 					}
-					echo $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . '<br/>';
 					echo $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
 				}
 			}
@@ -107,12 +108,15 @@
 		</td>
 		<td>
 			<?
-			foreach ( $customer['Address'] as $address ){
-				if ( $address['type'] == 'd' ){
-					if (isset($customer['Customer']['company_name']) && !empty($customer['Customer']['company_name'])) {
-						echo $customer['Customer']['company_name'] . '<br/>';
+			foreach ($customer['Address'] as $address) {
+				if ($address['type'] == 'd') {
+					echo $address['name'] . '<br/>';
+					if (!empty($address['contact_first_name']) || !empty($address['contact_last_name'])) {
+						$name = full_name($address['contact_first_name'], $address['contact_last_name']);
+						if (!empty($name)) {
+							echo $name . '<br/>';
+						}
 					}
-					echo $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . '<br/>';
 					echo $address['street'] . ' ' . $address['street_no'] . '<br />' . $address['zip'] . ' ' . $address['city'] . '<br />' . $address['state'];
 				}
 			}
