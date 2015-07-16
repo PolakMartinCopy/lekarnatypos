@@ -9,7 +9,7 @@
  $(document).ready(function() {
 	// JEDNOKROKOVA OBJEDNAVKA
 	PERSONAL_PURCHASE_SHIPPING_ID = parseInt(<?php echo PERSONAL_PURCHASE_SHIPPING_ID?>);
-
+	GEIS_POINT_SHIPPING_IDS = JSON.parse(<?php echo json_encode(GEIS_POINT_SHIPPING_IDS)?>);
 	// zobrazit form pro prihlaseni, pokud jsem zaskrtnul, ze zakaznik je jiz registrovany
 	if ($('#CustomerIsRegistered1').is(':checked')) {
 		$('#CustomerOneStepOrderDiv').show();
@@ -28,10 +28,10 @@
 	$('#isDifferentAddressCheckbox').change(function() {
 		// pokud mam dorucovaci adresu ruznou od fakturacni
 		if ($(this).is(':checked')) {
-			// zobrazim tabulku pro dorucovaci adresu
+			// zobrazim tabulku pro fakturacni adresu
 			$('#InvoiceAddressTable').show();
 		} else {
-			// schovam tabulku pro dorucovaci adresu
+			// schovam tabulku pro fakturacni adresu
 			$('#InvoiceAddressTable').hide();
 		}
 	});
@@ -42,6 +42,19 @@
 		$('#DeliveryAddressBox').hide();
 	}
 
+	// pokud je vybrana doprava na geis point
+	if (geisPointIsChecked()) {
+		// schovam box pro zadani dorucovaci adresy
+ 		$('#DeliveryAddressBox').hide();
+ 		// zobrazim box pro zadani fakturacni adresy
+ 		$('#InvoiceAddressBox').show();
+ 		// schovam box s checboxem pro rozhodnuti, ze fakturacni adresa je jina nez dorucovaci
+ 		$('#InvoiceAddressChoiceLabel').hide();
+ 		$('#InvoiceAddressChoiceLabelAlt').show();
+		// zobrazim tabulku pro fakturacni adresu
+		$('#InvoiceAddressTable').show();
+	}
+
 	// pri zmene dopravy
  	$('input[name="data[Order][shipping_id]"]').change(function(e) {
  		var shippingId = this.value;
@@ -49,11 +62,41 @@
 		if (shippingId == PERSONAL_PURCHASE_SHIPPING_ID) {
 			$('#InvoiceAddressBox').hide();
 			$('#DeliveryAddressBox').hide();
+		} else if ($.inArray(parseInt(shippingId), GEIS_POINT_SHIPPING_IDS) != -1) {
+			// schovam box pro zadani dorucovaci adresy
+ 			$('#DeliveryAddressBox').hide();
+ 			// zobrazim box pro zadani fakturacni adresy
+ 			$('#InvoiceAddressBox').show();
+ 			// schovam box s checboxem pro rozhodnuti, ze fakturacni adresa je jina nez dorucovaci
+ 			$('#InvoiceAddressChoiceLabel').hide();
+ 			$('#InvoiceAddressChoiceLabelAlt').show();
+			// zobrazim tabulku pro fakturacni adresu
+			$('#InvoiceAddressTable').show();
 		} else {
 			$('#InvoiceAddressBox').show();
+			// pokud mam zaskrtnuto, ze je fakturacni stejna jako dorucovaci
+			if ($('#isDifferentAddressCheckbox').is(':checked')) {
+				// zobrazim tabulku pro fakturacni adresu
+				$('#InvoiceAddressTable').show();
+			} else {
+				// schovam tabulku pro fakturacni adresu
+				$('#InvoiceAddressTable').hide();
+			}
+			// zobrazim box s checboxem pro rozhodnuti, ze fakturacni adresa je jina nez dorucovaci
+			$('#InvoiceAddressChoiceLabel').show();
+			$('#InvoiceAddressChoiceLabelAlt').hide();
 			$('#DeliveryAddressBox').show();
 		}
  	});
+
+
+ 	function geisPointIsChecked() {
+ 		var checked = false;
+ 		$.each(GEIS_POINT_SHIPPING_IDS, function(index, value) {
+			checked = checked || $('#OrderShippingId' + value).is(':checked');
+ 		});
+ 		return checked;
+ 	}
 });
 </script>
 <?php } ?>

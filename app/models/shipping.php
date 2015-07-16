@@ -117,7 +117,7 @@ class Shipping extends AppModel {
 	}
 	
 	function geis_point_url($session, $one_step_order = false) {
-		$address = $session->read('Address');
+		$address = $session->read('Address_payment');
 		if (!$address) {
 			return false;
 		}

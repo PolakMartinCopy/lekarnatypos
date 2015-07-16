@@ -295,9 +295,12 @@ if ($this->Session->check('Message.flash')) {
 
 <div id="InvoiceAddressBox">
 	<div class="input checkbox" style="margin: 0;border-bottom: 1px solid #e5e5e5;margin-bottom:20px">
-		<label>
+		<label id="InvoiceAddressChoiceLabel">
 			<?php echo $this->Form->input('Customer.is_delivery_address_different', array('label' => false, 'type' => 'checkbox', 'id' => 'isDifferentAddressCheckbox', 'div' => false)); ?>
 			<span style="font-size:21px">Fakturační adresa není stejná jako doručovací</span>
+		</label>
+		<label id="InvoiceAddressChoiceLabelAlt" style="display:none;padding-left:0">
+			<span style="font-size:21px">Fakturační adresa</span>
 		</label>
 	</div>
 

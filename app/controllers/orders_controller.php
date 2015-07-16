@@ -1203,11 +1203,22 @@ class OrdersController extends AppController {
 						if ($shipping_id == PERSONAL_PURCHASE_SHIPPING_ID) {
 							// nechci adresy
 							unset($this->data['Address']);
+						// doprava na geis point
+						} elseif (in_array($this->data['Order']['shipping_id'], $this->Order->Shipping->GP_shipping_id)) {
+							// nemam dorucovaci adresu, ale jen fakturacni
+							unset($this->data['Address'][0]);
+							// fakturacni
+							if (empty($this->data['Address'][1]['name'])) {
+								$this->data['Address'][1]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
+							}
+							$address_data = $this->data['Address'];
 						// jinak
 						} else {
+							// dorucovaci
 							if (empty($this->data['Address'][0]['name'])) {
 								$this->data['Address'][0]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
 							}
+							// fakturacni
 							if (empty($this->data['Address'][1]['name'])) {
 								$this->data['Address'][1]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
 							}
@@ -1450,6 +1461,7 @@ class OrdersController extends AppController {
 				$this->Session->write('Address.street_no', '');
 				$this->Session->write('Address.city', $gp_city);
 				$this->Session->write('Address.zip', $gp_zip);
+				$this->Session->write('Address.state', 'Česká republika');
 				// poznacim si, ze adresa je vybrana pomoci pluginu
 				$this->Session->write('Address.plugin_check', true);
 			} elseif (!$this->Session->check('Address') || !$this->Session->check('Address.plugin_check') || !$this->Session->read('Address.plugin_check')) {

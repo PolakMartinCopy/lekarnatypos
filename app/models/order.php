@@ -484,6 +484,7 @@ class Order extends AppModel {
 		} else {
 			$order['Order']['customer_name'] = $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'];
 		}
+
 		// doplnim data o dorucovaci adrese
 		if (isset($customer['Address'][0]['name']) && isset($customer['Address'][0]['street']) && isset($customer['Address'][0]['street_no']) && isset($customer['Address'][0]['city']) && isset($customer['Address'][0]['zip']) && isset($customer['Address'][0]['state'])) {
 			$order['Order']['delivery_name'] = $customer['Address'][0]['name'];
@@ -492,7 +493,7 @@ class Order extends AppModel {
 			}
 			if (isset($customer['Address'][0]['contact_last_name'])) {
 				$order['Order']['delivery_last_name'] = $customer['Address'][0]['contact_last_name'];
-			}		
+			}
 			$order['Order']['delivery_street'] = $customer['Address'][0]['street'] . ' ' . $customer['Address'][0]['street_no'];
 			$order['Order']['delivery_city'] = $customer['Address'][0]['city'];
 			$order['Order']['delivery_zip'] = $customer['Address'][0]['zip'];

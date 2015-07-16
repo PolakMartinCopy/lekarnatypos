@@ -72,6 +72,9 @@ class Setting extends AppModel {
 				define($constant, $this->findValue($constant));
 			}
 		}
+		
+		// TODO - predelat, aby se definovalo v tabulce settings a pak upravit vsude, kde je treba
+		define('GEIS_POINT_SHIPPING_IDS', json_encode(array(35, 36)));
 	}
 }
 ?>
