@@ -10,6 +10,10 @@
 		<td><?php echo $form->input('Shipping.name', array('label' => false, 'size' => 80))?></td>
 	</tr>
 	<tr>
+		<td>Poznámka</td>
+		<td><?php echo $form->input('Shipping.note', array('label' => false, 'size' => 80))?></td>
+	</tr>
+	<tr>
 		<td>Popis</td>
 		<td><?php echo $this->Form->input('Shipping.description', array('label' => false, 'rows' => 15, 'cols' => 100))?></td>
 	</tr>

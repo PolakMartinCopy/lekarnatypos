@@ -1041,6 +1041,9 @@ class OrdersController extends AppController {
 			));
 			foreach ($provider['shippings'] as &$shipping) {
 				$shipping['Shipping']['price'] = $this->Order->get_shipping_cost($shipping['Shipping']['id']);
+				if (isset($shipping['Shipping']['note']) && !empty($shipping['Shipping']['note'])) {
+					$shipping['Shipping']['name'] .= ' (' . $shipping['Shipping']['note'] . ')';
+				}
 			}
 		}
 		
