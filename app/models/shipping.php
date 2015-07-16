@@ -163,5 +163,8 @@ class Shipping extends AppModel {
 		return $shipping;
 	}
 
+	function isGeisPoint($shipping_id) {
+		return in_array($shipping_id, json_decode(GEIS_POINT_SHIPPING_IDS));
+	}
 }
 ?>

@@ -62,7 +62,7 @@
 		if (shippingId == PERSONAL_PURCHASE_SHIPPING_ID) {
 			$('#InvoiceAddressBox').hide();
 			$('#DeliveryAddressBox').hide();
-		} else if ($.inArray(parseInt(shippingId), GEIS_POINT_SHIPPING_IDS) != -1) {
+		} else if ($.inArray(shippingId, GEIS_POINT_SHIPPING_IDS) != -1) {
 			// schovam box pro zadani dorucovaci adresy
  			$('#DeliveryAddressBox').hide();
  			// zobrazim box pro zadani fakturacni adresy

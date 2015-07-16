@@ -69,12 +69,15 @@ class Setting extends AppModel {
 		foreach ($settings as $setting) {
 			$constant = $setting['Setting']['name'];
 			if (!defined($constant)) {
-				define($constant, $this->findValue($constant));
+				$value = $this->findValue($constant);
+				// pokud definuju GEIS_POINT_SHIPPING_IDS, je to pole a musim ho pregenerovat a definovat jako json array
+				if ($constant == 'GEIS_POINT_SHIPPING_IDS') {
+					$value = explode('|', $value);
+					$value = json_encode($value);
+				}
+				define($constant, $value);
 			}
 		}
-		
-		// TODO - predelat, aby se definovalo v tabulce settings a pak upravit vsude, kde je treba
-		define('GEIS_POINT_SHIPPING_IDS', json_encode(array(35, 36)));
 	}
 }
 ?>
