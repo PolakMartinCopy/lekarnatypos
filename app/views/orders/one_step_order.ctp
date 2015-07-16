@@ -290,20 +290,6 @@ if ($this->Session->check('Message.flash')) {
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-xs-12 col-sm-6 col-md-6">
-				<div class="form-group">
-					<label>IČ</label>
-					<?=$form->input('Customer.company_ico', array('label'=> false, 'class' => 'form-control'))?>
-				</div>
-			</div>
-			<div class="col-xs-12 col-sm-6 col-md-6">
-				<div class="form-group">
-					<label>DIČ</label>
-					<?=$form->input('Customer.company_dic', array('label'=> false, 'class' => 'form-control'))?>
-				</div>
-			</div>
-		</div>
 	</fieldset>
 </div>
 
@@ -379,7 +365,21 @@ if ($this->Session->check('Message.flash')) {
 					<?=$form->input('Address.1.state', array('label' => false, 'div' => false, 'type' => 'select', 'options' => array('Česká republika' => 'Česká republika'), 'class' => 'form-control'))?>
 				</div>
 			</div>
-		</div>		
+		</div>
+				<div class="row">
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<div class="form-group">
+					<label>IČ</label>
+					<?=$form->input('Customer.company_ico', array('label'=> false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<div class="form-group">
+					<label>DIČ</label>
+					<?=$form->input('Customer.company_dic', array('label'=> false, 'class' => 'form-control'))?>
+				</div>
+			</div>
+		</div>
 	</fieldset>
 </div>
 
