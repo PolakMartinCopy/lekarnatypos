@@ -201,4 +201,16 @@ jQuery(document).ready(function ($) {
 		$body.addClass("loading");
 		$(this).parent().parent().submit();
 	});
+	
+	// zobrazit / skryt form pro druhou adresu, pokud jsem zaskrtnul, ze ho chci (registrace zakaznika, objednavka)
+	$('#isDifferentAddressCheckbox').change(function() {
+		// pokud mam dorucovaci adresu ruznou od fakturacni
+		if ($(this).is(':checked')) {
+			// zobrazim tabulku pro fakturacni adresu
+			$('#InvoiceAddressTable').show();
+		} else {
+			// schovam tabulku pro fakturacni adresu
+			$('#InvoiceAddressTable').hide();
+		}
+	});
 });

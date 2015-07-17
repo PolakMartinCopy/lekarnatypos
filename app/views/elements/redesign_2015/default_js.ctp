@@ -24,18 +24,6 @@
 		}
 	});
 
-	// zobrazit / skryt form pro druhou adresu, pokud jsem zaskrtnul, ze ho chci
-	$('#isDifferentAddressCheckbox').change(function() {
-		// pokud mam dorucovaci adresu ruznou od fakturacni
-		if ($(this).is(':checked')) {
-			// zobrazim tabulku pro fakturacni adresu
-			$('#InvoiceAddressTable').show();
-		} else {
-			// schovam tabulku pro fakturacni adresu
-			$('#InvoiceAddressTable').hide();
-		}
-	});
-	
 	// pokud je rovnou vybrana doprava osobnim odberem
 	if ($('#OrderShippingId' + PERSONAL_PURCHASE_SHIPPING_ID).is(':checked')) {
 		$('#InvoiceAddressBox').hide();

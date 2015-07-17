@@ -377,25 +377,12 @@ class CustomersController extends AppController {
 	/*
 	 * @description			Registrace noveho uzivatele do systemu.
 	 */
-	function add(){
+	function add() {
 		// kontrola, jestli se nesnazi o registraci, i kdyz je prihlaseny
 		if ( $this->Session->check('Customer.id') ){
 			$this->Session->setFlash('Jste již přihlášen(a) ke svému účtu, chcete-li zaregistrovat nový účet, nejprve se odhlašte.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'customers', 'action' => 'index'), null, true);
 		}
-		
-		// nastavim si meta udaje
-		$this->set('page_heading', 'Registrace nového uživatele');
-		$this->set('_title', 'Registrace nového uživatele');
-		$this->set('_description	', 'Zaregistrujte se a získáte přehled o výhodnějších cenách pro registrované uživatele.');
-		$breadcrumbs = array(
-			array('anchor' => 'Domů', 'href' => '/'),
-			array('anchor' => 'Registrace uživatele', 'href' => '/registrace')
-		);
-		$this->set('breadcrumbs', $breadcrumbs);
-		
-		// nastavim layout
-		$this->layout = REDESIGN_PATH . 'content';
 		
 		// formular byl vyplnen
 		if (isset($this->data)) {
@@ -411,30 +398,64 @@ class CustomersController extends AppController {
 			$this->data['Customer']['active'] = true;
 			$this->data['Customer']['registration_source'] = 'eshop - registrace';
 
-			// chci ukladat take adresu???
+			// chci ukladat dorucovaci adresu???
 			// NE
 			if (
-				empty($this->data['Address'][0]['street']) &&
-				empty($this->data['Address'][0]['street_no']) &&
-				empty($this->data['Address'][0]['zip']) &&
-				empty($this->data['Address'][0]['city'])
+				empty($this->data['Address'][0]['street']) && empty($this->data['Address'][0]['street_no']) &&
+				empty($this->data['Address'][0]['zip']) && empty($this->data['Address'][0]['city'])
 			) {
-				unset($this->data['Address']);
-			// ANO
-			} else {
-				// je firma???
+				unset($this->data['Address'][0]);
+			} elseif (empty($this->data['Address'][0]['name'])) {
+				// je zakaznik firma?
 				// NE
 				if (empty($this->data['Customer']['company_name'])) {
-					$this->data['Address'][0]['name'] = $this->data['Customer']['first_name'] . ' ' . $this->data['Customer']['last_name'];
+					// do nazvu v adrese si dam sretezene jmeno zakaznika
+					$this->data['Address'][0]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
+				} else {
+					// do nazvu v adrese si dam jmeno firmy
+					$this->data['Address'][0]['name'] = $this->data['Customer']['company_name'];
+				}
+			}
+			
+			// vim, ze fakturacni adresa je stejna jako dorucovaci
+			if (!$this->data['Customer']['is_delivery_address_different'] || (
+					empty($this->data['Address'][1]['street']) && empty($this->data['Address'][1]['street_no']) &&
+				empty($this->data['Address'][1]['zip']) && empty($this->data['Address'][1]['city'])
+				)
+			) {
+				$this->data['Address'][1]['name'] = (isset($this->data['Address'][0]['name']) ? $this->data['Address'][0]['name'] : '');
+				$this->data['Address'][1]['contact_first_name'] = (isset($this->data['Address'][0]['contact_first_name']) ? $this->data['Address'][0]['contact_first_name'] : '');
+				$this->data['Address'][1]['contact_last_name'] = (isset($this->data['Address'][0]['contact_last_name']) ? $this->data['Address'][0]['contact_last_name'] : '');
+				$this->data['Address'][1]['street'] = (isset($this->data['Address'][0]['street']) ? $this->data['Address'][0]['street'] : '');
+				$this->data['Address'][1]['street_no'] = (isset($this->data['Address'][0]['street_no']) ? $this->data['Address'][0]['street_no'] : '');
+				$this->data['Address'][1]['zip'] = (isset($this->data['Address'][0]['zip']) ? $this->data['Address'][0]['zip'] : '');
+				$this->data['Address'][1]['city'] = (isset($this->data['Address'][0]['city']) ? $this->data['Address'][0]['city'] : '');
+				$this->data['Address'][1]['state'] = (isset($this->data['Address'][0]['state']) ? $this->data['Address'][0]['state'] : '');
+			}
+			
+			// chci ukladat fakturacni adresu???
+			// NE
+			if (
+				empty($this->data['Address'][1]['street']) && empty($this->data['Address'][1]['street_no']) &&
+				empty($this->data['Address'][1]['zip']) && empty($this->data['Address'][1]['city'])
+			) {
+				unset($this->data['Address'][1]);
+			} elseif (empty($this->data['Address'][1]['name'])) {
+				// je zakaznik firma?
+				// NE
+				if (empty($this->data['Customer']['company_name'])) {
+					// do nazvu v adrese si dam sretezene jmeno zakaznika
+					$this->data['Address'][1]['name'] = full_name($this->data['Customer']['first_name'], $this->data['Customer']['last_name']);
 				// ANO
 				} else {
-					$this->data['Address'][0]['name'] = $this->data['Customer']['company_name'];
-					$this->data['Address'][0]['contact_first_name'] = $this->data['Customer']['first_name'];
-					$this->data['Address'][0]['contact_last_name'] = $this->data['Customer']['last_name'];
+					// do nazvu v adrese si dam jmeno firmy
+					$this->data['Address'][1]['name'] = $this->data['Customer']['company_name'];
 				}
-				// podle zadane adresy pridam i fakturacni
-				$this->data['Address'][1] = $this->data['Address'][0];
-				$this->data['Address'][1]['type'] = 'f';
+			}
+			// chci ukladat vubec nejakou adresu?
+			// NE
+			if (empty($this->data['Address'])) {
+				unset($this->data['Address']);
 			}
 
 			// ukladam zakaznika (spolu s adresou a udaji o prihlaseni
@@ -456,6 +477,19 @@ class CustomersController extends AppController {
 				$this->Session->setFlash('Registrace nebyla úspěšná. Opravte chyby ve formuláři a uložte jej znovu', REDESIGN_PATH . 'flash_failure');
 			}
 		}
+		
+		// nastavim si meta udaje
+		$this->set('page_heading', 'Registrace nového uživatele');
+		$this->set('_title', 'Registrace nového uživatele');
+		$this->set('_description	', 'Zaregistrujte se a získáte přehled o výhodnějších cenách pro registrované uživatele.');
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Registrace uživatele', 'href' => '/registrace')
+		);
+		$this->set('breadcrumbs', $breadcrumbs);
+		
+		// nastavim layout
+		$this->layout = REDESIGN_PATH . 'content';
 	}
 	
 	function order_personal_info() {
