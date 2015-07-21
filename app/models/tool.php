@@ -52,7 +52,7 @@ class Tool extends AppModel {
 	
 	function log_notification($order_id, $notification_type) {
 		$file = 'files/notification_log.log';
-		$data = $order_id . "\t" . $notification_type . "\n";
+		$data = $order_id . "\t" . date('Y-m-d H:i:s') . "\t" . $notification_type . "\n";
 		file_put_contents($file, $data, FILE_APPEND);
 	}
 }

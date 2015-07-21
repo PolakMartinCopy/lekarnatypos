@@ -93,9 +93,9 @@ function strip_diacritic($text, $strip_dot = true) {
 	return $text;
 }
 
-function cz_date_time($datetime){
+function cz_date_time($datetime, $date_separator = '-') {
 	$dt = strtotime($datetime);
-	$dt = strftime("%d-%m-%Y %H:%M", $dt);
+	$dt = strftime('%d' . $date_separator . '%m' . $date_separator . '%Y %H:%M', $dt);
 	return $dt;
 }
 

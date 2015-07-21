@@ -17,6 +17,19 @@ class AppModel extends Model {
 		}
 		return false;
 	}
+	
+	function getFieldValue($id, $field) {
+		$item = $this->find('first', array(
+			'conditions' => array('id' => $id),
+			'contain' => array(),
+			'fields' => array($field)
+		));
+	
+		if (empty($item)) {
+			return false;
+		}
+		return $item[$this->name][$field];
+	}
 
 }
 ?>
