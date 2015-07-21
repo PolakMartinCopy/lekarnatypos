@@ -643,11 +643,7 @@ class Order extends AppModel {
 			//$mail_c->AddBCC('brko11@gmail.com');
 			$mail_c->Subject = 'POTVRZENÍ OBJEDNÁVKY (č. ' . $this->id . ')';
 
-			$customer_mail = 'Vážený(á) ' . $customer['first_name'] . ' ' . $customer['last_name'] . "\n\n";
-			$customer_mail .= 'Tento email je potvrzením objednávky v online obchodě http://www.' . CUST_ROOT . '/ v němž jste si právě objednal(a). ';
-			$customer_mail .= 'Na mail prosím nereagujte, je automaticky vygenerován. Již brzy Vás budeme kontaktovat, o stavu Vaší objednávky, mailem, nebo telefonicky.' . "\n\n";
-				
-			$customer_mail .= $this->order_mail($this->id);
+			$customer_mail = $this->order_mail($this->id);
 			if (is_array($customer_mail)) {
 				$mail_c->Subject = $customer_mail['MailTemplate']['subject'];
 				$customer_mail = $customer_mail['MailTemplate']['content'];
