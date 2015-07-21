@@ -32,35 +32,23 @@
 		?>
 		<script type="text/javascript" src="/js/tinymce_4/tinymce.min.js"></script>
 		<script type="text/javascript">
-			function fileBrowserCallBack (field_name, url, type, win) {
-				tinyMCE.activeEditor.windowManager.open({
-					file : '/admin/tiny_images/index',
-					title : 'Prohlížeč',
-					width : 800,  // Your dimensions may differ - toy around with them!
-					height : 600,
-					resizable : "yes",
-					inline : "yes",  // This parameter only has an effect if you use the inlinepopups plugin!
-					close_previous : "no"
-				}, {
-					window : win,
-					input : field_name,
-					oninsert : function(url){
-						 win.document.getElementById(field_name).value = url;
-					}
-				});
-				return false;
+			var tinyMceElement = "<?php echo $tinyMceElement ?>";
+
+			var height = 300;
+			if (tinyMceElement == 'MailTemplateContent') {
+				height = 600;
 			}
 			
 			tinymce.init({
 				content_css: "/css/<?php echo REDESIGN_PATH?>style.css",
-			   	selector: "#<?php echo $tinyMceElement ?>",
+			   	selector: '#' + tinyMceElement,
 			   	language : "cs",
+			   	height: height,
 			   	plugins: [
 			        "advlist autolink lists link image charmap print preview anchor",
 			       	"searchreplace visualblocks code fullscreen",
 			       	"insertdatetime media table contextmenu paste"
 			   	],
-			   	file_browser_callback: fileBrowserCallBack,
 			   	toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
 			   	relative_urls: false
 			});

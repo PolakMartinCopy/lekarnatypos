@@ -648,6 +648,10 @@ class Order extends AppModel {
 			$customer_mail .= 'Na mail prosím nereagujte, je automaticky vygenerován. Již brzy Vás budeme kontaktovat, o stavu Vaší objednávky, mailem, nebo telefonicky.' . "\n\n";
 				
 			$customer_mail .= $this->order_mail($this->id);
+			if (is_array($customer_mail)) {
+				$mail_c->Subject = $customer_mail['MailTemplate']['subject'];
+				$customer_mail = $customer_mail['MailTemplate']['content'];
+			}
 			
 			$mail_c->Body = $customer_mail;
 
@@ -692,11 +696,15 @@ class Order extends AppModel {
 		$mail->Subject = 'E-SHOP OBJEDNÁVKA (č. ' . $this->id . ')';
 		$mail->Body = 'Právě byla přijata nová objednávka pod číslem ' . $this->id . '.' . "\n";
 		$mail->Body .= 'Pro její zobrazení se přihlašte v administraci obchodu: http://www.' . $this->Setting->findValue('CUST_ROOT') . '/admin/' . "\n\n";
-		
-		$customer_mail = $this->order_mail($this->id);
+		// zmenit na false. adminum nechci posilat grafiku
+		$customer_mail = $this->order_mail($this->id, true);
+		if (is_array($customer_mail)) {
+			$mail->Subject = $customer_mail['MailTemplate']['subject'];
+			$customer_mail = $customer_mail['MailTemplate']['content'];
+		}
 		
 		$mail->Body .= $customer_mail;
-
+		
 		if (!$mail->Send()) {
 			App::import('Model', 'Tool');
 			$this->Tool = &new Tool;
@@ -704,7 +712,7 @@ class Order extends AppModel {
 		}
 	}
 	
-	function order_mail($id) {
+	function order_mail($id, $graphics = true) {
 		$order = $this->find('first', array(
 			'conditions' => array('Order.id' => $id),
 			'contain' => array(
@@ -742,65 +750,24 @@ class Order extends AppModel {
 			$customer_delivery_address = 'Dodací adresa: ' . $order['Order']['delivery_name'] . ', ' . (!empty($delivery_full_name) ? $delivery_full_name . ', ' : '') . $order['Order']['delivery_street'] . ', ' . $order['Order']['delivery_zip'] . ' ' . $order['Order']['delivery_city'] . ', ' . $order['Order']['delivery_state'];
 		}
 
-		App::import('Model', 'MailTemplate');
-		$this->MailTemplate = &new MailTemplate;
 		$mail_template_conditions = false;
 		if (defined('NEW_ORDER_MAIL_TEMPLATE_ID')) {
 			$mail_template_conditions = array('MailTemplate.id' => NEW_ORDER_MAIL_TEMPLATE_ID);
 		}
 		
-		if ($mail_template_conditions && $this->MailTemplate->hasAny($mail_template_conditions)) {
-			$mail_template = $this->MailTemplate->find('first', array(
+		if ($mail_template_conditions && $this->Status->MailTemplate->hasAny($mail_template_conditions) && $graphics) {
+			$mail_template = $this->Status->MailTemplate->find('first', array(
 				'conditions' => $mail_template_conditions,
 				'contain' => array(),
-				'fields' => array('MailTemplate.content')
+				'fields' => array('MailTemplate.id')
 			));
 			
-			$customer_info = '<table><tbody>';
-			$customer_info .= '<tr><th style="text-align:center">Odběratel</th></tr>';
-			$customer_info .= '<tr><td><strong>' . $order['Order']['customer_name'] . '</strong>' . (!empty($customer['CustomerType']['name']) ? ' (' . $customer['CustomerType']['name'] . ')' : '') . '</td></tr>';
-			$customer_info .= '<tr><td>IČ: ' . $order['Order']['customer_ico'] . '</td></tr>';
-			$customer_info .= '<tr><td>DIČ: ' . $order['Order']['customer_dic'] . '</td></tr>';
-			$customer_info .= '<tr><td>' . $customer_invoice_address . '</td></tr>';
-			$customer_info .= '<tr><td>Email: <a href="mailto:' . $order['Order']['customer_email'] . '">'. $order['Order']['customer_email'] . '</a></td></tr>';
-			$customer_info .= '<tr><td>Telefon: ' . $order['Order']['customer_phone'] . '</td></tr>';
-			$customer_info .= '<tr><td><strong>' . $customer_delivery_address . '</strong></td></tr>';
-			$customer_info .= '</tbody></table>';
-			
-			// telo emailu s obsahem objednavky
-			$order_info = '<table style="width:100%">' . "\n";
-			$order_info .= '<tr><th style="text-align:center;width:10%">Počet</th><th style="text-align:center;width:70%">název, kód, poznámka</th><th style="text-align:center;width:10%">cena/ks</th><th style="text-align:center;width:10%">cena celkem</th></tr>' . "\n";
-			foreach ($order['OrderedProduct'] as $ordered_product) {
-				$attributes = array();
-				if ( !empty($ordered_product['OrderedProductsAttribute']) ){
-					foreach ( $ordered_product['OrderedProductsAttribute'] as $attribute ){
-						$attributes[] = $attribute['Attribute']['Option']['name'] . ': ' . $attribute['Attribute']['value'];
-					}
-					$attributes = implode(', ', $attributes);
-				}
-			
-				$order_info .= '<tr><td>' . $ordered_product['product_quantity'] . '</td><td><a href="http://www.' . CUST_ROOT . '/' . $ordered_product['Product']['url'] . '">' . $ordered_product['product_name'] . '</a>' . (!empty($attributes) ? ', ' . $attributes : '') . '</td><td>' . round($ordered_product['product_price_with_dph']) . '&nbsp;Kč</td><td>' . ($ordered_product['product_quantity'] * round($ordered_product['product_price_with_dph'])) . '&nbsp;Kč</td></tr>' . "\n";
+			if (empty($mail_template)) {
+				return false;
+			} else {
+				$mail_template = $this->Status->MailTemplate->process($mail_template['MailTemplate']['id'], $id);
+				return $mail_template;
 			}
-			$order_info .= '<tr><td>1</td><td>' . $order['Shipping']['name'] . '</td><td>' . round($order['Order']['shipping_cost']) . '&nbsp;Kč</td><td>' . round($order['Order']['shipping_cost']) . '&nbsp;Kč</td></tr>' . "\n";
-			$order_info .= '<tr><td>1</td><td>' . $order['Payment']['name'] . '</td><td>0&nbsp;Kč</td><td>0&nbsp;Kč</td></tr>' . "\n";
-			$order_info .= '</table>' . "\n";
-			
-			$total_price = ($order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost']);
-			
-			$note = '';
-			if (!empty($order['Order']['comments'])) {
-				$note = $order['Order']['comments'];
-			}
-			
-			$content = $mail_template['MailTemplate']['content'];
-			$content = str_replace('%Order.id%', $id, $content);
-			$content = str_replace('%Order.order_info%', $order_info, $content);
-			$content = str_replace('%Order.customer_info%', $customer_info, $content);
-			$content = str_replace('%Order.total_price%', $total_price, $content);
-			$content = str_replace('%Order.note%', $note, $content);
-
-			return $content;
-			
 		} else {	
 			// hlavicka emailu s identifikaci dodavatele a odberatele
 			$customer_mail = '<h1>Objednávka č. ' . $id . '</h1>' . "\n";
@@ -1031,330 +998,6 @@ class Order extends AppModel {
 		return $success;
 	}
 
-	// updatuje polozky zpetne - mohl se zmenit napr stav objednavky atd.
-	function update() {
-		// zjistim posledne natazenou objednavku
-		App::import('Model', 'Setting');
-		$this->Setting = &new Setting;
-		$setting = $this->Setting->find('first', array(
-			'conditions' => array('Setting.name' => 'LAST_SYNCHRONIZED_ORDER'),
-			'contain' => array()
-		));
-		$lastSynchronizedOrder = $setting['Setting']['value'];
-		$lastSynchronizedOrder = $this->find('first', array(
-			'conditions' => array('Order.id' => $lastSynchronizedOrder),
-			'contain' => array(),
-			'fields' => array('Order.id', 'Order.sportnutrition_id')	
-		));
-		
-		// natahnu si sn objednavky od posledni synchronizovane
-		$condition = 'SnOrder.id >' . $lastSynchronizedOrder['Order']['sportnutrition_id'];
-		$snOrders = $this->findAllSn($condition);
-
-		foreach ($snOrders as $snOrder) {
-			$dataSource = $this->getDataSource();
-			$dataSource->begin($this);
-			try {
-				// vyparsuju data o objednavce
-				$order = $this->transformSn($snOrder);
-
-				// pokud mam v systemu objednavku s danym sn id
-				$dbOrder = $this->find('first', array(
-					'conditions' => array('Order.sportnutrition_id' => $order['Order']['sportnutrition_id']),
-					'contain' => array(),
-					'fields' => array('Order.id')
-				));
-
-				if (!empty($dbOrder)) {
-					// stavajici smazu vcetne produktu a atributu objednanych produktu
-					$orderedProducts = $this->OrderedProduct->find('all', array(
-						'conditions' => array('OrderedProduct.order_id' => $dbOrder['Order']['id']),
-						'contain' => array(),
-						'fields' => array('OrderedProduct.id')
-					));
-					
-					foreach ($orderedProducts as $orderedProduct) {
-						$this->OrderedProduct->OrderedProductsAttribute->deleteAll(array('OrderedProductsAttribute.ordered_product_id' => $orderedProduct['OrderedProduct']['id']));
-					}
-					
-					$this->OrderedProduct->deleteAll(array('OrderedProduct.order_id' => $dbOrder['Order']['id']));
-					$this->delete($dbOrder['Order']['id']);
-					
-					// pouziju id puvodni objednavky
-					$order['Order']['id'] = $dbOrder['Order']['id'];
-				}
-
-				// updatuju/vlozim nove vyparsovana data
-				$this->save($order);
-				$orderId = $this->id;
-				// musim ulozit objednavku a smazat produkty z kosiku
-				foreach ($order['OrderedProduct'] as $orderedProduct) {
-					$orderedProduct['order_id'] = $orderId;
-					if (isset($orderedProduct['OrderedProductsAttribute'])) {
-						$attributes = $orderedProduct['OrderedProductsAttribute'];
-						unset($orderedProduct['OrderedProductsAttribute']);
-					}
-					$orderedProductSave['OrderedProduct'] = $orderedProduct;
-					if (isset($attributes)) {
-						$orderedProductSave['OrderedProductsAttribute'] = $attributes;
-					}
-					$this->OrderedProduct->create();
-					$this->OrderedProduct->saveAll($orderedProductSave);
-				}
-				
-				$setting['Setting']['value'] = $orderId;
-				$this->Setting->save($setting);
-			} catch (Exception $e) {
-				debug($snOrder);
-				$dataSource->rollback($this);
-			}
-			$dataSource->commit($this);
-//die();
-			
-		}
-		die('here');
-	}
-	
-	function import() {
-//		$this->truncate();
-//		$this->OrderedProduct->truncate();
-//		$this->OrderedProduct->OrderedProductsAttribute->truncate();
-// 		$this->Ordernote->truncate();
-		
-		$last_order = $this->find('first', array(
-			'contain' => array(),
-			'fields' => array('Order.sportnutrition_id'),
-			'order' => array('Order.sportnutrition_id' => 'DESC')
-		));
-
-		$condition = '';
-		if (!empty($last_order)) {
-			$condition = 'SnOrder.id > ' . $last_order['Order']['sportnutrition_id'];
-		}
-		$snOrders = $this->findAllSn($condition);
-
-		foreach ($snOrders as $snOrder) {
-			$dataSource = $this->getDataSource();
-			$dataSource->begin($this);
-			try {
-				$order = $this->transformSn($snOrder);
-
-				$this->create();
-				$this->save($order);
-				$orderId = $this->id;
-				// musim ulozit objednavku a smazat produkty z kosiku
-				foreach ($order['OrderedProduct'] as $orderedProduct) {
-					$orderedProduct['order_id'] = $orderId;
-					if (isset($orderedProduct['OrderedProductsAttribute'])) {
-						$attributes = $orderedProduct['OrderedProductsAttribute'];
-						unset($orderedProduct['OrderedProductsAttribute']);
-					}
-					$orderedProductSave['OrderedProduct'] = $orderedProduct;
-					if (isset($attributes)) {
-						$orderedProductSave['OrderedProductsAttribute'] = $attributes;
-					}
-					$this->OrderedProduct->create();
-					$this->OrderedProduct->saveAll($orderedProductSave);
-				}
-			} catch (Exception $e) {
-				$dataSource->rollback($this);
-			}
-			$dataSource->commit($this);
-		}
-	}
-	
-	function findAllSn($condition = '', $limit = 1500) {
-		$this->setDataSource('sportnutrition');
-		$query = '
-			SELECT *
-			FROM orders AS SnOrder
-		';
-		
-		if ($condition) {
-			$query .= '
-				WHERE ' . $condition . '
-			';
-		}
-			
-		$query .= '
-			ORDER BY SnOrder.id ASC
-		';
-		if ($limit) {
-			$query .= '
-				LIMIT ' . $limit . '
-			';
-		}
-		
-		$snOrders = $this->query($query);
-		$this->setDataSource('default');
-		return $snOrders;
-	}
-	
-	function transformSn($snOrder) {
-		$customer = $this->Customer->findBySnId($snOrder['SnOrder']['uzivatel']);
-		$delivery_address = array();
-		$invoice_address = array();
-		$snCustomer = array();
-		if (!empty($customer)) {
-			$deliveryAddress = $this->Customer->Address->find('first', array(
-				'conditions' => array('Address.customer_id' => $customer['Customer']['id'], 'Address.type' => 'd'),
-				'contain' => array()
-			));
-			
-			$invoiceAddress = $this->Customer->Address->find('first', array(
-				'conditions' => array('Address.customer_id' => $customer['Customer']['id'], 'Address.type' => 'f'),
-				'contain' => array()
-			));
-		} else {
-			$snCustomer = $this->Customer->findSn($snOrder['SnOrder']['uzivatel']);
-			if (count($snCustomer) == 1) {
-				$snCustomer = $snCustomer[key($snCustomer)];
-			}
-		}
-		
-		$status_id = 0;
-		$status = $this->Status->findBySnName($snOrder['SnOrder']['status']);
-		if (!empty($status)) {
-			$status_id = $status['Status']['id'];
-		}
-		
-		// seskladam zakladni data o objednavce
-		$order = array(
-			'Order' => array(
-				'id' => $snOrder['SnOrder']['id'],
-				'customer_id' => (isset($customer['Customer']['id']) ? $customer['Customer']['id'] : 0),
-				'customer_name' => (!empty($invoiceAddress) ? $invoiceAddress['Address']['name'] : (isset($snCustomer['SnCustomer']['jmeno']) ? $snCustomer['SnCustomer']['jmeno'] : '')),
-				'customer_ico' => (isset($customer['Customer']['ico']) ? $customer['Customer']['ico'] : (isset($snCustomer['SnCustomer']['ic']) ? $snCustomer['SnCustomer']['ic'] : '')),
-				'customer_dic' => (isset($customer['Customer']['dic']) ? $customer['Customer']['dic'] : (isset($snCustomer['SnCustomer']['dic']) ? $snCustomer['SnCustomer']['dic'] : '')),
-				'customer_first_name' => (isset($customer['Customer']['first_name']) ? $customer['Customer']['first_name'] : (isset($snCustomer['SnCustomer']['jmeno']) ? $this->Customer->estimateFirstName($snCustomer['SnCustomer']['jmeno']) : '')),
-				'customer_last_name' => (isset($customer['Customer']['last_name']) ? $customer['Customer']['last_name'] : (isset($snCustomer['SnCustomer']['jmeno']) ? $this->Customer->estimateLastName($snCustomer['SnCustomer']['jmeno']) : '')),
-				'customer_street' => (!empty($invoiceAddress['Address']['street']) ? $invoiceAddress['Address']['street'] : (isset($snCustomer['SnCustomer']['uliceacp']) ? $snCustomer['SnCustomer']['uliceacp'] : '')),
-				'customer_city' => (!empty($invoiceAddress['Address']['city']) ? $invoiceAddress['Address']['city'] : (isset($snCustomer['SnCustomer']['mesto']) ? $snCustomer['SnCustomer']['mesto'] : '')),
-				'customer_zip' => (!empty($invoiceAddress['Address']['zip']) ? $invoiceAddress['Address']['zip'] : (isset($snCustomer['SnCustomer']['psc']) ? $snCustomer['SnCustomer']['psc'] : '')),
-				'customer_state' => (!empty($invoiceAddress['Address']['state']) ? $invoiceAddress['Address']['state'] : (isset($snCustomer['SnCustomer']['stat']) ? ($snCustomer['SnCustomer']['stat'] == 'CZ' ? 'Česká republika' : $snCustomer['SnCustomer']['stat']) : '')),
-				'customer_phone' => (isset($customer['Customer']['phone']) ? $customer['Customer']['phone'] : (isset($snCustomer['SnCustomer']['telefon']) ? $snCustomer['SnCustomer']['telefon'] : '')),
-				'customer_email' => (isset($customer['Customer']['email']) ? $customer['Customer']['email'] : (isset($snCustomer['SnCustomer']['email']) ? $snCustomer['SnCustomer']['email'] : '')),
-				'delivery_name' => (!empty($deliveryAddress) ? $deliveryAddress['Address']['name'] : (isset($snCustomer['SnCustomer']['jmeno']) ? $snCustomer['SnCustomer']['jmeno'] : '')),
-				'delivery_first_name' => (isset($customer['Customer']['first_name']) ? $customer['Customer']['first_name'] : (isset($snCustomer['SnCustomer']['jmeno']) ? $this->Customer->estimateFirstName($snCustomer['SnCustomer']['jmeno']) : '')),
-				'delivery_last_name' => (isset($customer['Customer']['last_name']) ? $customer['Customer']['last_name'] : (isset($snCustomer['SnCustomer']['jmeno']) ? $this->Customer->estimateLastName($snCustomer['SnCustomer']['jmeno']) : '')),
-				'delivery_street' => (!empty($deliveryAddress['Address']['street']) ? $deliveryAddress['Address']['street'] : (isset($snCustomer['SnCustomer']['uliceacp']) ? $snCustomer['SnCustomer']['uliceacp'] : '')),
-				'delivery_city' => (!empty($deliveryAddress['Address']['city']) ? $deliveryAddress['Address']['city'] : (isset($snCustomer['SnCustomer']['mesto']) ? $snCustomer['SnCustomer']['mesto'] : '')),
-				'delivery_zip' => (!empty($deliveryAddress['Address']['zip']) ? $deliveryAddress['Address']['zip'] : (isset($snCustomer['SnCustomer']['psc']) ? $snCustomer['SnCustomer']['psc'] : '')),
-				'delivery_state' => (!empty($deliveryAddress['Address']['state']) ? $deliveryAddress['Address']['state'] : (isset($snCustomer['SnCustomer']['stat']) ? ($snCustomer['SnCustomer']['stat'] == 'CZ' ? 'ÄŚeskĂˇ republika' : $snCustomer['SnCustomer']['stat']) : '')),
-				'status_id' => $status_id,
-				'comments' => $snOrder['SnOrder']['poznamka'],
-				'sportnutrition_id' => $snOrder['SnOrder']['id'],
-				'created' => date('Y-m-d H:i:s', $snOrder['SnOrder']['cas']),
-				'invoice' => $snOrder['SnOrder']['fakturace'],
-				'shipping_tax_class' => 'none'
-			)
-		);
-
-		// vyparsuju polozky objednavky
-		list($shipping, $payment, $orderedProducts) = $this->parseItemsSn($snOrder);
-		
-		if (!empty($shipping)) {
-			$order['Order']['shipping_cost'] = $shipping['Shipping']['price'];
-			$order['Order']['shipping_id'] = $shipping['Shipping']['id'];
-			if (isset($shipping['TaxClass']['description'])) {
-				$order['Order']['shipping_tax_class'] = $shipping['TaxClass']['description'];
-			}
-		}
-		
-		if (!empty($payment)) {
-			$order['Order']['payment_id'] = $payment['Payment']['id'];
-		}
-
-		$order['Order']['subtotal_with_dph'] = $orderedProducts['subtotal_with_dph'];
-		$order['Order']['subtotal_wout_dph'] = $orderedProducts['subtotal_wout_dph'];
-		
-		// pridam detaily
-		$order['OrderedProduct'] = $orderedProducts['OrderedProduct'];
-		
-		return $order;
-	}
-	
-	function parseitemsSn($snOrder) {
-		$items = $snOrder['SnOrder']['polozky'];
-		$items = explode('|=|', $items);
-		$orderedProducts = array('OrderedProduct' => array());
-		$shipping = array();
-		$payment = array();
-		$subtotalWithDph = 0;
-		$subtotalWoutDph = 0;
-
-		foreach ($items as $item) {
-			$itemInfo = explode('|-|', $item);
-			// pokud je to produkt
-			if ($itemInfo[2] != '_' && $itemInfo[2] != '') {
-				$snProductId = $itemInfo[2];
-				$product = $this->OrderedProduct->Product->findBySnId($snProductId);
-				
-				$orderedProduct = array(
-					'product_id' => (empty($product) ? 0 : $product['Product']['id']),
-					'product_name' => $itemInfo[3],
-					'product_price_wout_dph' => $itemInfo[5],
-					'product_price_with_dph' => $itemInfo[6],
-					'product_quantity' => $itemInfo[1],
-					'created' => date('Y-m-d H:i:s', $snOrder['SnOrder']['cas'])
-				);
-
-				$subtotalWithDph += $itemInfo[6] * $itemInfo[1];
-				$subtotalWoutDph += $itemInfo[5] * $itemInfo[1];
-				
-				$orderedProductsAttributes = $itemInfo[4];
-				if ($orderedProductsAttributes != '') {
-					$orderedProductsAttributes = explode(',', $orderedProductsAttributes);
-					foreach ($orderedProductsAttributes as $orderedProductsAttribute) {
-						$orderedProductsAttribute = trim($orderedProductsAttribute);
-						list($option, $attribute) = explode(':', $orderedProductsAttribute);
-						$option = trim($option);
-						$attribute = trim($attribute);
-						$option = $this->OrderedProduct->OrderedProductsAttribute->Attribute->Option->findByName($option);
-						if (!empty($option)) {
-							$attribute = $this->OrderedProduct->OrderedProductsAttribute->Attribute->findByValue($option['Option']['id'], $attribute);
-							if (!empty($attribute)) {
-								$orderedProduct['OrderedProductsAttribute'][] = array('attribute_id' => $attribute['Attribute']['id']);
-							}
-						}
-					}
-				}
-				$orderedProducts['OrderedProduct'][] = $orderedProduct;
-			} else {
-				$snName = $itemInfo[3];
-				// vyzkousim, jestli polozka neni platba
-				$payment = $this->Payment->findBySnName($snName);
-				if (!empty($payment)) {
-					// je to platba
-				} else {
-					// vyzkousim, jestli polozka neni dodani
-					$shipping = $this->Shipping->findBySnName($snName);
-					if (!empty($shipping)) {
-						$shipping['Shipping']['price'] = $itemInfo[8];
-						if ($shipping['Shipping']['tax_class_id']) {
-							$tax_class = $this->Shipping->TaxClass->find('first', array(
-								'conditions' => array('TaxClass.id' => $shipping['Shipping']['tax_class_id']),
-								'contain' => array()
-							));
-							if (!empty($tax_class)) {
-								$shipping['TaxClass'] = $tax_class['TaxClass'];
-							}
-						}
-					} else {
-						// polozka neni produkt, platba ani dodani, takze co vlastne je???
-						debug($itemInfo);
-						throw new Exception('neni produkt, dodani ani platba');
-					}
-				}
-			}
-		}
-		
-		$orderedProducts['subtotal_with_dph'] = $subtotalWithDph;
-		$orderedProducts['subtotal_wout_dph'] = $subtotalWoutDph;
-		
-		return array($shipping, $payment, $orderedProducts);
-	}
-	
 	function do_form_search($conditions, $data) {
 		if (isset($data['Order']['from']) && !empty($data['Order']['from'])) {
 			$from = cz2db_date($data['Order']['from']);
