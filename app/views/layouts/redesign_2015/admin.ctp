@@ -50,7 +50,8 @@
 			       	"insertdatetime media table contextmenu paste"
 			   	],
 			   	toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
-			   	relative_urls: false
+			   	relative_urls: false,
+			   	convert_urls: false
 			});
 			</script>
 		
