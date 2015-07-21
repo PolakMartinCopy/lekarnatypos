@@ -61,6 +61,7 @@ class MailTemplate extends AppModel{
 				case 'Order.customer_phone':
 				case 'Order.shipping_number':
 				case 'Order.variable_symbol':
+				case 'Order.comments':
 					$field = explode('.', $wildcard);
 					$field = $field[1];
 					$value = $this->Order->getFieldValue($order_id, $field);
