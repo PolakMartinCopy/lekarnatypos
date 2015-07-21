@@ -193,7 +193,7 @@ class MailTemplate extends AppModel{
  					$res = $order['Shipping']['tracker_prefix'] . $order['Order']['shipping_number'] . $order['Shipping']['tracker_postfix'];
  					break;
  				case 'Order.due_date':
- 					$res = '%Order.due_date%';
+ 					$res = date('d.m.Y', strtotime('+7 days'));
  					break;
  				case 'Order.delivery_date':
  					$res = date('d.m.Y', strtotime('+1 day'));
