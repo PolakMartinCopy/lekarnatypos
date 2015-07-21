@@ -196,7 +196,7 @@ class MailTemplate extends AppModel{
  					$res = '%Order.due_date%';
  					break;
  				case 'Order.delivery_date':
- 					$res = '%Order.delivery_date%';
+ 					$res = date('d.m.Y', strtotime('+1 day'));
  					break;
 			}
 		}

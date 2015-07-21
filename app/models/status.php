@@ -48,6 +48,7 @@ class Status extends AppModel {
 				return false;
 			} else {
 				$mail_template = $this->MailTemplate->process($mail_template['MailTemplate']['id'], $order_id);
+
 				// mam sestaveny mail template s daty
 				// musim ho odeslat, nactu si detaily z objednavky
 				$order = $this->Order->find('first', array(
