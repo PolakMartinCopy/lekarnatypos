@@ -35,20 +35,27 @@
 			var tinyMceElement = "<?php echo $tinyMceElement ?>";
 
 			var height = 300;
+			var contentCss = '/css/<?php echo REDESIGN_PATH?>style.css';
+			var plugins = [
+				"advlist autolink lists link image charmap print preview anchor",
+				"searchreplace visualblocks code fullscreen",
+				"insertdatetime media table contextmenu paste"
+			];
+			var themeAdvancedButtons3Add = '';
 			if (tinyMceElement == 'MailTemplateContent') {
 				height = 600;
+				contentCss = '';
+				plugins.push('fullpage');
+				themeAdvancedButtons3Add = 'fullpage';
 			}
 			
 			tinymce.init({
-				content_css: "/css/<?php echo REDESIGN_PATH?>style.css",
+				content_css: contentCss,
 			   	selector: '#' + tinyMceElement,
 			   	language : "cs",
 			   	height: height,
-			   	plugins: [
-			        "advlist autolink lists link image charmap print preview anchor",
-			       	"searchreplace visualblocks code fullscreen",
-			       	"insertdatetime media table contextmenu paste"
-			   	],
+			   	plugins: plugins,
+			   	theme_advanced_buttons3_add: themeAdvancedButtons3Add,
 			   	toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
 			   	relative_urls: false,
 			   	convert_urls: false
