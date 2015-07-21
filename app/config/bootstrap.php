@@ -99,6 +99,12 @@ function cz_date_time($datetime, $date_separator = '-') {
 	return $dt;
 }
 
+function cz_date($date, $date_separator = '-') {
+	$dt = strtotime($date);
+	$dt = strftime('%d' . $date_separator . '%m' . $date_separator . '%Y', $dt);
+	return $dt;
+}
+
 /** Kontrola e-mailové adresy
 * @param string $email e-mailová adresa
 * @return bool syntaktická správnost adresy
@@ -336,6 +342,51 @@ function full_name($first_name = null, $last_name = null) {
 		$full_name .= $last_name;
 	}
 	return $full_name;
+}
+
+function next_work_day($date = null) {
+	if (!$date) {
+		$date = date('Y-m-d');
+	}
+	
+	$next_work_day = date('Y-m-d', strtotime('+1 day', strtotime($date)));
+	$next_work_day_no_year = date('m-d', strtotime('+1 day', strtotime($date)));
+	
+	$cz_holiday = cz_holiday();
+	if (in_array($next_work_day_no_year, $cz_holiday)) {
+		$next_work_day = next_work_day($next_work_day);
+	}
+	
+	// nesmi byt svatek ani vikend - 0 je nedele, 6 je sobota
+	$weekday = date("w", strtotime($next_work_day));
+
+	if ($weekday == 0 || $weekday == 6) {
+		$next_work_day = next_work_day($next_work_day);
+	}
+	
+	return $next_work_day;
+}
+
+function cz_holiday() {
+	$holiday = array(
+		0 => '01-01', // novy rok
+		'05-01', // svatek prace
+		'05-08', // den vitezstvi
+		'07-05', // cyril a metodej
+		'07-06', // jan hus
+		'09-28', // den ceske statnosti
+		'10-28', // vznik samostatneho CS statu
+		'11-17', // den boje za svobodu
+		'12-24', // stedry den
+		'12-25', // 1. svatek vanocni
+		'12-26' // 2. svatek vanoci
+	);
+	
+	// pridam velikonocni pondeli
+	$easter_sunday = easter_date(date('Y'));
+	$easter_monday = strtotime('+1 day', $easter_sunday);
+	$holiday[] = date('m-d', $easter_monday);
+	return $holiday;
 }
 
 define('REDESIGN_PATH', 'redesign_2015/');

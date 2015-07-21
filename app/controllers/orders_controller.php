@@ -1376,7 +1376,10 @@ class OrdersController extends AppController {
 	}
 	
 	function test() {
-		$this->Order->notifyAdmin(36293);
+		$res = next_work_day();
+		debug($res);
+ 		$res = cz_date($res, '.');
+ 		debug($res); die();
 		die('hotovo');
 	}
 } // konec tridy
