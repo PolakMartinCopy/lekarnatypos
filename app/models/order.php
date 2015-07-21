@@ -693,7 +693,7 @@ class Order extends AppModel {
 		$mail->Body = 'Právě byla přijata nová objednávka pod číslem ' . $this->id . '.' . "\n";
 		$mail->Body .= 'Pro její zobrazení se přihlašte v administraci obchodu: http://www.' . $this->Setting->findValue('CUST_ROOT') . '/admin/' . "\n\n";
 		// zmenit na false. adminum nechci posilat grafiku
-		$customer_mail = $this->order_mail($this->id, true);
+		$customer_mail = $this->order_mail($this->id, false);
 		if (is_array($customer_mail)) {
 			$mail->Subject = $customer_mail['MailTemplate']['subject'];
 			$customer_mail = $customer_mail['MailTemplate']['content'];
