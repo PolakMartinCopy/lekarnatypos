@@ -48,35 +48,31 @@ class Status extends AppModel {
 				return false;
 			} else {
 				$mail_template = $this->MailTemplate->process($mail_template['MailTemplate']['id'], $order_id);
-				return $mail_template;
+				// mam sestaveny mail template s daty
+				// musim ho odeslat, nactu si detaily z objednavky
+				$order = $this->Order->find('first', array(
+						'conditions' => array('Order.id' => $order_id),
+						'contain' => array()
+				));
+					
+				// natahnu si mailovaci skript
+				App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
+				$ppm = &new phpmailer;
+				$ppm->CharSet = 'utf-8';
+				$ppm->Hostname = CUST_ROOT;
+				$ppm->Sender = CUST_MAIL;
+				$ppm->From = CUST_MAIL;
+				$ppm->FromName = CUST_NAME;
+				$ppm->ReplyTo = CUST_MAIL;
+					
+				$ppm->Body = $mail_template['MailTemplate']['content'];
+				$ppm->Subject = $mail_template['MailTemplate']['subject'];
+				$ppm->AddAddress($order['Order']['customer_email'], $order['Order']['customer_name']);
+				$ppm->AddBCC('brko11@gmail.com');
+				$ppm->IsHtml(true);
+
+				return $ppm->Send();	
 			}
-			
-			// mam sestaveny mail template s daty
-			// musim ho odeslat, nactu si detaily z objednavky
-			$order = $this->Order->find('first', array(
-				'conditions' => array('Order.id' => $order_id),
-				'contain' => array()
-			));
-			
-			// natahnu si mailovaci skript
-			App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
-			$ppm = &new phpmailer;
-			$ppm->CharSet = 'utf-8';
-			$ppm->Hostname = CUST_ROOT;
-			$ppm->Sender = CUST_MAIL;
-			$ppm->From = CUST_MAIL;
-			$ppm->FromName = CUST_NAME;
-			$ppm->ReplyTo = CUST_MAIL;
-			
-			$ppm->Body = $template['MailTemplate']['content'];
-			$ppm->Subject = $template['MailTemplate']['subject'];
-			$ppm->AddAddress($order['Order']['customer_email'], $order['Order']['customer_name']);
-			$ppm->AddBCC('brko11@gmail.com');
-			$ppm->IsHtml(true);
-			
-			return $ppm->Send();
-			
-			
 		} else {
 			return false;
 		}
