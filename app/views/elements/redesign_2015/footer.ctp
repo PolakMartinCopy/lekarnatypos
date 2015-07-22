@@ -55,7 +55,7 @@
                 tel.: 778 437 811
             </p>
 <?php if ($_SERVER['REQUEST_URI'] == '/') { ?>
-			<a href="http://www.sukl.cz/lekarna/72995264000" target="_blank">
+			<a href="https://www.sukl.cz/modules/apotheke/verify.php?kod=72995264000&verify_eu" target="_blank">
 		    	<img src="/images/<?php echo REDESIGN_PATH?>sukl-overeni.png" alt="Ověřit lékárnu" title="Ověřit lékárnu" width="132px" height="110px"  style="margin:10px 10px 0 0"/> 
 	    	</a>
 <?php } ?>
