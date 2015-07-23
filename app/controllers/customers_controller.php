@@ -806,7 +806,14 @@ class CustomersController extends AppController {
 		$this->set('verify', $verify);
 		if ($verify) {
 			// odhlasit
-			$this->set('delete_success', $this->Customer->delete($id));
+			$customer = array(
+				'Customer' => array(
+					'id' => $id,
+					'newsletter' => false,
+					'active' => false
+				)
+			);
+			$this->set('delete_success', $this->Customer->save($customer));
 		}
 		$this->layout = REDESIGN_PATH . 'content';
 	} 
