@@ -285,7 +285,7 @@ class Customer extends AppModel {
 			
 			// nastavim adresu, od koho se poslal email
 			$mail->From     = CUST_MAIL;
-			$mail->FromName = "Automatické potvrzení";
+			$mail->FromName = CUST_NAME;
 			$mail->AddReplyTo(CUST_MAIL, CUST_NAME);
 			
 			// nastavim kam se posila email

@@ -131,15 +131,15 @@ class CommentsController extends AppController {
 	function add() {
 		if (isset($this->data)) {
 			if ($this->Comment->is_spam($this->data['Comment']['body'])) {
-				$this->Session->setFlash('Váš komentář obsahuje zakázaná slova a je proto považován za SPAM. Kometář nebyl uložen.');
+				$this->Session->setFlash('Váš komentář obsahuje zakázaná slova a je proto považován za SPAM. Kometář nebyl uložen.', REDESIGN_PATH . 'flash_failure');
 			} else {
 				$this->Comment->create();
 				$this->data['Comment']['created'] = date('Y-m-d H:i:s');
 				if ($this->Comment->save($this->data)) {
-					$this->Session->setFlash('Váš kometář byl uložen ke zpracování. Po schválení se bude zobrazovat.');
+					$this->Session->setFlash('Váš kometář byl uložen ke zpracování. Po schválení se bude zobrazovat.', REDESIGN_PATH . 'flash_success');
 				} else {
 					$this->_persistValidation('Comment');
-					$this->Session->setFlash('Chyba při ukládání, zkontrolujte formulář a zkuste to prosím znovu.');
+					$this->Session->setFlash('Chyba při ukládání, zkontrolujte formulář a zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
 				}
 			}
 			$this->redirect($this->data['Comment']['request_uri']);

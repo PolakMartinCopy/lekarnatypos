@@ -49,8 +49,12 @@ class MailTemplate extends AppModel{
 	
 	function getWildcardValue($wildcard, $subject_id = null, $options = array()) {
 		$res = null;
+		// natahnu modely
 		App::import('Model', 'Order');
 		$this->Order = &new Order;
+		App::import('Model', 'Comment');
+		$this->Comment = &new Comment;
+		
 		switch ($wildcard) {
 			case 'Order.id':
 			case 'Customer.id':
@@ -64,10 +68,14 @@ class MailTemplate extends AppModel{
 			case 'Order.shipping_number':
 			case 'Order.variable_symbol':
 			case 'Order.comments':
+			case 'Comment.subject':
+			case 'Comment.body':
+			case 'Comment.reply':
 				if ($subject_id) {
-					$field = explode('.', $wildcard);
-					$field = $field[1];
-					$value = $this->Order->getFieldValue($subject_id, $field);
+					$objects = explode('.', $wildcard);
+					$field = $objects[1];
+					$model = $objects[0];
+					$value = $this->{$model}->getFieldValue($subject_id, $field);
 					$res = $value;
 					if ($field == 'created') {
 						$res = cz_date_time($value, '.');

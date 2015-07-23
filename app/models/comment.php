@@ -129,92 +129,66 @@ class Comment extends AppModel {
 			));
 		}
 
-		if ( isset( $comment['Comment']['email'] ) ){
-			// natahnu si mailovaci skript
-			include 'class.phpmailer.php';
+		if (isset($comment['Comment']['email'])) {
+			// vytvorim si objekt mailu
+			// mam definovanou sablonu pro email s odpovedi na komentar?
+			$mail_template_conditions = false;
+			if (defined('COMMENT_ANSWER_MAIL_TEMPLATE_ID')) {
+				$mail_template_conditions = array('MailTemplate.id' => COMMENT_ANSWER_MAIL_TEMPLATE_ID);
+			}
+				
+			App::import('Model', 'MailTemplate');
+			$this->MailTemplate = &new MailTemplate;
 			
-			// notifikacni email zakaznikovi
-			// o dotazu
+			if ($mail_template_conditions && $this->MailTemplate->hasAny($mail_template_conditions)) {
+				$mail_template = $this->MailTemplate->find('first', array(
+					'conditions' => $mail_template_conditions,
+					'contain' => array(),
+					'fields' => array('MailTemplate.id')
+				));
+					
+				if (empty($mail_template)) {
+					return false;
+				} else {
+					$customer_mail = $this->MailTemplate->process($mail_template['MailTemplate']['id'], $comment['Comment']['id']);
+				}
+			} else {
+				// vytvorim si emailovou zpravu
+				$customer_mail = 'Dobrý den,' . "\n";
+				$customer_mail .= 'Váš dotaz v následujícím znění:' . "\n\n";
+				$customer_mail .= $comment['Comment']['body']. "\n\n";
+				$customer_mail .= 'byl zodpovězen, odpověď naleznete níže:' . "\n\n";
+				$customer_mail .= $comment['Comment']['reply']. "\n\n";
+				
+				$customer_mail .= 's pozdravem' . "\n" . 'team internetového obchodu ' . CUST_NAME;
+			}
+			
+			App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
 			$mail = new phpmailer();
 
 			// uvodni nastaveni
 			$mail->CharSet = 'utf-8';
 			$mail->Hostname = CUST_ROOT;
 			$mail->Sender = CUST_MAIL;
+			$mail->IsHTML(true);
 			
 			// nastavim adresu, od koho se poslal email
 			$mail->From     = CUST_MAIL;
-			$mail->FromName = "Automatické potvrzení";
-			
+			$mail->FromName = CUST_NAME;
 			$mail->AddReplyTo(CUST_MAIL, CUST_NAME);
 
 			$mail->AddAddress($comment['Comment']['email'] , $comment['Comment']['author']);
-			$mail->AddBCC("vlado@tovarnak.com", "Vlado Tovarnak");
+			$mail->AddBCC('brko11@gmail.com');
 	
 			$mail->Subject = $comment['Comment']['subject'] . " - odpověď na váš dotaz";
-			$mail->Body = 'Dobrý den,' . "\n";
-			$mail->Body .= 'Váš dotaz v následujícím znění:' . "\n\n";
-			$mail->Body .= $comment['Comment']['body']. "\n\n";
-			$mail->Body .= 'byl zodpovězen, odpověď naleznete níže:' . "\n\n";
-			$mail->Body .= $comment['Comment']['reply']. "\n\n";
-			
-			$mail->Body .= 's pozdravem' . "\n" . 'team internetového obchodu ' . CUST_NAME;
-
+			if (is_array($customer_mail)) {
+				$mail->Subject = $customer_mail['MailTemplate']['subject'];
+				$customer_mail = $customer_mail['MailTemplate']['content'];
+			}
+			$mail->Body = $customer_mail;
 			return $mail->Send();
 		}
 		return false;
-	}
-	
-	/*
-	 * Natahne sportnutrition data
-	 */
-	function import() {
-		$this->truncate();
-		$snComments = $this->findAllSn();
-		foreach ($snComments as $snComment) {
-			$comment = $this->transformSn($snComment);
-			$this->create();
-			if (!$this->save($comment)) {
-				debug($comment);
-				debug($this->validationErrors);
-			}
-		}
-		return true;
-	}
-	
-	function findAllSn($condition = null) {
-		$this->setDataSource('admin');
-		$query = '
-			SELECT *
-			FROM comments AS SnComment
-		';
-		if ($condition) {
-			$query .= '
-				WHERE ' . $condition . '
-			';
-		}
-		$snComments = $this->query($query);
-		$this->setDataSource('default');
-		return $snComments;
-	}
-	
-	function transformSn($snComment) {
-		$comment = array(
-			'Comment' => array(
-				'id' => $snComment['SnComment']['id'],
-				'product_id' => $snComment['SnComment']['product_id'],
-				'author' => $snComment['SnComment']['author'],
-				'email' => $snComment['SnComment']['email'],
-				'subject' => $snComment['SnComment']['subject'],
-				'body' => $snComment['SnComment']['body'],
-				'reply' => $snComment['SnComment']['reply'],
-				'administrator_id' => $snComment['SnComment']['administrator_id'],
-				'confirmed' => $snComment['SnComment']['confirmed'],
-				'sent' => $snComment['SnComment']['sent'],
-			)
-		);
-	
-		return $comment;
 	}
 }
 ?>
