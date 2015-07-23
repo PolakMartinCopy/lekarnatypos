@@ -175,6 +175,63 @@ class MailTemplate extends AppModel{
  						$res = $table;
  					}
  					break;
+ 			case 'Order.personal_purchase_items_table':
+ 				$order = $this->Order->find('first', array(
+ 					'conditions' => array('Order.id' => $order_id),
+ 					'contain' => array(
+ 					'OrderedProduct' => array(
+ 						'OrderedProductsAttribute' => array(
+ 							'Attribute' => array(
+ 								'Option'
+ 							)
+ 						),
+ 						'Product',
+ 						),
+ 						'Shipping'
+ 					)
+ 				));
+ 				if (!empty($order['OrderedProduct'])) {
+ 					$table = '
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:12px;padding:3px;margin-bottom:10px;border:solid 1px #d8d7d7">
+	<tbody>
+		<tr>
+			<th style="background-color:#dafadb" width="50"></th>
+			<th align="left" style="font-size:11px;font-weight:normal;padding:4px 5px 4px 0;background-color:#dafadb">Název produktu</th>
+			<th align="right" style="font-size:11px;font-weight:normal;padding:4px 5px 4px 0;background-color:#dafadb">Cena</th>
+		</tr>';
+ 					foreach ($order['OrderedProduct'] as $ordered_product) {
+ 						$product_name = $ordered_product['product_name'];
+ 						if (!empty($ordered_product['OrderedProductsAttribute'])) {
+ 							$attributes = array();
+ 							foreach ($$ordered_product['OrderedProductsAttribute'] as $opa) {
+ 								$attributes[] = $opa['Attribute']['Option']['name'] . ': ' . $opa['Attribute']['value'];
+ 							}
+ 							$attributes = implode(', ', $attributes);
+ 						}
+ 						if (!empty($attributes)) {
+ 							$product_name .= ' - ' . $attributes;
+ 						}
+ 						$product_name = '<a href="http://www.lekarnatypos.cz/' . $ordered_product['Product']['url'] . '">' . $product_name . '</a>';
+ 						$product_price =
+ 					
+ 						$table .= '
+		<tr>
+			<td align="right" valign="top" style="padding:3px 5px 3px 5px">' . $ordered_product['product_quantity']  . '&nbsp;&times;</td>
+			<td valign="top" style="padding:3px 5px 3px 0">' . $product_name . '</td>
+			<td align="right" valign="top" style="padding:3px 5px">' . front_end_display_price($ordered_product['product_price_with_dph']) . '&nbsp;Kč</td>
+		</tr>';
+ 							}
+ 						$table .= '
+		<tr>
+			<td>&nbsp;</td>
+			<td valign="baseline" style="padding:6px 5px 6px 0"><b>Cena celkem:</b></td>
+			<td align="right" valign="baseline" style="padding:6px 5px 6px 5px"><b>' . front_end_display_price($order['Order']['orderfinaltotal']) . '&nbsp;Kč</b></td>
+		</tr>
+	</tbody>
+</table>';
+ 						$res = $table;
+ 					}
+ 					break;
  				case 'Order.cash':
  					$order = $this->Order->find('first', array(
  						'conditions' => array('Order.id' => $order_id),
