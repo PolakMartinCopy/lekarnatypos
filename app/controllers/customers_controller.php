@@ -16,8 +16,8 @@ class CustomersController extends AppController {
 			'login',
 			'password',
 			'confirm_hash',
-			'import',
-			'repair'
+			'repair',
+			'cancel_registration'
 		);
 		
 		if ( !$this->Session->check('Customer') && !in_array($this->params['action'], $allowed_actions) && !eregi("admin_", $this->params['action'])  ){
@@ -800,6 +800,16 @@ class CustomersController extends AppController {
 		));
 		$this->set('customer_orders_count', $customer_orders_count);
 	}
+	
+	function cancel_registration($id, $hash) {
+		$verify = $this->Customer->verify($id, $hash);
+		$this->set('verify', $verify);
+		if ($verify) {
+			// odhlasit
+			$this->set('delete_success', $this->Customer->delete($id));
+		}
+		$this->layout = REDESIGN_PATH . 'content';
+	} 
 	
 	/*
 	 * @desription				Prihlasovani zakaznika.

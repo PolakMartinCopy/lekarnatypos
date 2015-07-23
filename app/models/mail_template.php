@@ -53,6 +53,7 @@ class MailTemplate extends AppModel{
 		$this->Order = &new Order;
 		switch ($wildcard) {
 			case 'Order.id':
+			case 'Customer.id':
 				if ($subject_id) {
 					$res = $subject_id;
 				}
@@ -286,6 +287,12 @@ class MailTemplate extends AppModel{
 					$res = $options['password'];
 				}
 				break;
+			case 'Customer.verification_hash':
+				if (isset($subject_id)) {
+					App::import('Model', 'Customer');
+					$this->Customer = &new Customer;
+					$res = $this->Customer->createVerifyHash($subject_id);
+				}
 		}
 		return $res;
 	}

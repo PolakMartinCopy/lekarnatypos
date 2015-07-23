@@ -255,7 +255,7 @@ class Customer extends AppModel {
 						'login' => $customer['CustomerLogin'][0]['login'],
 						'password' => $customer['CustomerLogin'][0]['password']
 					);
-					$customer_mail = $this->MailTemplate->process($mail_template['MailTemplate']['id'], null, $options);
+					$customer_mail = $this->MailTemplate->process($mail_template['MailTemplate']['id'], $this->id, $options);
 
 				}
 			} else {
@@ -296,7 +296,6 @@ class Customer extends AppModel {
 				$mail->Subject = $customer_mail['MailTemplate']['subject'];
 				$customer_mail = $customer_mail['MailTemplate']['content'];
 			}
-
 			$mail->Body = $customer_mail;
 			return $mail->Send();
 		}
@@ -331,72 +330,6 @@ class Customer extends AppModel {
 		));
 		
 		return !empty($customer);
-	}
-	
-	function import() {
-		$this->truncate();
-		$this->CustomerLogin->truncate();
-
-		$snCustomers = $this->findAllSn();
-		// pro kazdou tridu adres
-		foreach ($snCustomers as $snCustomer) {
-			$customer = $this->transformSn($snCustomer);
-			$this->create();
-			if (!$this->saveAll($customer)) {
-				debug($customer);
-				debug($this->validationErrors);
-				$this->saveAll($customer, array('validate' => false));
-			}
-		}
-
-
-		return true;
-	}
-	
-	function findAllSn($condition = null) {
-		$this->setDataSource('admin');
-		$query = '
-			SELECT *
-			FROM customers AS SnCustomer
-		';
-		
-		if ($condition) {
-			$query .= '
-				WHERE ' . $condition . '
-			';
-		}
-
-		$snCustomers = $this->query($query);
-		$this->setDataSource('default');
-		return $snCustomers;
-	}
-	
-	function transformSn($snCustomer) {
-		$customer = array(
-			'Customer' => array(
-				'id' => $snCustomer['SnCustomer']['id'],
-				'first_name' => $snCustomer['SnCustomer']['first_name'],
-				'last_name' => $snCustomer['SnCustomer']['last_name'],
-				'phone' => $snCustomer['SnCustomer']['phone'],
-				'email' => $snCustomer['SnCustomer']['email'],
-				'company_name' => $snCustomer['SnCustomer']['company_name'],
-				'company_ico' => $snCustomer['SnCustomer']['company_ico'],
-				'company_dic' => $snCustomer['SnCustomer']['company_dic'],
-				'registration_source' => $snCustomer['SnCustomer']['registration_source'],
-				'confirmed' => $snCustomer['SnCustomer']['confirmed'],
-				'newsletter' => $snCustomer['SnCustomer']['newsletter'],
-				'customer_type_id' => 1,
-				'active' => 1,
-			),
-		);
-		
-		if ($snCustomer['SnCustomer']['login']) {
-			$customer['CustomerLogin'][] = array(
-				'login' => $snCustomer['SnCustomer']['login'],
-				'password' => $snCustomer['SnCustomer']['password']
-			);
-		}
-		return $customer;
 	}
 	
 	function estimateFirstName($snName) {
@@ -477,6 +410,24 @@ class Customer extends AppModel {
 	
 		fclose($file);
 		return true;
+	}
+	
+	function createVerifyHash($id) {
+		$customer = $this->find('first', array(
+			'conditions' => array('Customer.id' => $id),
+			'contain' => array(),
+		));
+		
+		$verifyString = $customer['Customer']['last_name'] . $customer['Customer']['created'] . Configure::read('Security.salt');
+		$verifyHash = md5($verifyString);
+		
+		return $verifyHash;
+	}
+	
+	function verify($id, $hash) {
+		$generatedHash = $this->createVerifyHash($id);
+		
+		return ($hash == $generatedHash);
 	}
 }
 ?>
