@@ -44,11 +44,14 @@ class ProductsController extends AppController {
 				$new_data['CartsProduct']['product_id'] = $this->data['Product']['id'];
 				$new_data['CartsProduct']['quantity'] = $this->data['Subproduct']['quantity'];
 			} else {
-				// vkladam do kosiku produkt z vypisu produktu v kategorii
+				// vkladam do kosiku produkt z vypisu produktu v kategorii a vyhledavani
 				// produkt chci do kosiku vlozit pouze v pripade, ze nema zadne varianty
 				if (!$this->Product->Subproduct->hasAny(array('Subproduct.product_id' => $this->data['Product']['id']))) {
 					$new_data['CartsProduct']['product_id'] = $this->data['Product']['id'];
 					$new_data['CartsProduct']['quantity'] = $this->data['Product']['quantity'];
+					if (isset($_SERVER['HTTP_REFERER'])) {
+						$category_url = $_SERVER['HTTP_REFERER'];
+					}
 				} else {
 					$this->Session->setFlash('Produkt se nepodařilo vložit do košíku. Nejprve prosím <a href="' . $_SERVER['REQUEST_URI'] . '#AddProductWithVariantsForm">vyberte variantu produktu</a>.', REDESIGN_PATH . 'flash_failure');
 					$this->redirect($_SERVER['REQUEST_URI']);
@@ -62,8 +65,13 @@ class ProductsController extends AppController {
 				// vlozim do kosiku
 				if ( $result ){
 					$this->Session->setFlash('Produkt byl uložen do nákupního košíku. Obsah Vašeho košíku si můžete zobrazit <a href="/kosik">zde</a>.', REDESIGN_PATH . 'flash_success');
-					$product = $this->Product->read(array('Product.url'), $this->data['CartsProduct']['product_id']);
-					$this->redirect('/' . $product['Product']['url'], null, true);
+					if (isset($category_url)) {
+						$url = $category_url;
+					} else {
+						$product = $this->Product->getFieldValue($this->data['CartsProduct']['product_id'], 'url');
+						$url = '/' . $product['Product']['url'];
+					}
+					$this->redirect($url);
 				} else {
 					$this->Session->setFlash('Vložení produktu do košíku se nezdařilo. Zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
 				}
