@@ -170,7 +170,7 @@ class Comment extends AppModel {
 			$mail->CharSet = 'utf-8';
 			$mail->Hostname = CUST_ROOT;
 			$mail->Sender = CUST_MAIL;
-			$mail->IsHTML(true);
+			$mail->IsHtml(true);
 			
 			// nastavim adresu, od koho se poslal email
 			$mail->From     = CUST_MAIL;

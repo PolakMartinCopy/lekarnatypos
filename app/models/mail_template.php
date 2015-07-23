@@ -69,8 +69,6 @@ class MailTemplate extends AppModel{
 			case 'Order.variable_symbol':
 			case 'Order.comments':
 			case 'Comment.subject':
-			case 'Comment.body':
-			case 'Comment.reply':
 				if ($subject_id) {
 					$objects = explode('.', $wildcard);
 					$field = $objects[1];
@@ -301,6 +299,18 @@ class MailTemplate extends AppModel{
 					$this->Customer = &new Customer;
 					$res = $this->Customer->createVerifyHash($subject_id);
 				}
+			case 'Comment.body':
+				if (isset($subject_id)) {
+					$body = $this->Comment->getFieldValue($subject_id, 'body');
+					$res = str_replace("\n", '<br/>', $body);
+				}
+				break;
+			case 'Comment.reply':
+				if (isset($subject_id)) {
+					$reply = $this->Comment->getFieldValue($subject_id, 'reply');
+					$res = str_replace("\n", '<br/>', $reply);
+				}
+				break;
 		}
 		return $res;
 	}
