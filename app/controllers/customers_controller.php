@@ -420,7 +420,7 @@ class CustomersController extends AppController {
 			// vim, ze fakturacni adresa je stejna jako dorucovaci
 			if (!$this->data['Customer']['is_delivery_address_different'] || (
 					empty($this->data['Address'][1]['street']) && empty($this->data['Address'][1]['street_no']) &&
-				empty($this->data['Address'][1]['zip']) && empty($this->data['Address'][1]['city'])
+					empty($this->data['Address'][1]['zip']) && empty($this->data['Address'][1]['city'])
 				)
 			) {
 				$this->data['Address'][1]['name'] = (isset($this->data['Address'][0]['name']) ? $this->data['Address'][0]['name'] : '');

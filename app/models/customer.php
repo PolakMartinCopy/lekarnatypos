@@ -231,40 +231,72 @@ class Customer extends AppModel {
 	function notify_account_created($customer) {
 		// musim zjistit, zda zakaznik uvedl
 		// emailovou adresu, jinak nebudu mail posilat
-		if (isset($customer['Customer']['email']) && !empty($customer['Customer']['email']) ){
+		if (isset($customer['Customer']['email']) && !empty($customer['Customer']['email'])) {
+			// mam definovanou sablonu pro email s informacemi o registraci?
+			$mail_template_conditions = false;
+			if (defined('NEW_CUSTOMER_MAIL_TEMPLATE_ID')) {
+				$mail_template_conditions = array('MailTemplate.id' => NEW_CUSTOMER_MAIL_TEMPLATE_ID);
+			}
+			
+			App::import('Model', 'MailTemplate');
+			$this->MailTemplate = &new MailTemplate;
+			
+			if ($mail_template_conditions && $this->MailTemplate->hasAny($mail_template_conditions)) {
+				$mail_template = $this->MailTemplate->find('first', array(
+					'conditions' => $mail_template_conditions,
+					'contain' => array(),
+					'fields' => array('MailTemplate.id')
+				));
+					
+				if (empty($mail_template)) {
+					return false;
+				} else {
+					$options = array(
+						'login' => $customer['CustomerLogin'][0]['login'],
+						'password' => $customer['CustomerLogin'][0]['password']
+					);
+					$customer_mail = $this->MailTemplate->process($mail_template['MailTemplate']['id'], null, $options);
+
+				}
+			} else {
+				// vytvorim si emailovou zpravu
+				$customer_mail = 'Vážená(ý) ' . $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . "\n\n";
+				$customer_mail .= 'Tento email byl automaticky vygenerován a odeslán, abychom potvrdili Vaši registraci' .
+						' v online obchodě http://www.' . CUST_ROOT . '/' . "\n";
+				$customer_mail .= 'Váš účet byl vytvořen s těmito přihlašovacími údaji:' . "\n";
+				$customer_mail .= 'LOGIN: ' . $customer['CustomerLogin'][0]['login'] . "\n";
+				$customer_mail .= 'HESLO: ' . $customer['CustomerLogin'][0]['password'] . "\n";
+				$customer_mail .= 'Pro přihlášení k Vašemu uživatelskému účtu použijte prosím přihlašovací formulář, který' .
+						' najdete na adrese http://www.' . CUST_ROOT . '/customers/login ' . "\n";
+				$customer_mail .= 'Pomocí Vašeho uživatelského účtu můžete operovat s uskutečněnými objednávkami, sledovat' .
+						' jejich stav a vytvářet objednávky nové.' . "\n\n";
+				$customer_mail .= 'Velmi si vážíme Vaší důvěry, děkujeme.' . "\n";
+			}
+			
 			// vytvorim si objekt mailu
 			App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
 			$mail = new phpmailer();
-
+			
 			// uvodni nastaveni maileru
 			$mail->CharSet = 'utf-8';
 			$mail->Hostname = CUST_ROOT;
 			$mail->Sender = CUST_MAIL;
-
+			
 			// nastavim adresu, od koho se poslal email
 			$mail->From     = CUST_MAIL;
 			$mail->FromName = "Automatické potvrzení";
 			$mail->AddReplyTo(CUST_MAIL, CUST_NAME);
-
+			
 			// nastavim kam se posila email
 			$mail->AddAddress($customer['Customer']['email'], $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name']);
 			$mail->Subject = 'Vytvoření zákaznického účtu na ' . CUST_ROOT;
-
-			// vytvorim si emailovou zpravu
-			$customer_mail = 'Vážená(ý) ' . $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'] . "\n\n";
-			$customer_mail .= 'Tento email byl automaticky vygenerován a odeslán, abychom potvrdili Vaši registraci' .
-			' v online obchodě http://www.' . CUST_ROOT . '/' . "\n";
-			$customer_mail .= 'Váš účet byl vytvořen s těmito přihlašovacími údaji:' . "\n";
-			$customer_mail .= 'LOGIN: ' . $customer['CustomerLogin'][0]['login'] . "\n";
-			$customer_mail .= 'HESLO: ' . $customer['CustomerLogin'][0]['password'] . "\n";
-			$customer_mail .= 'Pro přihlášení k Vašemu uživatelskému účtu použijte prosím přihlašovací formulář, který' .
-			' najdete na adrese http://www.' . CUST_ROOT . '/customers/login ' . "\n";
-			$customer_mail .= 'Pomocí Vašeho uživatelského účtu můžete operovat s uskutečněnými objednávkami, sledovat' .
-			' jejich stav a vytvářet objednávky nové.' . "\n\n";
-			$customer_mail .= 'Velmi si vážíme Vaší důvěry, děkujeme.' . "\n";
+			
+			if (is_array($customer_mail)) {
+				$mail->Subject = $customer_mail['MailTemplate']['subject'];
+				$customer_mail = $customer_mail['MailTemplate']['content'];
+			}
 
 			$mail->Body = $customer_mail;
-
 			return $mail->Send();
 		}
 		return false;

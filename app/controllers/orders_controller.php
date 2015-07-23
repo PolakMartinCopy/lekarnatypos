@@ -985,7 +985,7 @@ class OrdersController extends AppController {
 			
 			// pokud se lisi adresy, zobrazim element pro fakturacni adresu
 			if (
-				isset($customer) && (
+				isset($customer) && isset($customer['Address'][1]) && (
 					$customer['Address'][0]['name'] != $customer['Address'][1]['name'] ||
 					$customer['Address'][0]['street'] != $customer['Address'][1]['street'] ||
 					$customer['Address'][0]['street_no'] != $customer['Address'][1]['street_no'] ||
@@ -1140,7 +1140,7 @@ class OrdersController extends AppController {
 		if (!isset($customer['Customer']['id']) || empty($customer['Customer']['id'])) {
 			// musim vytvorit novy zakaznicky ucet, takze vygeneruju login a heslo
 			$customer['CustomerLogin'][0]['login'] = $this->Order->Customer->generateLogin($sess_customer);
-			$customer_password = $this->Order->Customer->generatePassword($sess_customer['last_name']);
+			$customer_password = $this->Order->Customer->generatePassword($sess_customer);
 			$customer['CustomerLogin'][0]['password'] = md5($customer_password);
 			$customer['Customer']['confirmed'] = 1;
 			$customer['Customer']['registration_source'] = 'eshop';
