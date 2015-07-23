@@ -281,7 +281,7 @@ class Customer extends AppModel {
 			$mail->CharSet = 'utf-8';
 			$mail->Hostname = CUST_ROOT;
 			$mail->Sender = CUST_MAIL;
-			$mail_c->IsHtml(true);
+			$mail->IsHtml(true);
 			
 			// nastavim adresu, od koho se poslal email
 			$mail->From     = CUST_MAIL;
