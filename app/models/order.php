@@ -700,7 +700,6 @@ class Order extends AppModel {
 		}
 		
 		$mail->Body .= $customer_mail;
-		
 		if (!$mail->Send()) {
 			App::import('Model', 'Tool');
 			$this->Tool = &new Tool;
