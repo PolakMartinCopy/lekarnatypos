@@ -84,7 +84,6 @@ class SuppliersController extends AppController {
 		$this->set('supplier', $supplier);
 		
 		if (isset($this->data)) {
-
 			$data_source = $this->Supplier->getDataSource();
 			$data_source->begin($this->Supplier->SupplierCategory);
 
@@ -169,14 +168,12 @@ class SuppliersController extends AppController {
 		} else {
 			$this->data['SupplierCategory'] = $supplier['SupplierCategory'];
 		}
-		$old_categories_ids = $this->Supplier->SupplierCategory->Category->subtree_ids(304);
-		// chci vynechat stare kategorie a korenovou kategorii
-		$skipped_categories_ids = $old_categories_ids;
-		$skipped_categories_ids[] = 5;
+		$skipped_categories_ids = array(0 => 5);
 		$categories_conditions = array('Category.id NOT IN (' . implode(',', $skipped_categories_ids) . ')');
-		$categories = $this->Supplier->SupplierCategory->Category->generatetreelist($categories_conditions, null, null, '_');
+		$categories = $this->Supplier->SupplierCategory->Category->generateAllPaths(false);
+		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
 		$this->set('categories', $categories);
-		
+
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -218,7 +215,7 @@ class SuppliersController extends AppController {
 		$xml_file_suffix = date('Y-m-d-H-i-s');
 		$xml_file = 'files/uploads/xml-' . $id . '-' . $xml_file_suffix . '.xml';
 //		file_put_contents($xml_file, $xml);
-		
+
 		$products = new SimpleXMLElement($xml);
 		
 		if (!empty($supplier['Supplier']['catalog_root_field'])) {
@@ -243,6 +240,7 @@ class SuppliersController extends AppController {
 			$supplier_product_ids = array();
 			// prochazim produkty - poskladam si save produktu
 			foreach ($products->{$supplier['Supplier']['product_field']} as $feed_product) {
+
 				// otestuju, jestli ma produkt ve fedu pozadovanou strukturu
 				if (!$this->Supplier->validate_feed($feed_product, $supplier['Supplier']['id_field'], $supplier['Supplier']['name_field'], $supplier['Supplier']['short_description_field'], $supplier['Supplier']['price_field'])) {
 					trigger_error('Produkt ' . $feed_product . ' není validní', E_USER_ERROR);
@@ -250,6 +248,7 @@ class SuppliersController extends AppController {
 				}
 				
 				$product = $this->Supplier->product($feed_product, $supplier);
+
 				// produkt jsem v poradku vyparsoval
 				if ($product) {
 					$product['Product']['supplier_id'] = $id;
@@ -257,11 +256,10 @@ class SuppliersController extends AppController {
 					$db_product = $this->Supplier->Product->find('first', array(
 						'conditions' => array(
 							'Product.supplier_id' => $product['Product']['supplier_id'],
-							'Product.supplier_product_id' => $product['Product']['supplier_product_id']
+							'Product.supplier_product_id' => $product['Product']['supplier_product_id'],
 						),
 						'contain' => array(),
 					));
-
 					$data_source = $this->Supplier->Product->getDataSource();
 					$data_source->begin($this->Supplier->Product);
 					// priznak, jestli jsem zakladal novy produkt
@@ -400,12 +398,12 @@ class SuppliersController extends AppController {
 							}
 							
 							$customer_type_product_price['price'] = null;
-							if ($customer_type['CustomerType']['id'] == 2) {
+							if ($customer_type['CustomerType']['id'] == 2 && isset($product['Product']['discount_common'])) {
 								$customer_type_product_price['price'] = $product['Product']['discount_common'];
 							}
 							$product_prices[] = $customer_type_product_price;
 						}
-	
+
 						if (!$this->Supplier->Product->CustomerTypeProductPrice->saveAll($product_prices)) {
 							debug($product_prices);
 							trigger_error('Nepodarilo se ulozit ceny produktu', E_USER_NOTICE);
@@ -438,7 +436,6 @@ class SuppliersController extends AppController {
 				foreach ($unactive_products as $unactive_product) {
 					// deaktivuju jen ty produkty, ktere maji povolenou upravu atributu active daty z feedu
 					if ($this->Supplier->Product->is_product_property_editable($unactive_product['Product']['id'], 17, $id)) {
-						debug($unactive_product); die();
 						$unactive_product['Product']['active'] = false;
 						if (!$this->Supplier->Product->save($unactive_product)) {
 							debug($unactive_product);

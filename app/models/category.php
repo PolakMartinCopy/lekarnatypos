@@ -22,7 +22,7 @@ class Category extends AppModel {
 	);
 	
 	// id kategorii, ktere se nebudou brat v potaz pri generovani souvisejicich produktu
-	var $unactive_categories_ids = array(304);
+	var $unactive_categories_ids = array();
 	
 	// id kategorie s darky, jejiz produkty nechci vypisovat v seznamu produktu podle vyrobce
 	var $present_category_id = null;

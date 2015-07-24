@@ -7,7 +7,7 @@ class ProductPropertiesProductsController extends AppController {
 	 * Touto metodou nastavim, ze u produktu Syncare nechci updatovat nikde nic
 	 */
 	function admin_init() {
-		$conditions = array('Product.supplier_id' => array(1, 2)); // Syncare a Topvet
+		$conditions = array('Product.supplier_id' => array(3)); // Syncare a Topvet
 		
 		// pro kazdy z vybranych produktu nastavim u vsech vlasnosti, ze ji nechci updatovat
 		$products = $this->ProductPropertiesProduct->Product->find('all', array(

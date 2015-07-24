@@ -189,10 +189,19 @@ class Supplier extends AppModel {
 			if (!$manufacturer_id && $supplier['Supplier']['id'] == 2) {
 				$manufacturer_id = 127;
 			}
+			// feed boneco nema vyrobce, ale vsechny produkty jsou jeho, takze id vyrobce nastavim natvrdo
+			if (!$manufacturer_id && $supplier['Supplier']['id'] == 3) {
+				$manufacturer_id = 177;
+			}
+				
 			// 		- danova trida
 			$tax_class_id = $this->product_tax_class_id($feed_product, $supplier['Supplier']['vat_field']);
 			// feed syncare nema danovou tridu, ale vsechny produkty jsou s DPH 21%
 			if (!$tax_class_id && $supplier['Supplier']['id'] == 2) {
+				$tax_class_id = 1;
+			}
+			// feed boneco nema danovou tridu, ale vsechny produkty jsou s DPH 21%
+			if (!$tax_class_id && $supplier['Supplier']['id'] == 3) {
 				$tax_class_id = 1;
 			}
 			if (!$tax_class_id) {
@@ -323,33 +332,37 @@ class Supplier extends AppModel {
 	}
 	
 	function product_supplier_category_id($feed_product, $category_field, $supplier_id) {
-		if ($supplier_category_name = simpleXMLChildValue($feed_product, $category_field)) {
-			// pokud nemam info o teto kategori v systemu, zalozim zaznam
-			$conditions = array(
-				'name' => $supplier_category_name,
-				'supplier_id' => $supplier_id
-			);
-			$supplier_category = $this->SupplierCategory->find('first', array(
-				'conditions' => $conditions,
-				'contain' => array(),
-				'fields' => array('SupplierCategory.id', 'SupplierCategory.active')					
-			));
-
-			if (empty($supplier_category)) {
-				$supplier_category['SupplierCategory'] = $conditions;
-				$supplier_category['SupplierCategory']['category_id'] = 0;
-				$supplier_category['SupplierCategory']['active'] = true;
-				$this->SupplierCategory->create();
-				if ($this->SupplierCategory->save($supplier_category)) {
-					return $this->SupplierCategory->id;
-				} else {
-					trigger_error('Nepodarilo se ulozit kategorii dodavatele ' . $supplier_category_name . ' pro ucely parovani');
-					return false;
-				}
-			} else {
-				return $supplier_category['SupplierCategory']['id'];
-			}
+		$supplier_category_name = 'NEDEFINOVANO';
+		if ($feed_supplier_category_name = simpleXMLChildValue($feed_product, $category_field)) {
+			$supplier_category_name = $feed_supplier_category_name;
 		}
+
+		// pokud nemam info o teto kategori v systemu, zalozim zaznam
+		$conditions = array(
+			'name' => $supplier_category_name,
+			'supplier_id' => $supplier_id
+		);
+		$supplier_category = $this->SupplierCategory->find('first', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array('SupplierCategory.id', 'SupplierCategory.active')					
+		));
+
+		if (empty($supplier_category)) {
+			$supplier_category['SupplierCategory'] = $conditions;
+			$supplier_category['SupplierCategory']['category_id'] = 0;
+			$supplier_category['SupplierCategory']['active'] = true;
+			$this->SupplierCategory->create();
+			if ($this->SupplierCategory->save($supplier_category)) {
+				return $this->SupplierCategory->id;
+			} else {
+				trigger_error('Nepodarilo se ulozit kategorii dodavatele ' . $supplier_category_name . ' pro ucely parovani');
+				return false;
+			}
+		} else {
+			return $supplier_category['SupplierCategory']['id'];
+		}
+
 		return false;
 	}
 	
@@ -584,8 +597,8 @@ class Supplier extends AppModel {
 			'contain' => array('ProductProperty'),
 		));
 
-		// pokud nemam zadano jinak, u produktu SynCare a TopVet nechci updatovat nic
-		if (empty($properties) && ($product['Product']['supplier_id'] == 2 || $product['Product']['supplier_id'] == 1)) {
+		// pokud nemam zadano jinak, u produktu SynCare a TopVet a Boneco nechci updatovat nic
+		if (empty($properties) && ($product['Product']['supplier_id'] == 2 || $product['Product']['supplier_id'] == 1) || $product['Product']['supplier_id'] == 3) {
 			foreach ($product['Product'] as $key => $value) {
 				if ($key != 'id') {
 					unset($product['Product'][$key]);

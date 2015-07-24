@@ -22,6 +22,10 @@
 	$name_arr = explode('.', $name);
 	$model = array_shift($name_arr);
 	$input_id = $model . join('', array_map(array('Inflector', 'camelize'), $name_arr));
+	
+	if (!isset($empty)) {
+		$empty = false;
+	}
 ?>
 
 <script type="text/javascript">
@@ -165,6 +169,6 @@
 
 <div class="ui-widget">
 <?php
-	echo $this->Form->input($name, array('label' => false, 'type' => 'select', 'options' => $options, 'empty' => false, 'div' => false))
+	echo $this->Form->input($name, array('label' => false, 'type' => 'select', 'options' => $options, 'empty' => $empty, 'div' => false))
 ?>
 </div>

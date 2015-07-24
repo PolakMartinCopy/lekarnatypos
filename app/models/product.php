@@ -892,7 +892,7 @@ class Product extends AppModel {
 		if (!empty($product_property) && isset($product_property['ProductPropertiesProduct']['update'])) {
 			$update = $product_property['ProductPropertiesProduct']['update'];
 			// pokud neni zadano jinak, u produktu syncare nechci updatovat
-		} elseif ($supplier_id == 2 || $supplier_id == 1) {
+		} elseif ($supplier_id == 2 || $supplier_id == 1 || $supplier_id == 3) {
 			$update = false;
 		}
 		return $update;

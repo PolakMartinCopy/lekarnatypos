@@ -22,7 +22,9 @@
 			echo $this->Form->hidden('SupplierCategory.' . $index . '.name');
 			echo $supplier_category['name'];
 		?></td>
-		<td><?php echo $this->Form->input('SupplierCategory.' . $index . '.category_id', array('label' => false, 'options' => $categories, 'empty' => true))?></td>
+		<td>
+			<?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'SupplierCategory.' . $index . '.category_id', 'options' => $categories, 'empty' => true))?>
+		</td>
 		<td><?php echo $this->Form->input('SupplierCategory.' . $index . '.active', array('label' => false))?></td>
 	</tr>
 	<?php } ?>
