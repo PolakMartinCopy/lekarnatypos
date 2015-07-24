@@ -20,4 +20,5 @@
 		</tr>
 	</table>
 </fieldset>
+<?php echo $this->Form->hidden('Manufacturer.active', array('value' => true))?>
 <?=$form->end('Vložit');?>
