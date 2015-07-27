@@ -48,6 +48,7 @@
 				<li><?php echo $this->Html->link('Vlastnosti produktů', array('controller' => 'product_properties', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Stavy objednávek', array('controller' => 'statuses', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Emailové šablony', array('controller' => 'mail_templates', 'action' => 'index'))?></li>
+				<li><?php echo $this->Html->link('SMS šablony', array('controller' => 's_m_s_templates', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Třídy atributů', array('controller' => 'options', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Přesměrování', array('controller' => 'redirects', 'action' => 'index'))?></li>
 			</ul>
