@@ -168,7 +168,7 @@ class MailTemplate extends AppModel{
  							if (!empty($attributes)) {
  								$product_name .= ' - ' . $attributes;
  							}
- 							$product_name = '<a href="http://www.lekarnatypos.cz/' . $ordered_product['Product']['url'] . '">' . $product_name . '</a>';
+ 							$product_name = '<a href="http://www.lekarnatypos.cz/' . $ordered_product['Product']['url'] . '" style="color:#63af29">' . $product_name . '</a>';
  							$product_price = 
  							
  							$table .= '
@@ -232,7 +232,7 @@ class MailTemplate extends AppModel{
  							if (!empty($attributes)) {
  								$product_name .= ' - ' . $attributes;
  							}
- 							$product_name = '<a href="http://www.lekarnatypos.cz/' . $ordered_product['Product']['url'] . '">' . $product_name . '</a>';
+ 							$product_name = '<a href="http://www.lekarnatypos.cz/' . $ordered_product['Product']['url'] . '" style="color:#63af29">' . $product_name . '</a>';
  							$product_price =
  					
  							$table .= '
