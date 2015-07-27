@@ -3,6 +3,7 @@
 <table class="topHeading" cellpadding="5" cellspacing="3">
 	<tr>
 		<th>ID</th>
+		<th>Obsah</th>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 	</tr>
@@ -15,6 +16,7 @@
 <? foreach ($templates as $template) { ?>
 	<tr>
 		<td><?php echo $this->Html->link($template['SMSTemplate']['id'], array('controller' => 's_m_s_templates', 'action' => 'edit', $template['SMSTemplate']['id']), array('escape' => false, 'title' => 'Upravit šablonu')); ?></td>
+		<td><?php echo $this->Html->link($template['SMSTemplate']['content'], array('controller' => 's_m_s_templates', 'action' => 'edit', $template['SMSTemplate']['id']), array('escape' => false, 'title' => 'Upravit šablonu')); ?></td>
 		<td><?php
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
 			echo $this->Html->link($icon, array('controller' => 's_m_s_templates', 'action' => 'edit', $template['SMSTemplate']['id']), array('escape' => false, 'title' => 'Upravit šablonu'));

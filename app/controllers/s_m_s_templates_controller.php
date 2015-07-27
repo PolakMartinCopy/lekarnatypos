@@ -5,7 +5,6 @@ class SMSTemplatesController extends AppController {
 	function admin_index() {
 		$templates = $this->SMSTemplate->find('all');
 		$this->set('templates', $templates);
-		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
