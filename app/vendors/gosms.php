@@ -147,6 +147,10 @@ class GoSMS {
 		//close connection
 		curl_close($ch);
 	
+		if ($this->logLevel) {
+			CakeLog::write('gosms', 'Zprava byla uspesne odeslana. Telefon: ' . $phone . ', zprava: ' . $message);
+		}
+		return true;
 	}
 }
 ?>
