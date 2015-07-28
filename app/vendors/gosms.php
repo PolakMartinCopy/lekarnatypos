@@ -27,7 +27,6 @@ class GoSMS {
 	function download_access_token() {
 		if (!defined('GOSMS_CLIENT_ID') || !defined('GOSMS_CLIENT_SECRET')) {
 			$message = 'Není definováno CLIENT_ID nebo CLIENT_SECRET';
-			debug($message);
 			CakeLog::write('gosms', $message);
 			return false;
 		} else {
@@ -79,7 +78,6 @@ class GoSMS {
 	function send($phone, $message) {
 		if (!$token = $this->get_access_token()) {
 			$logMessage = 'Nepodařilo se získat token.';
-			debug($logMessage);
 			if ($this->logLevel) {
 				CakeLog::write('gosms', $logMessage);
 			}
@@ -94,7 +92,6 @@ class GoSMS {
 	
 		if (!defined('GOSMS_CHANNEL')) {
 			$logMessage = 'Není definovaný kanál. Telefon: ' . $phone . ', zprava: ' . $logMessage;
-			debug($logMessage);
 			if ($this->logLevel) {
 				CakeLog::write('gosms', $logMessage);
 			}
@@ -130,14 +127,12 @@ class GoSMS {
 				$logMessage .= ' - ' . $result->detail;
 			}
 			$logMessage .= ' - Telefon: ' . $phone . ', zprava: ' . $message;
-			debug($logMessage);
 			if ($this->logLevel) {
 				CakeLog::write('gosms', $logMessage);
 			}
 			return false;
 		} elseif (!empty($result->recipients->invalid)) {
 			$logMessage = 'Nepodařilo se odeslat zprávu. Telefon: ' . $phone . ', zprava: ' . $message;
-			debug($logMessage);
 			if ($this->logLevel) {
 				CakeLog::write('gosms', $logMessage);
 			}

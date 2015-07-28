@@ -628,8 +628,12 @@ class Order extends AppModel {
 		if (isset($customer['phone']) && !empty($customer['phone']) && defined('NEW_ORDER_SMS_TEMPLATE_ID')) {
 			// jen pro *@seznam.cz, *@atlas.cz a osobni odbery
 			if ($this->sendSMSNotification($this->id)) {
-				die('prosel i druhy test');
-				$sms_template = $this->SMSTemplate->process(NEW_ORDER_SMS_TEMPLATE_ID, $order_id);
+				$order = $this->find('first', array(
+					'conditions' => array('Order.id' => $this->id),
+					'contain' => array(),
+					'fields' => array('Order.customer_phone')	
+				));
+				$sms_template = $this->Status->SMSTemplate->process(NEW_ORDER_SMS_TEMPLATE_ID, $this->id);
 				App::import('Vendor', 'GoSMS', array('file' => 'gosms.php'));
 				$this->GoSMS = &new GoSMS;
 				$this->GoSMS->logLevel = 1;
@@ -1041,8 +1045,10 @@ class Order extends AppModel {
 	// chci u dane objednavky posilat notifikace pomoci SMS?
 	// pouze v pripade, ze je objednavka osobnim odberem anebo ze je email na seznamu nebo na atlasu
 	function sendSMSNotification($id) {
-		// TODO - az nabehnou penize v penezence na GoSMS, odstranit
-		return false;
+		// nejprve jsem chtel posilat sms notifikace jen nekterym zakaznikum, ale ted chceme vsem
+		// necham tady tuto funkci, kdybysme to v budoucnu na neco chteli, ale ted vraci vsude true
+		// zaroven to tady muzu jednoduse vypnout
+		return true;
 		
 		$order = $this->find('first', array(
 			'conditions' => array('Order.id' => $id),
