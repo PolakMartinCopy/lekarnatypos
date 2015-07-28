@@ -1364,23 +1364,5 @@ class OrdersController extends AppController {
 		$this->set('order', $order);
 
 	}
-
-	function import() {
-		$this->Order->import();
-		die('here');
-	}
-
-	function update() {
-		$this->Order->update();
-		die('here');
-	}
-	
-	function test() {
-		$res = next_work_day();
-		debug($res);
- 		$res = cz_date($res, '.');
- 		debug($res); die();
-		die('hotovo');
-	}
 } // konec tridy
 ?>

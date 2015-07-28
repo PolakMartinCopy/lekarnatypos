@@ -623,9 +623,22 @@ class Order extends AppModel {
 		if (isset($id) && (!isset($this->id) || (isset($this->id) && empty($this->id)))) {
 			$this->id = $id;
 		}
+
+		// notifikace na telefon
+		if (isset($customer['phone']) && !empty($customer['phone']) && defined('NEW_ORDER_SMS_TEMPLATE_ID')) {
+			// jen pro *@seznam.cz, *@atlas.cz a osobni odbery
+			if ($this->sendSMSNotification($this->id)) {
+				die('prosel i druhy test');
+				$sms_template = $this->SMSTemplate->process(NEW_ORDER_SMS_TEMPLATE_ID, $order_id);
+				App::import('Vendor', 'GoSMS', array('file' => 'gosms.php'));
+				$this->GoSMS = &new GoSMS;
+				$this->GoSMS->logLevel = 1;
+				$this->GoSMS->send($order['Order']['customer_phone'], $sms_template['SMSTemplate']['content']);
+			}
+		}
 		
-		App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
-		if ( isset($customer['email']) && !empty($customer['email']) ){
+		if (isset($customer['email']) && !empty($customer['email'])) {
+			App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
 			$mail_c = new phpmailer();
 			// uvodni nastaveni
 			$mail_c->CharSet = 'utf-8';
@@ -1023,6 +1036,31 @@ class Order extends AppModel {
 			}
 		}
 		return $conditions;
+	}
+	
+	// chci u dane objednavky posilat notifikace pomoci SMS?
+	// pouze v pripade, ze je objednavka osobnim odberem anebo ze je email na seznamu nebo na atlasu
+	function sendSMSNotification($id) {
+		// TODO - az nabehnou penize v penezence na GoSMS, odstranit
+		return false;
+		
+		$order = $this->find('first', array(
+			'conditions' => array('Order.id' => $id),
+			'contain' => array(),
+			'fields' => array('Order.id', 'Order.customer_email', 'Order.shipping_id')
+		));
+
+		$sendSMSNotification = false;
+		
+		if (defined('PERSONAL_PURCHASE_SHIPPING_ID')) {
+			$sendSMSNotification = $sendSMSNotification || ($order['Order']['shipping_id'] == PERSONAL_PURCHASE_SHIPPING_ID);
+		}
+
+		if (!$sendSMSNotification) {
+			$sendSMSNotification = $sendSMSNotification || preg_match('/.*@(?:seznam|atlas)\.cz/', $order['Order']['customer_email']);
+		}
+
+		return $sendSMSNotification;
 	}
 } // konec tridy
 ?>

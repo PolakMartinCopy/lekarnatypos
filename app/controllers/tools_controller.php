@@ -22,13 +22,5 @@ class ToolsController extends AppController {
 		}
 		die();
 	}
-	
-	function gosms_test() {
-		App::import('Vendor', 'GoSMS', array('file' => 'gosms.php'));
-		$this->GoSMS = &new GoSMS;
-		$this->GoSMS->logLevel = 1;
-		$this->GoSMS->send('723238866', 'ahoj brko z uctu meavita');
-		die();
-	}
 }
 ?>
