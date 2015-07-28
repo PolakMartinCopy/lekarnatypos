@@ -61,5 +61,7 @@
 			</ul>
 		</li>
 		<li><?php echo $this->Html->link('Odhlásit', array('controller' => 'administrators', 'action' => 'logout'))?></li>
+		<li style="float:right"><a href="#">Jste přihlášen jako: <?php echo $this->Session->read('Administrator.first_name') . ' ' . $this->Session->read('Administrator.last_name')?></a></li>
 	</ul>
+	<div style="clear:both"></div>
 </div>

@@ -20,6 +20,7 @@ a:hover { text-decoration: none; }
 	background:	url('images/admin_menu_bg.png') repeat-x 0px 0px;
 	clear: both;
 	margin-top: 10px;
+	width: 1222px;
 }
 
 #admin_content {

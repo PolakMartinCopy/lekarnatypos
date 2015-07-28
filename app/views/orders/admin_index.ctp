@@ -213,7 +213,7 @@ $(function() {
 		</table>
 		<?php } ?></td>
 		<td>
-			<table class="tabulka">
+			<table class="tabulka" style="width:100%">
 				<?php foreach ($order['OrderedProduct'] as $ordered_product) { ?>
 				<tr>
 					<td><?php
@@ -223,7 +223,7 @@ $(function() {
 						}
 						echo $quantity_info;
 					?>x</td>
-					<td><?php
+					<td style="width:80%"><?php
 						$ordered_product_name = $ordered_product['product_name'];
 						if (!empty($ordered_product['Product'])) {
 							$ordered_product_name = $this->Html->link($ordered_product['product_name'], '/' . $ordered_product['Product']['url'], array('target' => 'blank'));
@@ -258,7 +258,6 @@ $(function() {
 					<td>&nbsp;</td>
 					<td>0</td>
 					<td>0</td>
-				</tr>
 				</tr>
 			</table>
 		</td>
