@@ -2,16 +2,6 @@
 class StatusesController extends AppController {
 	var $name = 'Statuses';
 
-	function beforeFilter(){
-		// musim si zavolat puvodni beforeFilter
-		parent::beforeFilter();
-		
-		$this->Status->MailTemplate->recursive = -1;
-		$mail_templates = $this->Status->MailTemplate->find('all');
-		$mail_templates = Set::combine($mail_templates, '{n}.MailTemplate.id', '{n}.MailTemplate.subject');
-		$this->set('mail_templates', $mail_templates);
-	}
-
 	function admin_index(){
 		$statuses = $this->Status->find('all', array(
 			'contain' => array('MailTemplate'),
@@ -21,23 +11,55 @@ class StatusesController extends AppController {
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
+	
+	function admin_add() {
+		if (isset($this->data)) {
+			if ($this->Status->save($this->data)) {
+				$this->Session->setFlash('Status byl uložen!');
+				$this->redirect(array('action' => 'index'), null, true);
+			} else {
+				$this->Session->setFlash('Chyba při ukládání statusu, zkontrolujte prosím všechna pole!');
+			}
+		}
+	
+		$mail_templates = $this->Status->MailTemplate->find('list', array(
+			'fields' => array('MailTemplate.id', 'MailTemplate.subject')
+		));
+		$this->set('mail_templates', $mail_templates);
+	
+		$sms_templates = $this->Status->SMSTemplate->find('list', array(
+			'fields' => array('SMSTemplate.id', 'SMSTemplate.shortcut')
+		));
+		$this->set('sms_templates', $sms_templates);
+	}
 
-	function admin_edit($id){
-		if ( !isset($this->data) ){
+	function admin_edit($id) {
+		if (!isset($this->data)) {
 			$this->Status->recursive = -1;
 			$this->data = $this->Status->read(null, $id);
-			if ( empty($this->data) ){
+			if (empty($this->data)) {
 				$this->Session->setFlash('Neexistující status!', REDESIGN_PATH . 'flash_failure');
 				$this->redirect(array('action' => 'index'), null, true);
 			}
 		} else {
-			if ( $this->Status->save($this->data) ){
+			if ($this->Status->save($this->data)) {
 				$this->Session->setFlash('Status byl upraven!', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('action' => 'edit', $this->Status->id), null, true);
 			} else {
 				$this->Session->setFlash('Chyba při úpravě statusu!', REDESIGN_PATH . 'flash_failure');
 			}
 		}
+		
+		$mail_templates = $this->Status->MailTemplate->find('list', array(
+			'fields' => array('MailTemplate.id', 'MailTemplate.subject')
+		));
+		$this->set('mail_templates', $mail_templates);
+
+		$sms_templates = $this->Status->SMSTemplate->find('list', array(
+			'fields' => array('SMSTemplate.id', 'SMSTemplate.shortcut')
+		));
+		$this->set('sms_templates', $sms_templates);		
+		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -81,17 +103,6 @@ class StatusesController extends AppController {
 				$this->Session->setFlash('Status byl vymazán!');
 			}
 			$this->redirect(array('action' => 'index'), null, true);
-		}
-	}
-
-	function admin_add(){
-		if ( isset($this->data) ){
-			if ( $this->Status->save($this->data) ){
-				$this->Session->setFlash('Status byl uložen!');
-				$this->redirect(array('action' => 'index'), null, true);
-			} else {
-				$this->Session->setFlash('Chyba při ukládání statusu, zkontrolujte prosím všechna pole!');
-			}
 		}
 	}
 }

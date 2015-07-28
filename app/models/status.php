@@ -13,7 +13,7 @@ class Status extends AppModel {
 
 	var $hasMany = array('Order');
 	
-	var $belongsTo = array('MailTemplate');
+	var $belongsTo = array('MailTemplate', 'SMSTemplate');
 	
 
 	var $validate = array(
@@ -98,15 +98,6 @@ class Status extends AppModel {
 			$return = $rfs;
 		}
 		return $return;
-	}
-	
-	function findBySnName($snName) {
-		$status = $this->find('first', array(
-			'conditions' => array('Status.sn_name' => $snName),
-			'contain' => array()
-		));
-		
-		return $status;
 	}
 }
 ?>

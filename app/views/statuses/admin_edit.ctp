@@ -4,9 +4,7 @@
  		<legend>Status objednávky</legend>
 		<table class="leftHeading" cellpadding="5" cellspacing="3">
 			<tr>
-				<th>
-					Název statusu
-				</th>
+				<th>Název statusu</th>
 				<td>
 					<?php echo $form->text('Status.name')?>
 					<?php echo $form->error('Status.name')?>
@@ -14,25 +12,19 @@
 			</tr>
 			<tr>
 
-				<th>
-					Barva statusu (RGB)
-				</th>
-				<td>
-					<?php echo $form->text('Status.color')?>
-				</td>
+				<th>Barva statusu (RGB)</th>
+				<td><?php echo $form->text('Status.color')?></td>
 			</tr>
 			<tr>
-				<th>
-					Předmět mailové šablony
-				</th>
-				<td>
-					<?php echo $form->select('Status.mail_template_id', $mail_templates, null, array('label' => false))?>
-				</td>
+				<th>Předmět mailové šablony</th>
+				<td><?php echo $form->select('Status.mail_template_id', $mail_templates, null, array('label' => false))?></td>
 			</tr>
 			<tr>
-				<th>
-					Závislá pole
-				</th>
+				<th>SMS šablona</th>
+				<td><?php echo $this->Form->input('Status.s_m_s_template_id', array('label' => false, 'options' => $sms_templates, 'empty' => true))?></td>
+			</tr>
+			<tr>
+				<th>Závislá pole</th>
 				<td>
 					<?php echo $form->textarea('Status.requested_fields', array('label' => false))?>
 				</td>
