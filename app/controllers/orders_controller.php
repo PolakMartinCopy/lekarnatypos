@@ -472,7 +472,7 @@ class OrdersController extends AppController {
 				// kontrola, zda jsou pro dany status vyzadovana nejake pole
 				$valid_requested_fields = array();
 				$requested_fields = $this->Order->Status->has_requested($status_id);
-				if ( !empty($requested_fields) ){
+				if (!empty($requested_fields)){
 					// nejaka pole jsou vyzadovana, takze si to musim zkontrolovat
 					$order = $this->Order->find('first', array(
 						'conditions' => array('Order.id' => $id),
@@ -510,10 +510,16 @@ class OrdersController extends AppController {
 						// hlaska, ze je pridano cislo baliku
 						$order['Ordernote'][0]['note'] = 'přidáno číslo balíku: ' . $shipping_number;
 					}
+					
+					// zjistim si id stavu, ve kterem byla objednavka pred zmenou
+					$prev_status_id = $this->Order->getFieldValue($id, 'status_id');
 
 					if ($this->Order->saveAll($order)) {
-						if (!$this->Order->Status->change_notification($id, $status_id)) {
-							$data['message'] = 'Stav objednávky ' . $id . ' byl úspěšně upraven, ale nepodařilo se odeslat informační email zákazníkovi.';
+						// notifikaci chci poslat pouze v pripade, ze se stavy lisi
+						if ($prev_status_id != $status_id) {
+							if (!$this->Order->Status->change_notification($id, $status_id)) {
+								$data['message'] = 'Stav objednávky ' . $id . ' byl úspěšně upraven, ale nepodařilo se odeslat informační email zákazníkovi.';
+							}
 						}
 						$data['success'] = true;
 						$data['message'] = 'Stav objednávky ' . $id . ' byl úspěšně upraven.';
