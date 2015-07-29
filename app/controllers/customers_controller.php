@@ -938,6 +938,9 @@ class CustomersController extends AppController {
 						)
 					),
 					'Product' => array(
+						'Image' => array(
+							'fields' => array('Image.id', 'Image.name')
+						),
 						'fields' => array('Product.id', 'Product.name', 'Product.url')
 					)
 				),
