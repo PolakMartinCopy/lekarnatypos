@@ -1105,6 +1105,22 @@ class ProductsController extends AppController {
 			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'));
 		}
+
+		if ($this->Session->check('RelatedProductSearch.Product.id')) {
+			if ($this->Session->read('RelatedProductSearch.Product.id') != $id) {
+				$this->Session->delete('RelatedProductsSearch');
+			} else {
+				if (!isset($this->data)) {
+					$this->data['Product']['id'] = $id;
+					if ($this->Session->check('RelatedProductSearch.Product.fulltext1')) {
+						$this->data['Product']['fulltext1'] = $this->Session->read('RelatedProductSearch.Product.fulltext1');
+					}
+					if ($this->Session->check('RelatedProductSearch.Category.id')) {
+						$this->data['Category']['id'] = $this->Session->read('RelatedProductSearch.Category.id');
+					}
+				}
+			}
+		}
 		
 		// pokud jsem ukladal souvisejici produkt, chci vypsat opet produkty z kategorie, ze ktere jsem souvisejici produkt vybiral
 		if (isset($this->params['named']['related_category_id'])) {
@@ -1133,27 +1149,70 @@ class ProductsController extends AppController {
 		
 		if (isset($this->data))  {
 			$products_conditions = array(
-				'CategoriesProduct.category_id' => $this->data['Category']['id'],
 				'Product.active' => true,
 				'Product.id !=' => $id
 			);
+			$search_form = array(
+				'Product' => array(
+					'id' => $id
+				)
+			);
+			
+			if (isset($this->data['Category']['id']) && !empty($this->data['Category']['id'])) {
+				$products_conditions['CategoriesProduct.category_id'] = $this->Product->CategoriesProduct->Category->subtree_ids($this->data['Category']['id']);
+				$search_form['Category']['id'] = $this->data['Category']['id'];
+			}
+			
+			if (isset($this->data['Product']['fulltext1']) && !empty($this->data['Product']['fulltext1'])) {
+				$value = $this->data['Product']['fulltext1'];
+				$fulltext_condition = array(
+					'OR' => array(
+						'Product.id' => $value,
+						"Product.name LIKE '%%" . $value . "%%'",
+						"Product.title LIKE '%%" . $value . "%%'",
+						"Product.heading LIKE '%%" . $value . "%%'",
+						"Product.related_name LIKE '%%" . $value . "%%'",
+						"Product.zbozi_name LIKE '%%" . $value . "%%'",
+						"Product.short_description LIKE '%%" . $value . "%%'",
+						"Product.description  LIKE '%%" . $value . "%%'",
+						"Manufacturer.name  LIKE '%%" . $value . "%%'",
+					)
+				);
+				$products_conditions[] = $fulltext_condition;
+				$search_form['Product']['fulltext1'] = $this->data['Product']['fulltext1'];
+			}
 			
 			if (!empty($related_products)) {
 				$related_products_ids = Set::extract('/Product/id', $related_products);
 				$products_conditions[] = 'CategoriesProduct.product_id NOT IN (' . implode(',', $related_products_ids) . ')';
 			}
-			
+
 			$categories_products = $this->Product->CategoriesProduct->find('all', array(
 				'conditions' => $products_conditions,
-				'contain' => array('Product'),
+				'contain' => array(),
 				'fields' => array(
-					'Product.id',
+					'DISTINCT Product.id',
 					'Product.name',
 					'Product.url'
+				),
+				'joins' => array(
+					array(
+						'table' => 'products',
+						'alias' => 'Product',
+						'type' => 'INNER',
+						'conditions' => array('Product.id = CategoriesProduct.product_id')
+					),
+					array(
+						'table' => 'manufacturers',
+						'alias' => 'Manufacturer',
+						'type' => 'INNER',
+						'conditions' => array('Manufacturer.id = Product.manufacturer_id')
+					)
 				)
 			));
-
 			$this->set('categories_products', $categories_products);
+			
+			$this->Session->write('RelatedProductSearch', $search_form);
 		} else {
 			$this->data['Product']['id'] = $id;
 		}

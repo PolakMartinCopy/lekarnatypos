@@ -10,10 +10,6 @@ class RelatedProductsController extends AppController {
 			$this->Session->setFlash('Není zadán produkt, ke kterému chcete uložit související produkty.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'products', 'action' => 'index'));
 		}
-
-		if (isset($this->params['named']['category_id'])) {
-			$category_id = $this->params['named']['category_id'];
-		}
 		
 		if (isset($this->params['named']['related_product_id'])) {
 			$save = array(
@@ -36,13 +32,8 @@ class RelatedProductsController extends AppController {
 		} else {
 			$this->Session->setFlash('Není zadán související produkt.', REDESIGN_PATH . 'flash_failure');
 		}
-		$redirect = array('controller' => 'products', 'action' => 'edit_related', $product_id, (isset($category_id) ? $category_id : null));
-		
-		// pokud vim id kategorie, ze ktere jsem vybiral souvisejici produkt, vratim si jej zpet, abych obsah kategorie opet vypsal
-		if (isset($this->params['named']['related_category_id'])) {
-			$redirect['related_category_id'] = $this->params['named']['related_category_id'];
-		}
-		$this->redirect($redirect);
+
+		$this->redirect(array('controller' => 'products', 'action' => 'edit_related', $product_id));
 	}
 	
 	function admin_move_up($id = null, $category_id = null, $related_category_id = null) {

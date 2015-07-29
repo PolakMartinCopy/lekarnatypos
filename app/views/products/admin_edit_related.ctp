@@ -43,11 +43,21 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 <?php } else { ?>
 <p><em>Produkt nemá dosud žádné související produkty.</em></p>
 <?php } ?>
-
-<?php echo $this->Form->create('Product', array('url' => array('controller' => 'products', 'action' => 'edit_related', (isset($opened_category_id) ? $opened_category_id : null))))?>
-<p>Vyberte rubriku: <?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'Category.id', 'options' => $categories))?></p>
+<br/><br/>
+<h2>Přidat související</h2>
+<?php echo $this->Form->create('Product', array('url' => array('controller' => 'products', 'action' => 'edit_related')))?>
+<table class="tabulka">
+	<tr>
+		<th>Kategorie</th>
+		<td><?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'Category.id', 'options' => $categories))?></td>
+	</tr>
+	<tr>
+		<th>Výraz</th>
+		<td><?php echo $this->Form->input('Product.fulltext1', array('label' => false, 'type' => 'text', 'div' => false, 'size' => 50)); ?></td>
+	</tr>
+</table>
 <?php echo $this->Form->hidden('Product.id')?>
-<?php echo $this->Form->submit('Odeslat')?>
+<?php echo $this->Form->submit('Vyhledat')?>
 <?php echo $this->Form->end()?>
 <br/><br/>
 <?php if (isset($categories_products) && !empty($categories_products)) { ?>
@@ -61,7 +71,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 	<tr>
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/add.png" alt="" />';
-			$url = array('controller' => 'related_products', 'action' => 'admin_add', 'product_id' => $product['Product']['id'], 'related_product_id' => $categories_product['Product']['id'], 'related_category_id' => $this->data['Category']['id']);
+			$url = array('controller' => 'related_products', 'action' => 'admin_add', 'product_id' => $product['Product']['id'], 'related_product_id' => $categories_product['Product']['id']);
 			if (isset($opened_category_id)) {
 				$url['category_id'] = $opened_category_id;
 			}
