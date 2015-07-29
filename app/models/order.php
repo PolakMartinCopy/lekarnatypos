@@ -1043,11 +1043,24 @@ class Order extends AppModel {
 	}
 	
 	// chci u dane objednavky posilat notifikace pomoci SMS?
-	// pouze v pripade, ze je objednavka osobnim odberem anebo ze je email na seznamu nebo na atlasu
 	function sendSMSNotification($id) {
 		// nejprve jsem chtel posilat sms notifikace jen nekterym zakaznikum, ale ted chceme vsem
 		// necham tady tuto funkci, kdybysme to v budoucnu na neco chteli, ale ted vraci vsude true
 		// zaroven to tady muzu jednoduse vypnout
+		
+		// nechci posilat notifikace sobe
+		$phone_blacklist = array('723238866');
+		
+		$order = $this->find('first', array(
+			'conditions' => array('Order.id' => $id),
+			'contain' => array(),
+			'fields' => array('Order.id', 'Order.customer_email', 'Order.shipping_id', 'Order.customer_phone')
+		));
+		
+		if (in_array($order['Order']['customer_phone'], $phone_blacklist)) {
+			return false;
+		}
+		
 		return true;
 		
 		$order = $this->find('first', array(
