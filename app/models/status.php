@@ -59,7 +59,6 @@ class Status extends AppModel {
 					$sms_template = $this->SMSTemplate->process($status['SMSTemplate']['id'], $order_id);
 					App::import('Vendor', 'GoSMS', array('file' => 'gosms.php'));
 					$this->GoSMS = &new GoSMS;
-					$this->GoSMS->logLevel = 1;
 					$this->GoSMS->send($order['Order']['customer_phone'], $sms_template['SMSTemplate']['content']);
 				}
 			}

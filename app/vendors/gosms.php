@@ -1,8 +1,5 @@
 <?php 
 class GoSMS {
-	
-	var $logLevel = 0;
-	
 	function get_access_token() {
 		$token = false;
 		// nejdriv se podivam, jestli mam token
@@ -78,9 +75,7 @@ class GoSMS {
 	function send($phone, $message) {
 		if (!$token = $this->get_access_token()) {
 			$logMessage = 'Nepodařilo se získat token.';
-			if ($this->logLevel) {
-				CakeLog::write('gosms', $logMessage);
-			}
+			debug($logMessage);
 			return false;
 		}
 	
@@ -92,9 +87,7 @@ class GoSMS {
 	
 		if (!defined('GOSMS_CHANNEL')) {
 			$logMessage = 'Není definovaný kanál. Telefon: ' . $phone . ', zprava: ' . $logMessage;
-			if ($this->logLevel) {
-				CakeLog::write('gosms', $logMessage);
-			}
+			debug($logMessage);
 			return false;
 		}
 		$channel = GOSMS_CHANNEL;
@@ -127,24 +120,17 @@ class GoSMS {
 				$logMessage .= ' - ' . $result->detail;
 			}
 			$logMessage .= ' - Telefon: ' . $phone . ', zprava: ' . $message;
-			if ($this->logLevel) {
-				CakeLog::write('gosms', $logMessage);
-			}
+			debug($logMessage);
 			return false;
 		} elseif (!empty($result->recipients->invalid)) {
 			$logMessage = 'Nepodařilo se odeslat zprávu. Telefon: ' . $phone . ', zprava: ' . $message;
-			if ($this->logLevel) {
-				CakeLog::write('gosms', $logMessage);
-			}
+			debug($logMessage);
 			return false;
 		}
 	
 		//close connection
 		curl_close($ch);
 	
-		if ($this->logLevel) {
-			CakeLog::write('gosms', 'Zprava byla uspesne odeslana. Telefon: ' . $phone . ', zprava: ' . $message);
-		}
 		return true;
 	}
 }
