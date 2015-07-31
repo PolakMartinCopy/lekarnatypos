@@ -4,9 +4,9 @@
 	<thead>
 		<tr>
 			<th style="width:60%" colspan="2">Produkt</th>
-			<th style="width:16%">Množství</th>
-			<th style="width:9%;white-space:nowrap" class="hidden-xs hidden-sm">Cena za kus</th>
-			<th style="width:9%;white-space:nowrap" class="hidden-xs hidden-sm">Cena celkem</th>
+			<th style="width:16%;text-align:right">Množství</th>
+			<th style="width:9%;white-space:nowrap;text-align:right" class="hidden-xs hidden-sm">Cena za kus</th>
+			<th style="width:9%;white-space:nowrap;text-align:right" class="hidden-xs hidden-sm">Cena celkem</th>
 		</tr>
 	</thead>
 	<tbody>
