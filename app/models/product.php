@@ -53,7 +53,8 @@ class Product extends AppModel {
 		),
 		'ProductPropertiesProduct' => array(
 			'dependent' => true
-		)
+		),
+		'TSVisitProduct'
 	);
 
 	var $belongsTo = array(

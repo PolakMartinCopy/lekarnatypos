@@ -359,10 +359,8 @@ class ProductsController extends AppController {
 		$stack = $this->Product->update_stack($stack, $id, $customer_type_id);
 		$this->Session->write('ProductStack', $stack);
 		
-		//if (!empty($product['CategoriesProduct'])) {
-		//	$right_sidebar_products = $this->Product->right_sidebar_products($id, $customer_type_id);
-		//	$this->set('right_sidebar_products', $right_sidebar_products);
-		//}
+		// trackovani prohlednutych produktu
+		$this->Product->TSVisitProduct->myCreate($id);
 	}
 	
 	/**

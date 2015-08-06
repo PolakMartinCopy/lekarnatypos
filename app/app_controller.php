@@ -5,7 +5,7 @@
 	var $paginate = array(
 		'limit' => 50	
 	);
-
+	
 	// beforeFilter se provede pri uplne kazde akci, ktera se vykona
 	function beforeFilter() {
 		Controller::disableCache();
@@ -62,6 +62,43 @@
 
 		}
 		
+		// pokud jsem ve front endu
+		if (!isset($this->params['admin'])) {
+			
+			// TRACKOVANI ZAKAZNIKU
+			// je zakaznik zalogovany
+			$is_logged_in = false;
+			if ($this->Session->check('Customer')) {
+				$customer = $this->Session->read('Customer');
+				if (isset($customer['id']) && !empty($customer['id']) && !isset($customer['noreg'])) {
+					$is_logged_in = true;
+				}
+			}
+			
+			$this->TSCustomerDevice = ClassRegistry::init('TSCustomerDevice');
+			$this->TSCustomerDevice->TSVisit = ClassRegistry::init('TSVisit');
+
+			if ($key = $this->Cookie->read('TSCustomerDevice.key')) {
+				$this->TSCustomerDevice->trackingKey = $key;
+			} else {
+				$customer_id = null;
+				if ($is_logged_in) {
+					$customer_id = $this->Session->read('Customer.id');
+				}
+				if ($key = $this->TSCustomerDevice->setKey($customer_id)) {
+					$this->Cookie->write('TSCustomerDevice.key', $key, true, '1 year');
+				} else {
+					debug('nemam trackovaci klic');
+					$key = false;
+				}
+			}
+			
+			if (!$this->TSCustomerDevice->TSVisit->get()) {
+				die('nepodarilo se zalozit / ziskat navstevu');
+			}
+
+		}
+		
 		App::import('Model', 'Setting');
 		$this->Setting = &new Setting;
 		$this->Setting->init();
@@ -104,7 +141,7 @@
 			}
 			$this->set('categories_bothers_tab', $categories_bothers_tab);
 			
-			// je zakaznik zalgovany
+			// je zakaznik zalogovany
 			$is_logged_in = false;
 			if ($this->Session->check('Customer')) {
 				$customer = $this->Session->read('Customer');

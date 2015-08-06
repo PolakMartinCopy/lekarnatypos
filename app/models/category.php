@@ -15,10 +15,13 @@ class Category extends AppModel {
 	);
 
 	var $hasMany = array(
-		'CategoriesProduct' => array('dependent' => true),
+		'CategoriesProduct' => array(
+			'dependent' => true
+		),
 		'CategoriesMostSoldProduct' => array(
 			'dependent' => true
-		)
+		),
+		'TSVisitCategory'
 	);
 	
 	// id kategorii, ktere se nebudou brat v potaz pri generovani souvisejicich produktu
