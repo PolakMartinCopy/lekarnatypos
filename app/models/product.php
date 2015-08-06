@@ -152,6 +152,10 @@ class Product extends AppModel {
 			'conditions' => array(
 				'CategoriesProduct.id IS NULL'
 			)
+		),
+		array(
+			'id' => 5,
+			'name' => 'Nejsou v nových kategoriích'
 		)
 	);
 	
@@ -839,10 +843,16 @@ class Product extends AppModel {
 			}
 		}
 		if (isset($data['Product']['search_property_id']) && !empty($data['Product']['search_property_id'])) {
-			foreach ($this->search_properties as $search_property) {
-				if ($search_property['id'] == $data['Product']['search_property_id']) {
-					$conditions[] = $search_property['conditions'];
-					break;
+			if ($data['Product']['search_property_id'] == 5) {
+				$conditions[] = 'CategoriesProduct.category_id NOT IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(398)) . ')';
+				$conditions[] = 'CategoriesProduct.category_id NOT IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(408)) . ')';
+				$conditions[] = 'CategoriesProduct.category_id IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(397)) . ')';
+			} else {
+				foreach ($this->search_properties as $search_property) {
+					if ($search_property['id'] == $data['Product']['search_property_id']) {
+						$conditions[] = $search_property['conditions'];
+						break;
+					}
 				}
 			}
 		}
