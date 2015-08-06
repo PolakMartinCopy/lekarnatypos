@@ -844,9 +844,18 @@ class Product extends AppModel {
 		}
 		if (isset($data['Product']['search_property_id']) && !empty($data['Product']['search_property_id'])) {
 			if ($data['Product']['search_property_id'] == 5) {
-				$conditions[] = 'CategoriesProduct.category_id NOT IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(398)) . ')';
-				$conditions[] = 'CategoriesProduct.category_id NOT IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(408)) . ')';
-				$conditions[] = 'CategoriesProduct.category_id IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(397)) . ')';
+				// zjistim id produktu, ktere jsou v novem podstrome
+				$complement_products = $this->CategoriesProduct->find('all', array(
+					'conditions' => array('CategoriesProduct.category_id IN (' . implode(',', $this->CategoriesProduct->Category->subtree_ids(398)) . ',' . implode(',', $this->CategoriesProduct->Category->subtree_ids(408)) . ')'),
+					'contain' => array(),
+					'fields' => array('DISTINCT CategoriesProduct.product_id')
+				));
+
+				if (!empty($complement_products)) {
+					$complement_products = SET::extract('/CategoriesProduct/product_id', $complement_products);
+					// a vypisu vsechny ostatni
+					$conditions[] = 'Product.id NOT IN (' . implode(',', $complement_products) . ')';
+				}
 			} else {
 				foreach ($this->search_properties as $search_property) {
 					if ($search_property['id'] == $data['Product']['search_property_id']) {
