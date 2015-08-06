@@ -18,7 +18,7 @@ class TSCustomerDevice extends AppModel {
 		);
 		
 		if ($this->save($save)) {
-			$this->TRCustomerDevice->trackingKey = $this->id;
+			$this->trackingKey = $this->id;
 			return $this->id;
 		}
 		return false;

@@ -76,7 +76,7 @@
 			}
 			
 			$this->TSCustomerDevice = ClassRegistry::init('TSCustomerDevice');
-			$this->TSCustomerDevice->TSVisit = ClassRegistry::init('TSVisit');
+			//$this->TSCustomerDevice->TSVisit = ClassRegistry::init('TSVisit');
 
 			if ($key = $this->Cookie->read('TSCustomerDevice.key')) {
 				$this->TSCustomerDevice->trackingKey = $key;
@@ -113,7 +113,8 @@
 			// volam fci, ktera mi pres sesnu zajisti prenost validacnich hlasek mezi modely
 			$this->_persistValidation();
 			
-			$this->Product = ClassRegistry::init('Product');
+			App::import('Model', 'Product');
+			$this->Product = &new Product;
 			
 			$opened_category_id = ROOT_CATEGORY_ID;
 			if (isset($this->viewVars['opened_category_id'])) {
