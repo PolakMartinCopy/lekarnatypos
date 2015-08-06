@@ -113,8 +113,7 @@
 			// volam fci, ktera mi pres sesnu zajisti prenost validacnich hlasek mezi modely
 			$this->_persistValidation();
 			
-			App::import('Model', 'Product');
-			$this->Product = &new Product;
+			$this->Product = ClassRegistry::init('Product');
 			
 			$opened_category_id = ROOT_CATEGORY_ID;
 			if (isset($this->viewVars['opened_category_id'])) {
