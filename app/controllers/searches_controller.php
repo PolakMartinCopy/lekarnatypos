@@ -85,7 +85,6 @@ class SearchesController extends AppController {
 	 * @param string $id
 	 */
 	function do_search() {
-		
 		if (isset($_GET['filter']['reset_filter'])) {
 			$url = $this->params['url']['url'];
 			$params = $this->params['url']['filter'];
@@ -107,8 +106,7 @@ class SearchesController extends AppController {
 			$this->redirect($url);
 		}
 		
-		App::import('Model', 'Product');
-		$this->Search->Product = new Product;
+		$this->Search->Product = ClassRegistry::init('Product');
 		
 		$this->layout = REDESIGN_PATH . 'content';
 		$this->set('_title', 'Vyhledávání produktů');

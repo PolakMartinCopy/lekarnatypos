@@ -1069,7 +1069,7 @@ class Product extends AppModel {
 		);
 
 		// vezmu jako cenu produktu obycejnou cenu
-		$this->virtualFields['price'] = $this->CategoriesProduct->Product->price;
+		$this->virtualFields['price'] = $this->price;
 		$cheapest = $this->find('first', array(
 			'conditions' => $conditions,
 			'contain' => array(),
@@ -1122,7 +1122,7 @@ class Product extends AppModel {
 		);
 
 		// vezmu jako cenu produktu obycejnou cenu
-		$this->virtualFields['price'] = $this->CategoriesProduct->Product->price;
+		$this->virtualFields['price'] = $this->price;
 		$most_sold = $this->find('first', array(
 			'conditions' => $conditions,
 			'contain' => array(),
