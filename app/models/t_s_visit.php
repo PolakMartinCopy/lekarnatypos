@@ -60,7 +60,7 @@ class TSVisit extends AppModel {
 		if (!$this->check()) {
 			$this->myCreate();
 		}
-		
+
 		$visit = $this->find('first', array(
 			'conditions' => array('TSVisit.id' => $this->visitId),
 			'contain' => array()
@@ -69,18 +69,64 @@ class TSVisit extends AppModel {
 		return $visit;
 	}
 	
-	// close - ukoncit navstevu (delka)
-	function close() {
+	function recountDuration() {
 		$visit = $this->get();
-
+		
 		$start = strtotime($visit['TSVisit']['created']);
 		$end =  strtotime(date('Y-m-d H:i:s'));
 		// delka navstevy v sekundach
 		$duration = $end - $start;
-
-		$visit['TSVisit']['closed'] = true;
+		
+		$visit['TSVisit']['modified'] = date('Y-m-d H:i:s');
 		$visit['TSVisit']['duration'] = $duration;
 		return $this->save($visit);
+	}
+	
+	// close - ukoncit navstevu (delka)
+	function close($id) {
+		$visit = $this->get();
+		$visit['TSVisit']['closed'] = true;
+		return $this->save($visit);
+	}
+	
+	function closeList($list) {
+		if (empty($list)) {
+			return true;
+		}
+		
+		$save = array();
+
+		foreach ($list as $id) {
+			$save[] = array(
+				'id' => $id,
+				'closed' => true
+			);
+		}
+		return $this->saveAll($save);
+	}
+	
+	function closeExpired() {
+		// vytahnu expirovane navstevy
+		// tzn nejsou ukoncene a posledni uprava (prodlozeni) probehla pred vice nez definovanou dobou
+		// defaultne si tady nastavim expiraci po 60 minutach
+		$visit_expiration = 60;
+		// pokud mam v systemu nastaveno jinak
+		if (defined('TSVISIT_EXPIRATION')) {
+			$visit_expiration = TSVISIT_EXPIRATION;
+		}
+		$expiration_landmark = date('Y-m-d H:i:s', strtotime('-' . $visit_expiration . ' minutes'));
+		
+		$expired = $this->find('all', array(
+			'conditions' => array(
+				'TSVisit.closed' => false,
+				'TSVisit.modified <' => $expiration_landmark
+			),
+			'contain' => array(),
+			'fields' => array('TSVisit.id')
+		));
+		$expired = Set::extract('/TSVisit/id', $expired);
+
+		return $this->closeList($expired);
 	}
 	
 	// byla objednavka - k otevrene navsteve pridat, ze byla provedena objednavka (jaka)

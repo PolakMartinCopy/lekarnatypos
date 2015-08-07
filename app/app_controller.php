@@ -93,10 +93,9 @@
 				}
 			}
 			
-			if (!$this->TSCustomerDevice->TSVisit->get()) {
-				die('nepodarilo se zalozit / ziskat navstevu');
-			}
+			if ($t_s_visit = $this->TSCustomerDevice->TSVisit->get()) {
 
+			}
 		}
 		
 		App::import('Model', 'Setting');
