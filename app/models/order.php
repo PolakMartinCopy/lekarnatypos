@@ -13,7 +13,7 @@ class Order extends AppModel {
 			'order' => array('Ordernote.created' => 'desc')
 		)
 	);
-	var $belongsTo = array('Customer', 'Shipping', 'Payment', 'Status');
+	var $belongsTo = array('Customer', 'Shipping', 'Payment', 'Status', 'TSVisit');
 
 	function afterFind($results){
 		if ( isset( $results[0]['Order']) && isset($results[0]['Order']['subtotal_with_dph']) && isset($results[0]['Order']['shipping_cost'])  ){
@@ -502,6 +502,7 @@ class Order extends AppModel {
 		
 		$order['Order']['customer_id'] = $customer['Customer']['id'];
 		$order['Order']['status_id'] = 1;
+		$order['Order']['t_s_visit_id'] = $this->TSVisit->check();
 
 		// data pro produkty objednavky
 		App::import('Model', 'CartsProduct');
