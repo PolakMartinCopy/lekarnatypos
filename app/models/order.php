@@ -1049,7 +1049,7 @@ class Order extends AppModel {
 		// zaroven to tady muzu jednoduse vypnout
 		
 		// nechci posilat notifikace sobe
-		$phone_blacklist = array('723238866');
+		$phone_blacklist = array('723238866', '7232388866');
 		
 		$order = $this->find('first', array(
 			'conditions' => array('Order.id' => $id),
