@@ -45,11 +45,17 @@ class TSVisit extends AppModel {
 		App::import('Model', 'CakeSession');
 		$this->Session = &new CakeSession;
 		$useragent = $this->Session->read('Config.userAgent');
+		$referer = null;
+		
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			$referer = $_SERVER['HTTP_REFERER'];
+		}
 
 		$save = array(
 			'TSVisit' => array(
 				't_s_customer_device_id' => $t_s_customer_device_id,
-				'useragent' => $useragent
+				'useragent' => $useragent,
+				'referer' => $referer
 			)
 		);
 

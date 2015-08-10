@@ -19,10 +19,10 @@ class Cart extends AppModel {
 		
 		$rand = $this->Session->read('Config.rand');
 		$userAgent = $this->Session->read('Config.userAgent');
+		// aktualni navsteva
 		$t_s_visit = $this->TSVisit->get();
 		
-		// zkusim najit v databazi kosik
-		// pro daneho uzivatele
+		// zkusim najit v databazi kosik pro daneho uzivatele a aktualni navstevu
 		$data = $this->find('first', array(
 			'conditions' => array(
 				'Cart.rand' => $this->Session->read('Config.rand'),
