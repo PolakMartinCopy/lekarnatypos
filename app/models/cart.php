@@ -1,6 +1,10 @@
 <?php
 class Cart extends AppModel {
 	var $name = 'Cart';
+	
+	var $actsAs = array('Containable');
+	
+	var $belongsTo = array('TSVisit');
 
 	var $hasMany = array(
 		'CartsProduct' => array(
@@ -13,9 +17,21 @@ class Cart extends AppModel {
 		App::import('Model', 'CakeSession');
 		$this->Session = &new CakeSession;
 		
+		$rand = $this->Session->read('Config.rand');
+		$userAgent = $this->Session->read('Config.userAgent');
+		$t_s_visit = $this->TSVisit->get();
+		
 		// zkusim najit v databazi kosik
 		// pro daneho uzivatele
-		$data = $this->find(array('rand' => $this->Session->read('Config.rand'), 'userAgent' => $this->Session->read('Config.userAgent')));
+		$data = $this->find('first', array(
+			'conditions' => array(
+				'Cart.rand' => $this->Session->read('Config.rand'),
+				'Cart.userAgent' => $this->Session->read('Config.userAgent'),
+				'Cart.t_s_visit_id' => $t_s_visit['TSVisit']['id']
+			),
+			'contain' => array(),
+			'fields' => array('Cart.id')
+		));
 
 		// kosik jsem v databazi nenasel,
 		// musim ho zalozit
@@ -30,8 +46,14 @@ class Cart extends AppModel {
 		App::import('Model', 'CakeSession');
 		$this->Session = &new CakeSession;
 		
-		$this->data['Cart']['rand'] = $this->Session->read('Config.rand');
-		$this->data['Cart']['userAgent'] = $this->Session->read('Config.userAgent');
+		$rand = $this->Session->read('Config.rand');
+		$userAgent = $this->Session->read('Config.userAgent');
+		$t_s_visit = $this->TSVisit->get();
+		
+		$this->data['Cart']['rand'] = $rand;
+		$this->data['Cart']['userAgent'] = $userAgent;
+		$this->data['Cart']['t_s_visit_id'] = $t_s_visit['TSVisit']['id'];
+
 		$this->save($this->data);
 		return $this->getLastInsertID();
 	}
