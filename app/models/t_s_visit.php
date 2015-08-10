@@ -41,11 +41,18 @@ class TSVisit extends AppModel {
 	// set - zalozit navstevu
 	function myCreate() {
 		$t_s_customer_device_id = $this->TSCustomerDevice->trackingKey;
+		
+		App::import('Model', 'CakeSession');
+		$this->Session = &new CakeSession;
+		$useragent = $this->Session->read('Config.userAgent');
+
 		$save = array(
 			'TSVisit' => array(
-				't_s_customer_device_id' => $t_s_customer_device_id
+				't_s_customer_device_id' => $t_s_customer_device_id,
+				'useragent' => $useragent
 			)
 		);
+
 		if ($this->save($save)) {
 			$this->visitId = $this->id;
 			return $this->visitId;
