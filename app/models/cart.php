@@ -54,7 +54,11 @@ class Cart extends AppModel {
 		$this->data['Cart']['userAgent'] = $userAgent;
 		$this->data['Cart']['t_s_visit_id'] = $t_s_visit['TSVisit']['id'];
 
-		$this->save($this->data);
+		// neukladam kosik, pokud je uzivatel monitorovaci system
+		if ($_SERVER['HTTP_USER_AGENT'] != 'Brko Web Page Monitor') {
+			$this->save($this->data);
+		}
+
 		return $this->getLastInsertID();
 	}
 	

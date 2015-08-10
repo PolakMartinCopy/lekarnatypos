@@ -59,10 +59,13 @@ class TSVisit extends AppModel {
 			)
 		);
 
-		if ($this->save($save)) {
-			$this->visitId = $this->id;
-			return $this->visitId;
-		} 
+		// neukladam navstevu, pokud je uzivatel monitorovaci system
+		if ($_SERVER['HTTP_USER_AGENT'] != 'Brko Web Page Monitor') {
+			if ($this->save($save)) {
+				$this->visitId = $this->id;
+				return $this->visitId;
+			} 
+		}
 		return false;
 	}
 	
