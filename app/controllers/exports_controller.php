@@ -4,12 +4,10 @@ class ExportsController extends AppController{
 	
 	function get_products($comparator_name) {
 		// natahnu si model Product
-		App::Import('model', 'Product');
-		$this->Product = &new Product;
-		
-		App::import('Model', 'CustomerType');
-		$this->CustomerType = new CustomerType;
-		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+		$this->Export->Product = ClassRegistry::init('Product');
+		$this->Export->CustomerType = ClassRegistry::init('CustomerType');
+
+		$customer_type_id = $this->Export->CustomerType->get_id($this->Session->read());
 		
 		$conditions = array(
 			"Product.short_description != ''",
@@ -19,7 +17,7 @@ class ExportsController extends AppController{
 		);
 		
 		$categories_conditions = 'Category.id = CategoriesProduct.category_id';
-		$not_active_categories = $this->Product->CategoriesProduct->Category->find('all', array(
+		$not_active_categories = $this->Export->Product->CategoriesProduct->Category->find('all', array(
 			'conditions' => array('Category.active' => false),
 			'contain' => array(),
 			'fields' => array('Category.id')	
@@ -28,7 +26,7 @@ class ExportsController extends AppController{
 		$not_active_categories_ids = array();
 		if (!empty($not_active_categories)) {
 			foreach ($not_active_categories as $not_active_category) {
-				$not_active_categories_ids = array_merge($not_active_categories_ids, $this->Product->CategoriesProduct->Category->subtree_ids($not_active_category['Category']['id']));
+				$not_active_categories_ids = array_merge($not_active_categories_ids, $this->Export->Product->CategoriesProduct->Category->subtree_ids($not_active_category['Category']['id']));
 			}
 		}
 		if (!empty($not_active_categories_ids)) {
@@ -36,8 +34,8 @@ class ExportsController extends AppController{
 		}
 		$categories_conditions_arr[] = $categories_conditions;
 		
-		$this->Product->virtualFields['price'] = $this->Product->price;
-		$products = $this->Product->find('all', array(
+		$this->Export->Product->virtualFields['price'] = $this->Export->Product->price;
+		$products = $this->Export->Product->find('all', array(
 			'conditions' => $conditions,
 			'contain' => array(
 				'TaxClass' => array(
@@ -126,8 +124,7 @@ class ExportsController extends AppController{
 			),
 //			'limit' => 10
 		));
-		unset($this->Product->virtualFields['price']);
-
+		unset($this->Export->Product->virtualFields['price']);
 		$res = array();
 		foreach ($products as $i => &$product) {
 			// kazdy produkt chci ve vystupu pouze jednou
@@ -260,7 +257,7 @@ class ExportsController extends AppController{
 
 			// jinak se vytvori retezec ze stromu kategorii v obchode
 			if (!isset($products[$index]['CATEGORYTEXT'])) {
-				$path = $this->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
+				$path = $this->Export->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
 				$keys = Set::extract('/Category/name', $path);
 				unset($keys[0]);
 				unset($keys[1]);
