@@ -55,6 +55,7 @@ class TSVisit extends AppModel {
 			'TSVisit' => array(
 				't_s_customer_device_id' => $t_s_customer_device_id,
 				'useragent' => $useragent,
+				'full_useragent' => $_SERVER['HTTP_USER_AGENT'],
 				'referer' => $referer
 			)
 		);
