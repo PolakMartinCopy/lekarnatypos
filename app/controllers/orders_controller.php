@@ -1376,7 +1376,7 @@ class OrdersController extends AppController {
 			'conditions' => array(),
 			'contain' => array('Order'),
 			'group' => array('OrderedProduct.order_id'),
-			'fields' => array('Order.id', 'SUM(OrderedProduct.product_price_wout_dph) AS subtotal_wout_dph')
+			'fields' => array('Order.id', 'SUM(OrderedProduct.product_price_wout_dph * OrderedProduct.product_quantity) AS subtotal_wout_dph')
 		));
 		
 		foreach ($orders as $order) {

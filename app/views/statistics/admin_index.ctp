@@ -32,8 +32,8 @@
 		<th>Datum objednávky</th>
 		<th>Produktů na objednávce</th>
 		<th>Cena bez dopravy</th>
+		<th>Cena bez DPH<br/>a bez dopravy</th>
 		<th>Celková cena</th>
-		<th>Celková cena<br/>bez DPH</th>
 	</tr>
 	<?php if (empty($orders)) { ?>
 	<tr>
@@ -55,8 +55,8 @@
 		<td><?php echo $this->Html->link($order['Order']['customer_name'], array('controller' => 'customers', 'action' => 'view', $order['Order']['customer_id']), array('target' => '_blank'))?></td>
 		<td><?php echo $order[0]['Order__date'] ?></td>
 		<td align="right"><?php echo $order[0]['Order__products_count']?></td>
-		<td align="right"><?php echo format_price($order['Order']['subtotal_wout_dph'])?></td>
 		<td align="right"><?php echo format_price($order['Order']['subtotal_with_dph']) ?></td>
+		<td align="right"><?php echo format_price($order['Order']['subtotal_wout_dph'])?></td>
 		<td align="right"><?php echo format_price($order[0]['Order__price']) ?></td>
 	</tr>
 <?php 	} ?>
@@ -65,8 +65,8 @@
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th align="right"><?php echo $total_products_count ?></th>
-		<th align="right"><?php echo format_price($total_subtotal_wout_dph) ?></th>
 		<th align="right"><?php echo format_price($total_subtotal_with_dph) ?></th>
+		<th align="right"><?php echo format_price($total_subtotal_wout_dph) ?></th>
 		<th align="right"><?php echo format_price($total_price) ?></th>
 	</tr>
 <?php } ?>
