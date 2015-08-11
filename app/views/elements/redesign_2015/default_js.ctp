@@ -102,4 +102,22 @@ $(document).ready(function() {
  	}
 });
 </script>
+<?php } elseif ($this->params['controller'] == 'products' && $this->params['action'] == 'view') { ?>
+<script type="text/javascript">
+$(document).ready(function() {
+	// TRACKOVANI ZAKAZNIKU
+	$('a[data-role="showDescription"]').click(function() {
+		$.ajax({
+			url: '/t_s_visit_products/product_description_shown/<?php echo $product['Product']['id']?>'
+		});
+	});
+	
+	$('a[data-role="showComments"]').click(function() {
+		$.ajax({
+			url: '/t_s_visit_products/product_comments_shown/<?php echo $product['Product']['id']?>'
+		});
+	});
+});
+</script>
+	
 <?php } ?>

@@ -4,6 +4,8 @@ class TSVisitSomething extends AppModel {
 	
 	var $actsAs = array('Containable');
 	
+	var $sthId = null;
+	
 	function myCreate($something_id) {
 		$last = $this->getLast();
 		$something_column_name = $this->somethingName . '_id';
@@ -22,7 +24,7 @@ class TSVisitSomething extends AppModel {
 	
 	function getLast() {
 		$visit = $this->TSVisit->get();
-		// pokud je posledni navstivena kategorie stejna, jako tato, nevkladam
+		// posledni zobrazeni nejake kategorie / produktu v ramci aktualni navstevy
 		$last = $this->find('first', array(
 			'conditions' => array($this->name . '.t_s_visit_id' => $visit['TSVisit']['id']),
 			'contain' => array(),
@@ -30,5 +32,24 @@ class TSVisitSomething extends AppModel {
 		));
 	
 		return $last;
+	}
+	
+	function getLastBySth() {
+		if (isset($this->sthId) && $this->sthId) {
+			$visit = $this->TSVisit->get();
+			$something_column_name = $this->somethingName . '_id';
+			// posledni zobrazeni DANE kategorie / produktu v ramci aktualni navstevy
+			$last = $this->find('first', array(
+				'conditions' => array(
+					$this->name . '.t_s_visit_id' => $visit['TSVisit']['id'],
+					$this->name . '.' . $something_column_name => $this->sthId
+				),
+				'contain' => array(),
+				'order' => array($this->name . '.created' => 'DESC')
+			));
+			
+			return $last;
+		}
+		return false;
 	}
 }

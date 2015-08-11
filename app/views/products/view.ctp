@@ -35,7 +35,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
     </div>
     <div class="product-details">
         <div class="product-short-desc">
-            <p><?php echo $product['Product']['short_description']?> <a href="#popis">Celý popis</a></p>
+            <p><?php echo $product['Product']['short_description']?> <a href="#popis" data-role="showDescription">Celý popis</a></p>
         </div>
         <?php if (isset($product['Product']['ean']) && !empty($product['Product']['ean'])) { ?>
         <div class="product-code">
@@ -166,8 +166,8 @@ foreach ($subproducts as $subproduct) {
         </div>
     </div>
     <ul class="nav nav-tabs" role="tablist">
-        <li class="active"><a href="#popis" data-toggle="tab">Detailní popis produktu</a></li>
-        <li class="hidden-xs"><a href="#komentare" data-toggle="tab">Komentáře / dotazy</a></li>
+        <li class="active"><a href="#popis" data-toggle="tab" data-role="showDescription">Detailní popis produktu</a></li>
+        <li class="hidden-xs"><a href="#komentare" data-toggle="tab" data-role="showComments">Komentáře / dotazy</a></li>
         <li class="hidden-xs"><a href="#poslat" data-toggle="tab">Poslat známému</a></li>
     </ul>
     <div class="tab-content">

@@ -144,16 +144,4 @@ class TSVisit extends AppModel {
 
 		return $this->closeList($expired);
 	}
-	
-	// byla objednavka - k otevrene navsteve pridat, ze byla provedena objednavka (jaka)
-	function setOrder($orderId) {
-		$visit = $this->get();
-		
-		$visit['TSVisit']['order_id'] = $orderId;
-		if ($this->save($visit)) {
-			return $this->close();
-		}
-		return false;
-	}
-
 }
