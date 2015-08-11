@@ -58,6 +58,7 @@ class StatisticsController extends AppController {
 						'Order.date',
 						'Order.products_count',
 						'Order.subtotal_with_dph',
+						'Order.subtotal_wout_dph',
 						'Order.shipping_cost',
 						'Order.price',
 						'Order.customer_id',

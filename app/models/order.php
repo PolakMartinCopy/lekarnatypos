@@ -515,7 +515,7 @@ class Order extends AppModel {
 		$ordered_products = array();
 
 		$cp_count = 0;
-		foreach ( $cart_products as $cart_product ){
+		foreach ($cart_products as $cart_product) {
 			// nactu produkt, abych si zapamatoval jeho jmeno
 			$product = $this->OrderedProduct->Product->find('first', array(
 				'conditions' => array('Product.id' => $cart_product['CartsProduct']['product_id']),
@@ -527,7 +527,7 @@ class Order extends AppModel {
 			$ordered_products[$cp_count]['OrderedProduct']['subproduct_id'] = $cart_product['CartsProduct']['subproduct_id'];
 			$ordered_products[$cp_count]['OrderedProduct']['product_price_with_dph'] = $cart_product['CartsProduct']['price_with_dph'];
 			$price_wout_dph = $cart_product['CartsProduct']['price_wout_dph'];
-			if (empty($price_wout_dph)) {
+			if (empty($price_wout_dph) || $price_wout_dph == 0) {
 				$percentage = 100 + $product['TaxClass']['value'];
 				$price_wout_dph = round($cart_product['CartsProduct']['price_with_dph'] / $percentage * 100, 2);
 			}
@@ -536,7 +536,7 @@ class Order extends AppModel {
 			$ordered_products[$cp_count]['OrderedProduct']['product_name'] = $this->OrderedProduct->generate_product_name($product['Product']['id']);
 			
 			$order_total_with_dph = $order_total_with_dph + ($cart_product['CartsProduct']['quantity'] * $cart_product['CartsProduct']['price_with_dph']);
-			$order_total_wout_dph = $order_total_wout_dph + ($cart_product['CartsProduct']['quantity'] * $cart_product['CartsProduct']['price_wout_dph']);
+			$order_total_wout_dph = $order_total_wout_dph + ($cart_product['CartsProduct']['quantity'] * $price_wout_dph);
 			// pamatuju si atributy objednaneho produktu
 			$ordered_products[$cp_count]['OrderedProductsAttribute'] = array();
 			if ( !empty($cart_product['CartsProduct']['subproduct_id']) ){
