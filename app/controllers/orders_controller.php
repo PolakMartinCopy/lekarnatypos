@@ -1370,20 +1370,5 @@ class OrdersController extends AppController {
 		$this->set('order', $order);
 
 	}
-	
-	function repair() {
-		$orders = $this->Order->OrderedProduct->find('all', array(
-			'conditions' => array(),
-			'contain' => array('Order'),
-			'group' => array('OrderedProduct.order_id'),
-			'fields' => array('Order.id', 'SUM(OrderedProduct.product_price_wout_dph * OrderedProduct.product_quantity) AS subtotal_wout_dph')
-		));
-		
-		foreach ($orders as $order) {
-			$order['Order']['subtotal_wout_dph'] = $order[0]['subtotal_wout_dph'];
-			$this->Order->save($order);
-		}
-		die('here');
-	}
 } // konec tridy
 ?>
