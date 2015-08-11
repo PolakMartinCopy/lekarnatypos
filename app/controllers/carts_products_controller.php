@@ -145,7 +145,7 @@ class CartsProductsController extends AppController {
 		if ( $cpID === false ){
 			// produkt v kosiku neni,
 			// vlozim ho
-			if ( !$this->CartsProduct->save($this->data) ){
+			if (!$this->CartsProduct->save($this->data)) {
 				return false;
 			}
 		} else {
@@ -158,6 +158,8 @@ class CartsProductsController extends AppController {
 			$this->CartsProduct->save($c);
 //			$this->CartsProduct->updateAll(array('quantity' => '`quantity` + ' . $this->data['CartsProduct']['quantity']), array('Cart.id' => $cpID));
 		}
+		$this->CartsProduct->Product->TSCartAddition->productId = $this->data['CartsProduct']['product_id'];
+		$this->CartsProduct->Product->TSCartAddition->myCreate();
 		return true;
 	}
 	

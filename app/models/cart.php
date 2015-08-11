@@ -10,7 +10,8 @@ class Cart extends AppModel {
 		'CartsProduct' => array(
 			'className' => 'CartsProduct',
 			'dependent' => true
-		)
+		),
+		'TSCartAddition'
 	);
 	
 	function get_id() {
