@@ -1048,38 +1048,13 @@ class Order extends AppModel {
 		// necham tady tuto funkci, kdybysme to v budoucnu na neco chteli, ale ted vraci vsude true
 		// zaroven to tady muzu jednoduse vypnout
 		
-		// nechci posilat notifikace sobe
-		$phone_blacklist = array('723238866', '7232388866');
-		
 		$order = $this->find('first', array(
 			'conditions' => array('Order.id' => $id),
 			'contain' => array(),
 			'fields' => array('Order.id', 'Order.customer_email', 'Order.shipping_id', 'Order.customer_phone')
 		));
 		
-		if (in_array($order['Order']['customer_phone'], $phone_blacklist)) {
-			return false;
-		}
-		
-		return true;
-		
-		$order = $this->find('first', array(
-			'conditions' => array('Order.id' => $id),
-			'contain' => array(),
-			'fields' => array('Order.id', 'Order.customer_email', 'Order.shipping_id')
-		));
-
-		$sendSMSNotification = false;
-		
-		if (defined('PERSONAL_PURCHASE_SHIPPING_ID')) {
-			$sendSMSNotification = $sendSMSNotification || ($order['Order']['shipping_id'] == PERSONAL_PURCHASE_SHIPPING_ID);
-		}
-
-		if (!$sendSMSNotification) {
-			$sendSMSNotification = $sendSMSNotification || preg_match('/.*@(?:seznam|atlas)\.cz/', $order['Order']['customer_email']);
-		}
-
-		return $sendSMSNotification;
+		return sendSMSNotification($order['Order']['customer_phone']);
 	}
 } // konec tridy
 ?>

@@ -367,6 +367,24 @@ function next_work_day($date = null) {
 	return $next_work_day;
 }
 
+// test, jestli posilat sms notifikace na tel. cislo
+function sendSMSNotification($phone) {
+	// nechci posilat notifikace sobe
+	$phone_blacklist = array('723238866', '7232388866');
+	
+	if (in_array($phone, $phone_blacklist)) {
+		return false;
+	}
+	
+	// nechci posilat sms na pevne linky
+	$only_mobiles_pattern = '/^((?:\+|00)?420)?(?:2\d{8}|(?:31|32|35|37|38|39|41|47|46|48|49|51|53|54|55|59|56|57|58)\d{7})$/';
+	if (preg_match($only_mobiles_pattern, $phone)) {
+		return false;
+	}
+	
+	return true;
+}
+
 function cz_holiday() {
 	$holiday = array(
 		0 => '01-01', // novy rok
