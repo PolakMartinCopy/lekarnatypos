@@ -91,6 +91,7 @@
 					<th>&nbsp;</th>
 					<th>&nbsp;</th>
 					<th>&nbsp;</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -146,6 +147,10 @@ function draw_table($object, $categories, $prefix) {
 			echo $object->Html->link($icon, array('controller' => 'categories', 'action' => 'movenode', $category['Category']['id']), array('escape' => false, 'title' => 'Přesunout kategorii'));
 		?></td>
 		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/link_external.png" alt=""/>';
+			echo $object->Html->link($icon, '/' . $category['Category']['url'], array('escape' => false, 'title' => 'Přejít do kategorie v shopu', 'target' => 'blank'));
+		?></td>
+		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/up.png" alt="" />';
 			echo $object->Html->link($icon, array('controller' => 'categories', 'action' => 'moveup', $category['Category']['id']), array('escape' => false, 'title' => 'Posunout nahorů'));
 		?></td>
@@ -171,6 +176,7 @@ function draw_table($object, $categories, $prefix) {
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/add.png' width='16' height='16' /> ... přidat podkategorii<br />
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/vcard.png' width='16' height='16' /> ... zobrazit produkty kategorie<br />
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/book.png' width='16' height='16' /> ... přesunout kategorii do jiného uzlu<br />
+			<img src='/images/<?php echo REDESIGN_PATH ?>icons/link_external.png' width='16' height='16' /> ... přejít do kategorie v shopu<br />
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/up.png' width='16' height='16' /> ... změnit pořadí v rámci kategorie nahoru<br />
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/down.png' width='16' height='16' /> ... změnit pořadí v rámci kategorie dolů<br />
 		</td>
