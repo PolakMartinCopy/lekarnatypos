@@ -10,7 +10,7 @@
         <?php if (!empty($category['children'])) { ?>
         <div class="subcategories">
         	<?php 
-            	$limit = 6;
+            	$limit = 5;
             	$count = 0;
             	while ($count < $limit && isset($category['children'][$count])) {
             		$subcategory = $category['children'][$count];
