@@ -438,9 +438,12 @@ class Category extends AppModel {
 		App::import('Model', 'Image');
 		$this->Image = new Image;
 		
-		if ($this->Image->resize($tmp_name, $file_name, $width, $height)) {
-			$file_name = str_replace($this->image_path . DS, '', $file_name);
-			return $file_name;
+		
+		if (file_exists($tmp_name)) {
+			if ($this->Image->resize($tmp_name, $file_name, $width, $height)) {
+				$file_name = str_replace($this->image_path . DS, '', $file_name);
+				return $file_name;
+			}
 		}
 		return false;
 	}

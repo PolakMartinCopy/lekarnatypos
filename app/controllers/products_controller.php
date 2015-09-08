@@ -255,6 +255,8 @@ class ProductsController extends AppController {
 		if (!empty($product['CategoriesProduct'])) {
 			// idcka kategorii, do kterych je produkt zarazen
 			$category_ids = Set::extract('/category_id', $product['CategoriesProduct']);
+			// do breadcrumbs chci vybirat jen z podstromu "NOVE KATEGORIE"
+			$wanted_category_ids = $this->Product->CategoriesProduct->Category->subtree_ids(408);
 			// aktualne otevrenou kategorii chci vybrat pouze z aktivnich, verejnych kategorii, ktere nejsou ve stromu horizontalniho menu
 			// zjistim neaktivni kategorie a jejich podstromy
 			$not_active_categories = $this->Product->CategoriesProduct->Category->find('all', array(
@@ -275,6 +277,9 @@ class ProductsController extends AppController {
 			}
 			if (!empty($category_ids)) {
 				$opened_category_id_conditions[] = 'Category.id IN (' . implode(',', $category_ids) . ')';
+			}
+			if (!empty($wanted_category_ids)) {
+				$opened_category_id_conditions[] = 'Category.id IN (' . implode(',', $wanted_category_ids) . ')';
 			}
 			
 			
