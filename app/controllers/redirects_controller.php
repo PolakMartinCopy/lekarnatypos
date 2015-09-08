@@ -92,5 +92,92 @@ class RedirectsController extends AppController {
 		$this->Session->setFlash('Přesměrování se nezdařilo vymazat, zkuste to prosím znovu.');
 		$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 	}
+	
+	function admin_load() {
+		$file = 'files/typos_presmerovani_kategorii.csv';
+		$contents = file_get_contents($file);
+		$contents = explode("\n", $contents);
+		unset($contents[count($contents)-1]);
+		
+		$redirects = array();
+		
+		foreach ($contents as $content) {
+			if (!list($request_uri, $target_uri) = str_getcsv($content, ';')) {
+				debug($content);
+				die();
+			}
+			
+			if (!empty($request_uri) && !empty($target_uri)) {
+				$request_uri = preg_replace('/"\s+\d+\s\d+"/', '', $request_uri);
+				$target_uri = preg_replace('/"\s*$/', '', $target_uri);
+				
+				$request_uri = trim($request_uri);
+				$target_uri = trim($target_uri);
+
+				// musim si najit, jestli uz podobny redirect je zavedeny a upravit presmerovani podle toho
+				// hledam zda uz redirect pro toto uri neexistuje
+				$r = $this->Redirect->find('all', array(
+					'conditions' => array(
+						'request_uri' => $request_uri
+					)
+				));
+				if (!empty($r)){
+					debug($target_uri);
+					debug($request_uri);
+					debug($r);
+					continue;
+				}
+					
+				// hledam zda neexistuji redirecty ktere maji za cil stranku, ktera uz je presmerovana jinam
+				// pokud ano, musim je upravit aby se zbytecne neredirectovalo nekolikrat po sobe
+				// musim zmenit cil podle
+				$r = $this->Redirect->find('all', array(
+					'conditions' => array(
+						'request_uri' => $target_uri
+					)
+				));
+				if (!empty($r)){
+					debug($target_uri);
+					debug($request_uri);
+					debug($r);
+					continue;
+				}
+					
+				// hledam, zda neexistuji redirecty ktere jsou cilem jineho redirectu
+				// pokud ano, musim upravit cile techto redirectu, aby se zbytecne neredirectovalo nekolikrat po sobe
+				$r = $this->Redirect->find('all', array(
+					'conditions' => array(
+						'target_uri' => $request_uri
+					)
+				));
+				
+				if (!empty($r)) {
+					foreach ($r as $item) {
+						$item['Redirect']['target_uri'] = $this->data['Redirect']['target_uri'];
+						$redirects[] = array(
+							'id' => $item['Redirect']['id'],
+							'request_uri' => $item['Redirect']['request_uri'],
+							'target_uri' => $target_uri
+						);
+					}
+				}
+				
+				$redirects[] = array(
+					'request_uri' => $request_uri,
+					'target_uri' => $target_uri
+				);
+					
+/*				if ( $this->Redirect->save($this->data) ){
+					$this->Session->setFlash('Přesměrování bylo uloženo.');
+					$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
+				} */
+			}
+			
+		}
+		
+		$this->Redirect->saveAll($redirects);
+		
+		die('here');
+	}
 }
 ?>

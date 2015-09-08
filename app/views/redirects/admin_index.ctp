@@ -19,10 +19,10 @@
 				<?=$redirect['Redirect']['id'] ?>
 			</td>
 			<td>
-				<?=$html->link($redirect['Redirect']['request_uri'], '/' . $redirect['Redirect']['request_uri']) ?>
+				<?=$html->link($redirect['Redirect']['request_uri'], $redirect['Redirect']['request_uri']) ?>
 			</td>
 			<td>
-				<?=$html->link($redirect['Redirect']['target_uri'], '/' . $redirect['Redirect']['target_uri']) ?>
+				<?=$html->link($redirect['Redirect']['target_uri'], $redirect['Redirect']['target_uri']) ?>
 			</td>
 			<td>
 				<?=$html->link('editovat', array('controller' => 'redirects', 'action' => 'edit', $redirect['Redirect']['id'], 'admin' => true)) ?>
