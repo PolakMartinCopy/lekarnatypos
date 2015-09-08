@@ -73,7 +73,7 @@ class Status extends AppModel {
 				$ppm->Sender = CUST_MAIL;
 				$ppm->From = CUST_MAIL;
 				$ppm->FromName = CUST_NAME;
-				$ppm->ReplyTo = CUST_MAIL;
+				$ppm->AddReplyTo(CUST_MAIL, CUST_NAME);
 						
 				$ppm->Body = $mail_template['MailTemplate']['content'];
 				$ppm->Subject = $mail_template['MailTemplate']['subject'];
