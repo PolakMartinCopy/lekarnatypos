@@ -129,7 +129,7 @@ class Category extends AppModel {
 
 		$order['Category.lft'] = 'asc';
 		// pridam kategorii s KATEGORIEMI
-		$path_ids[] = 397;
+		$path_ids[] = 408;
 		// pridam kategorii PODLE PRIZNAKU
 		$path_ids[] = 398;
 		

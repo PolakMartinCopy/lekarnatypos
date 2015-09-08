@@ -64,7 +64,7 @@
 		
 		// pokud jsem ve front endu
 		if (!isset($this->params['admin'])) {
-			
+				
 			// TRACKOVANI ZAKAZNIKU
 			// je zakaznik zalogovany
 			$is_logged_in = false;
@@ -74,10 +74,10 @@
 					$is_logged_in = true;
 				}
 			}
-			
+				
 			$this->TSCustomerDevice = ClassRegistry::init('TSCustomerDevice');
 			//$this->TSCustomerDevice->TSVisit = ClassRegistry::init('TSVisit');
-
+		
 			if ($key = $this->Cookie->read('TSCustomerDevice.key')) {
 				$this->TSCustomerDevice->trackingKey = $key;
 			} else {
@@ -92,11 +92,12 @@
 					$key = false;
 				}
 			}
-			
+				
 			if ($t_s_visit = $this->TSCustomerDevice->TSVisit->get()) {
-
+		
 			}
 		}
+		
 		
 		App::import('Model', 'Setting');
 		$this->Setting = &new Setting;
@@ -158,12 +159,12 @@
 				$this->CustomerType = new CustomerType;
 				$customer_type_id = $this->CustomerType->get_id($this->Session->read());
 				// na obsahove strance chci pouze seznam rootovych kategorii s otevrenym aktualnim podstromem
-				$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, 397);
+				$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, 408);
 				$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, 398);
 			} elseif ($this->layout == REDESIGN_PATH . 'homepage') {
 				if ($_SERVER['REQUEST_URI'] == '/') {
 					// uplny strom kategorii - vypisuje se pouze na HP
-					$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, 397);
+					$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, 408);
 					$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, 398);
 				}
 			}
