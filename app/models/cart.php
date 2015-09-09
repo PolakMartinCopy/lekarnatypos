@@ -20,15 +20,12 @@ class Cart extends AppModel {
 		
 		$rand = $this->Session->read('Config.rand');
 		$userAgent = $this->Session->read('Config.userAgent');
-		// aktualni navsteva
-		$t_s_visit = $this->TSVisit->get();
 		
 		// zkusim najit v databazi kosik pro daneho uzivatele a aktualni navstevu
 		$data = $this->find('first', array(
 			'conditions' => array(
 				'Cart.rand' => $this->Session->read('Config.rand'),
 				'Cart.userAgent' => $this->Session->read('Config.userAgent'),
-				'Cart.t_s_visit_id' => $t_s_visit['TSVisit']['id']
 			),
 			'contain' => array(),
 			'fields' => array('Cart.id')
@@ -49,11 +46,9 @@ class Cart extends AppModel {
 		
 		$rand = $this->Session->read('Config.rand');
 		$userAgent = $this->Session->read('Config.userAgent');
-		$t_s_visit = $this->TSVisit->get();
 		
 		$this->data['Cart']['rand'] = $rand;
 		$this->data['Cart']['userAgent'] = $userAgent;
-		$this->data['Cart']['t_s_visit_id'] = $t_s_visit['TSVisit']['id'];
 
 		// neukladam kosik, pokud je uzivatel monitorovaci system
 		if ($_SERVER['HTTP_USER_AGENT'] != 'Brko Web Page Monitor') {

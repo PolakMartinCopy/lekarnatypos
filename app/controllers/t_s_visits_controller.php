@@ -2,8 +2,8 @@
 class TSVisitsController extends AppController {
 	var $name = 'TSVisits';
 	
-	function recount_duration() {
-		$this->TSVisit->recountDuration();
+	function recount_duration($id) {
+		$this->TSVisit->recountDuration($id);
 		die();
 	}
 	

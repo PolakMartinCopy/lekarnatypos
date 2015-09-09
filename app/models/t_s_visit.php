@@ -6,7 +6,7 @@ class TSVisit extends AppModel {
 	
 	var $belongsTo = array('TSCustomerDevice');
 	
-	var $hasMany = array('TSVisitCategory');
+	var $hasMany = array('TSVisitCategory', 'Cart');
 	
 	var $visitId = null;
 	
@@ -87,8 +87,15 @@ class TSVisit extends AppModel {
 		return $visit;
 	}
 	
-	function recountDuration() {
-		$visit = $this->get();
+	function recountDuration($id) {
+		$visit = $this->find('first', array(
+			'conditions' => array('TSVisit.id' => $id),
+			'contain' => array(),
+		));
+		
+		if (empty($visit)) {
+			return false;
+		}
 		
 		$start = strtotime($visit['TSVisit']['created']);
 		$end =  strtotime(date('Y-m-d H:i:s'));
@@ -145,5 +152,26 @@ class TSVisit extends AppModel {
 		$expired = Set::extract('/TSVisit/id', $expired);
 
 		return $this->closeList($expired);
+	}
+	
+	function pairCart() {
+		$visitId = $this->visitId;
+		$cartId = $this->Cart->get_id();
+		if ($visitId && $cartId) {
+			if ($this->Cart->hasAny(array(
+				'Cart.id' => $cartId,
+				'Cart.t_s_visit_id' => null
+			))) {
+				$save = array(
+					'Cart' => array(
+						'id' => $cartId,
+						't_s_visit_id' => $visitId
+					)
+				);
+				
+				return $this->Cart->save($save);
+			}
+		}
+		return false;
 	}
 }

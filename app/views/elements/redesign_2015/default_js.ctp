@@ -2,22 +2,7 @@
 <script src="/js/<?php echo REDESIGN_PATH ?>bootstrap-slider.js"></script>
 <script src="/js/<?php echo REDESIGN_PATH ?>bootstrap.min.js"></script>
 <script src="/js/<?php echo REDESIGN_PATH ?>custom-scripts.js"></script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-	var firstClick = true;
-	$(document).click(function() {
-		if (firstClick) {
-			firstClick = false;
-			// ajaxem prepocitam delku navstevy
-			$.ajax({
-				url: '/t_s_visits/recount_duration',
-			});
-		}
-	});
-});
-</script>
-
+<script src="/js/<?php echo REDESIGN_PATH ?>customer-tracking.js"></script>
 
  <?php if ($this->params['controller'] == 'orders' && $this->params['action'] == 'one_step_order') { ?>
  <script type="text/javascript">

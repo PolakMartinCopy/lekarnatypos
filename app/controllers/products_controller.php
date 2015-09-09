@@ -365,7 +365,7 @@ class ProductsController extends AppController {
 		$this->Session->write('ProductStack', $stack);
 		
 		// trackovani prohlednutych produktu
-		$this->Product->TSVisitProduct->myCreate($id);
+//		$this->Product->TSVisitProduct->myCreate($id);
 	}
 	
 	/**

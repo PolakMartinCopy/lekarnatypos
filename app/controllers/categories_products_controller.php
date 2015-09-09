@@ -344,7 +344,7 @@ class CategoriesProductsController extends AppController {
 		
 		$this->set('sorting_options', $this->CategoriesProduct->Product->sorting_options);
 		// trackovani prohlednutych kategorii
-		$this->CategoriesProduct->Category->TSVisitCategory->myCreate($id);
+//		$this->CategoriesProduct->Category->TSVisitCategory->myCreate($id);
 	}
 	
 	function cancel_filter($id) {
