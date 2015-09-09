@@ -255,8 +255,13 @@ class ProductsController extends AppController {
 		if (!empty($product['CategoriesProduct'])) {
 			// idcka kategorii, do kterych je produkt zarazen
 			$category_ids = Set::extract('/category_id', $product['CategoriesProduct']);
-			// do breadcrumbs chci vybirat jen z podstromu "NOVE KATEGORIE"
-			$wanted_category_ids = $this->Product->CategoriesProduct->Category->subtree_ids(408);
+			// breadcrumbs sestavuju v zavislosti na tom, v jakem podstromu se prave nachazim (jestli mam v levem sidebaru otevrene KATEGORIE nebo CO VAS TRAPI)
+			$subtree_root_id = $this->Product->CategoriesProduct->Category->category_subtree_root_id;
+			$categories_bothers_tab = $this->Session->read('categories_bothers_tab');
+			if ($categories_bothers_tab == 'bothers') {
+				$subtree_root_id = $this->Product->CategoriesProduct->Category->bothers_subtree_root_id;
+			}
+			$wanted_category_ids = $this->Product->CategoriesProduct->Category->subtree_ids($subtree_root_id);
 			// aktualne otevrenou kategorii chci vybrat pouze z aktivnich, verejnych kategorii, ktere nejsou ve stromu horizontalniho menu
 			// zjistim neaktivni kategorie a jejich podstromy
 			$not_active_categories = $this->Product->CategoriesProduct->Category->find('all', array(
@@ -281,7 +286,6 @@ class ProductsController extends AppController {
 			if (!empty($wanted_category_ids)) {
 				$opened_category_id_conditions[] = 'Category.id IN (' . implode(',', $wanted_category_ids) . ')';
 			}
-			
 			
 			$opened_category_id = $this->Product->CategoriesProduct->Category->find('first', array(
 				'conditions' => $opened_category_id_conditions,

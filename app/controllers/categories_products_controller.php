@@ -116,9 +116,15 @@ class CategoriesProductsController extends AppController {
 		if (!$path) {
 			$this->cakeError('error404');
 		}
-		
-		// hned za korenem mam kategorie "KATEGORIE" a "PRIZNAKY", ktere ale nechci zobrazovat
+
+		// hned za korenem mam kategorie "NOVE KATEGORIE" a "PRIZNAKY", ktere ale nechci zobrazovat
+		if ($path[1]['Category']['id'] == $this->CategoriesProduct->Category->category_subtree_root_id) {
+			$this->Session->write('categories_bothers_tab', 'categories');		
+		} else {
+			$this->Session->write('categories_bothers_tab', 'bothers');
+		}
 		unset($path[1]);
+
 		foreach ($path as $item) {
 			$breadcrumb = array('anchor' => $item['Category']['breadcrumb'], 'href' => '/' . $item['Category']['url']);
 			if ($item['Category']['id'] == 5) {

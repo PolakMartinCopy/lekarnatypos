@@ -14,9 +14,7 @@
                 <div class="aside" id="categories-navigation">
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation"<?php echo ($categories_bothers_tab == 'categories' ? ' class="active"' : '')?>><a href="#categories" aria-controls="categories" role="tab" data-toggle="tab" class="categories-bothers-switch">Kategorie</a></li>
-                        <?php if (false) { // UKRYTE KATEGORIE ZBOZI PODLE PRIZNAKU?>
                         <li role="presentation"<?php echo ($categories_bothers_tab == 'bothers' ? ' class="active"' : '')?>><a href="#bothers" aria-controls="bothers" role="tab" data-toggle="tab" class="categories-bothers-switch">Co vás trápí</a></li>
-                        <?php } ?>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane fade<?php echo ($categories_bothers_tab == 'categories' ? ' in active' : '')?>" id="categories">

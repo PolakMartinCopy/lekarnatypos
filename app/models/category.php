@@ -32,6 +32,11 @@ class Category extends AppModel {
 
 	var $image_path = 'images/categories';
 	
+	// IDcko kategorie, ktera se pouzije jako rootova pro podstrom KATEGORIE
+	var $category_subtree_root_id = 408;
+	// IDcko kategorie, ktera se pouzite jako rootova pro podstrom CO VAS TRAPI
+	var $bothers_subtree_root_id = 398;
+	
 	function afterSave($created) {
 		if ($created) {
 			if ($url = $this->buildUrl($this->data)) {
@@ -129,9 +134,9 @@ class Category extends AppModel {
 
 		$order['Category.lft'] = 'asc';
 		// pridam kategorii s KATEGORIEMI
-		$path_ids[] = 408;
+		$path_ids[] = $this->category_subtree_root_id;
 		// pridam kategorii PODLE PRIZNAKU
-		$path_ids[] = 398;
+		$path_ids[] = $this->bothers_subtree_root_id;
 		
 		// mozne duplicity smazu
 		$path_ids = array_unique($path_ids);
