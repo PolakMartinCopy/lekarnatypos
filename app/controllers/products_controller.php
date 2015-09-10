@@ -300,14 +300,16 @@ class ProductsController extends AppController {
 		
 		// sestavim breadcrumbs
 		$path = $this->Product->CategoriesProduct->Category->getPath($opened_category_id);
-		unset($path[1]);
 		$breadcrumbs = array();
-		foreach ($path as $item) {
-			$breadcrumb = array('anchor' => $item['Category']['breadcrumb'], 'href' => '/' . $item['Category']['url']);
-			if ($item['Category']['id'] == 5) {
-				$breadcrumb = array('anchor' => 'Domů', 'href' => HP_URI);
+		if ($path) {
+			unset($path[1]);
+			foreach ($path as $item) {
+				$breadcrumb = array('anchor' => $item['Category']['breadcrumb'], 'href' => '/' . $item['Category']['url']);
+				if ($item['Category']['id'] == 5) {
+					$breadcrumb = array('anchor' => 'Domů', 'href' => HP_URI);
+				}
+				$breadcrumbs[] = $breadcrumb;
 			}
-			$breadcrumbs[] = $breadcrumb;
 		}
 		$breadcrumbs[] = array('anchor' => $product['Product']['breadcrumb'], 'href' => '/' . $product['Product']['url']);
 		$this->set('breadcrumbs', $breadcrumbs);
@@ -843,6 +845,7 @@ class ProductsController extends AppController {
 				'Product.zbozi_name',
 				'Product.heureka_name',
 				'Product.heureka_extended_name',
+				'Product.heureka_category',
 				'Product.short_description',
 				'Product.description',
 				'Product.active',

@@ -97,6 +97,7 @@ class ExportsController extends AppController{
 				'Product.zbozi_name',
 				'Product.heureka_name',
 				'Product.heureka_extended_name',
+				'Product.heureka_category',
 				'Product.price',
 				'Product.ean',
 				
@@ -122,8 +123,9 @@ class ExportsController extends AppController{
 				'ComparatorProductClickPrice.id',
 				'ComparatorProductClickPrice.click_price'
 			),
-//			'limit' => 10
+//			'limit' => 10,
 		));
+
 		unset($this->Export->Product->virtualFields['price']);
 		$res = array();
 		foreach ($products as $i => &$product) {
@@ -247,24 +249,31 @@ class ExportsController extends AppController{
 		);
 
 		foreach ($products as $index => $product) {
-			// pokud je kategorie produktu sparovana s heurekou, nastavi se rovnou jako 'Sportovni vyziva | *odpovidajici nazev kategorie*
-			foreach ($pairs as $name => $array) {
-				if (in_array($product['CategoriesProduct']['category_id'], $array)) {
-					$products[$index]['CATEGORYTEXT'] = $name;
-					break;
+			// pokud mam kategorii heureky definovanou primo u produktu
+			if (isset($product['Product']['heureka_category']) && !empty($product['Product']['heureka_category'])) {
+				// pouziju ji do feedu
+				$products[$index]['CATEGORYTEXT'] = $product['Product']['heureka_category'];
+			// jinak
+			} else {
+				// pokud je kategorie produktu sparovana s heurekou, nastavi se rovnou jako 'Sportovni vyziva | *odpovidajici nazev kategorie*
+				foreach ($pairs as $name => $array) {
+					if (in_array($product['CategoriesProduct']['category_id'], $array)) {
+						$products[$index]['CATEGORYTEXT'] = $name;
+						break;
+					}
+				}
+	
+				// jinak se vytvori retezec ze stromu kategorii v obchode
+				if (!isset($products[$index]['CATEGORYTEXT'])) {
+					$path = $this->Export->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
+					$keys = Set::extract('/Category/name', $path);
+					unset($keys[0]);
+					unset($keys[1]);
+					$products[$index]['CATEGORYTEXT'] = implode(' | ', $keys);
 				}
 			}
-
-			// jinak se vytvori retezec ze stromu kategorii v obchode
-			if (!isset($products[$index]['CATEGORYTEXT'])) {
-				$path = $this->Export->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
-				$keys = Set::extract('/Category/name', $path);
-				unset($keys[0]);
-				unset($keys[1]);
-				$products[$index]['CATEGORYTEXT'] = implode(' | ', $keys);
-			}
 		}
-	
+
 		$this->set('products', $products);
 		
 		// udaje o moznych variantach dopravy
