@@ -206,7 +206,7 @@ class ProductsController extends AppController {
 					'conditions' => array('Attribute.id = AttributesSubproduct.attribute_id')
 				)
 			),
-			'order' => array('Attribute.option_id', 'Attribute.sort_order'),
+			'order' => array('Attribute.option_id', 'Attribute.value'),
 		));
 
 		// vytahnu si serazeny idcka atributu
@@ -1329,7 +1329,10 @@ class ProductsController extends AppController {
 		}
 	
 		// zjistim si options, ktere jsou zadane v systemu
-		$options = $this->Product->Subproduct->AttributesSubproduct->Attribute->Option->find('all');
+		$options = $this->Product->Subproduct->AttributesSubproduct->Attribute->Option->find('all', array(
+			'conditions' => array('Option.active' => true),
+			'contain' => array()
+		));
 		$this->set('options', $options);
 	
 		// formular je vyplnen (ne filtrovani)
@@ -1432,9 +1435,9 @@ class ProductsController extends AppController {
 			// musim najit vsechny subprodukty tohoto produktu a ty, co nejsou podle zadanych hodnot platne, musim odstranit
 			// tzn musim porovnat saves oproti obsahu databaze a co je navic, tak smazat
 			$db_subproduct_ids = $this->Product->Subproduct->find('all', array(
-					'conditions' => array('product_id' => $this->data['Product']['id']),
-					'contain' => array(),
-					'fields' => array('id')
+				'conditions' => array('product_id' => $this->data['Product']['id']),
+				'contain' => array(),
+				'fields' => array('id')
 			));
 			foreach ($db_subproduct_ids as $db_subproduct_id) {
 				if (!in_array($db_subproduct_id['Subproduct']['id'], $subproduct_ids)) {
@@ -1448,18 +1451,24 @@ class ProductsController extends AppController {
 			// tzn pro kazdou option vybrat zvolene values k tomuto produktu - ne jen pro ty options, pro ktere ma produkt atributy, ale
 			// uplne pro vsechny
 			foreach ($options as $option) {
+				$order = array('Attribute.option_id ASC');
+				if ($option['Option']['id'] == 1) {
+					$order[] = 'Attribute.value ASC';
+				} else {
+					$order[] = 'Attribute.sort_order ASC';
+				}
 				// vybiram takovy vazby mezi produktem a atributem, ktery patri k zadanymu produktu
 				$attributes_subproducts = $this->Product->Subproduct->AttributesSubproduct->find('all', array(
-						'conditions' => array_merge(
-								array('Subproduct.product_id' => $id, 'Attribute.option_id' => $option['Option']['id'])
+					'conditions' => array_merge(
+						array('Subproduct.product_id' => $id, 'Attribute.option_id' => $option['Option']['id'])
+					),
+					'contain' => array(
+						'Subproduct',
+							'Attribute' => array(
+								'Option'
+							)
 						),
-						'contain' => array(
-								'Subproduct',
-								'Attribute' => array(
-										'Option'
-								)
-						),
-						'order' => array('Attribute.option_id ASC', 'Attribute.sort_order ASC'),
+						'order' => $order,
 						// musim se zbavit "duplicit" - atributes_subproduktu, ktery ukazuji na stejny atributy
 						'group' => array('Attribute.id')
 				));

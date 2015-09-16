@@ -6,6 +6,7 @@ class AttributesController extends AppController {
 
 	var $paginate = array(
 		'Attribute' => array(
+			'contain' => array('Option'),
 			'limit' => 25,
 			'order' => array(
 				'Attribute.option_id' => 'asc',
@@ -20,13 +21,14 @@ class AttributesController extends AppController {
 	);
 
 	function admin_index() {
-		$this->Attributes->recursive = -1;
+		$this->Attribute->recursive = -1;
 		
 		$options = $this->Attribute->Option->find('all', array(
+			'conditions' => array('Option.active' => true),
 			'contain' => array()
 		));
 		$this->set('options', $options);
-		
+
 		if (isset($this->params['named']['option_id'])) {
 			$script = '
 <script type="text/javascript" src="/js/jquery-1.4.2.min.js"></script>
@@ -41,10 +43,9 @@ $(\'#attribute_table tbody\').sortable().disableSelection();
 			';
 		
 			$this->set('script', $script);
-			$this->paginate['Attribute']['limit'] = 1000;
+			$this->paginate['Attribute']['show'] = 'all';
 			$this->paginate['Attribute']['conditions'] = array('option_id' => $this->params['named']['option_id']);
-			$this->paginate['Attribute']['contain'] = array('Option');
-			
+
 			if (isset($this->data)) {
 				$order = 1;
 				foreach ($this->data['Attribute'] as $attribute_id) {
@@ -61,6 +62,8 @@ $(\'#attribute_table tbody\').sortable().disableSelection();
 		}
 		$attributes = $this->paginate('Attribute');
 		$this->set('attributes', $attributes);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
 	function admin_add() {
