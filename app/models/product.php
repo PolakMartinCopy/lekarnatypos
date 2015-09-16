@@ -197,6 +197,12 @@ class Product extends AppModel {
 			$this->data['Product']['retail_price_with_dph'] = str_replace(',', '.', $this->data['Product']['retail_price_with_dph']);
 			$this->data['Product']['retail_price_with_dph'] = floatval($this->data['Product']['retail_price_with_dph']);
 		}
+		// uprava kategorie na heurece, at se da vkladat pouze cut&paste
+		if (array_key_exists('heureka_category', $this->data['Product'])) {
+			$this->data['Product']['heureka_category'] = str_replace('»', '|', $this->data['Product']['heureka_category']);
+			$this->data['Product']['heureka_category'] = str_replace('Heureka.cz | ', '', $this->data['Product']['heureka_category']);
+		}
+		
 		if (!empty($this->data['Product']['discount_common'])) {
 			$this->data['Product']['discount_common'] = floatval(str_replace(',', '.', $this->data['Product']['discount_common']));
 		}
