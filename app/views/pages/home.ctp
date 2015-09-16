@@ -1,9 +1,7 @@
 <div class="module-categories" role="tabpanel">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation"<?php echo ($categories_bothers_tab == 'categories' ? ' class="active"' : '')?>><a href="#categories" aria-controls="categories" role="tab" data-toggle="tab" class="categories-bothers-switch">Kategorie</a></li>
-        <?php if (false) { // UKRYTE KATEGORIE ZBOZI PODLE PRIZNAKU?>
         <li role="presentation"<?php echo ($categories_bothers_tab == 'bothers' ? ' class="active"' : '')?>><a href="#bothers" aria-controls="bothers" role="tab" data-toggle="tab" class="categories-bothers-switch">Co vás trápí</a></li>
-        <?php } ?>
     </ul>
     <div class="tab-content">
     	<?php if (!empty($categories_menu['categories'])) {?>
@@ -13,7 +11,7 @@
         <?php } // end if (!empty($categories_menu)) { ?>
         <?php if (!empty($bothers_menu['categories'])) { ?>
         <div role="tabpanel" class="tab-pane fade<?php echo ($categories_bothers_tab == 'bothers' ? ' in active' : '')?>" id="bothers">
-            <?php echo $this->element(REDESIGN_PATH . 'homepage_categories', array('categories' => $bothers_menu['categories']))?>
+            <?php echo $this->element(REDESIGN_PATH . 'homepage_categories', array('categories' => $bothers_menu['categories'], 'cell_height' => '80px'))?>
         </div>
         <?php } ?>
     </div>
