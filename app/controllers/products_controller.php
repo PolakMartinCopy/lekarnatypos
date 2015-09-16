@@ -1310,7 +1310,7 @@ class ProductsController extends AppController {
 			'contain' => array(),
 			'fields' => array('Product.id', 'Product.name', 'Product.url')
 		));
-		
+
 		if (empty($product)) {
 			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'products', 'action' => 'index'));
@@ -1334,7 +1334,7 @@ class ProductsController extends AppController {
 			'contain' => array()
 		));
 		$this->set('options', $options);
-	
+
 		// formular je vyplnen (ne filtrovani)
 		if (isset($this->data) && !isset($this->data['Option'])) {
 			// musim se podivat, jestli uz tam takovy atributy jsou
@@ -1444,7 +1444,7 @@ class ProductsController extends AppController {
 					$this->Product->Subproduct->delete($db_subproduct_id['Subproduct']['id']);
 				}
 			}
-			$this->Session->setFlash('Úpravy byly provedeny');
+			$this->Session->setFlash('Úpravy byly provedeny', REDESIGN_PATH . 'flash_success');
 			$this->redirect(array('controller' => 'products', 'action' => 'attributes_list', $this->data['Product']['id']));
 		} else {
 			// potrebuju vytvorit vstupni data pro formular
@@ -1481,7 +1481,6 @@ class ProductsController extends AppController {
 				$this->data['Attributes'][$option['Option']['id']] = trim($this->data['Attributes'][$option['Option']['id']]);
 			}
 		}
-		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -1932,7 +1931,7 @@ class ProductsController extends AppController {
 				}
 			}
 		}
-		$this->Session->setFlash('Úpravy byly provedeny.');
+		$this->Session->setFlash('Úpravy byly provedeny.', REDESIGN_PATH . 'flash_success');
 		$this->redirect(array('controller' => 'products', 'action' => 'attributes_list', $id));
 	}
 	

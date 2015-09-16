@@ -79,11 +79,19 @@ class Administrator extends AppModel{
 				),
 				array(
 					'controller' => 'products',
-					'actions' => array('admin_index', 'admin_add', 'admin_edit_detail', 'admin_edit_categories', 'admin_edit_price_list', 'admin_images_list')
+					'actions' => array('admin_index', 'admin_add', 'admin_edit_detail', 'admin_edit_categories', 'admin_edit_price_list', 'admin_images_list', 'admin_delete', 'admin_attributes_list', 'admin_add_subproducts')
 				),
 				array(
 					'controller' => 'images',
 					'actions' => array('admin_add', 'admin_delete', 'admin_move_up', 'admin_move_down')
+				),
+				array(
+					'controller' => 'categories_products',
+					'actions' => array('admin_delete', 'admin_add')
+				),
+				array(
+					'controller' => 'subproducts',
+					'actions' => array('admin_control')
 				)
 			);
 			$accessAllowed = false;
