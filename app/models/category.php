@@ -168,6 +168,9 @@ class Category extends AppModel {
 
 		// ke kazde kategorii si zjistim kolik ma v sobe produktu
 		$categories = $this->countProducts($categories);
+		
+		// vyfiltruju kategorie, ktere jsou prazdne (nema produkty, ani podkategorie s produkty)
+		$categories = $this->filterEmpty($categories);
 
 		return array(
 			'categories' => $categories, 'path_ids' => $path_ids, 'opened_category_id' => $opened_category_id
@@ -731,6 +734,32 @@ class Category extends AppModel {
 			}
 		}
 		return false;
+	}
+	
+	function filterEmpty($categories) {
+		foreach ($categories as $index => &$category) {
+			if (!empty($category['children'])) {
+				$category['children'] = $this->filterEmpty($category['children']);
+			}
+			if ($this->isEmpty($category['Category']['id'])) {
+				unset($categories[$index]);
+			}
+		}
+		return $categories;
+	}
+	
+	function isEmpty($id) {
+		$subtree_ids = $this->subtree_ids($id);
+		$cp = $this->CategoriesProduct->find('first', array(
+			'conditions' => array(
+				'Product.active' => true,
+				'CategoriesProduct.category_id' => $subtree_ids
+			),
+			'contain' => array('Product'),
+			'fields' => array('CategoriesProduct.id')
+		));
+		$isEmpty = empty($cp);
+		return $isEmpty;
 	}
 }
 ?>

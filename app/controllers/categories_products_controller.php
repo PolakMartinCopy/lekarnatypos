@@ -334,6 +334,9 @@ class CategoriesProductsController extends AppController {
 			'fields' => array('Category.id', 'Category.name', 'Category.url', 'Category.image'),
 			'order' => array('Category.lft' => 'asc')
 		));
+		// vyfiltruju prazdne kategorie
+		$subcategories = $this->CategoriesProduct->Category->filterEmpty($subcategories);
+		
 		foreach ($subcategories as &$subcategory) {
 			if (!empty($subcategory['Category']['image'])) {
 				$subcategory['Category']['image'] = $this->CategoriesProduct->Category->image_path . DS . $subcategory['Category']['image'];
