@@ -17,6 +17,10 @@
 		if ( $_SERVER['REQUEST_URI'] == '/admin/' || $_SERVER['REQUEST_URI'] == '/admin' ){
 			$this->redirect('/admin/administrators/login', null, true);
 		}
+		
+		App::import('Model', 'Setting');
+		$this->Setting = &new Setting;
+		$this->Setting->init();
 				
 		
 		if ( !$this->Session->check('Config') || !$this->Session->check('Config.rand') ) {
@@ -33,13 +37,13 @@
 			// jestlize clovek pristupuje do adminu
 			// a jeste se nezalogoval, musim ho presmerovat na stranku
 			// s loginem
-			if ( !$this->Session->check('Administrator') ){
+			App::import('Model', 'Administrator');
+			$this->Administrator = new Administrator;
+			if (!$this->Session->check('Administrator')) {
 				// musim zkontrolovat, zda nema clovek ulozenu cookie,
 				// na "dlouhe prihlaseni"
 				$cookie = $this->Cookie->read('Administrator');
 				if ( !empty($cookie) ){
-					App::import('Model', 'Administrator');
-					$this->Administrator = new Administrator;
 					$admin = $this->Administrator->recursive = -1;
 					
 					// musim zjistit, jestli heslo ulozene v cookies koresponduje
@@ -55,16 +59,23 @@
 					// donutim uzivatele zalogovat se
 					$this->redirect('/admin/administrators/login/url:' . base64_encode($this->params['url']['url']), null, true);
 				}
+			} else {
+				$admin['Administrator'] = $this->Session->read('Administrator');
+				if (!$this->Administrator->hasAccess($admin['Administrator']['id'], $this->params['controller'], $this->params['action'])) {
+					$redirect = array('controller' => 'products', 'action' => 'index');
+					if (isset($_SERVER['HTTP_REFERER'])) {
+						$redirect = $_SERVER['HTTP_REFERER'];
+					}
+					$this->Session->setFlash('Nemáte přístup k práci v této sekci', REDESIGN_PATH . 'flash_failure');
+					$this->redirect($redirect);
+				}
 			}
+			
 
 			// administrator ma session timeout 720 sekund * 10 = 2 hodiny
 			Configure::write('Session.timeout', 720);
 
 		}
-		
-		App::import('Model', 'Setting');
-		$this->Setting = &new Setting;
-		$this->Setting->init();
 	}
 	
 	function beforeRender() {

@@ -70,7 +70,10 @@ class AdministratorsController extends AppController {
 					
 					// presmeruju
 					$redirect = array('controller' => 'orders', 'action' => 'index', 'status_id' => 1);
-					if (isset($this->params['named']['url'])) {
+					// hosta presmeruju na index produktu
+					if ($this->Administrator->isHost($administrator['Administrator']['id'])) {
+						$redirect = array('controller' => 'products', 'action' => 'index');
+					} elseif (isset($this->params['named']['url'])) {
 						$redirect = '/' . base64_decode($this->params['named']['url']);
 					}
 					$this->redirect($redirect, null, true);
