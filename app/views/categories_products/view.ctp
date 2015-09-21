@@ -8,7 +8,7 @@
 <?php if (!empty($subcategories)) { ?>
 <div class="module-subcategories row">
 <?php foreach ($subcategories as $subcategory) { ?>
-	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+	<div class="subcategory-item col-xs-12 col-sm-6 col-md-4 col-lg-4">
 		<a href="/<?php echo $subcategory['Category']['url']?>">
 			<span class="subcategory-thumb"><img src="/<?php echo $subcategory['Category']['image']?>"/></span>
 			<span class="title"><?php echo $subcategory['Category']['name']?></span>
