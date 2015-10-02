@@ -166,7 +166,7 @@ class ExportsController extends AppController{
 
 		// sparovani kategorii na heurece s kategoriemi u nas v obchode
 		$pairs = array(
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky' => array(228, 229, 264, 266, 276, 332),
+/*			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky' => array(228, 229, 264, 266, 276, 332),
 			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na bolesti hlavy' => array(230, 231),
 			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na klouby a kosti' => array(232, 269, ),
 			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na chřipku' => array(233, 234, 239),
@@ -245,7 +245,8 @@ class ExportsController extends AppController{
 			'Jídlo a nápoje | Nápoje | Nealkoholické nápoje | Čaje' => array(284, 287, 288),
 			'Jídlo a nápoje | Nápoje | Nealkoholické nápoje | Bylinné čaje' => array(285, 286),
 				
-			'Bílé zboží | Malé spotřebiče | Péče o tělo | Zdravotní měřicí přístroje | Teploměry osobní' => array(293)
+			'Bílé zboží | Malé spotřebiče | Péče o tělo | Zdravotní měřicí přístroje | Teploměry osobní' => array(293)*/
+			'Heureka.cz | Oblečení a móda | Obuv | Dámská obuv' => array(769)
 		);
 
 		foreach ($products as $index => $product) {
