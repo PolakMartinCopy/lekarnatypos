@@ -163,7 +163,8 @@ class ProductsController extends AppController {
 				'Product.is_doprodej',
 				'Product.is_bestseller',
 				'Product.is_darek_zdarma',
-				
+				'Product.supplier_id',
+				'Product.is_alliance_rewritten'
 			),
 			'joins' => array(
 				array(
@@ -182,6 +183,14 @@ class ProductsController extends AppController {
 			$this->Session->setFlash('Neexistující produkt.');
 			$this->cakeError('error404');
 		}
+		
+		// pokud je produkt z PDK a nema upraveny popis (tzn v dlouhem popisu je adresa do PDK)
+		if (in_array($product['Product']['supplier_id'], array(4, 5)) && !$product['Product']['is_alliance_rewritten']) {
+			$description_image_content = download_url_like_browser($product['Product']['description']);
+			$product['Product']['description'] = '<img src="data:image/jpeg;base64,' . base64_encode($description_image_content) . '" />';
+		}
+		
+		
 		$this->set('product', $product);
 
 		// SPRAVA VARIANT PRODUKTU
