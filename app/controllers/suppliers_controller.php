@@ -76,7 +76,7 @@ class SuppliersController extends AppController {
 				)
 			)
 		));
-		
+
 		if (empty($supplier)) {
 			$this->Session->setFlash('Neznámý dodavatel', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
@@ -84,6 +84,7 @@ class SuppliersController extends AppController {
 		$this->set('supplier', $supplier);
 		
 		if (isset($this->data)) {
+
 			$data_source = $this->Supplier->getDataSource();
 			$data_source->begin($this->Supplier->SupplierCategory);
 
@@ -217,7 +218,7 @@ class SuppliersController extends AppController {
 //		file_put_contents($xml_file, $xml);
 
 		$products = new SimpleXMLElement($xml);
-		
+
 		if (!empty($supplier['Supplier']['catalog_root_field'])) {
 			$products = $products->xpath('//' . $supplier['Supplier']['catalog_root_field']);
 			if (empty($products)) {
@@ -286,8 +287,11 @@ class SuppliersController extends AppController {
 					} else {
 						$this->Supplier->Product->create();
 						$product_created = true;
+						
+						// pokud vytvarim produkt z alliance, chci si zapamatovat, ze u nej zadny spravce neupravoval popis
+						$product['Product']['is_alliance_rewritten'] = false;
 					}
-
+					
 					// ulozim produkt
 					if (!$this->Supplier->Product->save($product)) {
 						debug($product);
