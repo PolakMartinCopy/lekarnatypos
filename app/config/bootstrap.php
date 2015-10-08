@@ -407,6 +407,22 @@ function cz_holiday() {
 	return $holiday;
 }
 
+function latest_file($dir) {
+	$latest_ctime = 0;
+	$latest_filename = '';
+	
+	$d = dir($dir);
+	while (false !== ($entry = $d->read())) {
+		$filepath = "{$dir}/{$entry}";
+		// 	could do also other checks than just checking whether the entry is a file
+		if (is_file($filepath) && filemtime($filepath) > $latest_ctime) {
+			$latest_ctime = filemtime($filepath);
+			$latest_filename = $entry;
+		}
+	}
+	return $latest_filename;
+}
+
 define('REDESIGN_PATH', 'redesign_2015/');
 define('ROOT_CATEGORY_ID', 5);
 
@@ -420,6 +436,8 @@ $host = 'localhost';
 define('__DB_HOST__', $host);
 //define('IMAGE_IP', '78.80.90.21');
 define('IMAGE_IP', 'odstranit');
+
+define('PDK_DIAL_DIR', 'files/pdk_ciselniky');
 
 // kontrola, zda nezadame URI ktere ma byt presmerovano
 App::import('Model', 'Redirect');
