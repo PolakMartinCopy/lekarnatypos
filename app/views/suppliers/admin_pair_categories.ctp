@@ -4,6 +4,8 @@
 	<li><?php echo $this->Html->link('Zpět na seznam dodavatelů', array('controller' => 'suppliers', 'action' => 'index'))?></li>
 </ul>
 
+<?php echo $this->element(REDESIGN_PATH . 'admin/combobox-init')?>
+
 
 <?php if (empty($this->data['SupplierCategory'])) { ?>
 <p><em>Nejsou žádné kategorie ke spárování</em></p>
@@ -17,15 +19,13 @@
 	</tr>
 	<?php foreach ($this->data['SupplierCategory'] as $index => $supplier_category) { ?>
 	<tr>
-		<td><?php
+		<td style="width:40%"><?php
 			echo $this->Form->hidden('SupplierCategory.' . $index . '.id');
 			echo $this->Form->hidden('SupplierCategory.' . $index . '.name');
 			echo $supplier_category['name'];
 		?></td>
-		<td>
-			<?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'SupplierCategory.' . $index . '.category_id', 'options' => $categories, 'empty' => true))?>
-		</td>
-		<td><?php echo $this->Form->input('SupplierCategory.' . $index . '.active', array('label' => false))?></td>
+		<td style="width:56%"><?php echo $this->element(REDESIGN_PATH . 'admin/combobox-func', array('name' => 'SupplierCategory.' . $index . '.category_id', 'options' => $categories, 'empty' => true)); ?></td>
+		<td style="width:4%"><?php echo $this->Form->input('SupplierCategory.' . $index . '.active', array('label' => false))?></td>
 	</tr>
 	<?php } ?>
 </table>
