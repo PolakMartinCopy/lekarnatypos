@@ -413,11 +413,13 @@ function latest_file($dir) {
 	
 	$d = dir($dir);
 	while (false !== ($entry = $d->read())) {
-		$filepath = "{$dir}/{$entry}";
-		// 	could do also other checks than just checking whether the entry is a file
-		if (is_file($filepath) && filemtime($filepath) > $latest_ctime) {
-			$latest_ctime = filemtime($filepath);
-			$latest_filename = $entry;
+		if ($entry != '.ftpquota') {
+			$filepath = "{$dir}/{$entry}";
+			// 	could do also other checks than just checking whether the entry is a file
+			if (is_file($filepath) && filemtime($filepath) > $latest_ctime) {
+				$latest_ctime = filemtime($filepath);
+				$latest_filename = $entry;
+			}
 		}
 	}
 	return $latest_filename;
