@@ -135,7 +135,7 @@
                     <?php
                     $common_price_visibility = ' style="visibility:hidden"';
                     $discount_visibility = ' style="visibility:hidden"';
-                    if (isset($product['Product']['retail_price_with_dph']) && isset($product['Product']['price']) && $product['Product']['retail_price_with_dph'] != $product['Product']['price']) {
+                    if (isset($product['Product']['retail_price_with_dph']) && isset($product['Product']['price']) && floor($product['Product']['retail_price_with_dph']) != $product['Product']['price']) {
 						$common_price_visibility = '';
 						if (isset($product['Product']['discount']) && $product['Product']['discount']) {
 							$discount_visibility = '';
