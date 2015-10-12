@@ -7,7 +7,7 @@ class ProductPropertiesProductsController extends AppController {
 	 * Touto metodou nastavim, ze u produktu Syncare nechci updatovat nikde nic
 	 */
 	function admin_init() {
-		$conditions = array('Product.supplier_id' => array(3)); // Syncare a Topvet
+		$conditions = array('Product.supplier_id' => array(4, 5)); // Syncare a Topvet
 		
 		// pro kazdy z vybranych produktu nastavim u vsech vlasnosti, ze ji nechci updatovat
 		$products = $this->ProductPropertiesProduct->Product->find('all', array(
@@ -27,20 +27,19 @@ class ProductPropertiesProductsController extends AppController {
 			'fields' => array('ProductProperty.id')	
 		));
 		
-		// vygeneruju si pole pro ulozeni, ze u zadneho z vybranych produktu nechci nic updatovat feedem
+		// vygeneruju si pole pro ulozeni, ze u produktu chci feedem updatovat active a ceny
 		$properties_save = array();
 		foreach ($products as $product) {
 			foreach ($properties as $property) {
-				if (!$this->ProductPropertiesProduct->hasAny(array(
-					'product_id' => $product['Product']['id'],
-					'product_property_id' => $property['ProductProperty']['id']
-				))) {
-					$properties_save[] = array(
-						'product_id' => $product['Product']['id'],
-						'product_property_id' => $property['ProductProperty']['id'],
-						'update' => false
-					);
+				$update = false;
+				if (in_array($property['ProductProperty']['id'], array(11, 18))) {
+					$update = true;
 				}
+				$properties_save[] = array(
+					'product_id' => $product['Product']['id'],
+					'product_property_id' => $property['ProductProperty']['id'],
+					'update' => $update
+				);
 			}
 		}
 
