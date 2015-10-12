@@ -164,7 +164,7 @@ class Supplier extends AppModel {
 			//		- description
 			$description = $this->product_description($feed_product, $supplier['Supplier']['description_field']);
 			//		- retail_price_with_dph
-			$retail_price_with_dph = $this->product_retail_price_with_dph($feed_product, $supplier['Supplier']['price_field']);
+			$retail_price_with_dph = $this->product_retail_price_with_dph($feed_product, $supplier['Supplier']['price_field'], $supplier['Supplier']['price_increase']);
 			// v google feedu je soucasti ceny mena, v nasem pripade CZK
 			if ($supplier['Supplier']['feed_type'] == 'google') {
 				$retail_price_with_dph = str_replace(' CZK', '', $retail_price_with_dph);
@@ -311,8 +311,12 @@ class Supplier extends AppModel {
 		return simpleXMLChildValue($feed_product, $description_field);
 	}
 	
-	function product_retail_price_with_dph($feed_product, $price_field) {
-		return simpleXMLChildValue($feed_product, $price_field);
+	function product_retail_price_with_dph($feed_product, $price_field, $price_increase = null) {
+		$price = simpleXMLChildValue($feed_product, $price_field);
+		if (isset($price_increase) && $price_increase > 0) {
+			$price = round($price * (1 + ($price_increase / 100)));
+		}
+		return $price;
 	}
 	
 	function product_discount_common($feed_product, $price_field, $discount_field, $discount = null) {

@@ -103,6 +103,10 @@
 			<th><abbr title="Procentuální sleva z původní ceny dodavatele">Sleva</abbr></th>
 			<td><?php echo $this->Form->input('Supplier.discount', array('label' => false, 'after' => '%'))?></td>
 		</tr>
+		<tr>
+			<th><abbr title="Procentuální navýšení původní ceny dodavatele">Navýšení ceny</abbr></th>
+			<td><?php echo $this->Form->input('Supplier.price_increase', array('label' => false, 'after' => '%'))?></td>
+		</tr>
 	</table>
 	<?php echo $this->Form->hidden('Supplier.active', array('value' => true))?>
 	<?php echo $this->Form->submit('Uložit')?>
