@@ -906,21 +906,19 @@ class Product extends AppModel {
 	}
 	
 	function is_product_property_editable($id, $product_property_id, $supplier_id) {
-		// u produktu syncare nechci updatovat nic
-		$product_property = $this->ProductPropertiesProduct->find('first', array(
-			'conditions' => array(
-				'ProductPropertiesProduct.product_id' => $id,
-				'ProductPropertiesProduct.product_property_id' => $product_property_id
-			),
-			'contain' => array(),
-		));
 		// defaultne chci updatovat
 		$update = true;
-		if (!empty($product_property) && isset($product_property['ProductPropertiesProduct']['update'])) {
-			$update = $product_property['ProductPropertiesProduct']['update'];
-			// pokud neni zadano jinak, u produktu syncare nechci updatovat
-		} elseif ($supplier_id == 2 || $supplier_id == 1 || $supplier_id == 3 || $supplier_id == 4 || $supplier_id == 5) {
+		if ($supplier_id == 2 || $supplier_id == 1 || $supplier_id == 3 || $supplier_id == 4 || $supplier_id == 5) {
 			$update = false;
+		} else {
+			$product_property = $this->ProductPropertiesProduct->find('first', array(
+				'conditions' => array(
+					'ProductPropertiesProduct.product_id' => $id,
+					'ProductPropertiesProduct.product_property_id' => $product_property_id
+				),
+				'contain' => array(),
+			));
+			$update = $product_property['ProductPropertiesProduct']['update'];
 		}
 		return $update;
 	}
