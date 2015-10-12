@@ -241,6 +241,24 @@ class AllianceProductsController extends AppController {
 			'contain' => array(),
 //			'limit' => 50
 		));
+		
+		// vypustim z feedu ty produkty, ktere uz mam v obchodu zavedene i bez feedu (podle eanu)
+		App::import('Model', 'Product');
+		$this->AllianceProduct->Product = &new Product;
+		foreach ($products as $index => $product) {
+			if (!empty($product['AllianceProduct']['ean'])) {
+				$theProduct = $this->AllianceProduct->Product->find('first', array(
+					'conditions' => array(
+						'Product.ean' => $product['AllianceProduct']['ean'],
+						'Product.supplier_id NOT IN (4, 5)'
+					),
+					'contain' => array()
+				));
+				if (!empty($theProduct)) {
+					unset($products[$index]);
+				}
+			}
+		}
 
 		$this->set('products', $products);
 		$this->layout = 'xml/heureka';
