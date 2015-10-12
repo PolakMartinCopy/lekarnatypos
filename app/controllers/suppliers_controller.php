@@ -439,7 +439,7 @@ class SuppliersController extends AppController {
 				
 				foreach ($unactive_products as $unactive_product) {
 					// deaktivuju jen ty produkty, ktere maji povolenou upravu atributu active daty z feedu
-					if ($this->Supplier->Product->is_product_property_editable($unactive_product['Product']['id'], 17, $id)) {
+					if ($this->Supplier->Product->is_product_property_editable($unactive_product['Product']['id'], 18, $id)) {
 						$unactive_product['Product']['active'] = false;
 						if (!$this->Supplier->Product->save($unactive_product)) {
 							debug($unactive_product);
