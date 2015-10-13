@@ -283,7 +283,7 @@ class SearchesController extends AppController {
 			if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
 				$order = array_merge($order, $this->Search->Product->sorting_options[$_GET['filter']['sorting'][0]]['conditions']);
 			} else {
-				$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc'));
+				$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc', 'Product.price' => 'asc'));
 				$_GET['filter']['sorting'][0] = 0;
 			}
 			
