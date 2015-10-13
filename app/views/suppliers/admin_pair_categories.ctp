@@ -6,11 +6,10 @@
 
 <?php echo $this->element(REDESIGN_PATH . 'admin/combobox-init')?>
 
-
 <?php if (empty($this->data['SupplierCategory'])) { ?>
 <p><em>Nejsou žádné kategorie ke spárování</em></p>
 <?php } else { ?>
-<?php echo $this->Form->create('Supplier', array('url' => array('controller' => 'suppliers', 'action' => 'pair_categories', $supplier['Supplier']['id'])))?>
+<?php echo $this->Form->create('Supplier', array('url' => array('controller' => 'suppliers', 'action' => 'pair_categories', $supplier['Supplier']['id']) + $this->passedArgs))?>
 <table class="topHeading" cellspacing="3" cellpadding="5">
 	<tr>
 		<th>Kategorie dodavatele</th>
@@ -29,6 +28,17 @@
 	</tr>
 	<?php } ?>
 </table>
-<?php echo $this->Form->submit('Uložit')?>
-<?php echo $this->Form->end()?>
-<?php }?>
+<?php
+	echo $this->Form->submit('Uložit');
+	echo $this->Form->end();
+?>
+
+<div class="paging">
+<?
+	echo $this->Paginator->prev('<< Předchozí', array(), '<< Předchozí');
+	echo '&nbsp;&nbsp;' . $this->Paginator->numbers() . '&nbsp;&nbsp;';
+	echo $this->Paginator->next('Další >>', array(), 'Další >>');
+?>
+</div>
+
+<?php } ?>

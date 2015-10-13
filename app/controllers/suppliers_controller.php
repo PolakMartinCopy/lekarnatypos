@@ -70,12 +70,16 @@ class SuppliersController extends AppController {
 		
 		$supplier = $this->Supplier->find('first', array(
 			'conditions' => array('Supplier.id' => $id),
-			'contain' => array(
-				'SupplierCategory' => array(
-					'order' => array('name' => 'asc')
-				)
-			)
+			'contain' => array()
 		));
+		
+		$this->paginate['SupplierCategory'] = array(
+			'conditions' => array('SupplierCategory.supplier_id' => $id),
+			'contain' => array(),
+			'order' => array('SupplierCategory.name' => 'asc'),
+			'limit' => 30
+		);
+		$supplier_categories = $this->paginate('SupplierCategory');
 
 		if (empty($supplier)) {
 			$this->Session->setFlash('Neznámý dodavatel', REDESIGN_PATH . 'flash_failure');
@@ -161,13 +165,15 @@ class SuppliersController extends AppController {
 			if ($this->Supplier->SupplierCategory->saveAll($this->data['SupplierCategory'])) {
 				$data_source->commit($this->Supplier->SupplierCategory);
 				$this->Session->setFlash('Kategorie byly spárovány', REDESIGN_PATH . 'flash_success');
-				$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
+				$this->redirect(array('controller' => 'suppliers', 'action' => 'pair_categories') + $this->passedArgs);
 			} else {
 				$data_source->rollback($this->Supplier->SupplierCategory);
 				$this->Session->setFlash('Kategorie se nepodařilo spárovat', REDESIGN_PATH . 'flash_failure');
 			}
 		} else {
-			$this->data['SupplierCategory'] = $supplier['SupplierCategory'];
+			foreach ($supplier_categories as $supplier_category) {
+				$this->data['SupplierCategory'][] = $supplier_category['SupplierCategory'];
+			}
 		}
 		$skipped_categories_ids = array(0 => 5);
 		$categories_conditions = array('Category.id NOT IN (' . implode(',', $skipped_categories_ids) . ')');
