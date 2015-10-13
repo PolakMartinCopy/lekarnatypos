@@ -41,6 +41,10 @@
 			$icon = '<abbr title="Vynutit upload"><img src="/images/' . REDESIGN_PATH . 'icons/link_external.png" alt="" /></abbr>';
 			echo $this->Html->link($icon, array('controller' => 'suppliers', 'action' => 'upload', $supplier['Supplier']['id'], 'admin' => false, 'force' => true), array('target' => '_blank', 'escape' => false));
 		?></td>
+		<td><?php
+			$icon = '<abbr title="Kategorie a produkty"><img src="/images/' . REDESIGN_PATH . 'icons/acrobat.png" alt="" /></abbr>';
+			echo $this->Html->link($icon, array('controller' => 'suppliers', 'action' => 'categories_products_csv', $supplier['Supplier']['id']), array('escape' => false));
+		?></td>
 	</tr>
 	<?php } ?>
 </table>
@@ -72,6 +76,9 @@ echo $paginator->next(' Další &gt;&gt;', array('escape' => false), null, array
 	</tr>
 	<tr>
 		<td><img src="/images/<?php echo REDESIGN_PATH ?>icons/link_external.png" width='16' height='16' /> ... vynutit upload</td>
+	</tr>
+	<tr>
+		<td><img src="/images/<?php echo REDESIGN_PATH ?>icons/acrobat.png" width='16' height='16' /> ... kategorie a produkty</td>
 	</tr>
 </table>
 <div class="prazdny"></div>

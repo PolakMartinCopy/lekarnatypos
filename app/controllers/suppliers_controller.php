@@ -549,6 +549,38 @@ class SuppliersController extends AppController {
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
+	function admin_categories_products_csv($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Není zadán výrobce, jehož kategorie a produkty chcete vypsat', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
+		}
+		
+		$supplier = $this->Supplier->find('first', array(
+			'conditions' => array('Supplier.id' => $id),
+			'contain' => array(
+				'SupplierCategory' => array(
+					'fields' => array('SupplierCategory.id', 'SupplierCategory.name'),
+					'order' => array('name' => 'asc'),
+					'Product' => array(
+						'order' => array('name' => 'asc'),
+						'fields' => array('Product.id', 'Product.name'),
+					)
+				)
+			)
+		));
+		
+		if (empty($supplier)) {
+			$this->Session->setFlash('Nepodařilo se najít výrobce, jehož kategorie a produkty chcete vypsat', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'suppliers', 'action' => 'index'));
+		}
+
+		$this->set('supplier', $supplier);
+		$file_name = $supplier['Supplier']['name'] . '_categories_products';
+		$this->set('file_name', $file_name);
+		$this->set('charset', 'windows-1250');
+		$this->layout = REDESIGN_PATH . 'csv';
+	}
+	
 	function xml_autocomplete_list($id) {
 		$return = array(
 			'success' => false,
