@@ -138,7 +138,9 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
 			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
 		?></td>
-		<td><?php echo $this->Form->input('Product.manufacturer_id', array('label' => false, 'empty' => true))?></td>
+		<td><?php 
+			echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'Product.manufacturer_id', 'options' => $manufacturers));
+		?></td>
 	</tr>
 	<tr valign="top">
 		<td>Dostupnost:</td>
