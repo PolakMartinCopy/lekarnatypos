@@ -957,7 +957,9 @@ class ProductsController extends AppController {
 		}
 		
 		$productTypes = $this->Product->ProductType->find('list');
-		$manufacturers = $this->Product->Manufacturer->find('list');
+		$manufacturers = $this->Product->Manufacturer->find('list', array(
+			'conditions' => array('Manufacturer.active' => true)
+		));
 		$taxClasses = $this->Product->TaxClass->find('list');
 		$availabilities = $this->Product->Availability->find('list', array(
 			'conditions' => array('Availability.active' => true),

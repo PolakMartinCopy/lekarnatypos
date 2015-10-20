@@ -176,7 +176,8 @@ class CategoriesProductsController extends AppController {
 		
 		// DO TETO CHVILE MAM PODMINKY PRO VYBRANI PRODUKTU NEOMEZUJICI PODLE FILTRU
 		$filter_manufacturers_order = array('Manufacturer.name' => 'asc');
-		$filter_manufacturers = $this->CategoriesProduct->Product->Manufacturer->filter_manufacturers($conditions, $filter_manufacturers_order);
+		$filter_manufacturers_conditions = array_merge($conditions, array('Manufacturer.active' => true));
+		$filter_manufacturers = $this->CategoriesProduct->Product->Manufacturer->filter_manufacturers($filter_manufacturers_conditions, $filter_manufacturers_order);
 		$this->set('filter_manufacturers', $filter_manufacturers);
 		
 		// musim tedy vybrat nejlevnejsi a nejdrazsi produkt v podle dosavadnich podminek, protoze jakmile tam prihodim podminky o cene, zkresli mi to hodnoty pro slider
