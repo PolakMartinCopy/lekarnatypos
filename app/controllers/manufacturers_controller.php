@@ -321,9 +321,44 @@ class ManufacturersController extends AppController {
 		echo json_encode($result);
 		die();
 	}
-	
-	function admin_import() {
-		$this->Manufacturer->import();
+
+	function admin_repair() {
+		// pro kazdy nazev najdu reprezentanta (pokud mozno, aktivniho) - pivota
+		$unique_names = $this->Manufacturer->find('list');
+		$unique_names = array_unique($unique_names);
+		// kazdou tridu vyrobcu, urcenou nazvem, presmeruju na pivota a ostatni smazu
+		foreach ($unique_names as $index => $name) {
+			$class = $this->Manufacturer->find('all', array(
+				'conditions' => array('Manufacturer.name' => $name, 'Manufacturer.id !=' => $index),
+				'contain' => array(),
+				'fields' => array('Manufacturer.id', 'Manufacturer.name')
+			));
+			if (!empty($class)) {
+				foreach ($class as $duplicity) {
+					$products = $this->Manufacturer->Product->find('all', array(
+						'conditions' => array('Product.manufacturer_id' => $duplicity['Manufacturer']['id']),
+						'contain' => array(),
+						'fields' => array('Product.id', 'Product.name')
+					));
+					
+					if (!empty($products)) {
+						$save = array();
+						// presmeruju produkty na pivota
+						foreach ($products as $product) {
+							$product['Product']['manufacturer_id'] = $index;
+							$save[] = $product['Product'];
+						}
+						if (!$this->Manufacturer->Product->saveAll($save)) {
+							debug($save);
+							die();
+						}
+					}
+					
+					// duplicitni vyrobce smazu
+					$this->Manufacturer->delete($duplicity['Manufacturer']['id']);
+				}
+			}
+		}
 		die('here');
 	}
 }
