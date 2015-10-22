@@ -54,7 +54,11 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
             <?php } ?>
             <div class="param-horizontal">
                 <span>Dostupnost:</span>
-                <span><a href="/cenik-dopravy"><?php echo ucfirst($product['Availability']['name'])?></a></span>
+                <span><?php if ($product['Product']['active']) { ?>
+               		<a href="/cenik-dopravy"><?php echo ucfirst($product['Availability']['name']) ?></a>
+               	<?php } else { ?>
+               		Nedostupné
+               	<?php } ?></span>
             </div>
             <?php if (isset($product['Product']['note']) && !empty($product['Product']['note'])) { ?>
             <div class="param-horizontal">
