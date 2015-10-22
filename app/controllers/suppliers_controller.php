@@ -320,8 +320,11 @@ class SuppliersController extends AppController {
 							debug($product_url_update);
 							trigger_error('Nepodarilo se ulozit URL produktu', E_USER_NOTICE);
 							$data_source->rollback($this->Supplier->Product);
+							continue;
 						}
 					}
+					
+					$data_source->commit($this->Supplier->Product);
 
 					// OBRAZKY
 					// zjistim, jestli chci updatovat obrazky
@@ -419,8 +422,6 @@ class SuppliersController extends AppController {
 							trigger_error('Nepodarilo se ulozit ceny produktu', E_USER_NOTICE);
 						}
 					}
-					
-					$data_source->commit($this->Supplier->Product);
 
 					$supplier_product_ids[] = $product_id;
 				} else {

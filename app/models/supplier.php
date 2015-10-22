@@ -407,7 +407,8 @@ class Supplier extends AppModel {
 				$save_manufacturer = array(
 					'Manufacturer' => array(
 						'name' => $manufacturer,
-						'supplier_alias'
+						'supplier_alias' => $manufacturer,
+						'active' => true
 					)
 				);
 				$this->Product->Manufacturer->create();
