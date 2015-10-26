@@ -148,6 +148,14 @@ class ExportsController extends AppController{
 		return $res;
 	}
 	
+	function save_zbozi_feed() {
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . '/exports/seznam_cz';
+		$content = download_url($url);
+		$file_name = 'files/xml/zbozi.xml';
+		file_put_contents($file_name, $content);
+		die('here');
+	}
+	
 	function seznam_cz(){
 		// nastavim si layout do ktereho budu cpat data v XML
 		$this->layout = 'xml/heureka';
