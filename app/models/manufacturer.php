@@ -78,6 +78,12 @@ class Manufacturer extends AppModel {
 					'conditions' => array('Product.id = CategoriesProduct.product_id')
 				),
 				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => array('Category.id = CategoriesProduct.category_id')
+				),					
+				array(
 					'table' => 'availabilities',
 					'alias' => 'Availability',
 					'type' => 'INNER',

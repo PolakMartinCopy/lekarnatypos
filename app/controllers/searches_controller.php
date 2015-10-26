@@ -168,6 +168,7 @@ class SearchesController extends AppController {
 					$or,
 					// chci jen aktivni produkty
 					'Product.active' => true,
+					'Category.active' => true
 				)
 			);
 			
@@ -222,6 +223,12 @@ class SearchesController extends AppController {
 					'alias' => 'CategoriesProduct',
 					'type' => 'INNER',
 					'conditions' => array('Product.id = CategoriesProduct.product_id')
+				),
+				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => array('Category.id = CategoriesProduct.category_id')
 				),
 				array(
 					'table' => 'images',

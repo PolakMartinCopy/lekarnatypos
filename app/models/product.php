@@ -1056,6 +1056,12 @@ class Product extends AppModel {
 				'conditions' => array('CategoriesProduct.product_id = Product.id')
 			),
 			array(
+				'table' => 'categories',
+				'alias' => 'Category',
+				'type' => 'INNER',
+				'conditions' => array('Category.id = CategoriesProduct.category_id')
+			),
+			array(
 				'table' => 'customer_type_product_prices',
 				'alias' => 'CustomerTypeProductPrice',
 				'type' => 'LEFT',
@@ -1107,6 +1113,12 @@ class Product extends AppModel {
 				'alias' => 'CategoriesProduct',
 				'type' => 'INNER',
 				'conditions' => array('CategoriesProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'categories',
+				'alias' => 'Category',
+				'type' => 'INNER',
+				'conditions' => array('Category.id = CategoriesProduct.category_id')
 			),
 			array(
 				'table' => 'customer_type_product_prices',

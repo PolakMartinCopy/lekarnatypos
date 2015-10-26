@@ -172,6 +172,7 @@ class CategoriesProductsController extends AppController {
 		$conditions = array(
 			'CategoriesProduct.category_id' => $category_ids,
 			'Product.active' => true,
+			'Category.active' => true
 		);
 		
 		// DO TETO CHVILE MAM PODMINKY PRO VYBRANI PRODUKTU NEOMEZUJICI PODLE FILTRU
@@ -222,6 +223,12 @@ class CategoriesProductsController extends AppController {
 				'alias' => 'CategoriesProduct',
 				'type' => 'INNER',
 				'conditions' => array('CategoriesProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'categories',
+				'alias' => 'Category',
+				'type' => 'INNER',
+				'conditions' => array('Category.id = CategoriesProduct.category_id')
 			),
 			array(
 				'table' => 'images',
