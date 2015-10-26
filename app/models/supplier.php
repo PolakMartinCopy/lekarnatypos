@@ -702,6 +702,9 @@ class Supplier extends AppModel {
 	}
 	
 	function product_update_categories($product_id, $id) {
+		if ($id == 5) {
+			return true;
+		}
 		return $this->Product->is_product_property_editable($product_id, 17, $id);
 	}
 	
