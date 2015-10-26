@@ -29,7 +29,7 @@ class SupplierCategoriesController extends AppController {
 				$save[] = $category['SupplierCategory'];
 			}
 		}
-debug($save); die();
+
 		$this->SupplierCategory->saveAll($save);
 		die('here');
 	}
