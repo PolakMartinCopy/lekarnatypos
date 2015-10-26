@@ -123,7 +123,7 @@ class ExportsController extends AppController{
 				'ComparatorProductClickPrice.id',
 				'ComparatorProductClickPrice.click_price'
 			),
-//			'limit' => 10,
+//			'limit' => 1000,
 		));
 
 		unset($this->Export->Product->virtualFields['price']);
@@ -157,6 +157,14 @@ class ExportsController extends AppController{
 		
 		// produkty zobrazovane na detailu na firmy.cz
 		$this->set('firmy_cz_products', array(762, 971, 880, 363, 654));
+	}
+	
+	function save_heureka_feed() {
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . '/exports/heureka_cz';
+		$content = download_url($url);
+		$file_name = 'files/xml/heureka.xml';
+		file_put_contents($file_name, $content);
+		die('here');
 	}
 	
 	function heureka_cz() {

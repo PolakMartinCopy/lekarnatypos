@@ -51,7 +51,7 @@ class Cart extends AppModel {
 		$this->data['Cart']['userAgent'] = $userAgent;
 
 		// neukladam kosik, pokud je uzivatel monitorovaci system
-		if ($_SERVER['HTTP_USER_AGENT'] != 'Brko Web Page Monitor') {
+		if (isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] != 'Brko Web Page Monitor') {
 			$this->save($this->data);
 		}
 
