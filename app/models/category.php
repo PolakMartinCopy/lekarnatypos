@@ -109,6 +109,9 @@ class Category extends AppModel {
 	 * @return multitype:string unknown
 	 */
 	function getSidebarMenu($opened_category_id, $logged = false, $order_by_opened = true, $show_all = false, $only_active_subtree = false, $root_category_id = ROOT_CATEGORY_ID) {
+		// pokud chci vypisovat menu na HP, podivam se nejdriv do kese, jestli nemam data tam a pokud ne, natahnu si je cely znova (a ulozim do kese)
+		
+		
 		$horizontal_categories_tree_ids = $this->get_horizontal_categories_tree_ids();
 		if (in_array($opened_category_id, $horizontal_categories_tree_ids)) {
 			$opened_category_id = ROOT_CATEGORY_ID;
@@ -167,7 +170,7 @@ class Category extends AppModel {
 		$categories = $this->generateTree($root_category_id, $order, $path_ids_conditions);
 
 		// ke kazde kategorii si zjistim kolik ma v sobe produktu
-		$categories = $this->countProducts($categories);
+//		$categories = $this->countProducts($categories);
 		
 		// vyfiltruju kategorie, ktere jsou prazdne (nema produkty, ani podkategorie s produkty)
 		$categories = $this->filterEmpty($categories);

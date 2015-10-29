@@ -36,4 +36,5 @@
 	<?php echo $this->element(REDESIGN_PATH . 'default_js')?>
 	<div class="modal"><!-- Place at bottom of page --></div>
 </body>
+<?php echo $this->element('sql_dump')?>
 </html>
