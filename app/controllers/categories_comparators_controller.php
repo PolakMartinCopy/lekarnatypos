@@ -5,7 +5,7 @@ class CategoriesComparatorsController extends AppController {
 	function init_heureka() {
 		$comparator_id = 1;
 		
-		$source_file = 'files/TyposUrl.csv';
+		$source_file = 'files/TyposURL.csv';
 		$content = file_get_contents($source_file);
 		$content = explode("\n", $content);
 		$save = array();
