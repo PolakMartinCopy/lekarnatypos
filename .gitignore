@@ -11,3 +11,4 @@ tmp
 /.externalToolBuilders
 /app/webroot/files/*.log
 /app/webroot/plugins/fetch-klient
+/app/webroot/tmp

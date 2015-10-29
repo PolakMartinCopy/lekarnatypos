@@ -110,7 +110,22 @@ class Category extends AppModel {
 	 */
 	function getSidebarMenu($opened_category_id, $logged = false, $order_by_opened = true, $show_all = false, $only_active_subtree = false, $root_category_id = ROOT_CATEGORY_ID) {
 		// pokud chci vypisovat menu na HP, podivam se nejdriv do kese, jestli nemam data tam a pokud ne, natahnu si je cely znova (a ulozim do kese)
-		
+		$file_name = md5(md5($opened_category_id) . md5($logged) . md5($order_by_opened) . md5($show_all) . md5($only_active_subtree) . md5($root_category_id));
+		$file_path = 'tmp/cache/' . $file_name;
+		// existuje pozadovany soubor se zakesovanymi daty?
+		if (file_exists($file_path)) {
+			// cas, kdy byl modifikovan
+			$mtime = filemtime($file_path);
+			$nowtime = time();
+			// soubory chci kesovat hodinu
+			$cacheLength = 60*60;
+
+			if ($cacheLength >= ($nowtime - $mtime)) {
+				$res = file_get_contents($file_path);
+				$res = unserialize($res);
+				return $res;
+			}
+		}
 		
 		$horizontal_categories_tree_ids = $this->get_horizontal_categories_tree_ids();
 		if (in_array($opened_category_id, $horizontal_categories_tree_ids)) {
@@ -174,12 +189,16 @@ class Category extends AppModel {
 		
 		// vyfiltruju kategorie, ktere jsou prazdne (nema produkty, ani podkategorie s produkty)
 		$categories = $this->filterEmpty($categories);
-
-		return array(
+		
+		$res = array(
 			'categories' => $categories, 'path_ids' => $path_ids, 'opened_category_id' => $opened_category_id
 		);
+		
+		file_put_contents($file_path, serialize($res));
+
+		return $res;
 	}
-	
+
 	function getSubcategoriesMenuList($opened_category_id = null, $logged = false, $order_by_opened = true, $show_all = false) {
 		$horizontal_categories_tree_ids = $this->get_horizontal_categories_tree_ids();
 		if (in_array($opened_category_id, $horizontal_categories_tree_ids)) {

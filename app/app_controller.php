@@ -128,10 +128,6 @@
 			$categories_menu = array();
 			$bothers_menu = array();
 			if ($this->layout == REDESIGN_PATH . 'content') {
-				// nejprodavanejsi produkty
-				App::import('Model', 'CustomerType');
-				$this->CustomerType = new CustomerType;
-				$customer_type_id = $this->CustomerType->get_id($this->Session->read());
 				// na obsahove strance chci pouze seznam rootovych kategorii s otevrenym aktualnim podstromem
 				$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, $this->Product->CategoriesProduct->Category->category_subtree_root_id);
 				$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, $this->Product->CategoriesProduct->Category->bothers_subtree_root_id);
