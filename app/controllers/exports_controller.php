@@ -2,7 +2,7 @@
 class ExportsController extends AppController{
 	var $name = 'Exports';
 	
-	function get_products($comparator_name) {
+	function get_products($comparator_id) {
 		// natahnu si model Product
 		$this->Export->Product = ClassRegistry::init('Product');
 		$this->Export->CustomerType = ClassRegistry::init('CustomerType');
@@ -86,7 +86,7 @@ class ExportsController extends AppController{
 					'table' => 'comparators',
 					'alias' => 'Comparator',
 					'type' => 'LEFT',
-					'conditions' => array('Comparator.id = ComparatorProductClickPrice.comparator_id AND Comparator.name="' . $comparator_name . '"')
+					'conditions' => array('Comparator.id = ComparatorProductClickPrice.comparator_id AND Comparator.id=' . $comparator_id)
 				)
 			),
 			'fields' => array(
@@ -100,6 +100,7 @@ class ExportsController extends AppController{
 				'Product.heureka_category',
 				'Product.price',
 				'Product.ean',
+				'Product.supplier_id',
 				
 				'Image.id',
 				'Image.name',
@@ -121,7 +122,7 @@ class ExportsController extends AppController{
 				'Manufacturer.name',
 					
 				'ComparatorProductClickPrice.id',
-				'ComparatorProductClickPrice.click_price'
+				'ComparatorProductClickPrice.click_price',
 			),
 //			'limit' => 1000,
 		));
@@ -160,7 +161,7 @@ class ExportsController extends AppController{
 		// nastavim si layout do ktereho budu cpat data v XML
 		$this->layout = 'xml/heureka';
 		
-		$products = $this->get_products('zbozi.cz');
+		$products = $this->get_products(2);
 		$this->set('products', $products);
 		
 		// produkty zobrazovane na detailu na firmy.cz
@@ -177,102 +178,45 @@ class ExportsController extends AppController{
 	
 	function heureka_cz() {
 		$this->layout = 'xml/heureka';
+		// heureka ma v systemu id = 1 (comparators)
+		$comparator_id = 1;
 		
-		$products = $this->get_products('heureka.cz');
+		$products = $this->get_products($comparator_id);
 
 		// sparovani kategorii na heurece s kategoriemi u nas v obchode
 		$pairs = array(
-/*			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky' => array(228, 229, 264, 266, 276, 332),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na bolesti hlavy' => array(230, 231),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na klouby a kosti' => array(232, 269, ),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na chřipku' => array(233, 234, 239),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na bolesti v krku' => array(235),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na kašel' => array(236, 237),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na rýmu' => array(238),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na akné' => array(348),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na bradavice' => array(247),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na ekzém' => array(248),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na jizvy' => array(249),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na plísně' => array(250),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na opary' => array(312),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Vitamíny pro těhotné a kojící' => array(257, 258, 313, 259),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Vitamíny a minerály' => array(265, 365, 366, 323),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na posílení imunity' => array(367, 274),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Dětské vitamíny' => array(322),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na ledviny a močový měchýř' => array(267),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na cévy' => array(268),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na únavu' => array(270),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na střeva' => array(271, 272),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na obezitu' => array(273),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na klimakterium' => array(275),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na alergie, astma' => array(324, 333),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na mozek, paměť' => array(373),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Diagnostické testy' => array(326, 327, 328, 368),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Diagnostické testy | Těhotenské testy' => array(325),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na zácpu' => array(334),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na průjem' => array(335),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na žaludeční vředy' => array(336),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na žaludeční vředy' => array(337),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky proti nadýmání' => array(338, 339),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Přípravky na játra' => array(372),
-			'Kosmetika a zdraví | Zdraví | Léky, vitamíny a potravinové doplňky | Homeopatika' => array(297, 298, 299),
-				
-				
-			'Kosmetika a zdraví | Zdraví | Péče o zuby' => array(255, 261),
-			'Kosmetika a zdraví | Zdraví | Péče o zuby | Zubní kartáčky' => array(307),
-			'Kosmetika a zdraví | Zdraví | Péče o zuby | Mezizubní péče | Mezizubní kartáčky' => array(308),
-			'Kosmetika a zdraví | Zdraví | Péče o zuby | Zubní pasty' => array(309),
-			'Kosmetika a zdraví | Zdraví | Péče o zuby | Ústní vody' => array(310),
-			'Kosmetika a zdraví | Zdraví | Péče o zuby | Péče o umělý chrup' => array(311),
-			'Kosmetika a zdraví | Zdraví | Repelenty' => array(256),
-			'Kosmetika a zdraví | Zdraví | Zdravotní potřeby' => array(289, 294),
-			'Kosmetika a zdraví | Zdraví | Zdravotní potřeby | Náplasti' => array(290),
-			'Kosmetika a zdraví | Zdraví | Zdravotní potřeby | Obvazové materiály' => array(291),
-			'Kosmetika a zdraví | Zdraví | Zdravotní potřeby | Lékárničky' => array(292),
-			'Kosmetika a zdraví | Zdraví | Zdravotní potřeby | Přípravky na inkontinenci' => array(329),
-			'Kosmetika a zdraví | Zdraví | Oční optika | Roztoky a pomůcky ke kontaktním čočkám' => array(296),
-			'Kosmetika a zdraví | Zdraví | Přístroje | Inhalátory' => array(369),
-
-			'Kosmetika a zdraví | Kosmetika' => array(241, 242, 243, 244, 245, 306, 295),
-			'Kosmetika a zdraví | Kosmetika | Pleťová kosmetika' => array(352),
-			'Kosmetika a zdraví | Kosmetika | Pleťová kosmetika | Přípravky pro péči o oční okolí' => array(347),
-			'Kosmetika a zdraví | Kosmetika | Pleťová kosmetika | Přípravky na problematickou pleť' => array(349, 350, 340, 341, 346, 371),
-			'Kosmetika a zdraví | Kosmetika | Pleťová kosmetika | Speciální péče o pleť' => array(351, 353, 356, 358, 343),
-			'Kosmetika a zdraví | Kosmetika | Pleťová kosmetika | Přípravky na vrásky a stárnoucí pleť' => array(354, 355, 344),
-			'Kosmetika a zdraví | Kosmetika | Pleťová kosmetika | Přípravky na stařecké skvrny' => array(342),
-			'Kosmetika a zdraví | Kosmetika | Dekorativní kosmetika | Přípravky na tvář' => array(357),
-			'Kosmetika a zdraví | Kosmetika | Vlasová kosmetika' => array(359, 252),
-			'Kosmetika a zdraví | Kosmetika | Tělová kosmetika' => array(360, 314),
-			'Kosmetika a zdraví | Kosmetika | Tělová kosmetika | Přípravky pro péči o ruce a nehty' => array(361, 254),
-			'Kosmetika a zdraví | Kosmetika | Tělová kosmetika | Přípravky pro péči o nohy' => array(362, 253),
-			'Kosmetika a zdraví | Kosmetika | Sluneční ochrana | Přípravky na opalování' => array(363),
-			'Kosmetika a zdraví | Kosmetika | Sluneční ochrana | Přípravky po opalování' => array(370),
-			'Kosmetika a zdraví | Kosmetika | Dětská kosmetika' => array(345, 262, 317, 318, 319, 320, 321),
-			'Kosmetika a zdraví | Kosmetika | Intimní kosmetika' => array(251),
-			'Kosmetika a zdraví | Kosmetika | Intimní kosmetika | Hygienické vložky' => array(330),
-				
-			'Dětské zboží | Dětská výživa' => array(260),
-			'Dětské zboží | Dětská výživa | Kojenecká mléka' => array(315, 316),
-			'Dětské zboží | Pleny' => array(331),
-				
-			'Sport | Sportovní výživa | Ostatní sportovní výživa' => array(277, 364),
-			'Sport | Sportovní výživa | Proteiny' => array(278),
-			
-			'Jídlo a nápoje | Nápoje | Nealkoholické nápoje | Čaje' => array(284, 287, 288),
-			'Jídlo a nápoje | Nápoje | Nealkoholické nápoje | Bylinné čaje' => array(285, 286),
-				
-			'Bílé zboží | Malé spotřebiče | Péče o tělo | Zdravotní měřicí přístroje | Teploměry osobní' => array(293)*/
-			'Heureka.cz | Oblečení a móda | Obuv | Dámská obuv' => array(769)
+			'Heureka.cz | Oblečení a móda | Obuv' => array(769),
+			'Heureka.cz | Oblečení a móda | Obuv | Dámská obuv' => array(833, 836, 837, 838, 839, 840),
+			'Heureka.cz | Oblečení a móda | Obuv | Dětská obuv' => array(834, 841, 842),
+			'Heureka.cz | Oblečení a móda | Obuv | Pánská obuv' => array(835),
 		);
+		
+		App::import('Model', 'Category');
+		$this->Export->Category = &new Category;
 
 		foreach ($products as $index => $product) {
 			// pokud mam kategorii heureky definovanou primo u produktu
 			if (isset($product['Product']['heureka_category']) && !empty($product['Product']['heureka_category'])) {
 				// pouziju ji do feedu
 				$products[$index]['CATEGORYTEXT'] = $product['Product']['heureka_category'];
+			// pokud je produkt z Alliance
+			} elseif (in_array($product['Product']['supplier_id'], array(4,5))) {
+				// mam k dane kategorii produktu prirazenou kategorii na heurece?
+				$categories_comparator = $this->Export->Category->CategoriesComparator->find('first', array(
+					'conditions' => array(
+						'comparator_id' => $comparator_id,
+						'category_id' => $product['CategoriesProduct']['category_id']
+					),
+					'contain' => array(),
+					'fields' => array('CategoriesComparator.path')
+				));
+
+				if (!empty($categories_comparator)) {
+					$products[$index]['CATEGORYTEXT'] = $categories_comparator['CategoriesComparator']['path'];
+				}
 			// jinak
 			} else {
-				// pokud je kategorie produktu sparovana s heurekou, nastavi se rovnou jako 'Sportovni vyziva | *odpovidajici nazev kategorie*
+				// pokud je kategorie produktu sparovana s heurekou, nastavi se cesta ze shopu
 				foreach ($pairs as $name => $array) {
 					if (in_array($product['CategoriesProduct']['category_id'], $array)) {
 						$products[$index]['CATEGORYTEXT'] = $name;
