@@ -21,7 +21,10 @@ class Category extends AppModel {
 		'CategoriesMostSoldProduct' => array(
 			'dependent' => true
 		),
-		'TSVisitCategory'
+		'TSVisitCategory',
+		'CategoriesComparator' => array(
+			'dependent' => true
+		)
 	);
 	
 	// id kategorii, ktere se nebudou brat v potaz pri generovani souvisejicich produktu

@@ -7,6 +7,9 @@ class Comparator extends AppModel {
 	var $hasMany = array(
 		'ComparatorProductClickPrice' => array(
 			'dependent' => true
+		),
+		'CategoriesComparator' => array(
+			'dependent' => true
 		)
 	);
 	
