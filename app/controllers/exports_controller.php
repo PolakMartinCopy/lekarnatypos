@@ -214,8 +214,9 @@ class ExportsController extends AppController{
 				if (!empty($categories_comparator)) {
 					$products[$index]['CATEGORYTEXT'] = $categories_comparator['CategoriesComparator']['path'];
 				}
-			// jinak
-			} else {
+			}
+
+			if (!isset($products[$index]['CATEGORYTEXT'])) {
 				// pokud je kategorie produktu sparovana s heurekou, nastavi se cesta ze shopu
 				foreach ($pairs as $name => $array) {
 					if (in_array($product['CategoriesProduct']['category_id'], $array)) {
