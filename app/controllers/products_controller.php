@@ -878,10 +878,13 @@ class ProductsController extends AppController {
 				'Product.title',
 				'Product.keywords',
 				'Product.pohoda_id',
-				'Product.ean'
+				'Product.ean',
+				'Product.supplier_id',
+				'Product.alliance_description',
+				'Product.is_alliance_rewritten'
 			)	
 		));
-		
+
 		if (empty($product)) {
 			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'));
@@ -900,6 +903,11 @@ class ProductsController extends AppController {
 		}
 		
 		if (isset($this->data)) {
+			// pokud je produkt z alliance a nemam potvrzenou upravu popisu, popis neupravuju
+			if (in_array($product['Product']['supplier_id'], array(4, 5)) && !$this->data['Product']['is_alliance_rewritten']) {
+				unset($this->data['Product']['description']);
+			}
+
 			if ($this->Product->save($this->data)) {
 				// k produktu si ulozim id pro export do pohody
 				if (empty($this->data['Product']['pohoda_id'])) {
@@ -953,6 +961,10 @@ class ProductsController extends AppController {
 				}
 				$this->data['ProductProperty'][$product_property['ProductProperty']['id']]['property_id'] = $product_property['ProductProperty']['id'];
 				$this->data['ProductProperty'][$product_property['ProductProperty']['id']]['update'] = $update;
+			}
+			
+			if (in_array($product['Product']['supplier_id'], array(4, 5)) && !$product['Product']['is_alliance_rewritten']) {
+				$this->data['Product']['description'] = $product['Product']['alliance_description'];
 			}
 		}
 		

@@ -114,6 +114,13 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		?></td>
 		<td><?=$form->input('Product.description', array('label' => false, 'style' => 'width:600px;height:350px;'))?></td>
 	</tr>
+<?php if (in_array($product['Product']['supplier_id'], array(4, 5))) { ?>
+	<tr valign="top">
+		<td>Potvrzen upravený popis:</td>
+		<td style="width:5%">&nbsp;</td>
+		<td><?=$form->input('Product.is_alliance_rewritten', array('label' => false))?></td>
+	</tr>	
+<?php } ?>
 	<tr valign="top">
 		<td>Aktivní:
 			<a href='/administrace/help.php?width=500&id=3' class='jTip' id='3' name='Aktivní (3)'>
