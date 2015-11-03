@@ -533,6 +533,9 @@ class ProductsController extends AppController {
 		$search_properties = Set::combine($search_properties, '{n}.id', '{n}.name');
 		$this->set('search_properties', $search_properties);
 		
+		$is_alliance = array(0 => 'nerozhoduje' , 1 => 'není', 2 => 'je');
+		$this->set('is_alliance', $is_alliance);
+		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	

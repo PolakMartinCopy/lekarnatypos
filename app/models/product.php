@@ -760,6 +760,15 @@ class Product extends AppModel {
 				}
 			}
 		}
+		
+		if (isset($data['Product']['is_alliance']) && !empty($data['Product']['is_alliance'])) {
+			if ($data['Product']['is_alliance'] == 1) {
+				$conditions[] = '(Product.supplier_id NOT IN (4, 5) OR Product.supplier_id IS NULL)';
+			} elseif ($data['Product']['is_alliance'] == 2) {
+				$conditions[] = 'Product.supplier_id IN (4, 5)';
+			}
+		}
+		
 		return $conditions;
 	}
 	

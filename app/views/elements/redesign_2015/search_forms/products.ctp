@@ -17,6 +17,10 @@
 		<td><?php echo $this->Form->input('AdminProductForm.Product.search_property_id', array('label' => false, 'type' => 'select', 'options' => $search_properties, 'empty' => false))?></td>
 	</tr>
 	<tr>
+		<th>Alliance?</th>
+		<td><?php echo $this->Form->input('AdminProductForm.Product.is_alliance', array('label' => false, 'type' => 'select', 'options' => $is_alliance, 'empty' => false))?></td>
+	</tr>
+	<tr>
 		<td colspan="2"><?php echo $this->Html->link('reset filtru a řazení', array('reset' => 'products')) ?></td>
 	</tr>
 </table>
