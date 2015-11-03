@@ -157,6 +157,10 @@ class Product extends AppModel {
 		array(
 			'id' => 5,
 			'name' => 'Nejsou v nových kategoriích'
+		),
+		array(
+			'id' => 6,
+			'name' => 'Duplicitní podle EAN'
 		)
 	);
 	
@@ -750,6 +754,26 @@ class Product extends AppModel {
 					$complement_products = SET::extract('/CategoriesProduct/product_id', $complement_products);
 					// a vypisu vsechny ostatni
 					$conditions[] = 'Product.id NOT IN (' . implode(',', $complement_products) . ')';
+				}
+			} elseif ($data['Product']['search_property_id'] == 6) {
+				$duplicities = $this->find('all', array(
+					'conditions' => array(),
+					'contain' => array(),
+					'fields' => array('Product.id'),
+					'joins' => array(
+						array(
+							'table' => 'products',
+							'alias' => 'Product1',
+							'type' => 'INNER',
+							'conditions' => array('Product.ean IS NOT NULL AND Product.ean != "" AND Product.ean = Product1.ean AND Product.id != Product1.id')
+						)
+					)
+				));
+
+				if (!empty($duplicities)) {
+					$duplicities = SET::extract('/Product/id', $duplicities);
+					// a vypisu vsechny ostatni
+					$conditions[] = 'Product.id IN (' . implode(',', $duplicities) . ')';
 				}
 			} else {
 				foreach ($this->search_properties as $search_property) {

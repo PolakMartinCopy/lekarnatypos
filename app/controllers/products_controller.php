@@ -499,6 +499,9 @@ class ProductsController extends AppController {
 		if ($sort && $direction) {
 			$this->paginate['order'] = array($sort => $direction);
 		}
+		if (isset($this->data['AdminProductForm']['Product']['search_property_id']) && $this->data['AdminProductForm']['Product']['search_property_id'] == 6) {
+			$this->paginate['order'] = array('Product.ean' => 'asc');
+		}
 		$this->paginate['conditions'] = $conditions;
 		$this->paginate['contain'] = array();
 		$this->paginate['joins'] = $joins;
