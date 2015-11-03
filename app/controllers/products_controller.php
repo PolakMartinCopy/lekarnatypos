@@ -963,7 +963,7 @@ class ProductsController extends AppController {
 				$this->data['ProductProperty'][$product_property['ProductProperty']['id']]['update'] = $update;
 			}
 			
-			if (in_array($product['Product']['supplier_id'], array(4, 5)) && !$product['Product']['is_alliance_rewritten']) {
+			if (in_array($product['Product']['supplier_id'], array(4, 5)) && !$product['Product']['is_alliance_rewritten'] && !empty($product['Product']['alliance_description'])) {
 				$this->data['Product']['description'] = $product['Product']['alliance_description'];
 			}
 		}
