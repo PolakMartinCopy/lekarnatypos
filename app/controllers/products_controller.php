@@ -2003,11 +2003,6 @@ class ProductsController extends AppController {
 		die('zmeneno');
 	}
 	
-	function admin_import() {
-		$this->Product->import();
-		die('here');
-	}
-	
 	function load_eans() {
 		$file_name = 'EanDopl.csv';
 		$file_dir = 'files';
@@ -2044,128 +2039,74 @@ class ProductsController extends AppController {
 		die();
 	}
 	
-	function sold_out_urls() {
-		$removes = array(
-//			array('-docasne-vyprodano', 'dočasně vyprodáno'),
-//			array('docasne-vyprodano', 'dočasně vyprodáno'),
-//			array('-vyprodano', 'vyprodáno'),
-//			array('vyprodano', 'vyprodáno'),
-//			array('-doprodano', 'doprodáno'),
-//			array('doprodano', 'doprodáno'),
-//			array('-novinka', 'novinka'),
-			array('novinka', 'novinka')
-		);
-		
-		$remove_strings = array(
-			0 => 'dočasně vyprodáno!',
-			'dočasně vyprodáno',
-			'- vyprodáno!',
-			'- VYPRODÁNO!',
-			'- vyprodáno',
-			'- VYPRODÁNO',
-			'vyprodáno!',
-			'VYPRODÁNO!',
-			'vyprodáno',
-			'VYPRODÁNO',
-			'doprodáno!',
-			'doprodáno'
-		);
-		
-		App::import('Model', 'Redirect');
-		$this->Redirect = &new Redirect;
-		
-		$data_source = $this->Product->getDataSource();
+	function admin_download_pd_descriptions() {
+		$folder = 'files/pd_descriptions/';
+		$products = $this->Product->find('all', array(
+			'conditions' => array(
+				'Product.supplier_id' => array(4, 5),
+				'OR' => array(
+					array('Product.is_pd_description_downloaded' => false),
+					array('Product.is_pd_description_downloaded' => null)
+				)
+					
+			),
+			'contain' => array(),
+			'fields' => array('Product.id', 'Product.description')
+		));
+		$limit = 10000;
+		$counter = 1;
+		foreach ($products as $product) {
+			if ($image = download_url_like_browser($product['Product']['description'])) {
+				$image_name = $product['Product']['id'] . '.jpeg';
+				if (file_put_contents($folder . $image_name, $image)) {
+					$product['Product']['is_pd_description_downloaded'] = true;
+					if (!$this->Product->savE($product)) {
+						debug($product);
+						die('nepodarilo se ulozit produkt');
+					}
+				} else {
+					$debug($folder . $image_name);
+					die('nepodarilo se nahrat obrazek na disk');
+				}
+			} else {
+				debug($product['Product']['description'] . ' - ' . $product['Product']['id'] . ' - NEPODARILO SE STAHNOUT OBRAZEK');
 				
-		// pro kazdy retezec, ktereho se chci zbavit
-		foreach ($removes as $remove) {
-			// najdu produkty, ktere ho maji v url
-			$products = $this->Product->find('all', array(
-				'conditions' => array(
-					'Product.url LIKE "%%' . $remove[0] . '%%"',
-					'Product.active' => true,
-					'Availability.cart_allowed' => true
-				),
-				'contain' => array('Availability'),
-				'fields' => array(
-					'Product.id',
-					'Product.name',
-					'Product.breadcrumb',
-					'Product.related_name',
-					'Product.heading',
-					'Product.title',
-					'Product.zbozi_name',
-					'Product.heureka_name',
-					'Product.url',
-					'Availability.cart_allowed'
-				),
-				'order' => array('Product.active' => 'desc', 'Availability.cart_allowed' => 'desc'),
-				'limit' => 5
-			));
-			
-			foreach ($products as $product) {
-				$data_source->begin($this->Product);
-				$old_url = '/' . $product['Product']['url'];
-				$new_url = '/' . str_replace($remove[0], '', $product['Product']['url']);
-				// nachystam si presmerovani
-				$new_redirect = array(
-					'Redirect' => array(
-						'request_uri' => $old_url,
-						'target_uri' => $new_url
+			}
+			if ($counter == $limit) {
+				die('Zpracovano ' . $limit . ' produktu');
+			}
+			$counter += 1;
+		}
+		
+		die('OK');
+	}
+	
+	function admin_upload_transformed_pd_descriptions() {
+		$folder = 'files/pd_descriptions_transformed/';
+		$folder_contents = scandir($folder);
+
+		foreach ($folder_contents as $file_name) {
+			if ($file_name != '.' && $file_name != '..') {
+				$product_id = explode('.', $file_name);
+				$product_id = $product_id[0];
+				
+				$description = file_get_contents($folder . $file_name);
+				
+				$product = array(
+					'Product' => array(
+						'id' => $product_id,
+						'alliance_description' => $description
 					)
 				);
-				$this->Redirect->create();
-debug($new_redirect);
-				if (!$this->Redirect->save($new_redirect)) {
-					$data_source->rollback($this->Product);
-					debug($new_redirect);
-					debug($this->Redirect->validationErrors);
-					die('nepodarilo se ulozit NOVY redirect');
-				}
 				
-				// existuje presmerovani s upravovanou adresu?
-				$old_redirects = $this->Redirect->find('all', array(
-					'conditions' => array('Redirect.target_uri' => $old_url),
-					'contain' => array(),
-					'fields' => array('Redirect.id')
-				));
-debug($old_redirects);
-				// upravim stavajici presmerovani, aby smerovala na novou adresu
-				foreach ($old_redirects as $old_redirect) {
-					$old_redirect['Redirect']['target_uri'] = $new_url;
-					if (!$this->Redirect->save($old_redirect)) {
-						$data_source->rollback($this->Product);
-						debug($old_redirect);
-						debug($this->Redirect->validationErrors);
-						die('nepodarilo se ulozit UPRAVENY redirect');
-					}
-				}
-				// nahradim retezce i v textovych polich
-debug($product);
-				foreach ($remove_strings as $remove_string) {
-					$product['Product']['name'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['name']));
-					$product['Product']['breadcrumb'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['breadcrumb']));
-					$product['Product']['related_name'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['related_name']));
-					$product['Product']['heading'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['heading']));
-					$product['Product']['title'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['title']));
-					$product['Product']['zbozi_name'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['zbozi_name']));
-					$product['Product']['heureka_name'] = trim(preg_replace('/' . $remove_string . '/i', '', $product['Product']['heureka_name']));
-				}
-				
-				$product['Product']['url'] = $new_url;
-				$product['Product']['url'] = preg_replace('/^\//', '', $product['Product']['url']);
-debug($product);
 				if (!$this->Product->save($product)) {
-					$data_source->rollback($this->Product);
 					debug($product);
-					debug($this->Product->validationErrors);
-					die('nepodarilo se ulozit upraveny produkt');
+					die('nepodarilo se ulozit produkt');
 				}
-				$data_source->commit($this->Product);
-//die();
+				
 			}
-			die('jeden remove');
 		}
-		die('asd');
+		die('OK');
 	}
 } // konec tridy
 ?>
