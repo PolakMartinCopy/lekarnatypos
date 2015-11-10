@@ -101,6 +101,18 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		?></td>
 		<td><?=$form->input('Product.short_description', array('label' => false, 'type' => 'texrarea', 'style' => 'width:600px;height:40px;'))?></td>
 	</tr>
+<?php if (in_array($product['Product']['supplier_id'], array(4, 5)) && isset($this->data['Product']['description_url'])) { ?>
+	<tr valign="top">
+		<td>Původní popis z Alliance:</td>
+		<td style="width:5%">&nbsp;</td>
+		<td>
+			<div style="height:300px;overflow:scroll"><?php
+			echo $this->data['Product']['description_url'];
+			echo $this->Form->hidden('Product.description_url');
+		?></div>
+		</td>
+	</tr>
+<?php } ?>
 	<tr valign="top">
 		<td>Popis:
 			<a href='/administrace/help.php?width=500&id=23' class='jTip' id='23' name='Popis (23)'>
