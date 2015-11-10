@@ -42,8 +42,11 @@
 				</span>
 			<?php } ?>
              </div>
+             <div class="hidden-sm hidden-md hidden-lg">
+             	<a href="/kosik"><i class="fa fa-shopping-cart"></i></a>
+             </div>
          </div>
-		<button type="button" class="categories-toggle hidden-md hidden-lg" data-toggle="collapse" data-target="#categories-navigation">
+		<button type="button" class="categories-toggle hidden-sm hidden-md hidden-lg" data-toggle="collapse" data-target="#categories-navigation">
         	<i class="fa fa-fw fa-bars"></i>
 		</button>
      </div>
