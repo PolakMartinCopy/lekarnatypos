@@ -20,7 +20,7 @@
 <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
 <meta name="viewport" content="initial-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no" />
 
-<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/bootstrap.css?v=3" />
+<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/bootstrap.css?v=4" />
 <link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/custom-styles.css?v=1" />
 
 <script type="text/javascript">
