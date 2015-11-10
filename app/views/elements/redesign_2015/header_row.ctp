@@ -21,20 +21,25 @@
              </div>
          </div>
 		<div class="basket-info">
-			<?php echo $this->Html->link('<i class="fa fa-shopping-cart"></i>', array('controller' => 'carts_products'), array('escape' => false))?>
-			
 			<div class="hidden-xs basket-info-box">
 			<?php if ($carts_stats['products_count']) { ?>
-			    V <?php echo $this->Html->link('košíku', array('controller' => 'orders', 'action' => 'one_step_order'))?></a> máte<br />
-                <strong><?php echo $carts_stats['products_count']?> ks</strong> zboží za <strong><?php echo number_format($carts_stats['total_price'], 0, ',', ' ')?> Kč</strong><br />
-                <?php if ($carts_stats['free_shipping']) { ?>
-				<span class="small"><strong>Doprava je zdarma!</strong></span>
-				<?php } else { ?>
-                <span class="small">(už jen <strong><?php echo number_format($carts_stats['free_shipping_remaining'], 0, ',', ' ')?> Kč</strong> a máte <strong>dopravu zdarma</strong>)</span>
-                <a href="/kosik" class="hidden-sm hidden-md hidden-lg btn btn-warning">K objednávce</a>
-                <?php } ?>
+			
+                <a href="/kosik" class="basket-info basket-not-empty">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span class="hidden-xs basket-info-box">
+                        Košík <strong><?php echo $carts_stats['products_count']?> ks</strong> za <strong><?php echo number_format($carts_stats['total_price'], 0, ',', ' ')?> Kč</strong><br />
+                        <?php if ($carts_stats['free_shipping']) { ?>
+                        <span class="small"><strong>Doprava je zdarma!</strong></span>
+                        <?php } else { ?>
+ 							<span class="small">(už jen <strong><?php echo number_format($carts_stats['free_shipping_remaining'], 0, ',', ' ')?> Kč</strong> a máte <strong>dopravu zdarma</strong>)</span>                        
+                        <?php } ?>
+                    </span>
+                </a>
+			
 			<?php } else { ?>
-				<br/>Košík je prázdný.
+				<span style="vertical-align:middle;line-height:40px">
+					<i class="fa fa-shopping-cart"></i>Košík je prázdný.
+				</span>
 			<?php } ?>
              </div>
          </div>
