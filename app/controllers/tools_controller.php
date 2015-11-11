@@ -48,9 +48,9 @@ class ToolsController extends AppController {
 			$mail->From     = CUST_MAIL;
 			$mail->FromName = CUST_NAME;
 			
-			//$mail->AddAddress(CUST_MAIL, CUST_NAME);
+			$mail->AddAddress(CUST_MAIL, CUST_NAME);
 			$mail->AddAddress('brko11@gmail.com', 'Martin Polák');
-			//$mail->AddAddress('martin@drdla.eu', 'Martin Drdla');
+			$mail->AddAddress('martin@drdla.eu', 'Martin Drdla');
 			
 			$mail->Subject = 'Nový požadavek na kontakt z www.lekarnatypos.cz';
 			$mail->Body = 'Právě byla přijat nový požadavek na kontaktování.' . "\n";
