@@ -58,7 +58,7 @@
     	popupID = window.setTimeout(checkCookies, 10000);
     }
     function checkCookies() {
-        if (document.cookie.indexOf("subscribe-popup") < 0 && window.location.href != 'http://localhost/kazdy-mesic-voucher-pravidla-souteze') {
+        if (document.cookie.indexOf("subscribe-popup") < 0 && window.location.href != 'http://www.lekarnatypos.cz/kazdy-mesic-voucher-pravidla-souteze') {
             $("body").addClass("modal-open");
             $('.subscribe-modal').fadeIn(500);
         }
