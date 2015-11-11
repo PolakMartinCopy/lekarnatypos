@@ -5,7 +5,7 @@
             <div class="modal-header text-right">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" onclick="popupAlreadyShown();">&times;</span></button>
                 <h3 class="modal-title">
-                    Získejte <a href="/kazdy-mesic-voucher-pravidla-souteze" style="color: #e30780;"><span style="color: #e30780">každý měsíc poukaz na 1000 Kč</span></a><br />na nákup v naší <span style="color: #63af29">Lékárně Typos</span>
+                    Získejte <a href="/kazdy-mesic-voucher-pravidla-souteze" style="color: #e30780;" target="_blank"><span style="color: #e30780">každý měsíc poukaz na 1000 Kč</span></a><br />na nákup v naší <span style="color: #63af29">Lékárně Typos</span>
                 </h3>
             </div>
             <div class="modal-body">
