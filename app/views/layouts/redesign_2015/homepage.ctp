@@ -26,6 +26,7 @@
 	 				echo $this->Session->flash();
 	 			} */
 	 			echo $content_for_layout;
+	 			echo $this->element(REDESIGN_PATH . 'module_we_call_you');
 				echo $this->element(REDESIGN_PATH . 'module_newsletter');
 				echo $this->element(REDESIGN_PATH . 'facebook_news');
 			?>
