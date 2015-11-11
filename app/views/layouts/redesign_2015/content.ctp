@@ -3,7 +3,7 @@
 <head>
 	<?php echo $this->element(REDESIGN_PATH . 'default_head')?>
 </head>
-<body>
+<body onload="showPopup();">
 	<?php echo $this->element(REDESIGN_PATH . 'fb_root')?>
 	<div class="container main-content">
 		<?php echo $this->element(REDESIGN_PATH . 'header_row')?>
@@ -57,7 +57,8 @@
     </div>
 	<?php echo $this->element(REDESIGN_PATH . 'footer')?>
 	<?php echo $this->element(REDESIGN_PATH . 'default_js')?>
-	<div class="modal"><!-- Place at bottom of page --></div>
+	<?php echo $this->element(REDESIGN_PATH . 'modal-newsletter-subscribe')?>
+	<div class="modal-order"><!-- Place at bottom of page --></div>
 </body>
 <?php echo $this->element('sql_dump')?>
 </html>
