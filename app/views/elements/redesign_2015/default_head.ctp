@@ -20,8 +20,10 @@
 <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
 <meta name="viewport" content="initial-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no" />
 
-<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/bootstrap.css?v=4" />
-<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/custom-styles.css?v=1" />
+<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/bootstrap.css?v=5" />
+<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/custom-styles.css?v=2" />
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
 <script type="text/javascript">
     var _gaq = _gaq || [];

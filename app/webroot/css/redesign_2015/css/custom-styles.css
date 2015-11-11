@@ -28,3 +28,7 @@ body.loading {
 body.loading .modal-order {
     display: block;
 }
+
+.error-message{color:red}
+.success-message{color:green}
+.form-error{background-color:#F9B9B9}
