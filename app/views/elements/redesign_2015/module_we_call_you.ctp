@@ -51,7 +51,7 @@ $(document).ready(function() {
 				},
 				success: function(data) {
 					if (data.success) {
-						messagePrefix = '<div success-message">';
+						messagePrefix = '<div class="success-message">';
 					}
 					$('#ContactLine').after(messagePrefix + data.message + messageSuffix);
 				},
