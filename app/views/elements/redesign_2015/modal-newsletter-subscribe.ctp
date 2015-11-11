@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-md">
         <div class="modal-content subscribe-modal-content" modal-transclude="">
             <div class="modal-header text-right">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" onclick="popupAlreadyShown();">&times;</span></button>
+            	<button aria-label="Close" data-dismiss="modal" class="close" type="button" onclick="popupAlreadyShown();"><span aria-hidden="true">×</span></button>
                 <h3 class="modal-title">
                     Získejte <a href="/kazdy-mesic-voucher-pravidla-souteze" style="color: #e30780;" target="_blank"><span style="color: #e30780">každý měsíc poukaz na 1000 Kč</span></a><br />na nákup v naší <span style="color: #63af29">Lékárně Typos</span>
                 </h3>
