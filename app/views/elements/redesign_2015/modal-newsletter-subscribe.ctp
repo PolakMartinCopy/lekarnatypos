@@ -55,10 +55,10 @@
 <script type="text/javascript">
     var popupID;
     function showPopup() {
-        popupID = window.setTimeout(checkCookies, 10000);
+    	popupID = window.setTimeout(checkCookies, 10000);
     }
     function checkCookies() {
-        if (document.cookie.indexOf("subscribe-popup") < 0) {
+        if (document.cookie.indexOf("subscribe-popup") < 0 && window.location.href != 'http://localhost/kazdy-mesic-voucher-pravidla-souteze') {
             $("body").addClass("modal-open");
             $('.subscribe-modal').fadeIn(500);
         }
