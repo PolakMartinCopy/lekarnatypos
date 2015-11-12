@@ -972,7 +972,7 @@ class ProductsController extends AppController {
 			if (in_array($product['Product']['supplier_id'], array(4, 5)) && !$product['Product']['is_alliance_rewritten']) {
 				$description_image_content = download_url_like_browser($product['Product']['description']);
 				$this->data['Product']['description_url'] = '<img src="data:image/jpeg;base64,' . base64_encode($description_image_content) . '" />';
-				$this->data['Product']['description'] = $product['Product']['alliance_description'];
+				$this->data['Product']['description'] = str_replace("\n", '<br/>', $product['Product']['alliance_description']);
 			}
 		}
 		
