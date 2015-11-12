@@ -17,6 +17,12 @@ class News extends AppModel {
 				'message' => 'Zadejte titulek aktuality'
 			)
 		),
+		'heading' => array(
+			'notEmpty' => array(
+				'rule' => 'notEmpty',
+				'message' => 'Zadejte nadpis aktuality'
+			)
+		),
 		'text' => array(
 			'notEmpty' => array(
 				'rule' => 'notEmpty',

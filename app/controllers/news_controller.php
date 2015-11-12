@@ -8,7 +8,7 @@ class NewsController extends AppController {
 		$news = $this->News->find('all', array(
 			'conditions' => array(),
 			'contain' => array(),
-			'fields' => array('News.id', 'News.title', 'News.first_sentence', 'News.image'),
+			'fields' => array('News.id', 'News.title', 'News.heading', 'News.image'),
 			'order' => array('News.order' => 'desc')
 		));
 		
@@ -50,7 +50,6 @@ class NewsController extends AppController {
 		$actuality = $this->News->find('first', array(
 			'conditions' => array('News.id' => $id),
 			'contain' => array(),
-			'fields' => array('News.id', 'News.title', 'News.text', 'News.image')
 		));
 		
 		if (empty($actuality)) {
@@ -68,10 +67,13 @@ class NewsController extends AppController {
 						$old_image = $actuality['News']['image'];
 					}
 					$this->data['News']['image'] = $this->News->loadImage($this->data['News']['image']);
+				} else {
+					unset($this->data['News']['image']);
 				}
+
 				// pokud mam natazeny obrazek
 				if (!isset($this->data['News']['image']) || $this->data['News']['image'] !== false) {
-
+					$this->News->create();
 					if ($this->News->save($this->data)) {
 						if ($old_image && file_exists($old_image)) {
 							unlink($old_image);
@@ -205,7 +207,7 @@ class NewsController extends AppController {
 			),
 			array(
 				'anchor' => $actuality['News']['title'],
-				'href' => array('controller' => 'news', 'action' => 'view', $id)
+				'href' => '/news/view/' . $actuality['News']['id']
 			)
 		);
 		$this->set('breadcrumbs', $breadcrumbs);

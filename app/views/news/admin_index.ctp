@@ -8,7 +8,7 @@
 		<th>&nbsp;</th>
 		<th>ID</th>
 		<th>Titulek</th>
-		<th>Text</th>
+		<th>Nadpis</th>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 	</tr>
@@ -31,7 +31,7 @@
 		?></td>
 		<td><?php echo $actuality['News']['id']?></td>
 		<td><?php echo $actuality['News']['title']?></td>
-		<td><?php echo $actuality['News']['first_sentence']?></td>
+		<td><?php echo $actuality['News']['heading']?></td>
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/up.png" alt="" />';
 			echo $this->Html->link($icon, array('controller' => 'news', 'action' => 'move_up', $actuality['News']['id']), array('escape' => false));

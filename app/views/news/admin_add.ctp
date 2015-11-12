@@ -2,8 +2,20 @@
 <?php echo $this->Form->create('News', array('type' => 'file'))?>
 <table class="tabulkaedit">
 	<tr class="nutne">
-		<td>Titulek</td>
+		<td>META Titulek</td>
 		<td><?php echo $this->Form->input('News.title', array('label' => false, 'size' => 50))?></td>
+	</tr>
+	<tr class="nutne">
+		<td>Nadpis</td>
+		<td><?php echo $this->Form->input('News.heading', array('label' => false, 'size' => 50))?></td>
+	</tr>
+	<tr>
+		<td>Podnadpis</td>
+		<td><?php echo $this->Form->input('News.subheading', array('label' => false, 'size' => 150))?></td>
+	</tr>
+	<tr>
+		<td>Perex</td>
+		<td><?php echo $this->Form->input('News.perex', array('label' => false, 'cols' => 150, 'rows' => 5))?></td>
 	</tr>
 	<tr>
 		<td>Obrázek</td>

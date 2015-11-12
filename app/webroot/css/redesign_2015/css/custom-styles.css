@@ -32,3 +32,4 @@ body.loading .modal-order {
 .error-message{color:red}
 .success-message{color:green}
 .form-error{background-color:#F9B9B9}
+h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
