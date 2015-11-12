@@ -1092,6 +1092,7 @@ class OrdersController extends AppController {
 		$customer['Customer'] = $sess_customer;
 
 		$order = $this->Session->read('Order');
+		
 		$shipping_id = $order['shipping_id'];
 		// pokud mam zvoleno dodani na vydejni misto geis point, nactu parametry pro doruceni (z GET nebo sesny)
 		if ($this->Order->Shipping->isGeisPoint($shipping_id)) {
@@ -1179,7 +1180,12 @@ class OrdersController extends AppController {
 
 		if ($order === false) {
 			$this->Session->setFlash('Objednávku se nepodařilo uložit, máte správně zadané adresy?', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
+			$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order'));
+		}
+
+		if (empty($order[1])) {
+			$this->Session->setFlash('Vaše objednávka neobsahuje žádné produkty. Pravděpodobně byl Váš prohlížeč delší dobu nečinný.<br/>Prosím vložte produkty znovu do košíku a dokončete objednávku.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order'));
 		}
 
 		$dataSource = $this->Order->getDataSource();
