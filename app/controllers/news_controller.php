@@ -206,7 +206,7 @@ class NewsController extends AppController {
 				'href' => '/aktuality'
 			),
 			array(
-				'anchor' => $actuality['News']['title'],
+				'anchor' => $actuality['News']['heading'],
 				'href' => '/news/view/' . $actuality['News']['id']
 			)
 		);
