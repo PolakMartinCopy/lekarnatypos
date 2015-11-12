@@ -17,6 +17,7 @@
             	<?php echo $this->Html->link('<img src="' . $actuality['News']['image'] . '" />', $link, array('escape' => false))?>
             	<?php echo $this->Html->link($actuality['News']['heading'], $link, array('class' => 'title'))?>
                 <p><?php echo $actuality['News']['perex']?></p>
+                <div style="clear:both"></div>
             </li>
             <?php } ?>
         </ul>
