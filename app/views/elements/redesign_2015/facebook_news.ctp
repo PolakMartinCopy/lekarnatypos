@@ -15,8 +15,8 @@
         	?>
             <li>
             	<?php echo $this->Html->link('<img src="' . $actuality['News']['image'] . '" />', $link, array('escape' => false))?>
-            	<?php echo $this->Html->link($actuality['News']['title'], $link, array('class' => 'title'))?>
-                <p><?php echo $actuality['News']['first_sentence']?></p>
+            	<?php echo $this->Html->link($actuality['News']['heading'], $link, array('class' => 'title'))?>
+                <p><?php echo $actuality['News']['perex']?></p>
             </li>
             <?php } ?>
         </ul>

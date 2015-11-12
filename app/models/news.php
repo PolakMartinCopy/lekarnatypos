@@ -57,7 +57,6 @@ class News extends AppModel {
 	function hp_list() {
 		$news = $this->find('all', array(
 			'contain' => array(),
-			'fields' => array('News.id', 'News.title', 'News.first_sentence', 'News.image'),
 			'order' => array('News.order' => 'desc'),
 			'limit' => 2
 		));
