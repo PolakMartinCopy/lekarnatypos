@@ -56,7 +56,7 @@
 			   	height: height,
 			   	plugins: plugins,
 			   	theme_advanced_buttons3_add: themeAdvancedButtons3Add,
-			   	toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
+			   	toolbar: "insertfile undo redo | styleselect | fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
 			   	relative_urls: false,
 			   	convert_urls: false
 			});
