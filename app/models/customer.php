@@ -65,6 +65,7 @@ class Customer extends AppModel {
  		$query = '
  			SELECT
  				Customer.id,
+ 				Customer.created,
  				Customer.name,
  				Customer.company_name,
  				Customer.email,
@@ -83,6 +84,7 @@ class Customer extends AppModel {
  			FROM (
  				SELECT
  					Customer1.id,
+ 					Customer1.created,
  					CONCAT(Customer1.last_name, " ", Customer1.first_name) AS name,
  					Customer1.company_name,
  					Customer1.email,
@@ -108,6 +110,7 @@ class Customer extends AppModel {
  			UNION
  				SELECT
  					NewsletterApplicant.id,
+ 					NewsletterApplicant.created,
  					CONCAT(NewsletterApplicant.last_name, " ", NewsletterApplicant.first_name) AS name,
  					NULL,
  					NewsletterApplicant.email,
@@ -488,6 +491,7 @@ class Customer extends AppModel {
 	
 			$lines[] = array(
 				$customer['Customer']['id'],
+				$customer['Customer']['created'],
 				$customer['Customer']['name'],
 				$customer['Customer']['email'],
 				$customer['Customer']['phone'],
