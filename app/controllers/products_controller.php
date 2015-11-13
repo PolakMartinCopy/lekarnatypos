@@ -2128,5 +2128,51 @@ class ProductsController extends AppController {
 		}
 		die('OK');
 	}
+	
+	function admin_deactivate_alliance() {
+		$file = 'files/duplicitni-ean-kody.csv';
+		$content = file_get_contents($file);
+		$content = explode("\n", $content);
+		foreach ($content as $line) {
+			$line = explode(';', $line);
+			foreach ($line as $id) {
+				$id = trim($id);
+				if ($id) {
+					// deaktivovat produkt
+					$product = array(
+						'Product' => array(
+							'id' => $id,
+							'active' => false
+						)
+					);
+					$this->Product->create();
+					$this->Product->save($product);
+					// zakazat update atributu active
+					$property = array(
+						'ProductPropertiesProduct' => array(
+							'product_id' => $id,
+							'product_property_id' => 18,
+							'update' => false
+						)
+					);
+					$db_property = $this->Product->ProductPropertiesProduct->find('first', array(
+						'conditions' => array(
+							'ProductPropertiesProduct.product_id' => $id,
+							'ProductPropertiesProduct.product_property_id' => 18
+						),
+						'contain' => array(),
+						'fields' => array()
+					));
+					if (!empty($db_property)) {
+						$property['ProductPropertiesProduct']['id'] = $db_property['ProductPropertiesProduct']['id'];
+					}
+	
+					$this->Product->ProductPropertiesProduct->create();
+					$this->Product->ProductPropertiesProduct->save($property);
+				}
+			}
+		}
+		die('OK');
+	}
 } // konec tridy
 ?>
