@@ -1,4 +1,4 @@
-<h1><?php echo $actuality['News']['heading']?></h1>
+<h1><?php echo $this->Html->link($actuality['News']['heading'], array('controller' => 'news', 'action' => 'view', $actuality['News']['id']));?></h1>
 <?php if (!empty($actuality['News']['subheading'])) { ?>
 <h2 class="content-subheading"><?php echo $actuality['News']['subheading']?></h2>
 <?php } ?>

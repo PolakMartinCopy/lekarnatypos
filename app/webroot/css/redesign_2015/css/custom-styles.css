@@ -33,3 +33,17 @@ body.loading .modal-order {
 .success-message{color:green}
 .form-error{background-color:#F9B9B9}
 h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
+
+.actuality h2 {
+	width:80%;
+	float:left;
+}
+.actuality .date {
+	width:15%;
+	float:right;
+	margin:32px 0 20px 0;
+}
+
+.actuality .date span {
+	float: right;
+}

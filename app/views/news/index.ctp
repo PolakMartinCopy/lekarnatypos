@@ -13,7 +13,9 @@
 				}
 	?>
 	<div class="actuality">
-		<h2><?php echo $this->Html->link($actuality['News']['heading'], array('controller' => 'news', 'action' => 'view', $actuality['News']['id']))?></h2>
+		<div><h2><?php echo $this->Html->link($actuality['News']['heading'], array('controller' => 'news', 'action' => 'view', $actuality['News']['id']))?></h2></div>
+		<div class="date"><span><?php echo $actuality['News']['czech_date']?></span></div>
+		<div style="clear:both"></div>
 <?php 	if ($image) {
 			echo $this->Html->link($image_tag, array('controller' => 'news', 'action' => 'view', $actuality['News']['id']), array('escape' => false));
 		}
@@ -21,7 +23,6 @@
 			echo '<p>' . $actuality['News']['perex'] . '</p>';
 		} ?>
 		<div style="clear:both"></div>
-		<div class="date" style="float:right"><?php echo $actuality['News']['czech_date']?></div>
 	</div>
 	<?php	}
 	} ?>
