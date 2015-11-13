@@ -504,7 +504,7 @@ class Customer extends AppModel {
 
 		foreach ($lines as $line) {
 			$row = implode(';', $line);
-			fwrite($file, iconv('utf-8', 'windows-1250', $row . "\r\n"));
+			fwrite($file, iconv('utf-8', 'windows-1250//TRANSLIT', $row . "\r\n"));
 		}
 	
 		fclose($file);
