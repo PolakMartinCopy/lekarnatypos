@@ -11,8 +11,13 @@
 		<td><?php echo $this->Form->input('Customer.orders_amount', array('label' => false))?></td>
 	</tr>
 	<tr>
+		<td>Z popup okna?</td>
+		<td><?php echo $this->Form->input('Customer.is_popup', array('label' => false, 'type' => 'checkbox'))?></td>
+	</tr>
+	<tr>
 		<td>CSV</td>
-		<td><?php echo $this->Form->input('Customer.csv', array('label' => false, 'type' => 'checkbox'))?>
+		<td><?php echo $this->Form->input('Customer.csv', array('label' => false, 'type' => 'checkbox'))?></td>
+	</tr>
 </table>
 <br/>
 <?php echo $this->Form->submit('Zobrazit')?>
@@ -31,11 +36,12 @@ if (isset($this->data) && isset($this->Paginator)) {
 		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('ID', 'Customer.id') : 'ID')?></th>
 		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Firma', 'Customer.company_name') : 'Firma') ?></th>
 		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Jméno / E-mail', 'Customer.name') : 'Jméno') ?></th>
-		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Cena', 'CustomerType.name') : 'Cena') ?></th>
+		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Cena', 'Customer.customer_type_name') : 'Cena') ?></th>
 		<th>Město</th>
 		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Přihlášen', 'Customer.login_count') : 'Přihlášen') ?></th>
 		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Naposledy', 'Customer.login_date') : 'Naposledy') ?></th>
 		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Objednávek', 'Customer.orders_amount') : 'Objednávek') ?></th>
+		<th><?php echo (isset($this->Paginator) ? $this->Paginator->sort('Z popup?', 'Customer.is_popup') : 'Z popup?')?></th>
 	</tr>
 	<tr>
 		<td colspan="2"><?php 
@@ -48,39 +54,60 @@ if (isset($this->data) && isset($this->Paginator)) {
 		foreach ($customers as $customer) { ?>
 	<tr>
 		<td><?php
-			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
-			echo $this->Html->link($icon, array('controller' => 'customers', 'action' => 'view', $customer['Customer']['id']), array('escape' => false, 'title' => 'Upravit zákazníka'));
+			if (!$customer['Customer']['is_popup']) {
+				$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
+				echo $this->Html->link($icon, array('controller' => 'customers', 'action' => 'view', $customer['Customer']['id']), array('escape' => false, 'title' => 'Upravit zákazníka'));
+			}
+		?></td>
+		<td><?php
+			if (!$customer['Customer']['is_popup']) {
+				$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/email.png" alt="" />';
+				echo $this->Html->link($icon, array('controller' => 'customers', 'action' => 'send_login', $customer['Customer']['id']), array('escape' => false, 'title' => 'Poslat přístupové údaje'), 'Opravdu chcete uživateli poslat emailovou adresu s přístupovými údaji?');
+			}
 		?></td>
 		<td><?php 
-			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/email.png" alt="" />';
-			echo $this->Html->link($icon, array('controller' => 'customers', 'action' => 'send_login', $customer['Customer']['id']), array('escape' => false, 'title' => 'Poslat přístupové údaje'), 'Opravdu chcete uživateli poslat emailovou adresu s přístupovými údaji?');
-		?></td>
-		<td><?php echo $customer['Customer']['id'] ?></td>
+			if (!$customer['Customer']['is_popup']) {
+				echo $customer['Customer']['id'];
+			}
+		 ?></td>
 		<td><?php echo $customer['Customer']['company_name']?></td>
 		<td>
 			<?php echo $this->Html->link($customer['Customer']['name'], array('controller' => 'customers', 'action' => 'view', $customer['Customer']['id']))?><br/>
 			<?php echo $customer['Customer']['email']?><br/>
 			<?php echo $customer['Customer']['phone']?>
 		</td>
-		<td><?php echo $customer['CustomerType']['name']?></td>
+		<td><?php echo $customer['Customer']['customer_type_name']?></td>
 		<td><?php 
 			$address = '';
-			if (!empty($customer['Address'])) {
-				$address = $customer['Address'][0]['street'];
-				if (!empty($customer['Address'][0]['street_no'])) {
-					$address .= ' ' . $customer['Address'][0]['street_no'];
+			if (!empty($customer['Customer']['address_street']) || !empty($customer['Customer']['address_street_no']) || !empty($customer['Customer']['address_city']) || !empty($customer['Customer']['address_zip'])) {
+				$address = $customer['Customer']['address_street'];
+				if (!empty($customer['Customer']['address_street_no'])) {
+					$address .= ' ' . $customer['Customer']['address_street_no'];
 				}
 				if (!empty($address)) {
 					$address .= '<br/>';
 				}
-				$address .= '<strong>' . $customer['Address'][0]['city'] . '</strong><br/>';
-				$address .= $customer['Address'][0]['zip'];
+				$address .= '<strong>' . $customer['Customer']['address_city'] . '</strong><br/>';
+				$address .= $customer['Customer']['address_zip'];
 			}
 			echo $address;
 		?></td>
-		<td><?php echo $customer['Customer']['login_count']?></td>
-		<td><?php echo $customer['Customer']['login_date']?></td>
-		<td><?php echo $customer['Customer']['orders_count']?><br/><?php echo format_price($customer['Customer']['orders_amount'])?></td>
+		<td><?php
+			if (!$customer['Customer']['is_popup']) {
+				echo $customer['Customer']['login_count'];
+			}
+		?></td>
+		<td><?php
+			if (!$customer['Customer']['is_popup']) {
+				echo $customer['Customer']['login_date'];
+			}
+		?></td>
+		<td><?php
+			if (!$customer['Customer']['is_popup']) {
+				echo $customer['Customer']['orders_count']?><br/><?php echo format_price($customer['Customer']['orders_amount']);
+			}
+		?></td>
+		<td><?php echo ($customer['Customer']['is_popup'] ? 'ano' : 'ne')?></td>
 	</tr>
 	<?php }
 	} ?>

@@ -54,15 +54,109 @@ class Customer extends AppModel {
  	var $export_file = 'files/customers.csv';
  	
  	function paginateCount($conditions = null, $recursive = 0, $extra = array()) {
- 		$parameters = compact('conditions');
- 		$this->recursive = $recursive;
- 		$count = $this->find('count', array_merge($parameters, $extra));
- 		if (isset($extra['group'])) {
- 			$count = $this->getAffectedRows();
- 		}
- 		return $count;
+ 		return count($this->customFind($conditions, null, null, null, $extra['having']));
  	}
  	
+ 	function paginate($conditions, $fields, $order, $limit, $page = 1, $recursive = null, $extra = array()) {
+ 		return $this->customFind($conditions, $order, $limit, $page, $extra['having']);
+ 	}
+ 	
+ 	function customFind($conditions = null, $order = null, $limit = null, $page = null, $having = null) {
+ 		$query = '
+ 			SELECT
+ 				Customer.id,
+ 				Customer.name,
+ 				Customer.company_name,
+ 				Customer.email,
+ 				Customer.phone,
+ 				Customer.login_count,
+ 				Customer.login_date,
+ 				Customer.orders_amount,
+ 				Customer.orders_count,
+ 				Customer.customer_type_name,
+				Customer.address_street,
+				Customer.address_street_no,
+				Customer.address_city,
+				Customer.address_zip,
+ 				Customer.modal_window_identifier,
+ 				Customer.is_popup
+ 			FROM (
+ 				SELECT
+ 					Customer1.id,
+ 					CONCAT(Customer1.last_name, " ", Customer1.first_name) AS name,
+ 					Customer1.company_name,
+ 					Customer1.email,
+ 					Customer1.phone,
+ 					Customer1.login_count,
+ 					Customer1.login_date,
+ 					SUM(Order.subtotal_with_dph + Order.shipping_cost) AS orders_amount,
+ 					IF (Order.id IS NULL, 0, COUNT(*)) AS orders_count,
+ 					CustomerType.name AS customer_type_name,
+ 					Address.street AS address_street,
+ 					Address.street_no AS address_street_no,
+ 					Address.city AS address_city,
+ 					Address.zip AS address_zip,
+ 					NULL AS modal_window_identifier,
+ 					0 AS is_popup
+ 				FROM
+ 					customers AS Customer1
+ 						LEFT JOIN customer_types AS CustomerType ON (Customer1.customer_type_id = CustomerType.id)
+ 						LEFT JOIN addresses AS Address ON (Customer1.id = Address.customer_id AND Address.type = "f")
+ 						LEFT JOIN orders AS `Order` ON (Customer1.id = Order.customer_id)
+ 				WHERE Customer1.active = 1
+ 				GROUP BY %%GROUP%%
+ 			UNION
+ 				SELECT
+ 					NewsletterApplicant.id,
+ 					CONCAT(NewsletterApplicant.last_name, " ", NewsletterApplicant.first_name) AS name,
+ 					NULL,
+ 					NewsletterApplicant.email,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NULL,
+ 					NewsletterApplicant.modal_window_identifier,
+ 					1
+ 				FROM newsletter_applicants AS NewsletterApplicant
+ 			) AS Customer
+
+ 	
+ 		';
+ 		$group = 'Customer1.id';
+ 		if ($having) {
+ 			$group .= ' ' . $having;
+ 		}
+ 		$group .= "\n";
+ 		$query = str_replace('%%GROUP%%', $group, $query);
+
+ 		if ($conditions) {
+ 			$query .= 'WHERE ' . $conditions . "\n";
+ 		}
+ 		if (is_array($order)) {
+ 			$order_arr = array();
+ 			foreach ($order as $key => $value) {
+ 				$order_arr[] = $key . ' ' . $value;
+ 			}
+ 			$order = implode(', ', $order_arr);
+ 		}
+ 		if ($order) {
+ 			$query .= 'ORDER BY ' . $order . "\n";
+ 		}
+ 		if ($limit) {
+ 			if ($page) {
+ 				$offset = ($page - 1) * $limit;
+ 				$limit = $offset . ',' . $limit;
+ 			}
+ 			$query .= 'LIMIT ' . $limit . "\n";
+ 		}
+ 		return $this->query($query);
+ 	}
 
 	function assignPassword($customer_login_id, $email){
 		$start = rand(0, 23);
@@ -382,15 +476,15 @@ class Customer extends AppModel {
 		
 		foreach ($customers as $customer) {
 			$customer_street = '';
-			if (!empty($customer['Address'])) {
-				$customer_street = $customer['Address'][0]['street'];
-				if (!empty($customer_street) && !empty($customer['Address'][0]['street_no'])) {
-					$customer_street .= ' ' . $customer['Address'][0]['street_no'];
+			if (!empty($customer['Customer']['address_street']) || !empty($customer['Customer']['address_street_no']) || !empty($customer['Customer']['address_city']) || !empty($customer['Customer']['address_zip'])) {
+				$customer_street = $customer['Customer']['address_street'];
+				if (!empty($customer_street) && !empty($customer['Customer']['address_street_no'])) {
+					$customer_street .= ' ' . $customer['Customer']['address_street_no'];
 				}
 			}
 	
-			$customer_city = (empty($customer['Address'][0]['city']) ? '' : $customer['Address'][0]['city']);
-			$customer_zip = (empty($customer['Address'][0]['zip']) ? '' : $customer['Address'][0]['zip']);
+			$customer_city = (empty($customer['Customer']['address_city']) ? '' : $customer['Customer']['address_city']);
+			$customer_zip = (empty($customer['Customer']['address_zip']) ? '' : $customer['Customer']['address_zip']);
 	
 			$lines[] = array(
 				$customer['Customer']['id'],
@@ -399,10 +493,11 @@ class Customer extends AppModel {
 				$customer['Customer']['phone'],
 				$customer_street,
 				$customer_city,
-				$customer_zip
+				$customer_zip,
+				$customer['Customer']['modal_window_identifier']
 			);
 		}
-		
+
 		foreach ($lines as $line) {
 			$row = implode(';', $line);
 			fwrite($file, iconv('utf-8', 'windows-1250', $row . "\r\n"));
