@@ -72,8 +72,16 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td><?php echo $this->Form->input('Product.active', array('label' => false))?></td>
 	</tr>
 	<tr valign="top">
-		<td>Kategorie:</td>
+		<td>Kategorie 1:</td>
 		<td><?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'CategoriesProduct.0.category_id', 'options' => $categories))?></td>
+	</tr>
+	<tr valign="top">
+		<td>Kategorie 2:</td>
+		<td><?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'CategoriesProduct.1.category_id', 'options' => $categories))?></td>
+	</tr>
+	<tr valign="top">
+		<td>Kategorie 3:</td>
+		<td><?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'CategoriesProduct.2.category_id', 'options' => $categories))?></td>
 	</tr>	
 	<tr valign="top">
 		<td>Výrobce:

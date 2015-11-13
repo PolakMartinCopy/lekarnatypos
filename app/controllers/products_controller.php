@@ -787,6 +787,11 @@ class ProductsController extends AppController {
 	function admin_add() {
 		
 		if (!empty($this->data)) {
+			foreach ($this->data['CategoriesProduct'] as $index => $data) {
+				if ($data['category_id'] == 0) {
+					unset($this->data['CategoriesProduct'][$index]);
+				}
+			}
 			// ukladam produkt
 			if ($this->Product->saveAll($this->data)) {
 				// k produktu si ulozim id pro export do pohody
