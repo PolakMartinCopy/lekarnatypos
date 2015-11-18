@@ -32,6 +32,9 @@
                         <a href="http://obchody.heureka.cz/lekarnatypos-cz/recenze/" target="_blank">
                             <img src="/img/<?php echo REDESIGN_PATH?>heureka-overeno-zakazniky.png" alt="Heureka.cz - Ověřeno zákazníky" />
                         </a>
+                        <a href="http://www.dendopravyzdarma.cz" title="DenDopravyZdarma.cz - oslavte to s námi!">
+                        	<img width="200" height="120" src="http://www.heureka.cz/direct/promo/den-dopravy-zdarma/banner_DDZ_200x120-2015-cz.jpg" alt="Den Dopravy Zdarama" />
+                        </a>
                         <a href="https://www.sukl.cz/modules/apotheke/verify.php?kod=72995264000&verify_eu" target="_blank">
 		    				<img src="/images/<?php echo REDESIGN_PATH?>sukl-overeni.png" alt="Ověřit lékárnu" title="Ověřit lékárnu" width="234px" height="195px"/> 
 	    				</a>
