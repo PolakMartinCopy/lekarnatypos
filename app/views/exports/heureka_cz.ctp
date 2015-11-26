@@ -34,9 +34,16 @@ foreach ($products as $product) {
 		<DELIVERY>
 			<DELIVERY_ID><![CDATA[<?php echo $shipping['Shipping']['heureka_id']?>]]></DELIVERY_ID>
 			<?php // pokud je cena produktu vyssi, nez cena objednavky, od ktere je tato doprava zdarma, cena je 0, jinak zadam cenu dopravy
-			$shipping_price = 0;
-			if ($shipping['Shipping']['free'] && $product['Product']['price'] < $shipping['Shipping']['free']) {
-				$shipping_price = ceil($shipping[0]['min_price']);
+			$shipping_price = ceil($shipping[0]['min_price']);
+			// produkt je drazsi nez minimalni hodnota, od kdy je dana doprava zdarma
+			if (!$shipping['Shipping']['free'] || $product['Product']['price'] > $shipping['Shipping']['free']) {
+				$shipping_price = 0;
+			// produkt je od syncare a je drazsi nez 700
+			} elseif ($product['Manufacturer']['id'] == 127 && $product['Product']['price'] >= 700 && $shipping['Shipping']['heureka_id'] == 'GEIS') {
+			// produkt je neostrata a je drazsi nez 1200
+				$shipping_price = 0;
+			} elseif ($product['Manufacturer']['id'] == 174 && $product['Product']['price'] >= 1200 && $shipping['Shipping']['heureka_id'] == 'GEIS') {
+				$shipping_price = 0;
 			}
 			?>
 			<DELIVERY_PRICE><?php echo $shipping_price?></DELIVERY_PRICE>
