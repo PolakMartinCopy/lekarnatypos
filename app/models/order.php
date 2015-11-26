@@ -1084,8 +1084,10 @@ class Order extends AppModel {
 	
 	function manufacturer_free_shipping($manufacturer_id, $price_limit, $shipping_id) {
 		$free_shipping = false;
-		// doprava je mozna zdarma vzdy jen pro GEIS platbu predem - ID 32
-		$manufacturer_free_shipping_ids = array(32);
+		// doprava je mozna zdarma pro:
+		//  -- GEIS balik platbu predem - ID 32
+		//  -- GEIS POINT s platbou predem - ID 35
+		$manufacturer_free_shipping_ids = array(32, 35);
 		if (in_array($shipping_id, $manufacturer_free_shipping_ids)) {
 			
 			// data pro produkty objednavky
