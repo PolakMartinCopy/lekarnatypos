@@ -80,6 +80,8 @@ class Cart extends AppModel {
 	
 	// muzu mit pro dany obsah kosiku dopravu zdarma?
 	function isFreeShipping($total_price = null) {
+		// doprava muze byt zdarma bud proto, ze CENA ZBOZI V KOSIKU JE VYSSI NEZ NEJNIZSI MOZNA MEZ PRO DOPRAVU ZDARMA
+		// anebo v kosiku mam ZBOZI, KTERE UMOZNUJE DOPRAVU ZDARMA ((neostrata nad 1200,- || syncare nad 700,-) && GEIS s platbou predem) 
 		/*
 		 * zjistim nejmensi moznou cenu objednavky, od ktere je doprava zdarma (mimo osobni odber)
 		 * a pokud mam objednavku alespon v dane hodnote, je mozna doprava zdarma
@@ -94,6 +96,16 @@ class Cart extends AppModel {
 		}
 
 		$free = $total_price > $shipping['Shipping']['free'];
+		
+		// doprava je mozna zdarma vzdy jen pro GEIS platbu predem - ID 32
+		$manufacturer_free_shipping_ids = array(32);
+		$i = 0;
+		while (!$free && $i < count($manufacturer_free_shipping_ids)) {
+			$manufacturer_free_shipping_id = $manufacturer_free_shipping_ids[$i];
+			$free = $free || $this->CartsProduct->Product->OrderedProduct->Order->manufacturers_free_shipping($manufacturer_free_shipping_id);
+			$i++;
+		}
+
 		return $free;
 	}
 	

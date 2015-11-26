@@ -571,6 +571,7 @@ class Order extends AppModel {
 		$free_shipping = false;
 
 		$cp_count = 0;
+		// mam dopravu zdarma, protoze objednavka obsahuje produkt, ktery toto umoznuje?
 		foreach ($cart_products as $cart_product) {
 			// projdu vsechny priznaky
 			foreach ( $cart_product['Product']['Flag'] as $flags_product ){
@@ -584,6 +585,10 @@ class Order extends AppModel {
 			$order_total_wout_dph = $order_total_wout_dph + ($cart_product['CartsProduct']['quantity'] * $cart_product['CartsProduct']['price_wout_dph']);
 			$cp_count++;
 		}
+		
+		// pokud mam v objednavce produkty syncare nad 700,- a doprava je geis a platba predem, je doprava zdarma
+		// NEBO pokud mam v objednavce produkty neostrata nad 1200,- a doprava je geis a platba predem, je doprava zdarma
+		$free_shipping = $free_shipping || $this->syncare_free_shipping($shipping_id) || $this->neostrata_free_shipping($shipping_id);
 		
 		// dopocitavam si cenu dopravneho pro objednavku predpokladam nulovou cenu
 		$shipping_cost = 0;
@@ -1055,6 +1060,50 @@ class Order extends AppModel {
 		));
 		
 		return sendSMSNotification($order['Order']['customer_phone']);
+	}
+	
+	function manufacturers_free_shipping($shipping_id) {
+		return $this->syncare_free_shipping($shipping_id) || $this->neostrata_free_shipping($shipping_id);
+	}
+	
+	function syncare_free_shipping($shipping_id) {
+		// pokud mam v objednavce produkty syncare nad 700,- a doprava je geis a platba predem, je doprava zdarma
+		$syncare_manufacturer_id = 127;
+		$syncare_price_limit = 700;
+		
+		return $this->manufacturer_free_shipping($syncare_manufacturer_id, $syncare_price_limit, $shipping_id);
+	}
+	
+	function neostrata_free_shipping($shipping_id) {
+		// pokud mam v objednavce produkty neostrata nad 1200,- a doprava je geis a platba predem, je doprava zdarma
+		$neostrata_manufacturer_id = 174;
+		$neostrata_price_limit = 1200;
+		
+		return $this->manufacturer_free_shipping($neostrata_manufacturer_id, $neostrata_price_limit, $shipping_id);
+	}
+	
+	function manufacturer_free_shipping($manufacturer_id, $price_limit, $shipping_id) {
+		$free_shipping = false;
+		// doprava je mozna zdarma vzdy jen pro GEIS platbu predem - ID 32
+		$manufacturer_free_shipping_ids = array(32);
+		if (in_array($shipping_id, $manufacturer_free_shipping_ids)) {
+			
+			// data pro produkty objednavky
+			App::import('Model', 'CartsProduct');
+			$this->CartsProduct = &new CartsProduct;
+	
+			$cart_products = $this->CartsProduct->getProducts();
+			
+			$manufacturer_price = 0;
+			foreach ($cart_products as $cart_product) {
+				$cart_product_manufacturer_id = $this->OrderedProduct->Product->getFieldValue($cart_product['Product']['id'], 'manufacturer_id');
+				if ($cart_product_manufacturer_id == $manufacturer_id) {
+					$manufacturer_price += $cart_product['CartsProduct']['quantity'] * $cart_product['CartsProduct']['price_with_dph'];
+				}
+			}
+			$free_shipping = $manufacturer_price >= $price_limit;
+		}
+		return $free_shipping;
 	}
 } // konec tridy
 ?>
