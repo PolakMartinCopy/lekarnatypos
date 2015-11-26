@@ -98,7 +98,7 @@ class Cart extends AppModel {
 		$free = $total_price > $shipping['Shipping']['free'];
 		
 		// doprava je mozna zdarma vzdy jen pro GEIS platbu predem - ID 32
-		$manufacturer_free_shipping_ids = array(32);
+		$manufacturer_free_shipping_ids = array(32, 35);
 		$i = 0;
 		while (!$free && $i < count($manufacturer_free_shipping_ids)) {
 			$manufacturer_free_shipping_id = $manufacturer_free_shipping_ids[$i];

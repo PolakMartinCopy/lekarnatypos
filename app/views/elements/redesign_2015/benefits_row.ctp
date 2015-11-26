@@ -12,7 +12,7 @@
     <div class="benefit">
         <span class="icon"><i class="fa fa-fw fa-truck"></i></span>
         <span class="title"><strong>Doprava zdarma</strong></span>
-        <span class="desc hidden-sm hidden-md">při objednávce nad 2 000 Kč</span>
+        <span class="desc hidden-sm hidden-md">více informací <a href="/cenik-dopravy">zde...</a></span>
     </div>
     <div class="benefit">
         <span class="icon"><i class="fa fa-fw fa-graduation-cap"></i></span>
