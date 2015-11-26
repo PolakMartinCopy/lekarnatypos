@@ -124,7 +124,7 @@ class Cart extends AppModel {
 			$total_price = $this->totalPrice();
 		}
 
-		$remaining = $shipping['Shipping']['free'] - $total_price;
+		$remaining = $shipping['Shipping']['free'] - $total_price + 1;
 		return $remaining;
 	}
 }
