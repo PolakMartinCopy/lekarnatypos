@@ -129,23 +129,17 @@ class ExportsController extends AppController{
 
 		unset($this->Export->Product->virtualFields['price']);
 		$res = array();
+		$res_ids = array();
 		foreach ($products as $i => &$product) {
 			// kazdy produkt chci ve vystupu pouze jednou
 			$to_res = true;
-			foreach ($res as $r) {
-				if ($r['Product']['id'] == $product['Product']['id']) {
-					$to_res = false;
-					break;
-				}
-			}
-			if ($to_res) {
+			if (!in_array($product['Product']['id'], $res_ids)) {
 				$product['Product']['name'] = str_replace('&times;', 'x', $product['Product']['name']);
 				$product['Product']['short_description'] = str_replace('&times;', 'x', $product['Product']['short_description']);
-				$res[] = $product;				
+				$res[] = $product;
+				$res_ids[] = $product['Product']['id'];				
 			}
-
 		}
-
 		return $res;
 	}
 	
