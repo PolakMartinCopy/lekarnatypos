@@ -190,6 +190,7 @@ class ProductsController extends AppController {
 			$product['Product']['description'] = '<img src="data:image/jpeg;base64,' . base64_encode($description_image_content) . '" />';
 		}
 		
+		$product['Product']['free_shipping_min_quantity'] = $this->Product->minQuantityFreeShipping($product['Product']['id']);
 		
 		$this->set('product', $product);
 

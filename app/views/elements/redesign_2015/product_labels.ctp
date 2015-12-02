@@ -23,5 +23,17 @@
     <span class="product-label gift">
         Dárek
     </span>
-    <?php } ?>
+    <?php }
+	if (isset($product['Product']['free_shipping_min_quantity']) && !empty($product['Product']['free_shipping_min_quantity'])) {
+		$out = '<span class="icon"><i class="fa fa-fw fa-truck"></i></span>';
+		if ($product['Product']['free_shipping_min_quantity'] == 1) {
+			$out .= ' zdarma';
+		} else {
+			$out .= ' ' . $product['Product']['free_shipping_min_quantity'] . ' ks';
+		}
+		?>
+		<span class="product-label free-shipping"><?php echo $out?></span>
+	<?php 
+	}
+    ?>
 </div>

@@ -308,6 +308,9 @@ class CategoriesProductsController extends AppController {
 		$this->CategoriesProduct->Product->virtualFields['discount'] = $this->CategoriesProduct->Product->discount;
 
 		$products = $this->paginate('Product');
+		foreach ($products as &$product) {
+			$product['Product']['free_shipping_min_quantity'] = $this->CategoriesProduct->Product->minQuantityFreeShipping($product['Product']['id']);
+		}
 
 		// opetovne vypnuti virtualnich poli, nastavenych za behu
 		unset($this->CategoriesProduct->Product->virtualFields['sold']);

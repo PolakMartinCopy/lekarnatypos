@@ -21,7 +21,7 @@
 <meta name="viewport" content="initial-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no" />
 
 <link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/bootstrap.css?v=5" />
-<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/custom-styles.css?v=4" />
+<link rel="stylesheet" type="text/css" href="/css/<?php echo REDESIGN_PATH ?>css/custom-styles.css?v=5" />
 
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 

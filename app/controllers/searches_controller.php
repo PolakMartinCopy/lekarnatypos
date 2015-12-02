@@ -305,6 +305,9 @@ class SearchesController extends AppController {
 			$this->Search->Product->virtualFields['discount'] = $this->Search->Product->discount;
 
 			$products = $this->paginate('Product');
+			foreach ($products as &$product) {
+				$product['Product']['free_shipping_min_quantity'] = $this->Search->Product->minQuantityFreeShipping($product['Product']['id']);
+			}
 
 			// opetovne vypnuti virtualnich poli, nastavenych za behu
 			unset($this->Search->Product->virtualFields['sold']);

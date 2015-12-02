@@ -1107,5 +1107,21 @@ class Product extends AppModel {
 		}
 		return $res;
 	}
+	
+	function minQuantityFreeShipping($id) {
+		$free_shipping_products = $this->FreeShippingProduct->find('all', array(
+			'conditions' => array('FreeShippingProduct.product_id' => $id),
+			'contain' => array(),
+		));
+
+		$min = null;
+		foreach ($free_shipping_products as $free_shipping_product) {
+			if (!$min || $free_shipping_product['FreeShippingProduct']['quantity'] < $min) {
+				$min = $free_shipping_product['FreeShippingProduct']['quantity'];
+			}
+		}
+		
+		return $min;
+	}
 }
 ?>

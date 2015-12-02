@@ -161,7 +161,7 @@
 					?>
                 </div>
                 <p class="desc"><?php echo $product['Product']['short_description']?></p>
-                <?php if ($product['Product']['is_akce'] || $product['Product']['is_novinka'] || $product['Product']['is_doprodej'] || $product['Product']['is_bestseller'] || $product['Product']['is_darek_zdarma']) { ?>
+                <?php if ($product['Product']['is_akce'] || $product['Product']['is_novinka'] || $product['Product']['is_doprodej'] || $product['Product']['is_bestseller'] || $product['Product']['is_darek_zdarma'] || $product['Product']['free_shipping_min_quantity']) { ?>
 				<?php echo $this->element(REDESIGN_PATH . 'product_labels', array('product' => $product))?>
                 <?php } ?>
             </div>
