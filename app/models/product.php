@@ -1088,15 +1088,19 @@ class Product extends AppModel {
 	
 	function generateFreeShipping($data) {
 		$res = array();
-		if (array_key_exists('free_shipping_quantity', $data['Product']) && $data['Product']['free_shipping_quantity'] != '') {
+		if (array_key_exists('free_shipping_quantity', $data['Product'])) {
 			// doprava zdarma se definuje pouze pro dopravce geis s platbou predem
 			//  -- GEIS balik platbu predem - ID 32
 			//  -- GEIS POINT s platbou predem - ID 35
 			$shipping_ids = array(32, 35);
+			$quantity =  $data['Product']['free_shipping_quantity'];
+			if ($quantity == '') {
+				$quantity = 0;
+			}
 			foreach ($shipping_ids as $shipping_id) {
 				$res_item = array(
 					'shipping_id' => $shipping_id,
-					'quantity' => $data['Product']['free_shipping_quantity']
+					'quantity' => $quantity
 				);
 				if (isset($data['Product']['id'])) {
 					$res_item['product_id'] = $data['Product']['id'];
