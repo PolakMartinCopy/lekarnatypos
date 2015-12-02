@@ -792,6 +792,9 @@ class ProductsController extends AppController {
 					unset($this->data['CategoriesProduct'][$index]);
 				}
 			}
+			
+			$this->data['FreeShippingProduct'] = $this->Product->generateFreeShipping($this->data);
+			
 			// ukladam produkt
 			if ($this->Product->saveAll($this->data)) {
 				// k produktu si ulozim id pro export do pohody
@@ -943,6 +946,22 @@ class ProductsController extends AppController {
 					}
 				}
 				
+				$this->data['FreeShippingProduct'] = $this->Product->generateFreeShipping($this->data);
+				foreach ($this->data['FreeShippingProduct'] as &$free_shipping_product) {
+					$db_free_shipping_product = $this->Product->FreeShippingProduct->getByProductShipping($product['Product']['id'], $free_shipping_product['shipping_id']);
+					if (!empty($db_free_shipping_product)) {
+						$free_shipping_product['id'] = $db_free_shipping_product['FreeShippingProduct']['id'];
+					}
+					if ($free_shipping_product['quantity'] == 0) {
+						if (!empty($db_free_shipping_product)) { 
+							$this->Product->FreeShippingProduct->delete($db_free_shipping_product['FreeShippingProduct']['id']);
+						}
+					} else {
+						$this->Product->FreeShippingProduct->create();
+						$this->Product->FreeShippingProduct->save($free_shipping_product);
+					}
+				}
+				
 				$this->Session->setFlash('Produkt byl upraven.', REDESIGN_PATH . 'flash_success');
 				$this->redirect($_SERVER['REQUEST_URI']);
 			} else {
@@ -978,6 +997,11 @@ class ProductsController extends AppController {
 				$description_image_content = download_url_like_browser($product['Product']['description']);
 				$this->data['Product']['description_url'] = '<img src="data:image/jpeg;base64,' . base64_encode($description_image_content) . '" />';
 				$this->data['Product']['description'] = str_replace("\n", '<br/>', $product['Product']['alliance_description']);
+			}
+			
+			$free_shipping_product = $this->Product->FreeShippingProduct->getByProductId($product['Product']['id']);
+			if (!empty($free_shipping_product)) {
+				$this->data['Product']['free_shipping_quantity'] = $free_shipping_product['FreeShippingProduct']['quantity'];
 			}
 		}
 		

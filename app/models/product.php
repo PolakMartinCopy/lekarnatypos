@@ -54,6 +54,9 @@ class Product extends AppModel {
 		'ProductPropertiesProduct' => array(
 			'dependent' => true
 		),
+		'FreeShippingProduct' => array(
+			'dependent' => true
+		),
 		'TSVisitProduct',
 		'TSCartAddition'
 	);
@@ -1081,6 +1084,28 @@ class Product extends AppModel {
 		));
 		unset($this->virtualFields['price']);
 		return $most_sold;
+	}
+	
+	function generateFreeShipping($data) {
+		$res = array();
+		if (array_key_exists('free_shipping_quantity', $data['Product']) && $data['Product']['free_shipping_quantity'] != '') {
+			// doprava zdarma se definuje pouze pro dopravce geis s platbou predem
+			//  -- GEIS balik platbu predem - ID 32
+			//  -- GEIS POINT s platbou predem - ID 35
+			$shipping_ids = array(32, 35);
+			foreach ($shipping_ids as $shipping_id) {
+				$res_item = array(
+					'shipping_id' => $shipping_id,
+					'quantity' => $data['Product']['free_shipping_quantity']
+				);
+				if (isset($data['Product']['id'])) {
+					$res_item['product_id'] = $data['Product']['id'];
+				}
+				
+				$res[] = $res_item; 
+			}
+		}
+		return $res;
 	}
 }
 ?>

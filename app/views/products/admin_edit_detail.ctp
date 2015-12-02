@@ -184,11 +184,13 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.product_type_id', array('label' => false, 'empty' => true))?></td>
 	</tr>
+<!-- 
 	<tr>
 		<td>Pohoda ID</td>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.pohoda_id', array('label' => false, 'type' => 'text'))?></td>
 	</tr>
+!-->
 	<tr>
 		<td>EAN</td>
 		<td style="width:5%"><?php
@@ -226,6 +228,12 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		?></td>
 		<td><?=$form->input('Product.tax_class_id', array('label' => false))?></td>
 	</tr>
+	<tr>
+		<td>Doprava zdarma</td>
+		<td>&nbsp;</td>
+		<td><?php echo $this->Form->input('Product.free_shipping_quantity', array('label' => false, 'size' => '3', 'before' => 'od&nbsp;', 'after' => '&nbsp;ks', 'style' => 'text-align:right')); ?></td>
+	</tr>
+<!--
 	<tr valign="top">
 		<td>Recyklační poplatky:
 			<a href='/administrace/help.php?width=500&id=25' class='jTip' id='25' name='Recyklační poplatky (25)'>
@@ -235,6 +243,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.recycle_fees', array('label' => false, 'after' => '&nbsp;Kč'))?></td>
 	</tr>
+
 	<tr valign="top">
 		<td>Sleva:
 			<a href='/administrace/help.php?width=500&id=26' class='jTip' id='26' name='Sleva (26)'>
@@ -253,6 +262,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.guarantee', array('label' => false, 'after' => '&nbsp;měsíců (999 = doživotní)'))?></td>
 	</tr>
+-->
 	<tr valign="top">
 		<td>Priorita:
 			<a href='/administrace/help.php?width=500&id=28' class='jTip' id='28' name='Priorita (28)'>
@@ -262,6 +272,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.priority', array('label' => false, 'after' => '&nbsp;(0 = nejvyšší, 999 = nejnižší)'))?></td>
 	</tr>
+<!-- 
 	<tr valign="top">
 		<td>Váha:</td>
 		<td>&nbsp;</td>
@@ -276,6 +287,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.video', array('label' => false, 'cols' => 100, 'rows' => 4))?></td>
 	</tr>
+ -->
 	<tr valign="top">
 		<td>Atributy:</td>
 		<td>&nbsp;</td>

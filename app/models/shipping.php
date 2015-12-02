@@ -12,7 +12,12 @@ class Shipping extends AppModel {
 	
 	var $belongsTo = array('TaxClass');
 
-	var $hasMany = array('Order');
+	var $hasMany = array(
+		'Order',
+		'FreeShippingProduct' => array(
+			'dependent' => true
+		)
+	);
 	
 	var $validate = array(
 		'provider_name' => array(
