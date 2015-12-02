@@ -184,6 +184,18 @@ class ExportsController extends AppController{
 		
 		App::import('Model', 'Category');
 		$this->Export->Category = &new Category;
+		
+		// udaje o moznych variantach dopravy
+		App::import('Model', 'Shipping');
+		$this->Shipping = new Shipping;
+		// vytahnu si vsechny zpusoby dopravy mimo osobniho odberu (id = 1)
+		$shippings = $this->Shipping->find('all', array(
+			'conditions' => array('NOT' => array('Shipping.heureka_id' => null)),
+			'contain' => array(),
+			'group' => array('Shipping.heureka_id'),
+			'fields' => array('*', 'MIN(Shipping.price) AS min_price')
+		));
+		$this->set('shippings', $shippings);
 
 		foreach ($products as $index => $product) {
 			// pokud mam kategorii heureky definovanou primo u produktu
@@ -225,21 +237,19 @@ class ExportsController extends AppController{
 					$products[$index]['CATEGORYTEXT'] = implode(' | ', $keys);
 				}
 			}
+			foreach ($shippings as $shipping) {
+				$free_shipping_product = $this->Export->Product->FreeShippingProduct->getByProductShipping($product['Product']['id'], $shipping['Shipping']['id']);
+				if (!empty($free_shipping_product)) {
+					$products[$index]['Product']['Shipping'][] = array(
+						'id' => $shipping['Shipping']['id'],
+						'free_shipping_min_quantity' => $free_shipping_product['FreeShippingProduct']['quantity']
+					);
+				}
+			}			
 		}
 
 		$this->set('products', $products);
 		
-		// udaje o moznych variantach dopravy
-		App::import('Model', 'Shipping');
-		$this->Shipping = new Shipping;
-		// vytahnu si vsechny zpusoby dopravy mimo osobniho odberu (id = 1)
-		$shippings = $this->Shipping->find('all', array(
-			'conditions' => array('NOT' => array('Shipping.heureka_id' => null)),
-			'contain' => array(),
-			'group' => array('Shipping.heureka_id'),
-			'fields' => array('*', 'MIN(Shipping.price) AS min_price') 
-		));
-		$this->set('shippings', $shippings);
 	}
 	
 	function google_merchant() {

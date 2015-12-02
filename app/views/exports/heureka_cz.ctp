@@ -44,6 +44,14 @@ foreach ($products as $product) {
 				$shipping_price = 0;
 			} elseif ($product['Manufacturer']['id'] == 174 && $product['Product']['price'] >= 1200 && $shipping['Shipping']['heureka_id'] == 'GEIS') {
 				$shipping_price = 0;
+			} else {
+				if (isset($product['Product']['Shipping'])) {
+					foreach ($product['Product']['Shipping'] as $product_shipping) {
+						if ($product_shipping['id'] == $shipping['Shipping']['id'] && $product_shipping['free_shipping_min_quantity'] == 1) {
+							$shipping_price = 0;
+						}
+					}
+				}
 			}
 			?>
 			<DELIVERY_PRICE><?php echo $shipping_price?></DELIVERY_PRICE>
