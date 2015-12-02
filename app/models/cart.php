@@ -97,13 +97,17 @@ class Cart extends AppModel {
 
 		$free = $total_price > $shipping['Shipping']['free'];
 		
-		// doprava je mozna zdarma vzdy jen pro GEIS platbu predem - ID 32
+		// doprava je mozna zdarma vzdy jen pro GEIS platbu predem - ID 32, 35
 		$manufacturer_free_shipping_ids = array(32, 35);
 		$i = 0;
 		while (!$free && $i < count($manufacturer_free_shipping_ids)) {
 			$manufacturer_free_shipping_id = $manufacturer_free_shipping_ids[$i];
 			$free = $free || $this->CartsProduct->Product->OrderedProduct->Order->manufacturers_free_shipping($manufacturer_free_shipping_id);
 			$i++;
+		}
+		
+		if (!$free) {
+			$free = $free || $this->CartsProduct->Product->OrderedProduct->Order->cart_product_count_free_shipping($manufacturer_free_shipping_id);
 		}
 
 		return $free;

@@ -590,6 +590,9 @@ class Order extends AppModel {
 		// NEBO pokud mam v objednavce produkty neostrata nad 1200,- a doprava je geis a platba predem, je doprava zdarma
 		$free_shipping = $free_shipping || $this->syncare_free_shipping($shipping_id) || $this->neostrata_free_shipping($shipping_id);
 		
+		// doprava muze byt zdarma take v pripade, ze mam v objednavce alespon X ks produktu, u ktereho je tato vlastnost definovana
+		$free_shipping = $free_shipping || $this->cart_product_count_free_shipping($shipping_id);
+		
 		// dopocitavam si cenu dopravneho pro objednavku predpokladam nulovou cenu
 		$shipping_cost = 0;
 		if (!$free_shipping) {
@@ -1106,6 +1109,35 @@ class Order extends AppModel {
 			$free_shipping = $manufacturer_price >= $price_limit;
 		}
 		return $free_shipping;
+	}
+	
+	// doprava zdarma, pokud mam v kosiku (objednavce) vice nez X produktu (kde je definovano)
+	function cart_product_count_free_shipping($shipping_id) {
+		$free_shipping = false;
+		
+		// doprava je mozna zdarma pro:
+		//  -- GEIS balik platbu predem - ID 32
+		//  -- GEIS POINT s platbou predem - ID 35
+		$manufacturer_free_shipping_ids = array(32, 35);
+		if (in_array($shipping_id, $manufacturer_free_shipping_ids)) {
+			// data pro produkty objednavky
+			App::import('Model', 'CartsProduct');
+			$this->CartsProduct = &new CartsProduct;
+			
+			$cart_products = $this->CartsProduct->getProducts();
+			$i = 0;
+			while (!$free_shipping && $i < count($cart_products)) {
+				$cart_product = $cart_products[$i];
+				$free_shipping_product = $this->CartsProduct->Product->FreeShippingProduct->getByProductShipping($cart_product['Product']['id'], $shipping_id);
+				if (!empty($free_shipping_product)) {
+					$free_shipping = $free_shipping || ($cart_product['CartsProduct']['quantity'] >= $free_shipping_product['FreeShippingProduct']['quantity']);					
+				}
+
+				$i++;
+			}
+		}
+		return $free_shipping;
+	
 	}
 } // konec tridy
 ?>
