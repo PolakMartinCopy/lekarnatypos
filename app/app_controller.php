@@ -8,6 +8,12 @@
 	
 	// beforeFilter se provede pri uplne kazde akci, ktera se vykona
 	function beforeFilter() {
+		if ($_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz' && $_SERVER['HTTP_HOST'] != 'localhost') {
+			header("HTTP/1.0 410 Gone");
+			echo "The requested page has been removed.";
+			die();
+		}
+		
 		Controller::disableCache();
 		
 		// import tool modelu
