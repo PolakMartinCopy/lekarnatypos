@@ -138,7 +138,7 @@
 				$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, $this->Product->CategoriesProduct->Category->category_subtree_root_id);
 				$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, $this->Product->CategoriesProduct->Category->bothers_subtree_root_id);
 			} elseif ($this->layout == REDESIGN_PATH . 'homepage') {
-				if ($_SERVER['REQUEST_URI'] == '/') {
+				if ($this->params['controller'] == 'pages' && $this->params['action'] == 'home') {
 					// uplny strom kategorii - vypisuje se pouze na HP
 					$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, $this->Product->CategoriesProduct->Category->category_subtree_root_id);
 					$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, $this->Product->CategoriesProduct->Category->bothers_subtree_root_id);
