@@ -67,3 +67,9 @@ h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
 .benefits .benefit {
 	text-align: center;
 }
+
+#map {
+	margin: 0 auto;
+    width: 800px;
+    height: 500px;
+}

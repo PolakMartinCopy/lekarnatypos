@@ -90,6 +90,7 @@ class ContentsController extends AppController{
 		));
 		
 		if (!empty($page)) {
+			$page['Content']['content'] = str_replace('<p>%%MAP%%</p>', '<div id="map"></div>', $page['Content']['content']);
 			$this->set('page_content', $page['Content']['content']);
 			$this->set('title_for_content', $page['Content']['title']);
 			$this->set('description_for_content', $page['Content']['description']);

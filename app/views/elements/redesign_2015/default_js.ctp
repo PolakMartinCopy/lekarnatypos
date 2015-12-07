@@ -3,6 +3,25 @@
 <script src="/js/<?php echo REDESIGN_PATH ?>custom-scripts.js"></script>
 <script src="/js/<?php echo REDESIGN_PATH ?>customer-tracking.js"></script>
 
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+  function initialize() {
+    var mapCanvas = document.getElementById('map');
+    var mapOptions = {
+      center: new google.maps.LatLng(49.197295, 16.608908),
+      zoom: 16,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeControl: false
+    }
+    var map = new google.maps.Map(mapCanvas, mapOptions)
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(49.197295, 16.608908),
+        map: map,
+      });
+  }
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
  <?php if ($this->params['controller'] == 'orders' && $this->params['action'] == 'one_step_order') { ?>
  <script type="text/javascript">
  $(document).ready(function() {
@@ -103,5 +122,4 @@ $(document).ready(function() {
 	});
 });
 </script>
-	
 <?php } ?>
