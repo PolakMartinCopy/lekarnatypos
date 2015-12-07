@@ -6,19 +6,26 @@
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script>
   function initialize() {
-    var mapCanvas = document.getElementById('map');
-    var mapOptions = {
-      center: new google.maps.LatLng(49.197295, 16.608908),
-      zoom: 16,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      mapTypeControl: false
-    }
-    var map = new google.maps.Map(mapCanvas, mapOptions)
-    var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(49.197295, 16.608908),
-        map: map,
-      });
+	  drawMap('map', 16);
+	  drawMap('mapSmall', 15);
   }
+
+  function drawMap(elementId, zoom) {
+	    var mapCanvas = document.getElementById(elementId);
+	    var mapOptions = {
+	      center: new google.maps.LatLng(49.197295, 16.608908),
+	      zoom: zoom,
+	      mapTypeId: google.maps.MapTypeId.ROADMAP,
+	      mapTypeControl: false
+	    }
+	    var map = new google.maps.Map(mapCanvas, mapOptions)
+	    var marker = new google.maps.Marker({
+	        position: new google.maps.LatLng(49.197295, 16.608908),
+	        map: map,
+	    });
+	    return true;
+  }
+  
   google.maps.event.addDomListener(window, 'load', initialize);
 </script>
 

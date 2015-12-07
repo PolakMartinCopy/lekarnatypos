@@ -73,3 +73,8 @@ h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
     width: 800px;
     height: 500px;
 }
+
+#mapSmall {
+    width: 400px;
+    height: 250px;
+}
