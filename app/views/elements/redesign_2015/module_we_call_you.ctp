@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <h3>Nenašli jste u nás svůj oblíbený produkt?</h3>
-                <p>Pokud něco v našem e-shopu nenajdete, kontaktujte nás. Nebo nám nechte na sebe telefon, my se vám ozveme a zboží přidáme do objednávky.</p>
+                <p>Nenašli jste něco, nebo potřebujete poradit. Nechte nám telefonní číslo a my Vám zavoláme.</p>
             </div>
             <div class="col-md-1"></div>
             <div class="col-md-5">
@@ -11,7 +11,7 @@
                     <div class="input-group" id="ContactLine">
                         <input size="30" class="form-control" id="Contact">
                         <span class="input-group-btn">
-                            <button type="submit" name="subscribe" class="btn btn-warning">Odeslat kontakt</button>
+                            <button type="submit" name="subscribe" class="btn btn-warning">Zavolejte mi</button>
                         </span>
                     </div>
                 </form>

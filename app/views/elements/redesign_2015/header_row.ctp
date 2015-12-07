@@ -15,8 +15,8 @@
 				Jste přihlášen jako <strong><?php echo $customer['first_name']?> <?php echo $customer['last_name']?></strong>.<br/>
 				<a href="/customers"><strong>Můj účet</strong></a>  |  <a href="/customers/logout"><strong>Odhlásit se</strong></a>
 <?php } else { ?>
-                 Nepřihlášený zákazník<br />
-                <a href="/registrace"><strong>Registrace</strong></a>  |  <a href="/prihlaseni"><strong>Přihlášení</strong></a>
+                 Nejste přihlášeni<br />
+                <a href="/registrace"><strong>Registrovat</strong></a>  |  <a href="/prihlaseni"><strong>Přihlásit</strong></a>
 <?php } ?>
              </div>
          </div>
@@ -38,7 +38,7 @@
 			
 			<?php } else { ?>
 				<span style="vertical-align:middle;line-height:40px">
-					<i class="fa fa-shopping-cart"></i>Košík je prázdný.
+					<i class="fa fa-shopping-cart"></i>Košík zeje prázdnotou.
 				</span>
 			<?php } ?>
              </div>
@@ -57,7 +57,7 @@
                  <span class="input-group-btn">
                      <button class="btn btn-lg btn-success" type="submit" name="action">
                          <i class="fa fa-search"></i>
-                         Hledat
+                         Hledej
                      </button>
                  </span>
              </div>

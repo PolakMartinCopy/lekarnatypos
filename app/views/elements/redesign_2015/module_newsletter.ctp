@@ -10,7 +10,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <h3>Nepropásněte už žádnou akční nabídku!</h3>
-                    <p>Přihlaste se k odběru našich newsletterů a dostávejte aktuální akční nabídky a jiné zajímavosti.</p>
+                    <p>Nechte nám svůj e-mail a buďte první, kdo bude vědět o všech slevách, výprodejích a akčních nabídkách.</p>
                 </div>
             </div>
             <div class="row">
@@ -33,7 +33,7 @@
                         <div class="input-group">
                             <input type="email" size="30" class="form-control" name="email" id="email" placeholder="vas.email@domena.cz">
                             <span class="input-group-btn">
-                                <button type="submit" name="subscribe" class="btn btn-warning">Odebírat novinky</button>
+                                <button type="submit" name="subscribe" class="btn btn-warning">Chci být informován</button>
                             </span>
                         </div>
 

@@ -19,6 +19,18 @@
                 Vše o Lékárně Typos
             </div>
             <ul class="links">
+            	<li style="list-style-type:none">
+            		<div id="showHeurekaBadgeHere-2"></div><script type="text/javascript">
+//<![CDATA[
+var _hwq = _hwq || [];
+    _hwq.push(['setKey', 'B07B416DBB1B526966038D02638F5E20']);_hwq.push(['showWidget', '2', '43810', 'Lékárna Typos', 'lekarnatypos-cz']);(function() {
+    var ho = document.createElement('script'); ho.type = 'text/javascript'; ho.async = true;
+    ho.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.heureka.cz/direct/i/gjs.php?n=wdgt&sak=B07B416DBB1B526966038D02638F5E20';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ho, s);
+})();
+//]]>
+</script>
+				</li>
                 <li><a href="/o-provozovateli">Informace o provozovateli</a></li>
                 <li><a href="/prodejna">Naše prodejna</a></li>
                 <li><a href="/kontakty">Jak nás kontaktovat</a></li>

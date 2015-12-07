@@ -63,3 +63,7 @@ h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
 .module-product-detail .product-labels .product-label.free-shipping:before{
 	background:url(../img/product-label-lg-free-shipping.png) no-repeat top left
 }
+
+.benefits .benefit {
+	text-align: center;
+}

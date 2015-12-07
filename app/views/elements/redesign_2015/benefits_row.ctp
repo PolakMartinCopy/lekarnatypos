@@ -7,12 +7,12 @@
     <div class="benefit">
         <span class="icon"><i class="fa fa-fw fa-heart"></i></span>
         <span class="title"><strong>Osobní přístup</strong></span>
-        <span class="desc hidden-sm hidden-md">rádi ochotně pomůžeme a poradíme</span>
+        <span class="desc hidden-sm hidden-md">rádi pomůžeme a poradíme</span>
     </div>
     <div class="benefit">
         <span class="icon"><i class="fa fa-fw fa-truck"></i></span>
         <span class="title"><strong>Doprava zdarma</strong></span>
-        <span class="desc hidden-sm hidden-md">více informací <a href="/cenik-dopravy">zde...</a></span>
+        <span class="desc hidden-sm hidden-md">podívejte se <a href="/cenik-dopravy">kdy...</a></span>
     </div>
     <div class="benefit">
         <span class="icon"><i class="fa fa-fw fa-graduation-cap"></i></span>
