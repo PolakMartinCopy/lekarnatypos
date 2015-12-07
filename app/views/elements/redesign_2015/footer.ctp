@@ -19,7 +19,10 @@
                 Vše o Lékárně Typos
             </div>
             <ul class="links">
-            	<li style="list-style-type:none">
+                <li><a href="/o-provozovateli">Informace o provozovateli</a></li>
+                <li><a href="/prodejna">Naše prodejna</a></li>
+                <li><a href="/kontakty">Jak nás kontaktovat</a></li>
+                <li style="list-style-type:none">
             		<div id="showHeurekaBadgeHere-2"></div><script type="text/javascript">
 //<![CDATA[
 var _hwq = _hwq || [];
@@ -31,9 +34,6 @@ var _hwq = _hwq || [];
 //]]>
 </script>
 				</li>
-                <li><a href="/o-provozovateli">Informace o provozovateli</a></li>
-                <li><a href="/prodejna">Naše prodejna</a></li>
-                <li><a href="/kontakty">Jak nás kontaktovat</a></li>
             </ul>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 hidden-xs">
