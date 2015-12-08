@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <h3>Nenašli jste u nás svůj oblíbený produkt?</h3>
-                <p>Nenašli jste něco, nebo potřebujete poradit. Nechte nám telefonní číslo a my Vám zavoláme.</p>
+                <p>Potřebujete poradit? Nechte nám svoje telefonní číslo a my Vám zavoláme.</p>
             </div>
             <div class="col-md-1"></div>
             <div class="col-md-5">
