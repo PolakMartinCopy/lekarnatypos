@@ -132,7 +132,7 @@ class SitemapsController extends AppController{
 		fwrite($fp, $end_string);
 		fclose($fp);
 		// uzavrit soubor
-		die('here');
+		die();
 	}
 }
 ?>
