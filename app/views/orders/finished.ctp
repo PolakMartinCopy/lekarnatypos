@@ -37,6 +37,9 @@ var _hrq = _hrq || [];
 })();
 </script>
 
+<!-- Měřicí kód Sklik.cz -->
+<iframe width="119" height="22" frameborder="0" scrolling="no" src="//c.imedia.cz/checkConversion?c=100017514&color=ffffff&v="></iframe>
+
 <?php if (false) { ?>
 <!--
 MERICI KOD ZBOZI.CZ
