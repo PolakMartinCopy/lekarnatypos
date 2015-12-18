@@ -12,3 +12,4 @@ tmp
 /app/webroot/files/*.log
 /app/webroot/plugins/fetch-klient
 /app/webroot/tmp
+/app/webroot/sitemap.xml

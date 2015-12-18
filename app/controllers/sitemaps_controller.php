@@ -2,7 +2,7 @@
 class SitemapsController extends AppController{
 	var $name = 'Sitemaps';
 	
-	function admin_generate(){
+	function generate(){
 		// otevrit soubor pro zapis, s vymazanim obsahu
 		$fp = fopen('sitemap.xml', 'w');
 
