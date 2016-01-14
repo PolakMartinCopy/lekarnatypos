@@ -733,12 +733,16 @@ class OrdersController extends AppController {
 					}
 				}
 			}
+			
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . '/orders/geis/' . base64_encode(serialize($export_ids));
-
+			$content = download_url($url);
+			
 			header('Content-Type: text/xml');
 			header('Content-Transfer-Encoding: Binary');
 			header('Content-disposition: attachment; filename="' . basename('geis.xml') . '"');
-			readfile($url); // do the double-download-dance (dirty but worky)
+			echo $content;
+/*			readfile($url); // do the double-download-dance (dirty but worky) */
+			
 			die();
 		}
 
