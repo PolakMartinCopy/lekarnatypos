@@ -95,11 +95,7 @@ $(function() {
 	</tr>
 <? foreach ($orders as $index => $order) { ?>
 	<tr>
-		<td><?php 
-			if (!$order['Order']['invoice']) {
-				echo $this->Form->input('Order.' . $order['Order']['id'] . '.export', array('label' => false, 'type' => 'checkbox', 'value' => true));
-			}
-		?></td>
+		<td><?php echo $this->Form->input('Order.' . $order['Order']['id'] . '.export', array('label' => false, 'type' => 'checkbox', 'value' => true));?></td>
 		<td><?php 
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/pencil.png" alt="" />';
 			echo $this->Html->link($icon, array('controller' => 'orders', 'action' => 'view', $order['Order']['id']), array('escape' => false));
@@ -287,5 +283,8 @@ $(function() {
 ?>
 </div>
 <?php echo $this->Form->hidden('backtrace_url', array('value' => $_SERVER['REQUEST_URI']))?>
-<?php echo $this->Form->submit('Fakturovat (účetní systém Pohoda)')?>
+<div style="padding:10px">
+	<button type="submit">Fakturovat (účetní systém Pohoda)</button>
+	<button type="submit" formaction="/admin/orders/geis_export">Export pro Geis</button>
+</div>
 <?php echo $this->Form->end()?>
