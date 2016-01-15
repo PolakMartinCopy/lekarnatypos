@@ -286,5 +286,6 @@ $(function() {
 <div style="padding:10px">
 	<button type="submit">Fakturovat (účetní systém Pohoda)</button>
 	<button type="submit" formaction="/admin/orders/geis_export">Export pro Geis</button>
+	<button type="submit" formaction="/admin/orders/cpost_export">Export pro ČP</button>
 </div>
 <?php echo $this->Form->end()?>
