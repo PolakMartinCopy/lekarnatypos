@@ -11,26 +11,6 @@ class CategoriesProductsController extends AppController {
 		),
 	);
 		
-	function admin_add(){
-		if (isset($this->data)){
-			if ($this->CategoriesProduct->hasAny($this->data['CategoriesProduct'])) {
-				$this->Session->setFlash('Produkt je již přiřazen do kategorie.', REDESIGN_PATH . 'flash_failure');
-			} else {
-				$this->CategoriesProduct->create();
-				if ($this->CategoriesProduct->save($this->data)) {
-					$this->Session->setFlash('Produkt byl přiřazen do kategorie.', REDESIGN_PATH . 'flash_success');
-				} else {
-					$this->Session->setFlash('Produkt nemohl být zkopírován, došlo k chybě.', REDESIGN_PATH . 'flash_failure');
-				}
-			}
-			$this->redirect(array('controller' => 'products', 'action' => 'edit_categories', $this->data['CategoriesProduct']['product_id'], (isset($this->params['named']['category_id']) ? $this->params['named']['category_id'] : null)));
-		} else {
-			$this->Session->setFlash('Neznámý produkt.', REDESIGN_PATH . 'flash_failure');
-			$this->redirect(array('controller' => 'products', 'action' => 'index'));
-		}
-		
-	}
-		
 	// presun produktu mezi kategoriemi
 	function admin_edit($id){
 		// presune produkt do vybrane kategorie

@@ -1324,6 +1324,22 @@ class ProductsController extends AppController {
 			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'));
 		}
+		
+		if (isset($this->data)) {
+			// projdu data a vyfiltruju chyby
+			$save = array();
+			foreach ($this->data['CategoriesProduct'] as $cp) {
+				if ($cp['category_id'] && !$this->Product->CategoriesProduct->hasAny($cp) && !in_array($cp, $save)) {
+					$save[] = $cp;
+				}
+			}
+			if ($this->Product->CategoriesProduct->saveAll($save)) {
+				$this->Session->setFlash('Produkt byl přiřazen do kategorii.', REDESIGN_PATH . 'flash_success');
+				$this->redirect(array('controller' => 'products', 'action' => 'edit_categories', $id, (isset($this->params['named']['category_id']) ? $this->params['named']['category_id'] : null)));
+			} else {
+				$this->Session->setFlash('Produkt nemohl být zkopírován, došlo k chybě.', REDESIGN_PATH . 'flash_failure');
+			}
+		}
 	
 		$this->set('product', $product);
 		
@@ -1352,7 +1368,7 @@ class ProductsController extends AppController {
 			$this->set('opened_category_id', $category['Category']['id']);
 		}
 		
-		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(false);
+		$categories = $this->Product->CategoriesProduct->Category->generateAllPaths(true);
 		$categories = Set::combine($categories, '{n}.Category.id', '{n}.Category.path');
 		$this->set('categories', $categories);
 		
