@@ -27,3 +27,11 @@
 <?php } else {
 	 	echo $this->element(REDESIGN_PATH . $listing_style);
 } ?>
+
+<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH ?>customer_tracking/category.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	categoryId = <?php echo $category['Category']['id']?>;
+	categoryView(categoryId);
+});
+</script>

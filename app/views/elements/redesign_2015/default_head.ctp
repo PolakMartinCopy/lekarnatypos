@@ -35,3 +35,5 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
 </script>
+
+<script src="/js/<?php echo REDESIGN_PATH ?>customer_tracking/bootstrap.js"></script>

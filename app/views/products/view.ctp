@@ -257,3 +257,13 @@ foreach ($subproducts as $subproduct) {
 </div>
 <?php echo $this->element(REDESIGN_PATH . 'product_carousel', array('module_class' => 'module-last-visited', 'element_id' => 'last-visited-products', 'title' => 'Naposledy prohlížené zboží', 'products' => $last_visited_products))?>
 <?php echo $this->element(REDESIGN_PATH . 'product_carousel', array('module_class' => 'module-related', 'element_id' => 'related-products', 'title' => 'Související zboží', 'products' => $similar_products))?>
+
+<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH ?>customer_tracking/product.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	productId = <?php echo $product['Product']['id'] ?>;
+	productVisit(productId);
+	productDescClick(productId);
+	productCommentsClick(productId);
+});
+</script>

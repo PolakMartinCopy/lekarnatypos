@@ -1,7 +1,6 @@
 <script src="/js/<?php echo REDESIGN_PATH ?>bootstrap-slider.js"></script>
 <script src="/js/<?php echo REDESIGN_PATH ?>bootstrap.min.js"></script>
 <script src="/js/<?php echo REDESIGN_PATH ?>custom-scripts.js"></script>
-<script src="/js/<?php echo REDESIGN_PATH ?>customer-tracking.js"></script>
 
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script>
@@ -110,36 +109,6 @@
  		});
  		return checked;
  	}
-});
-</script>
-<?php } elseif ($this->params['controller'] == 'products' && $this->params['action'] == 'view') { ?>
-<script type="text/javascript">
-$(document).ready(function() {
-	// TRACKOVANI ZAKAZNIKU
-	$.ajax({
-		url: '/t_s_visit_products/my_create/<?php echo $product['Product']['id'] ?>',
-		async: false
-	});
-	$('a[data-role="showDescription"]').click(function() {
-		$.ajax({
-			url: '/t_s_visit_products/product_description_shown/<?php echo $product['Product']['id']?>'
-		});
-	});
-	
-	$('a[data-role="showComments"]').click(function() {
-		$.ajax({
-			url: '/t_s_visit_products/product_comments_shown/<?php echo $product['Product']['id']?>'
-		});
-	});
-});
-</script>
-<?php } elseif ($this->params['controller'] == 'categories_products' && $this->params['action'] == 'view') { ?>
-<script type="text/javascript">
-$(document).ready(function() {
-	$.ajax({
-		url: '/t_s_visit_categories/my_create/<?php echo $category['Category']['id'] ?>',
-		async: false
-	});
 });
 </script>
 <?php }?>
