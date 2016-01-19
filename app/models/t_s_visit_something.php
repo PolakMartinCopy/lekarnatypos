@@ -22,6 +22,7 @@ class TSVisitSomething extends AppModel {
 					't_s_visit_id' => $visit['TSVisit']['id']
 				)
 			);
+			$this->create();
 			return $this->save($save);
 		}
 		return true;

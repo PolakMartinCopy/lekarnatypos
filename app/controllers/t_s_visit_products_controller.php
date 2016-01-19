@@ -24,7 +24,7 @@ class TSVisitProductsController extends AppController {
 	
 	function my_create($id) {
 		$key = $this->TSVisitProduct->TSVisit->TSCustomerDevice->getKey($this->Cookie, $this->Session);
-		debug($this->TSVisitProduct->myCreate($id));
+		$this->TSVisitProduct->myCreate($id);
 		die();
 	}
 }
