@@ -23,5 +23,23 @@ class TSCustomerDevice extends AppModel {
 		}
 		return false;
 	}
+	
+	function getKey($cookie, $session) {
+		if ($key = $cookie->read('TSCustomerDevice.key')) {
+			$this->trackingKey = $key;
+		} else {
+			$customer_id = null;
+			if ($this->Customer->is_logged_in($session)) {
+				$customer_id = $session->read('Customer.id');
+			}
+			if ($key = $this->setKey($customer_id)) {
+				$cookie->write('TSCustomerDevice.key', $key, true, '1 year');
+			} else {
+				debug('nemam trackovaci klic');
+				$key = false;
+			}
+		}
+		return $key;
+	}
 }
 ?>

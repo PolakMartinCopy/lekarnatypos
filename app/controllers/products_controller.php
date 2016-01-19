@@ -379,9 +379,6 @@ class ProductsController extends AppController {
 		// updatuju zasobnik v sesne, kde mam ulozenych x naposled navstivenych produktu
 		$stack = $this->Product->update_stack($stack, $id, $customer_type_id);
 		$this->Session->write('ProductStack', $stack);
-		
-		// trackovani prohlednutych produktu
-//		$this->Product->TSVisitProduct->myCreate($id);
 	}
 	
 	/**

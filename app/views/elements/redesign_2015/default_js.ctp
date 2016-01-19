@@ -116,6 +116,10 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	// TRACKOVANI ZAKAZNIKU
+	$.ajax({
+		url: '/t_s_visit_products/my_create/<?php echo $product['Product']['id'] ?>',
+		async: false
+	});
 	$('a[data-role="showDescription"]').click(function() {
 		$.ajax({
 			url: '/t_s_visit_products/product_description_shown/<?php echo $product['Product']['id']?>'

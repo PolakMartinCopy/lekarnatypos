@@ -528,5 +528,17 @@ class Customer extends AppModel {
 		
 		return ($hash == $generatedHash);
 	}
+	
+	function is_logged_in($session) {
+		// je zakaznik zalogovany
+		$is_logged_in = false;
+		if ($session->check('Customer')) {
+			$customer = $session->read('Customer');
+			if (isset($customer['id']) && !empty($customer['id']) && !isset($customer['noreg'])) {
+				$is_logged_in = true;
+			}
+		}
+		return $is_logged_in;
+	}
 }
 ?>

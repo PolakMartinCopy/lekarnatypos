@@ -21,7 +21,7 @@ $(document).ready(function() {
 				// ajaxem prepocitam delku navstevy
 				$.ajax({
 					url: '/t_s_visits/recount_duration/' + visitId,
-//					async: false
+					async: false
 				});
 			}
 		});

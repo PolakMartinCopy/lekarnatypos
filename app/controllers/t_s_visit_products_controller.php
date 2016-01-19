@@ -6,7 +6,7 @@ class TSVisitProductsController extends AppController {
 		if (!$product_id) {
 			return false;
 		}
-		
+		$key = $this->TSVisitProduct->TSVisit->TSCustomerDevice->getKey($this->Cookie, $this->Session);
 		$this->TSVisitProduct->sthId = $product_id;
 		$this->TSVisitProduct->productDescriptionShow();
 		die();
@@ -16,9 +16,15 @@ class TSVisitProductsController extends AppController {
 		if (!$product_id) {
 			return false;
 		}
-
+		$key = $this->TSVisitProduct->TSVisit->TSCustomerDevice->getKey($this->Cookie, $this->Session);
 		$this->TSVisitProduct->sthId = $product_id;
 		$this->TSVisitProduct->productCommentsShow();
+		die();
+	}
+	
+	function my_create($id) {
+		$key = $this->TSVisitProduct->TSVisit->TSCustomerDevice->getKey($this->Cookie, $this->Session);
+		debug($this->TSVisitProduct->myCreate($id));
 		die();
 	}
 }

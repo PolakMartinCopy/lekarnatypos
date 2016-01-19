@@ -82,12 +82,12 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
 	if (empty($subproducts) && $product['Availability']['cart_allowed'] && $product['Product']['active']) {
 		echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'encoding' => false));
 ?>
-	<div class="count-input">
+			<div class="count-input">
 <?php echo $this->Form->input('Product.quantity', array('label' => false, 'div' => false, 'value' => 1, 'maxlength' => 4)); ?>
-		<div class="count-add">+</div>
-		<div class="count-remove">-</div>
-	</div>
-	<span class="count-unit">ks</span>
+				<div class="count-add">+</div>
+				<div class="count-remove">-</div>
+			</div>
+			<span class="count-unit">ks</span>
 <?php 
 		echo $this->Form->button('Přidat do košíku', array('id' => 'AddToCartButton', 'class' => 'btn btn-warning btn-lg'));
 		echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id']));
@@ -106,21 +106,21 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
     
 <!-- VLOZENI DO KOSIKU, KDYZ PRODUKT MA VARIANTY -->
 <?php if (!empty($subproducts) && $product['Availability']['cart_allowed'] && $product['Product']['active']) { ?>
-<div class="product-variants row">
-	<div class="col-xs-12">
-		<h4 class="headline">Zvolte si variantu</h4>
+	<div class="product-variants row">
+		<div class="col-xs-12">
+			<h4 class="headline">Zvolte si variantu</h4>
 
 <?php echo $this->Form->create('Product', array('url' => '/' . $product['Product']['url'], 'encoding' => false, 'id' => 'AddProductWithVariantsForm')); ?>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Varianta</th>
-					<th>Naše cena</th>
-					<th class="hidden-xs hidden-sm">Množství</th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
-			<tbody>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Varianta</th>
+						<th>Naše cena</th>
+						<th class="hidden-xs hidden-sm">Množství</th>
+						<th>&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
 <?php 
 foreach ($subproducts as $subproduct) {
 	$information = '';
@@ -130,26 +130,26 @@ foreach ($subproducts as $subproduct) {
 	
 	$subproduct['Subproduct']['price_with_dph'] += $product['Product']['price']; 
 ?>
-				<tr>
-					<td><?php echo $information ?></td>
-					<td class="center"><span class="price"><?php echo $subproduct['Subproduct']['price_with_dph']?>&nbsp;Kč</span></td>
-					<td class="hidden-xs hidden-sm">
-						<div class="count-input">
-							<?php echo $this->Form->input('Subproduct.' . $subproduct['Subproduct']['id'] . '.quantity', array('label' => false, 'div' => false, 'value' => 1))?>
-							<div class="count-add">+</div><div class="count-remove">-</div>
-						</div>
-						<span class="count-unit">ks</span>
-						<?php echo $this->Form->hidden('Subproduct.' . $subproduct['Subproduct']['id'] . '.id', array('value' => $subproduct['Subproduct']['id']))?>
-					</td>
-					<td class="center"><button name="data[Subproduct][<?php echo $subproduct['Subproduct']['id'] ?>][chosen]" value="1" class="btn btn-warning">Do košíku</button></td>
-				</tr>
+					<tr>
+						<td><?php echo $information ?></td>
+						<td class="center"><span class="price"><?php echo $subproduct['Subproduct']['price_with_dph']?>&nbsp;Kč</span></td>
+						<td class="hidden-xs hidden-sm">
+							<div class="count-input">
+								<?php echo $this->Form->input('Subproduct.' . $subproduct['Subproduct']['id'] . '.quantity', array('label' => false, 'div' => false, 'value' => 1))?>
+								<div class="count-add">+</div><div class="count-remove">-</div>
+							</div>
+							<span class="count-unit">ks</span>
+							<?php echo $this->Form->hidden('Subproduct.' . $subproduct['Subproduct']['id'] . '.id', array('value' => $subproduct['Subproduct']['id']))?>
+						</td>
+						<td class="center"><button name="data[Subproduct][<?php echo $subproduct['Subproduct']['id'] ?>][chosen]" value="1" class="btn btn-warning">Do košíku</button></td>
+					</tr>
 <?php } ?>
-			</tbody>
-		</table>
+				</tbody>
+			</table>
 <?php echo $this->Form->hidden('Product.id', array('value' => $product['Product']['id']))?>
 <?php echo $this->Form->end()?>
+		</div>
 	</div>
-</div>
 <?php } ?>
 
 

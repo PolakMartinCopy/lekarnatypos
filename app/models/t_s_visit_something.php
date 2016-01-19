@@ -7,10 +7,15 @@ class TSVisitSomething extends AppModel {
 	var $sthId = null;
 	
 	function myCreate($something_id) {
+		// zjistim posledni zobrazeni produktu / kategorie v ramci aktualni navstevy
 		$last = $this->getLast();
+		// nastavim nazev sloupce podle toho, co chci ukladat (produkt / kategorie)
 		$something_column_name = $this->somethingName . '_id';
+		// pokud je posledni zobrazeny produkt / kategorie jina, nez aktualni
 		if ($last[$this->name][$something_column_name] != $something_id) {
+			// zjistim id aktualni navstevy
 			$visit = $this->TSVisit->get();
+			// ulozim nove navstiveny produkt / kategorii
 			$save = array(
 				$this->name => array(
 					$something_column_name => $something_id,
@@ -37,6 +42,7 @@ class TSVisitSomething extends AppModel {
 	function getLastBySth() {
 		if (isset($this->sthId) && $this->sthId) {
 			$visit = $this->TSVisit->get();
+			
 			$something_column_name = $this->somethingName . '_id';
 			// posledni zobrazeni DANE kategorie / produktu v ramci aktualni navstevy
 			$last = $this->find('first', array(

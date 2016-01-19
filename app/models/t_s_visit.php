@@ -23,7 +23,7 @@ class TSVisit extends AppModel {
 			),
 			'contain' => array(),
 		));
-		
+
 		return $visit;
 	}
 
@@ -83,7 +83,6 @@ class TSVisit extends AppModel {
 			'conditions' => array('TSVisit.id' => $this->visitId),
 			'contain' => array()
 		));
-		
 		return $visit;
 	}
 	
