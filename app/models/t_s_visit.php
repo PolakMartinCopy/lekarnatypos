@@ -75,6 +75,10 @@ class TSVisit extends AppModel {
 	 * vyhleda navstevu definovanou dle visitId
 	 */
 	function get() {
+		if ($this->checkRobots()) {
+			return false;
+		}
+		
 		if (!$this->check()) {
 			$this->myCreate();
 		}
@@ -84,6 +88,13 @@ class TSVisit extends AppModel {
 			'contain' => array()
 		));
 		return $visit;
+	}
+	
+	function checkRobots() {
+		$robots = array('Googlebot');
+		$robots = implode('|', $robots);
+		$pattern = '/[' . $robots . ']/';
+		return !preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
 	}
 	
 	function recountDuration($id) {
