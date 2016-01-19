@@ -14,16 +14,18 @@ class TSVisitSomething extends AppModel {
 		// pokud je posledni zobrazeny produkt / kategorie jina, nez aktualni
 		if ($last[$this->name][$something_column_name] != $something_id) {
 			// zjistim id aktualni navstevy
-			$visit = $this->TSVisit->get();
-			// ulozim nove navstiveny produkt / kategorii
-			$save = array(
-				$this->name => array(
-					$something_column_name => $something_id,
-					't_s_visit_id' => $visit['TSVisit']['id']
-				)
-			);
-			$this->create();
-			return $this->save($save);
+			if ($visit = $this->TSVisit->get()) {
+				// ulozim nove navstiveny produkt / kategorii
+				$save = array(
+					$this->name => array(
+						$something_column_name => $something_id,
+						't_s_visit_id' => $visit['TSVisit']['id']
+					)
+				);
+				$this->create();
+				return $this->save($save);
+			}
+			return false;
 		}
 		return true;
 	}

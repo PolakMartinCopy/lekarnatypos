@@ -75,7 +75,7 @@ class TSVisit extends AppModel {
 	 * vyhleda navstevu definovanou dle visitId
 	 */
 	function get() {
-		if ($this->checkRobots()) {
+		if (!$this->checkRobots()) {
 			return false;
 		}
 		
@@ -90,10 +90,11 @@ class TSVisit extends AppModel {
 		return $visit;
 	}
 	
+	// vraci true, pokud neni prichozi robot z definovanych
 	function checkRobots() {
-		$robots = array('Googlebot');
+		$robots = array('Googlebot', 'Seznambot');
 		$robots = implode('|', $robots);
-		$pattern = '/[' . $robots . ']/';
+		$pattern = '/' . $robots . '/';
 		return !preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
 	}
 	
