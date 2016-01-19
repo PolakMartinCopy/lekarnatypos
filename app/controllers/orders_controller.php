@@ -984,6 +984,11 @@ class OrdersController extends AppController {
 						} else {
 							// ulozim si info o zakaznikovi do session
 							$this->Session->write('Customer', $customer['Customer']);
+							
+							// podivam se, jestli mam u sledovace sparovane zarizeni s danym zakaznikem
+							if ($key = $this->Order->Customer->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
+								$this->Order->Customer->TSCustomerDevice->setCustomerId($customer['Customer']['id']);
+							}
 								
 							// ze session odstranim data o objednavce,
 							// pokud se snazil zakaznik pred prihlasenim neco
@@ -1072,7 +1077,13 @@ class OrdersController extends AppController {
 								// pokud existuje, priradim k objednavce zakaznikovo idcko (at nezakladam noveho a nevznikaji mi ucty s duplicitnim emailem
 								if (!empty($customer)) {
 									$this->data['Customer']['id'] = $customer['Customer']['id'];
+
+									// podivam se, jestli mam u sledovace sparovane zarizeni s danym zakaznikem
+									if ($key = $this->Order->Customer->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
+										$this->Order->Customer->TSCustomerDevice->setCustomerId($customer['Customer']['id']);
+									}
 								}
+								
 								// pamatuju si, ze zakaznik neni prihlaseny v objednavce (protoze to vsude testuju z historickych duvodu
 								// pres customer id v sesne a to je mi ted na nic
 								$this->data['Customer']['noreg'] = true;

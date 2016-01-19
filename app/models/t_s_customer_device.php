@@ -41,5 +41,19 @@ class TSCustomerDevice extends AppModel {
 		}
 		return $key;
 	}
+	
+	function setCustomerId($customerId) {
+		if (isset($this->trackingKey)) {
+			$save = array(
+				'TSCustomerDevice' => array(
+					'id' => $this->trackingKey,
+					'customer_id' => $customerId
+				)
+			);
+			$this->create();
+			return $this->save($save);
+		}
+		return false;
+	}
 }
 ?>

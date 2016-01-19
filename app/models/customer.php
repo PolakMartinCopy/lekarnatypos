@@ -13,7 +13,8 @@ class Customer extends AppModel {
 		),
 		'CustomerLogin' => array(
 			'dependent' => true
-		)
+		),
+		'TSCustomerDevice'
 	);
 
  	var $validate = array(

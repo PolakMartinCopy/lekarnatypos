@@ -824,6 +824,11 @@ class CustomersController extends AppController {
 				// ulozim si info o zakaznikovi do session
 				$this->Session->write('Customer', $customer['Customer']);
 				
+				// podivam se, jestli mam u sledovace sparovane zarizeni s danym zakaznikem
+				if ($key = $this->Customer->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
+					$this->Customer->TSCustomerDevice->setCustomerId($customer['Customer']['id']);
+				}
+				
 				// ze session odstranim data o objednavce,
 				// pokud se snazil zakaznik pred prihlasenim neco
 				// vyplnovat v objednavce, delalo by mi to bordel
