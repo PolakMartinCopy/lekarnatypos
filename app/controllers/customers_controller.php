@@ -1053,6 +1053,11 @@ class CustomersController extends AppController {
 						
 					// automaticky ho prihlasim
 					$this->Session->write('Customer', $customer['Customer']);
+					// podivam se, jestli mam u sledovace sparovane zarizeni s danym zakaznikem
+					if ($key = $this->Customer->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
+						$this->Customer->TSCustomerDevice->setCustomerId($customer['Customer']['id']);
+					}
+					
 					$this->Session->setFlash('Vaše přístupové údaje Vám byly odeslány na emailovou adresu.<br/>Byl jste úspěšně přihlášen', REDESIGN_PATH . 'flash_success');
 					// PRESMERUJU TAM, ODKUD PRISEL
 					$url = '/prihlaseni';
