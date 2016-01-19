@@ -133,4 +133,13 @@ $(document).ready(function() {
 	});
 });
 </script>
-<?php } ?>
+<?php } elseif ($this->params['controller'] == 'categories_products' && $this->params['action'] == 'view') { ?>
+<script type="text/javascript">
+$(document).ready(function() {
+	$.ajax({
+		url: '/t_s_visit_categories/my_create/<?php echo $category['Category']['id'] ?>',
+		async: false
+	});
+});
+</script>
+<?php }?>
