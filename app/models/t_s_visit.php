@@ -92,7 +92,7 @@ class TSVisit extends AppModel {
 	
 	// vraci true, pokud neni prichozi robot z definovanych
 	function checkRobots() {
-		$robots = array('Googlebot', 'Seznambot');
+		$robots = array('Googlebot', 'SeznamBot', 'bingbot', 'AdsBot');
 		$robots = implode('|', $robots);
 		$pattern = '/' . $robots . '/';
 		return !preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
