@@ -23,11 +23,13 @@ class TSVisitSomething extends AppModel {
 					)
 				);
 				$this->create();
-				return $this->save($save);
+				if ($this->save($save)) {
+					return $this->id;
+				}
 			}
 			return false;
 		}
-		return true;
+		return $last[$this->name]['id'];
 	}
 	
 	function getLast() {

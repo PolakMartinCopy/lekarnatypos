@@ -32,6 +32,6 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	categoryId = <?php echo $category['Category']['id']?>;
-	categoryView(categoryId);
+	visitCategoryId = categoryView(categoryId);
 });
 </script>
