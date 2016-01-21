@@ -1,9 +1,10 @@
 <?php
-class TSVisitCategorySortingShow extends AppModel {
+App::import('Model', 'TSVisitCategoryElementShow');
+class TSVisitCategorySortingShow extends TSVisitCategoryElementShow {
 	var $name = 'TSVisitCategorySortingShow';
 	
-	var $actsAs = array('Containable');
-	
-	var $belongsTo = array('TSVisitCategory');
+	function __construct($id = null, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+	}
 }
 ?>
