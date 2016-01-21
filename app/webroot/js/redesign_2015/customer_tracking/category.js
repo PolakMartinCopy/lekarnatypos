@@ -17,8 +17,8 @@ function sortingShow(visitCategoryId) {
 	res = false;
 	$.ajax({
 		url: '/t_s_visit_category_sorting_shows/my_create/' + visitCategoryId,
-		async: false,
 		dataType: 'json',
+		async: false,
 		success: function(data) {
 			if (data.success) {
 				res = data.data;
@@ -32,8 +32,8 @@ function lastSortingShow(visitCategoryId) {
 	$res = false;
 	$.ajax({
 		url: '/t_s_visit_category_sorting_shows/find_last/' + visitCategoryId,
-		async: false,
 		dataType: 'json',
+		async: false,
 		success: function(data) {
 			if (data.success) {
 				res = data.data;
@@ -47,7 +47,6 @@ function sortingChange(sortingShowId, sortingId) {
 	res = false;
 	$.ajax({
 		url: '/t_s_visit_category_sorting_changes/my_create/' + sortingShowId + '/' + sortingId,
-		async: false,
 		dataType: 'json',
 		success: function(data) {
 			if (data.success) {
@@ -64,10 +63,13 @@ $(document).ready(function() {
 	visitCategoryId = categoryView(categoryId);
 	var sortingShowId = null;
 	
+	// pokud je filtr rozbaleny uz pri nacteni stranky
 	if ($('#filterForm #sorting .filter-selector').hasClass('expanded')) {
+		// najdi posledni navstevu teto kategorie
 		sortingShowId = lastSortingShow(visitCategoryId);
 	}
 	
+	// pokud rozbalim filtr
 	$('#filterForm #sorting .filter-selector').click(function() {
 		// zobrazeni ukladam, jen pokud byl element shovany a opravu jsem ho zobrazil (a ne ze byl zobrazeny a ja jsem ho schoval)
 		if (!$(this).hasClass('expanded')) {
@@ -81,6 +83,7 @@ $(document).ready(function() {
 			e.preventDefault();
 			var className = this.className;
 			var sortingId = $(this).attr('data-sorting-id');
+			alert(sortingShowId);
 			// razeni nebylo zatrzeno
 			if (className != 'checked') {
 				// ulozim si, ze jsem zvolil razeni dle daneho parametru
