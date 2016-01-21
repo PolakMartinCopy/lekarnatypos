@@ -5,7 +5,7 @@ class TSVisitCategory extends TSVisitSomething {
 	
 	var $belongsTo = array('Category', 'TSVisit');
 	
-	var $hasMany = array('TSVisitCategorySortingShow', 'TSVisitCategoryPriceFilterShow');
+	var $hasMany = array('TSVisitCategorySortingShow');
 	
 	var $somethingName = 'category';
 	
