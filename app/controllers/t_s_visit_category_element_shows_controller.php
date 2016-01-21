@@ -25,7 +25,7 @@ class TSVisitCategoryElementShowsController extends AppController {
 	function find_last($visitCategoryId) {
 		$res = array('success' => false);
 		$elementShow = $this->{$this->modelClass}->find('first', array(
-				'conditions' => array($this->modelClass . '$this->modelClass.t_s_visit_category_id' => $visitCategoryId),
+				'conditions' => array($this->modelClass . '.t_s_visit_category_id' => $visitCategoryId),
 				'contain' => array(),
 				'order' => array($this->modelClass . '.id' => 'desc')
 		));
