@@ -1,3 +1,5 @@
+var sortingShowId = null;
+
 function categoryView(categoryId) {
 	res = false;
 	$.ajax({
@@ -21,7 +23,7 @@ function sortingShow(visitCategoryId) {
 		async: false,
 		success: function(data) {
 			if (data.success) {
-				res = data.data;
+				sortingShowId = data.data;
 			}
 		}
 	})
@@ -36,7 +38,7 @@ function lastSortingShow(visitCategoryId) {
 		async: false,
 		success: function(data) {
 			if (data.success) {
-				res = data.data;
+				sortingShowId = data.data;
 			}
 		}
 	})
@@ -61,19 +63,18 @@ function sortingChange(sortingShowId, sortingId) {
 
 $(document).ready(function() {
 	visitCategoryId = categoryView(categoryId);
-	var sortingShowId = null;
 	
 	// pokud je filtr rozbaleny uz pri nacteni stranky
 	if ($('#filterForm #sorting .filter-selector').hasClass('expanded')) {
 		// najdi posledni navstevu teto kategorie
-		sortingShowId = lastSortingShow(visitCategoryId);
+		lastSortingShow(visitCategoryId);
 	}
 	
 	// pokud rozbalim filtr
 	$('#filterForm #sorting .filter-selector').click(function() {
 		// zobrazeni ukladam, jen pokud byl element shovany a opravu jsem ho zobrazil (a ne ze byl zobrazeny a ja jsem ho schoval)
 		if (!$(this).hasClass('expanded')) {
-			sortingShowId = sortingShow(visitCategoryId);
+			sortingShow(visitCategoryId);
 		}
 	});
 	
