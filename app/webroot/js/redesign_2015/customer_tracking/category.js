@@ -83,7 +83,6 @@ $(document).ready(function() {
 			e.preventDefault();
 			var className = this.className;
 			var sortingId = $(this).attr('data-sorting-id');
-			alert(sortingShowId);
 			// razeni nebylo zatrzeno
 			if (className != 'checked') {
 				// ulozim si, ze jsem zvolil razeni dle daneho parametru
