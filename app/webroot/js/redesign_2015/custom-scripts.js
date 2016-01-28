@@ -168,7 +168,7 @@ jQuery(document).ready(function ($) {
 	    	values = values.split(',');
 	    	var minValue = values[0];
 	    	var maxValue = values[1];
-	    		
+	    	
 	    	// nastavim formularova pole
 	    	$('#filterPriceMin').val(minValue);
 	    	$('#filterPriceMax').val(maxValue);
