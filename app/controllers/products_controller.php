@@ -68,8 +68,7 @@ class ProductsController extends AppController {
 					if (isset($category_url)) {
 						$url = $category_url;
 					} else {
-						$product = $this->Product->getFieldValue($this->data['CartsProduct']['product_id'], 'url');
-						$url = '/' . $product['Product']['url'];
+						$url = '/' . $this->Product->getFieldValue($this->data['CartsProduct']['product_id'], 'url');
 					}
 					$this->redirect($url);
 				} else {
