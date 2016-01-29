@@ -445,7 +445,7 @@ class Order extends AppModel {
 		return $id;
 	}
 
-	function build($customer) {
+	function build($customer, $cookie = null) {
 		App::import('model', 'CakeSession');
 		$this->Session = &new CakeSession;
 		// ze sesny vytahnu data o objednavce a doplnim potrebna data
@@ -502,7 +502,9 @@ class Order extends AppModel {
 		
 		$order['Order']['customer_id'] = $customer['Customer']['id'];
 		$order['Order']['status_id'] = 1;
-		$order['Order']['t_s_visit_id'] = $this->TSVisit->check();
+		$this->TSVisit->TSCustomerDevice->getKey($cookie, $this->Session);
+		$visit = $this->TSVisit->get();
+		$order['Order']['t_s_visit_id'] = $visit['TSVisit']['id'];
 
 		// data pro produkty objednavky
 		App::import('Model', 'CartsProduct');

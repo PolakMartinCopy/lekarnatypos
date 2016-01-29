@@ -1319,7 +1319,7 @@ class OrdersController extends AppController {
 		}
 
 		//data pro objednavku
-		$order = $this->Order->build($customer);
+		$order = $this->Order->build($customer, $this->Cookie);
 
 		if ($order === false) {
 			$this->Session->setFlash('Objednávku se nepodařilo uložit, máte správně zadané adresy?', REDESIGN_PATH . 'flash_failure');
