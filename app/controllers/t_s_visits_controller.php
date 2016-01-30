@@ -26,7 +26,7 @@ class TSVisitsController extends AppController {
 			
 			header('Content-Type: text/xml');
 			header('Content-Transfer-Encoding: Binary');
-			header('Content-disposition: attachment; filename="' . basename('visit_export.xml') . '"');
+			header('Content-disposition: attachment; filename="' . basename('visit_export.csv') . '"');
 			echo $content;
 			
 			die();
