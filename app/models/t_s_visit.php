@@ -6,7 +6,7 @@ class TSVisit extends AppModel {
 	
 	var $belongsTo = array('TSCustomerDevice');
 	
-	var $hasMany = array('TSVisitCategory', 'Cart');
+	var $hasMany = array('TSVisitCategory', 'TSVisitProduct', 'Cart', 'Order');
 	
 	var $visitId = null;
 	
@@ -184,5 +184,167 @@ class TSVisit extends AppModel {
 			}
 		}
 		return false;
+	}
+	
+	function getVisitCategoriesSubquery($from, $to) {
+		$dataSource = $this->getDataSource();
+		$visitCategoriesSubquery = array(
+			'conditions' => array(
+				'DATE(TSVisit.created) >=' => $from,
+				'DATE(TSVisit.created) <=' => $to
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 't_s_customer_devices',
+					'alias' => 'TSCustomerDevice',
+					'type' => 'INNER',
+					'conditions' => array('TSVisit.t_s_customer_device_id = TSCustomerDevice.id')
+				),
+				array(
+					'table' => 'customers',
+					'alias' => 'Customer',
+					'type' => 'INNER',
+					'conditions' => array('TSCustomerDevice.customer_id = Customer.id')
+				),
+				array(
+					'table' => 't_s_visit_categories',
+					'alias' => 'TSVisitCategory',
+					'type' => 'LEFT',
+					'conditions' => array('TSVisitCategory.t_s_visit_id = TSVisit.id')
+				),
+				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => array('Category.id = TSVisitCategory.category_id')
+				),
+			),
+			'fields' => array(
+				'Customer.id AS customer_id',
+				'TSVisit.id AS visit_id',
+				'TSVisit.created AS visit_created',
+				'TSVisit.duration AS visit_duration',
+				'"category" AS visit_type',
+				'TSVisitCategory.id AS visit_element_id',
+				'TSVisitCategory.created AS visit_element_created',
+				'Category.id AS element_id',
+				'Category.name AS element_name',
+				'Category.parent_id AS category_parent_id',
+				'"0" AS product_description_show',
+				'"0" AS product_comments_show',
+			),
+			'order' => null,
+			'table' => $dataSource->fullTableName($this),
+			'alias' => 'TSVisit',
+			'limit' => null,
+			'offset' => null,
+			'group' => null,
+		);
+		$visitCategoriesSubquery = $dataSource->buildStatement($visitCategoriesSubquery, $this);
+		return $visitCategoriesSubquery;
+	}
+	
+	function getVisitProductsSubquery($from, $to) {
+		$dataSource = $this->getDataSource();
+		$visitProductsSubquery = array(
+			'conditions' => array(
+				'DATE(TSVisit.created) >=' => $from,
+				'DATE(TSVisit.created) <=' => $to
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 't_s_customer_devices',
+					'alias' => 'TSCustomerDevice',
+					'type' => 'INNER',
+					'conditions' => array('TSVisit.t_s_customer_device_id = TSCustomerDevice.id')
+				),
+				array(
+					'table' => 'customers',
+					'alias' => 'Customer',
+					'type' => 'INNER',
+					'conditions' => array('TSCustomerDevice.customer_id = Customer.id')
+				),
+				array(
+					'table' => 't_s_visit_products',
+					'alias' => 'TSVisitProduct',
+					'type' => 'LEFT',
+					'conditions' => array('TSVisitProduct.t_s_visit_id = TSVisit.id')
+				),
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = TSVisitProduct.product_id')
+				)
+			),
+			'fields' => array(
+				'Customer.id AS customer_id',
+				'TSVisit.id AS visit_id',
+				'TSVisit.created AS visit_created',
+				'TSVisit.duration AS visit_duration',
+				'"product" AS visit_type',
+				'TSVisitProduct.id AS visit_element_id',
+				'TSVisitProduct.created AS visit_element_created',
+				'Product.id AS element_id',
+				'Product.name AS element_name',
+				'"0" AS category_parent_id',
+				'TSVisitProduct.description_show AS product_description_show',
+				'TSVisitProduct.comments_show AS product_comments_show',
+			),
+			'order' => null,
+			'table' => $dataSource->fullTableName($this),
+			'alias' => 'TSVisit',
+			'limit' => null,
+			'offset' => null,
+			'group' => null,
+		);
+		$visitProductsSubquery = $dataSource->buildStatement($visitProductsSubquery, $this);
+		return $visitProductsSubquery;
+	}
+	
+	// vlozil behem dane navstevy produkt do kosiku?
+	function productCartInserted($id, $productId) {
+		$productCartInsertion = $this->Cart->find('first', array(
+			'conditions' => array(
+				'Cart.t_s_visit_id' => $id,
+				'TSCartAddition.product_id' => $productId
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 't_s_cart_additions',
+					'alias' => 'TSCartAddition',
+					'type' => 'LEFT',
+					'conditions' => array('Cart.id = TSCartAddition.cart_id')
+				)
+			),
+			'fields' => array('*')
+		));
+		
+		return !empty($productCartInsertion);
+	}
+	
+	// objednal si behem dane navstevy produkt?
+	function productOrdered($id, $productId) {
+		$productOrder = $this->Order->find('first', array(
+			'conditions' => array(
+				'Order.t_s_visit_id' => $id,
+				'OrderedProduct.product_id' => $productId
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OrderedProduct',
+					'type' => 'LEFT',
+					'conditions' => array('Order.id = OrderedProduct.order_id')
+				)
+			),
+			'fields' => array('*')
+		));
+
+		return !empty($productOrder);
 	}
 }

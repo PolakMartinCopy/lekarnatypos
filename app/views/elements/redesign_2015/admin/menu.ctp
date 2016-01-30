@@ -58,6 +58,7 @@
 			<ul>
 				<li><?php echo $this->Html->link('Statistiky', array('controller' => 'statistics', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('E-maily pro novinky', array('controller' => 'customers', 'action' => 'newsletter_emails'))?></li>
+				<li><?php echo $this->Html->link('Export dat ze sledovače', array('controller' => 't_s_visits', 'action' => 'export'))?></li>
 			</ul>
 		</li>
 		<li><?php echo $this->Html->link('Odhlásit', array('controller' => 'administrators', 'action' => 'logout'))?></li>
