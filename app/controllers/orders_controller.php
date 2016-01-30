@@ -1077,7 +1077,6 @@ class OrdersController extends AppController {
 								// pokud existuje, priradim k objednavce zakaznikovo idcko (at nezakladam noveho a nevznikaji mi ucty s duplicitnim emailem
 								if (!empty($customer)) {
 									$this->data['Customer']['id'] = $customer['Customer']['id'];
-
 									// podivam se, jestli mam u sledovace sparovane zarizeni s danym zakaznikem
 									if ($key = $this->Order->Customer->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
 										$this->Order->Customer->TSCustomerDevice->setCustomerId($customer['Customer']['id']);
@@ -1306,6 +1305,11 @@ class OrdersController extends AppController {
 				$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
 			}
 			$c_dataSource->commit($this->Order->Customer);
+			
+			// naparuju uzivatelske zarizeni na noveho zakaznika
+			if ($key = $this->Order->Customer->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
+				$this->Order->Customer->TSCustomerDevice->setCustomerId($this->Order->Customer->id);
+			}
 			
 			// jedna se o nove zalozeny zakaznicky ucet, takze mu poslu notifikaci, pokud pri registraci uvedl svou emailovou adresu
 			$customer['CustomerLogin'][0]['password'] = $customer_password;
