@@ -92,7 +92,7 @@ class TSVisit extends AppModel {
 	
 	// vraci true, pokud neni prichozi robot z definovanych
 	function checkRobots() {
-		$robots = array('Googlebot', 'SeznamBot', 'bingbot', 'AdsBot');
+		$robots = array('Googlebot', 'SeznamBot', 'bingbot', 'AdsBot', 'Seznam screenshot-generator');
 		$robots = implode('|', $robots);
 		$pattern = '/' . $robots . '/';
 		return !preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
@@ -204,7 +204,7 @@ class TSVisit extends AppModel {
 				array(
 					'table' => 'customers',
 					'alias' => 'Customer',
-					'type' => 'INNER',
+					'type' => 'LEFT',
 					'conditions' => array('TSCustomerDevice.customer_id = Customer.id')
 				),
 				array(
@@ -263,7 +263,7 @@ class TSVisit extends AppModel {
 				array(
 					'table' => 'customers',
 					'alias' => 'Customer',
-					'type' => 'INNER',
+					'type' => 'LEFT',
 					'conditions' => array('TSCustomerDevice.customer_id = Customer.id')
 				),
 				array(
