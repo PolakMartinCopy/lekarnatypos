@@ -24,7 +24,7 @@ class TSVisitsController extends AppController {
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . '/t_s_visits/export/' . $from . '/' . $to;
 			$content = download_url($url);
 			
-			header('Content-Type: text/csv');
+			header('Content-Type: text/csv; charset=windows-1250');
 			header('Content-Transfer-Encoding: Binary');
 			header('Content-disposition: attachment; filename="' . basename('visit_export.csv') . '"');
 			echo $content;
