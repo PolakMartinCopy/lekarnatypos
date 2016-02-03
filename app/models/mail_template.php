@@ -160,7 +160,7 @@ class MailTemplate extends AppModel{
  							$product_name = $ordered_product['product_name'];
  							if (!empty($ordered_product['OrderedProductsAttribute'])) {
  								$attributes = array();
- 								foreach ($$ordered_product['OrderedProductsAttribute'] as $opa) {
+ 								foreach ($ordered_product['OrderedProductsAttribute'] as $opa) {
  									$attributes[] = $opa['Attribute']['Option']['name'] . ': ' . $opa['Attribute']['value'];
  								}
  								$attributes = implode(', ', $attributes);
