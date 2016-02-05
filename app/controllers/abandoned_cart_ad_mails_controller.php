@@ -32,7 +32,7 @@ class AbandonedCartAdMailsController extends AppController {
 				// kryptovane id emailu v db
 				$cryptMailId = urlencode(Security::cipher($this->AbandonedCartAdMail->id, Configure::read('Security.salt')));
 				$body = str_replace('%%crypt_mail_id%%', $cryptMailId, $body);
-debug($body); die();
+
 				$customerName = $customer['Customer']['first_name'] . ' ' . $customer['Customer']['last_name'];
 				// pokud poslu email
 				if ($this->AbandonedCartAdMail->sendMail($adMailTemplate['AdMailTemplate']['subject'], $body, $customer['Customer']['email'], $customerName)) {
