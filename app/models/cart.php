@@ -5,6 +5,8 @@ class Cart extends AppModel {
 	var $actsAs = array('Containable');
 	
 	var $belongsTo = array('TSVisit');
+	
+	var $hasOne = array('AbandonedCartAdMail');
 
 	var $hasMany = array(
 		'CartsProduct' => array(
@@ -130,6 +132,102 @@ class Cart extends AppModel {
 
 		$remaining = $shipping['Shipping']['free'] - $total_price + 1;
 		return $remaining;
+	}
+	
+	function getProducts($id) {
+		// vytahnu si vsechny produkty, ktere patri
+		// do zakaznikova kose
+		$cart_products = $this->CartsProduct->find('all', array(
+			'conditions' => array('CartsProduct.cart_id' => $id),
+			'contain' => array(
+				'Product' => array(
+					'fields' => array('id', 'name')
+				),
+				'Subproduct' => array(
+					'AttributesSubproduct' => array(
+						'fields' => array('attribute_id')
+					)
+				)
+			)
+		));
+
+		foreach ($cart_products as $index => $cart_product) {
+			$cart_products[$index]['CartsProduct']['product_attributes'] = array();
+			if (!empty($cart_product['CartsProduct']['subproduct_id'])) {
+				$subproduct = $this->CartsProduct->Product->Subproduct->find('first', array(
+					'conditions' => array('Subproduct.id' => $cart_product['CartsProduct']['subproduct_id']),
+					'contain' => array(
+						'AttributesSubproduct' => array(
+							'Attribute' => array(
+								'Option'
+							)
+						)
+					)	
+				));
+				$product_attributes = array();
+				foreach ($subproduct['AttributesSubproduct'] as $attributes_subproduct) {
+					$product_attributes[$attributes_subproduct['Attribute']['Option']['name']] = $attributes_subproduct['Attribute']['value'];
+				}
+				$cart_products[$index]['CartsProduct']['product_attributes'] = $product_attributes;
+			}
+		}
+		return $cart_products;
+	}
+	
+	function getCustomer($id) {
+		$customer = $this->find('first', array(
+			'conditions' => array('Cart.id' => $id),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 't_s_visits',
+					'alias' => 'TSVisit',
+					'type' => 'INNER',
+					'conditions' => array('TSVisit.id = Cart.t_s_visit_id')
+				),
+				array(
+					'table' => 't_s_customer_devices',
+					'alias' => 'TSCustomerDevice',
+					'type' => 'INNER',
+					'conditions' => array('TSCustomerDevice.id = TSVisit.t_s_customer_device_id')
+				),
+				array(
+					'table' => 'customers',
+					'alias' => 'Customer',
+					'type' => 'INNER',
+					'conditions' => array('TSCustomerDevice.customer_id = Customer.id')
+				)
+			),
+			'fields' => array('Customer.*')
+		));
+		return $customer;
+	}
+	
+	// vyprazdni kosik (vymaze z nej produkty)
+	function dump($id) {
+		return $this->CartsProduct->deleteAll(array('CartsProduct.cart_id' => $id));
+	}
+	
+	function copy($oldId, $newId) {
+		$products = $this->CartsProduct->find('all', array(
+			'conditions' => array('CartsProduct.cart_id' => $oldId),
+			'contain' => array(),
+			'fields' => array(
+				'CartsProduct.product_id',
+				'CartsProduct.subproduct_id',
+				'CartsProduct.product_attributes',
+				'CartsProduct.quantity',
+				'CartsProduct.price_with_dph',
+				'CartsProduct.price_wout_dph'
+			)
+		));
+		
+		$saveAll = array();
+		foreach ($products as $product) {
+			$product['CartsProduct']['cart_id'] = $newId;
+			$saveAll[] = $product['CartsProduct'];
+		}
+		return $this->CartsProduct->saveAll($saveAll);
 	}
 }
 ?>

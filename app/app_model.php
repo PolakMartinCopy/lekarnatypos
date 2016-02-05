@@ -30,6 +30,16 @@ class AppModel extends Model {
 		}
 		return $item[$this->name][$field];
 	}
+	
+	function setAttribute($id, $attName, $attValue) {
+		$save = array(
+			$this->name => array(
+				'id' => $id,
+				$attName => $attValue
+			)
+		);
+		return $this->save($save);
+	}
 
 }
 ?>

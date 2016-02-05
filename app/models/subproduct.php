@@ -94,5 +94,54 @@ class Subproduct extends AppModel {
 
 		return $subproduct;
 	}
+	
+	function getById($id, $buildName = true) {
+		$joins = array();
+		$fields = array('Subproduct.*');
+		if ($buildName) {
+			$joins = array(
+				array(
+					'table' => 'attributes_subproducts',
+					'alias' => 'AttributesSubproduct',
+					'type' => 'INNER',
+					'conditions' => array('Subproduct.id = AttributesSubproduct.subproduct_id')
+				),
+				array(
+					'table' => 'attributes',
+					'alias' => 'Attribute',
+					'type' => 'INNER',
+					'conditions' => array('Attribute.id = AttributesSubproduct.attribute_id')
+				),
+				array(
+					'table' => 'options',
+					'alias' => 'Option',
+					'type' => 'INNER',
+					'conditions' => array('Attribute.option_id = Option.id')
+				)
+			);
+			$fields = array_merge($fields, array('Attribute.value', 'Option.name'));
+		}
+		
+		$subproduct = $this->find('all', array(
+			'conditions' => array('Subproduct.id' => $id),
+			'contain' => array(),
+			'joins' => $joins ,
+			'fields' => $fields
+		));
+
+		$res = array();
+		if (!empty($subproduct)) {
+			$res['Subproduct'] = $subproduct[0]['Subproduct'];
+			$subproductName = array();
+			if ($buildName) {
+				foreach ($subproduct as $attribute) {
+					$subproductName[] = $attribute['Option']['name'] . ': ' . $attribute['Attribute']['value'];
+				}
+			}
+			$res['Subproduct']['name'] = implode(', ', $subproductName);
+			return $res;
+		}
+		return false;
+	}
 }
 ?>

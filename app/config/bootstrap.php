@@ -449,4 +449,16 @@ if ($r = $this->Redirect->check($_SERVER['REQUEST_URI'])) {
 	header("Location: " . $r['Redirect']['target_uri']);
 	exit();
 }
+
+function utm_parameters_string($getParams) {
+	$res = array();
+	$utmTags = array('source', 'medium', 'campaing', 'content');
+	foreach ($utmTags as $tag) {
+		$tagName = 'utm_' . $tag;
+		if (isset($getParams[$tagName])) {
+			$res[] = $tagName . '=' . $getParams[$tagName];
+		}
+	}
+	return implode('&', $res);
+}
 ?>
