@@ -12,7 +12,7 @@ class AbandonedCartAdMailsController extends AppController {
 		die();
 	}
 			
-	function send($cartId = 601437) { // XXX - jiny clovek, XXX - anonymni navsteva, 601437 - moje navsteva
+	function send($cartId = 593830) { // XXX - jiny clovek, XXX - anonymni navsteva, 593830 - moje navsteva
 		// ziskam sablonu
 		$adMailTemplate = $this->AbandonedCartAdMail->AdMailTemplate->findByType('abandoned_cart');
 		// vygeneruju element s produkty

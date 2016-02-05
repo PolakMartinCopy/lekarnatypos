@@ -54,7 +54,7 @@ class CartsController extends AppController {
 			// vysypu kosik
 			$this->Cart->dump($newId);
 			// naklonuju obsah puvodniho kosiku do noveho
-			if ($this->Cart->copy($oldId, $newId)) {
+			if ($oldId != $newId && $this->Cart->copy($oldId, $newId)) {
 				$this->Session->setFlash('Vítejte zpět! Nyní můžete pokračovat ve Vašem nákupu.', REDESIGN_PATH . 'flash_success');
 			}
 		}
