@@ -28,30 +28,31 @@ class AbandonedCartAdMail extends AppModel {
 	}
 	
 	function getProductsBox($cartId) {
-		$customer = $this->Cart->getCustomer($cartId);
-
-		$cart_products = $this->Cart->getProducts($cartId);
-		
-		$res = '';
-		foreach ($cart_products as $cart_product) {
-			$product = $this->getProduct($cart_product['Product']['id'], $customer['Customer']['customer_type_id']);
-			$variant = false;
-			if ($cart_product['CartsProduct']['subproduct_id']) {
-				$variant = $this->Cart->CartsProduct->Product->Subproduct->getById($cart_product['CartsProduct']['subproduct_id']);
-				$product['Product']['name'] .= ' - ' . $variant['Subproduct']['name'];
-				$product['Product']['price'] += $variant['Subproduct']['price_with_dph'];
+		if ($customer = $this->Cart->getCustomer($cartId)) {
+			$cart_products = $this->Cart->getProducts($cartId);
+			
+			$res = '';
+			foreach ($cart_products as $cart_product) {
+				$product = $this->getProduct($cart_product['Product']['id'], $customer['Customer']['customer_type_id']);
+				$variant = false;
+				if ($cart_product['CartsProduct']['subproduct_id']) {
+					$variant = $this->Cart->CartsProduct->Product->Subproduct->getById($cart_product['CartsProduct']['subproduct_id']);
+					$product['Product']['name'] .= ' - ' . $variant['Subproduct']['name'];
+					$product['Product']['price'] += $variant['Subproduct']['price_with_dph'];
+				}
+			
+				$res .= '
+	<tr>
+	    <td valign="middle" style="padding: 3px 5px 3px 5px"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik" target="_blank"><img src="http://www.lekarnatypos.cz/product-images/' . $product['Image']['name'] . '" width="70" /></a></td>
+	    <td valign="middle" style="padding:3px 5px 3px 0"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik" style="color: #63af29;" target="_blank">' . $product['Product']['name'] . '</a></td>
+	    <td align="right" valign="middle" style="padding:3px 5px 3px 5px">' . $cart_product['CartsProduct']['quantity'] . '&nbsp;×</td>
+	    <td align="right" valign="middle" style="padding:3px 5px">' . $product['Product']['price'] . '&nbsp;Kč</td>
+	</tr>';
 			}
-		
-			$res .= '
-<tr>
-    <td valign="middle" style="padding: 3px 5px 3px 5px"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik" target="_blank"><img src="http://www.lekarnatypos.cz/product-images/' . $product['Image']['name'] . '" width="70" /></a></td>
-    <td valign="middle" style="padding:3px 5px 3px 0"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik" style="color: #63af29;" target="_blank">' . $product['Product']['name'] . '</a></td>
-    <td align="right" valign="middle" style="padding:3px 5px 3px 5px">' . $cart_product['CartsProduct']['quantity'] . '&nbsp;×</td>
-    <td align="right" valign="middle" style="padding:3px 5px">' . $product['Product']['price'] . '&nbsp;Kč</td>
-</tr>';
+			
+			return $res;
 		}
-		
-		return $res;
+		return false;
 	}
 	
 	function getProduct($productId, $customerTypeId) {

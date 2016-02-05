@@ -200,6 +200,7 @@ class Cart extends AppModel {
 			),
 			'fields' => array('Customer.*')
 		));
+
 		return $customer;
 	}
 	
@@ -228,6 +229,10 @@ class Cart extends AppModel {
 			$saveAll[] = $product['CartsProduct'];
 		}
 		return $this->CartsProduct->saveAll($saveAll);
+	}
+	
+	function isBuiltFromAbandoned($id) {
+		return $this->AbandonedCartAdMail->hasAny(array('AbandonedCartAdMail.new_cart_id' => $id));
 	}
 }
 ?>
