@@ -296,7 +296,13 @@ class SuppliersController extends AppController {
 						// pokud vytvarim produkt z alliance, chci si zapamatovat, ze u nej zadny spravce neupravoval popis
 						$product['Product']['is_alliance_rewritten'] = false;
 					}
+					
+					if (array_key_exists('short_description', $product['Product']) && empty($product['Product']['short_description']) && isset($product['Product']['name'])) {
+						$product['Product']['short_description'] = $product['Product']['name'];
+					}
+
 					$this->Supplier->Product->create();
+					$this->Supplier->Product->data = array();
 					// ulozim produkt
 					if (!$this->Supplier->Product->save($product)) {
 						debug($product);
@@ -304,6 +310,7 @@ class SuppliersController extends AppController {
 						$data_source->rollback($this->Supplier->Product);
 						continue;
 					}
+
 					$product_id = $this->Supplier->Product->id;
 
 					// update URL produktu, pokud se zmenil nazev produktu
