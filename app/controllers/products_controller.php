@@ -791,7 +791,10 @@ class ProductsController extends AppController {
 			}
 			
 			$this->data['FreeShippingProduct'] = $this->Product->generateFreeShipping($this->data);
-			
+			if (empty($this->data['FreeShippingProduct'])) {
+				unset($this->data['FreeShippingProduct']);
+			}
+
 			// ukladam produkt
 			if ($this->Product->saveAll($this->data)) {
 				// k produktu si ulozim id pro export do pohody
@@ -944,16 +947,15 @@ class ProductsController extends AppController {
 				}
 				
 				$this->data['FreeShippingProduct'] = $this->Product->generateFreeShipping($this->data);
-				foreach ($this->data['FreeShippingProduct'] as &$free_shipping_product) {
-					$db_free_shipping_product = $this->Product->FreeShippingProduct->getByProductShipping($product['Product']['id'], $free_shipping_product['shipping_id']);
-					if (!empty($db_free_shipping_product)) {
-						$free_shipping_product['id'] = $db_free_shipping_product['FreeShippingProduct']['id'];
-					}
-					if ($free_shipping_product['quantity'] == 0) {
-						if (!empty($db_free_shipping_product)) { 
-							$this->Product->FreeShippingProduct->delete($db_free_shipping_product['FreeShippingProduct']['id']);
+				if (empty($this->data['FreeShippingProduct'])) {
+					unset($this->data['FreeShippingProduct']);
+					$this->Product->FreeShippingProduct->deleteAll(array('FreeShippingProduct.product_id' => $id));
+				} else {
+					foreach ($this->data['FreeShippingProduct'] as &$free_shipping_product) {
+						$db_free_shipping_product = $this->Product->FreeShippingProduct->getByProductShipping($product['Product']['id'], $free_shipping_product['shipping_id']);
+						if (!empty($db_free_shipping_product)) {
+							$free_shipping_product['id'] = $db_free_shipping_product['FreeShippingProduct']['id'];
 						}
-					} else {
 						$this->Product->FreeShippingProduct->create();
 						$this->Product->FreeShippingProduct->save($free_shipping_product);
 					}

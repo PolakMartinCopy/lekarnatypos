@@ -1097,16 +1097,18 @@ class Product extends AppModel {
 			if ($quantity == '') {
 				$quantity = 0;
 			}
-			foreach ($shipping_ids as $shipping_id) {
-				$res_item = array(
-					'shipping_id' => $shipping_id,
-					'quantity' => $quantity
-				);
-				if (isset($data['Product']['id'])) {
-					$res_item['product_id'] = $data['Product']['id'];
+			if ($quantity > 0) {
+				foreach ($shipping_ids as $shipping_id) {
+					$res_item = array(
+						'shipping_id' => $shipping_id,
+						'quantity' => $quantity
+					);
+					if (isset($data['Product']['id'])) {
+						$res_item['product_id'] = $data['Product']['id'];
+					}
+					
+					$res[] = $res_item; 
 				}
-				
-				$res[] = $res_item; 
 			}
 		}
 		return $res;
