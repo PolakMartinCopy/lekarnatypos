@@ -291,13 +291,12 @@ class SuppliersController extends AppController {
 							continue;
 						}
 					} else {
-						$this->Supplier->Product->create();
 						$product_created = true;
 						
 						// pokud vytvarim produkt z alliance, chci si zapamatovat, ze u nej zadny spravce neupravoval popis
 						$product['Product']['is_alliance_rewritten'] = false;
 					}
-					
+					$this->Supplier->Product->create();
 					// ulozim produkt
 					if (!$this->Supplier->Product->save($product)) {
 						debug($product);
