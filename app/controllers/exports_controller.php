@@ -252,67 +252,169 @@ class ExportsController extends AppController{
 		
 	}
 	
+	function save_google_feed() {
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . '/exports/google_merchant';
+		$content = download_url($url);
+		$file_name = 'files/xml/google_merchant.xml';
+		file_put_contents($file_name, $content);
+		die('here');
+	}
+	
 	function google_merchant() {
 		// bez layoutu
 		$this->autoLayout = false;
 		
-		// sparovani kategorii na heurece s kategoriemi u nas v obchode
-		$pairs = array(
-			'Zdraví a krása > Zdravotní péče > Fitness a výživa' => array(1, 2, 6, 7, 9, 25, 26, 28, 14),	
-			'Zdraví a krása > Zdravotní péče > Fitness a výživa > Doplňky na zvýšení růstu svalové hmoty' => array(15, 57, 58, 59, 60, 87, 88, 89, 61, 62, 16, 67, 68, 69, 70, 17, 71, 72, 73, 18, 63, 64, 19, 77, 78, 79, 80, 20),
-			'Zdraví a krása > Zdravotní péče > Fitness a výživa > Vitamíny a výživové doplňky' => array(21, 74, 75, 76, 22, 65, 66, 23, 81, 82, 24, 83, 84, 85, 86),
-			'Média > Knihy > Naučná a odborná literatura > Knihy o zdraví a fitness' => array(12),
-			'Sportovní potřeby > Cvičení a fitness' => array(10, 40, 41, 42, 43, 44, 13, 33, 38),
-			'Oblečení a doplňky > Oblečení > Sportovní oblečení' => array(11, 90, 91, 50, 51),
-			'Oblečení a doplňky > Oblečení > Sportovní oblečení > Sportovní kalhoty' => array(45, 49),
-			'Oblečení a doplňky > Oblečení > Sportovní oblečení > Sportovní šortky' => array(46, 94),
-			'Oblečení a doplňky > Oblečení > Sportovní oblečení > Sportovní trika' => array(47, 93),
-			'Oblečení a doplňky > Oblečení > Sportovní oblečení > Mikiny' => array(48, 92),
-			'Sportovní potřeby > Cvičení a fitness > Činky' => array(29),
-			'Sportovní potřeby > Cvičení a fitness > Trenažéry > Spinningová kola' => array(30, 36),
-			'Sportovní potřeby > Cvičení a fitness > Trenažéry > Šlapací trenažéry' => array(31),
-			'Sportovní potřeby > Cvičení a fitness > Trenažéry > Běžecké trenažéry' => array(34),
-			'Sportovní potřeby > Cvičení a fitness > Trenažéry > Veslařské trenažéry' => array(35),
-			'Sportovní potřeby > Cvičení a fitness > Vzpěračské lavice' => array(37),
+		// natahnu si model Product
+		$this->Export->Product = ClassRegistry::init('Product');
+		// typ uzivatele - neprihlaseny
+		$customer_type_id = 2;
+		// srovnavac - Google Merchant Center
+		$comparator_id = 3;
+		// podminky pro vyhledani produktu
+		$conditions = array(
+				"Product.short_description != ''",
+				'Availability.cart_allowed' => true,
+				'Product.active' => true,
+				'Product.feed' => true,
+				'Product.price >' => 0
 		);
 		
-		$products = $this->get_products('google merchant center');
-		
-		App::import('Model', 'Category');
-		$this->Category = &new Category;
-		
-		foreach ($products as $index => &$product) {
-			// pokud je produkt v kategorii 77 - pripravky s tribulusem - nechci ho do feedu
-			$categories = $this->Category->CategoriesProduct->find('all', array(
-				'conditions' => array('CategoriesProduct.product_id' => $product['Product']['id']),
+		// podminky pro vyhledani kategorii
+		$categories_conditions = 'Category.id = CategoriesProduct.category_id';
+		// vytahnu si kategorie, ktere nejsou aktivni
+		$not_active_categories = $this->Export->Product->CategoriesProduct->Category->find('all', array(
+				'conditions' => array('Category.active' => false),
 				'contain' => array(),
-				'fields' => array('CategoriesProduct.category_id')
-			));
-			$categories = Set::extract('/CategoriesProduct/category_id', $categories);
-			if (in_array(77, $categories)) {
-				unset($products[$index]);
-				continue;
+				'fields' => array('Category.id')
+		));
+		// zjistim idcka podstromu neaktivnich kategorii
+		$not_active_categories_ids = array();
+		if (!empty($not_active_categories)) {
+			foreach ($not_active_categories as $not_active_category) {
+				$not_active_categories_ids = array_merge($not_active_categories_ids, $this->Export->Product->CategoriesProduct->Category->subtree_ids($not_active_category['Category']['id']));
 			}
-			// chci odchytit produkty, ktere maji v nekde textu "tribulus"
-			if (preg_match('/tribulus/i', $product['Product']['name']) || preg_match('/tribulus/i', $product['Product']['short_description'])) {
-				unset($products[$index]);
-				continue;
-			}
-			
-			$product['Product']['category_text'] = '';
-			// pokud je kategorie produktu sparovana , nastavi se rovnou jako 'Sportovni vyziva | *odpovidajici nazev kategorie*
-			foreach ($pairs as $name => $array) {
-				if (in_array($product['CategoriesProduct']['category_id'], $array)) {
-					$product['Product']['category_text'] = $name;
-					break;
-				}
-			}
-
-			$product['Product']['type_text'] = $this->Category->getPath($product['CategoriesProduct']['category_id']);
-			$product['Product']['type_text'] = Set::extract('/Category/name', $product['Product']['type_text']);
-			$product['Product']['type_text'] = implode(' | ', $product['Product']['type_text']);
 		}
-		$this->set('products', $products);
+		// nechci do zdroje produkty z neaktivnich kategorii
+		if (!empty($not_active_categories_ids)) {
+			$categories_conditions .= ' AND Category.id NOT IN (' . implode(',', $not_active_categories_ids) . ')';
+		}
+		$categories_conditions_arr[] = $categories_conditions;
+		
+		$this->Export->Product->virtualFields['price'] = $this->Export->Product->price;
+		$products = $this->Export->Product->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(
+				'Manufacturer' => array(
+					'fields' => array('id', 'name')
+				),
+			),
+			'joins' => array(
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'INNER',
+					'conditions' => array('Image.product_id = Product.id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'availabilities',
+					'alias' => 'Availability',
+					'type' => 'INNER',
+					'conditions' => array('Availability.id = Product.availability_id AND Availability.cart_allowed = 1')
+				),
+				array(
+					'table' => 'categories_products',
+					'alias' => 'CategoriesProduct',
+					'type' => 'INNER',
+					'conditions' => array('CategoriesProduct.product_id = Product.id')
+				),
+				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => $categories_conditions_arr
+				),
+				array(
+					'table' => 'categories_comparators',
+					'alias' => 'CategoriesComparator',
+					'type' => 'LEFT',
+					'conditions' => array('Category.id = CategoriesComparator.category_id AND CategoriesComparator.comparator_id = ' . $comparator_id)
+				)
+			),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.short_description',
+				'Product.url',
+				'Product.zbozi_name',
+				'Product.heureka_name',
+				'Product.heureka_extended_name',
+				'Product.heureka_category',
+				'Product.price',
+				'Product.ean',
+				'Product.supplier_id',
+		
+				'Image.id',
+				'Image.name',
+					
+				'Availability.id',
+				'Availability.name',
+					
+				'CategoriesProduct.id',
+				'CategoriesProduct.product_id',
+				'CategoriesProduct.category_id',
+					
+				'Category.id',
+				'Category.name',
+					
+				'CategoriesComparator.id',
+				'CategoriesComparator.path',
+ 
+				'Manufacturer.id',
+				'Manufacturer.name',
+			),
+//			'limit' => 1000
+		));
+		unset($this->Export->Product->virtualFields['price']);
+
+		$res = array();
+		$res_ids = array();
+		foreach ($products as $i => &$product) {
+			if (!in_array($product['Product']['id'], $res_ids)) {
+
+				$subproducts = $this->Export->Product->Subproduct->find('all', array(
+					'conditions' => array('Subproduct.product_id' => $product['Product']['id']),
+					'contain' => array(),
+					'fields' => array('Subproduct.id')
+				));
+				if (!empty($subproducts)) {
+					foreach ($subproducts as &$subproduct) {
+						$subproduct = $this->Export->Product->Subproduct->getById($subproduct['Subproduct']['id'], true);
+						$product['Subproduct'][] = $subproduct['Subproduct'];
+					}
+				}
+				
+				$product['Product']['type_text'] = $this->Export->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
+				if (!empty($Product['Product']['type_text'])) {
+					unset($product['Product']['type_text'][0]);
+					unset($product['Product']['type_text'][1]);
+				}
+				$product['Product']['type_text'] = Set::extract('/Category/name', $product['Product']['type_text']);
+				$product['Product']['type_text'] = implode(' | ', $product['Product']['type_text']);
+				
+				$product['Product']['name'] = str_replace('&times;', 'x', $product['Product']['name']);
+				$product['Product']['short_description'] = str_replace('&times;', 'x', $product['Product']['short_description']);
+				$res[] = $product;
+				$res_ids[] = $product['Product']['id'];
+			}
+		}
+
+		$this->set('products', $res);
 	}
 }
 ?>
