@@ -253,6 +253,7 @@ class Manufacturer extends AppModel {
 		
 		$conditions = array(
 			'Product.active' => true,
+			'Category.active' => true,
 			$this->Product->price . ' > 0'
 		);
 		
@@ -277,7 +278,19 @@ class Manufacturer extends AppModel {
 					'alias' => 'CustomerTypeProductPrice',
 					'type' => 'LEFT',
 					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
-				)
+				),
+				array(
+					'table' => 'categories_products',
+					'alias' => 'CategoriesProduct',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = CategoriesProduct.product_id')
+				),
+				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => array('Category.id = CategoriesProduct.category_id')
+				),
 			),
 			'fields' => array('Manufacturer.id', 'Manufacturer.name', 'COUNT(Product.id) AS product_count'),
 			'order' => array('product_count' => 'desc'),
@@ -286,6 +299,7 @@ class Manufacturer extends AppModel {
 		));
 		
 		$manufacturers = array_merge($defManufacturers, $diffManufacturers);
+
 		foreach ($manufacturers as $index => $manufacturer) {
 			$url = $this->get_url($manufacturer['Manufacturer']['id']);
 			// musim prekladat data, abych mohl pouzit element pro vypis kategorii
