@@ -69,6 +69,7 @@ class ManufacturersController extends AppController {
 			$this->data = $manufacturer;
 		}
 		
+		$this->set('tinyMceElement', 'ManufacturerContent');
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 
@@ -137,14 +138,14 @@ class ManufacturersController extends AppController {
 		if (empty($manufacturer)) {
 			$this->cakeError('error404');
 		}
-		
+
 		$manufacturer['Manufacturer']['url'] = $this->Manufacturer->get_url($manufacturer['Manufacturer']['id']);
 		$this->set('manufacturer', $manufacturer);
 		$this->set('opened_manufacturer_id', $id);
 
 		$this->layout = REDESIGN_PATH . 'content';
-		$this->set('_title', $manufacturer['Manufacturer']['name']);
-		$this->set('_description', 'Léky, doplňky stravy a další produkty od výrobce ' . $manufacturer['Manufacturer']['name']);
+		$this->set('_title', $manufacturer['Manufacturer']['title']);
+		$this->set('_description', $manufacturer['Manufacturer']['description']);
 		
 		// sestavim breadcrumbs
 		$breadcrumbs = array(

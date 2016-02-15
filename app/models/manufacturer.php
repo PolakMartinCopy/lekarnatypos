@@ -23,6 +23,38 @@ class Manufacturer extends AppModel {
 	
 	var $filter_limit = null;
 	
+	function beforeValidate() {
+		// udelam si kontrolu, jestli je vyplneny titulek
+		if (array_key_exists('title', $this->data['Manufacturer']) && empty($this->data['Manufacturer']['title'])){
+			$this->data['Manufacturer']['title'] = $this->data['Manufacturer']['name'];
+		}
+		// udelam si kontrolu, jestli je vyplneny titulek a url
+		if (array_key_exists('title', $this->data['Manufacturer']) && empty($this->data['Manufacturer']['heading'])){
+			$this->data['Manufacturer']['heading'] = $this->data['Manufacturer']['name'];
+		}
+		// udelam si kontrolu, jestli je vyplneny titulek a url
+		if (array_key_exists('title', $this->data['Manufacturer']) && empty($this->data['Manufacturer']['description'])) {
+			$this->data['Manufacturer']['description'] = $this->buildDescription($this->data['Manufacturer']['name']);
+		}
+	}
+	
+	function afterFind($results) {
+		if (!isset($results['Manufacturer'])) {
+			foreach ($results as &$result) {
+				if (isset($result['Manufacturer']) && array_key_exists('heading', $result['Manufacturer']) && empty($result['Manufacturer']['heading']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
+					$result['Manufacturer']['heading'] = $result['Manufacturer']['name'];
+				}
+				if (isset($result['Manufacturer']) && array_key_exists('title', $result['Manufacturer']) && empty($result['Manufacturer']['title']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
+					$result['Manufacturer']['title'] = $result['Manufacturer']['name'];
+				}
+				if (isset($result['Manufacturer']) && array_key_exists('description', $result['Manufacturer']) && empty($result['Manufacturer']['description']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
+					$result['Manufacturer']['description'] = $this->buildDescription($result['Manufacturer']['name']);
+				}
+			}
+		}
+		return $results;
+	}
+	
 	function get_url($id) {
 		$url = '';
 		$manufacturer = $this->find('first', array(
@@ -272,6 +304,58 @@ class Manufacturer extends AppModel {
 		$res['path_ids'] = array(0 => $opened_manufacturer_id);
 
 		return $res;
+	}
+	
+	function getTitle($id) {
+		$manufacturer = $this->find($first, array(
+			'conditions' => array('Manufacturer.id' => $id),
+			'contain' => array(),
+			'fields' => array('Manufacturer.name', 'Manufacturer.title')
+		));
+		if (!empty($manufacturer)) {
+			$title = $manufacturer['Manufacturer']['title'];
+			if (empty($title)) {
+				$title = $manufacturer['Manufacturer']['name'];
+			}
+			return $title;
+		}
+		return false;
+	}
+	
+	function getHeading($id) {
+		$manufacturer = $this->find($first, array(
+			'conditions' => array('Manufacturer.id' => $id),
+			'contain' => array(),
+			'fields' => array('Manufacturer.name', 'Manufacturer.heading')
+		));
+		if (!empty($manufacturer)) {
+			$heading = $manufacturer['Manufacturer']['heading'];
+			if (empty($title)) {
+				$heading = $manufacturer['Manufacturer']['heading'];
+			}
+			return $heading;
+		}
+		return false;
+	}
+	
+	function getDescription($id) {
+		$manufacturer = $this->find($first, array(
+			'conditions' => array('Manufacturer.id' => $id),
+			'contain' => array(),
+			'fields' => array('Manufacturer.name', 'Manufacturer.description')
+		));
+		if (!empty($manufacturer)) {
+			$description = $manufacturer['Manufacturer']['description'];
+			if (empty($title)) {
+				$description = $this->buildDescription($manufacturer['Manufacturer']['name']);
+			}
+			return $description;
+		}
+		return false;
+	}
+	
+	private static function buildDescription($name) {
+		return 'Produkty výrobce ' . $name . ' najdete v nabídce e-shopu LekarnaTypos CZ';
 	}
 }
 ?>
