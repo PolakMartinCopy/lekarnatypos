@@ -18,6 +18,10 @@
 			<th>Popis</th>
 			<td><?php echo $this->Form->input('Manufacturer.text', array('label' => false, 'rows' => 15))?></td>
 		</tr>
+		<tr>
+			<th>Do menu?</th>
+			<td><?php echo $this->Form->input('Manufacturer.is_sidebar', array('label' => false))?></td>
+		</tr>
 	</table>
 </fieldset>
 <?php echo $this->Form->hidden('Manufacturer.active', array('value' => true))?>

@@ -207,13 +207,31 @@ class Manufacturer extends AppModel {
 		return $redirect_url;
 	}
 	
-	function getSidebarMenu($opened_manufacturer_id, $min_product_count = 50) {
+	function getSidebarMenu($opened_manufacturer_id, $limit = 40) {
 		$customer_type_id = 2;
-		$manufacturers = $this->find('all', array(
+		// nejdriv vytahnu ty, ktere mam natvrdo definovane, ze tam chci
+		$defManufacturers = $this->find('all', array(
 			'conditions' => array(
-				'Product.active' => true,
-				$this->Product->price . ' > 0'
+				'Manufacturer.is_sidebar' => true,
+				'Manufacturer.active' => true
 			),
+			'contain' => array(),
+			'fields' => array('Manufacturer.id', 'Manufacturer.name')
+		));
+		
+		$conditions = array(
+			'Product.active' => true,
+			$this->Product->price . ' > 0'
+		);
+		
+		if (!empty($defManufacturers)) {
+			$limit -= count($defManufacturers);;
+			$defManufacturersIds = Set::extract('/Manufacturer/id', $defManufacturers);
+			$conditions[] = 'Manufacturer.id NOT IN (' . implode(',', $defManufacturersIds) . ')';
+		}
+
+		$diffManufacturers = $this->find('all', array(
+			'conditions' => $conditions,
 			'contain' => array(),
 			'joins' => array(
 				array(
@@ -230,9 +248,13 @@ class Manufacturer extends AppModel {
 				)
 			),
 			'fields' => array('Manufacturer.id', 'Manufacturer.name', 'COUNT(Product.id) AS product_count'),
-			'order' => array('Manufacturer.name' => 'asc'),
-			'group' => array('Manufacturer.id HAVING product_count > ' . $min_product_count),
+			'order' => array('product_count' => 'desc'),
+			'group' => array('Manufacturer.id'),
+			'limit' => $limit
 		));
+		
+		$manufacturers = array_merge($defManufacturers, $diffManufacturers);
+		usort($manufacturers, array('Manufacturer', '__sortByName'));
 
 		$res = array();
 		foreach ($manufacturers as $index => &$manufacturer) {
@@ -253,6 +275,10 @@ class Manufacturer extends AppModel {
 		$res['path_ids'] = array(0 => $opened_manufacturer_id);
 
 		return $res;
+	}
+	
+	private static function __sortByName($a, $b) {
+		return strcmp($a['Manufacturer']['name'], $b['Manufacturer']['name']);
 	}
 }
 ?>
