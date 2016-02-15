@@ -786,5 +786,12 @@ class Category extends AppModel {
 		$isEmpty = empty($cp);
 		return $isEmpty;
 	}
+	
+	static function sortByName($a, $b) {
+		if ($a['Category']['name'] == $b['Category']['name']) {
+			return 0;
+		}
+		return ($a['Category']['name'] < $b['Category']['name']) ? -1 : 1;
+	}
 }
 ?>

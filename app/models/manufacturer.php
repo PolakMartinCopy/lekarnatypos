@@ -254,31 +254,24 @@ class Manufacturer extends AppModel {
 		));
 		
 		$manufacturers = array_merge($defManufacturers, $diffManufacturers);
-		usort($manufacturers, array('Manufacturer', '__sortByName'));
-
-		$res = array();
-		foreach ($manufacturers as $index => &$manufacturer) {
-			if ($this->Product->hasAny(array('Product.manufacturer_id' => $manufacturer['Manufacturer']['id'], 'Product.active' => true))) {
-				$url = $this->get_url($manufacturer['Manufacturer']['id']);
-				// musim prekladat data, abych mohl pouzit element pro vypis kategorii
-				$res[] = array(
-					'Category' => array(
-						'id' => $manufacturer['Manufacturer']['id'],
-						'url' => $url,
-						'name' => mb_convert_case(mb_strtolower($manufacturer['Manufacturer']['name']), MB_CASE_TITLE),
-						'children' => array()
-					)
-				);
-			}
+		foreach ($manufacturers as $index => $manufacturer) {
+			$url = $this->get_url($manufacturer['Manufacturer']['id']);
+			// musim prekladat data, abych mohl pouzit element pro vypis kategorii
+			$res[] = array(
+				'Category' => array(
+					'id' => $manufacturer['Manufacturer']['id'],
+					'url' => $url,
+					'name' => mb_convert_case(mb_strtolower($manufacturer['Manufacturer']['name']), MB_CASE_TITLE),
+					'children' => array()
+				)
+			);
 		}
+		usort($res, array('Category', 'sortByName'));
+
 		$res['categories'] = $res;
 		$res['path_ids'] = array(0 => $opened_manufacturer_id);
 
 		return $res;
-	}
-	
-	private static function __sortByName($a, $b) {
-		return strcmp($a['Manufacturer']['name'], $b['Manufacturer']['name']);
 	}
 }
 ?>
