@@ -1,6 +1,8 @@
 <div class="module-products">
     <div class="module-filters clearfix">
         <form id="filterForm" action="#filterForm" autocomplete="off" method="get">
+        	<?php // pokud nemam nastaveny vyrobce pro filtr, element schovam (napr na vypisu produktu vyrobce nepotrebuju filtrovat podle vyrobce)
+        	if (isset($filter_manufacturers) && !empty($filter_manufacturers)) { ?>
             <div class="select" id="brand">
             	<?php $filter_select_expanded = (isset($filter_tab) && $filter_tab == 'brand'); ?>
                 <span data-default="Výrobce" data-more-format="Výrobce: %d" class="filter-selector<?php echo ($filter_select_expanded ? ' expanded' : '')?>">
@@ -64,6 +66,7 @@
                     <a href="#" class="clear-filter" data-identificator="brand">Zrušit filtr</a>
                 </div>
             </div>
+            <?php } ?>
             <div class="select" id="price">
             	<?php $filter_select_expanded = (isset($filter_tab) && $filter_tab == 'price'); ?>
                 <span data-default="Cena" data-format="%d Kč - %d Kč" class="filter-selector<?php echo ($filter_select_expanded ? ' expanded' : '')?>">

@@ -105,19 +105,26 @@ class Manufacturer extends AppModel {
 			return false;
 		}
 		// chci 2 nejprodavanejsi produkty dane kategorie
-		$limit = 2;
+		$limit = 8;
+		$year_ago = date('Y-m-d', strtotime('-1 year'));
+
+		$conditions = array(
+			'Product.manufacturer_id' => $id,
+			'Image.is_main' => true,
+			'Product.active' => true,
+			'DATE(OrderedProduct.created) >' => $year_ago
+		);
+		
 		// idcka kategorii s darky, abych darky nezobrazoval ve vypisu
-		$present_category_ids = $this->Product->CategoriesProduct->Category->subtree_ids($this->Product->CategoriesProduct->Category->present_category_id);
+		if ($this->Product->CategoriesProduct->Category->present_category_id) {
+			$present_category_ids = $this->Product->CategoriesProduct->Category->subtree_ids($this->Product->CategoriesProduct->Category->present_category_id);
+			$conditions[] = 'CategoriesProduct.category_id NOT IN (' . implode(',', $present_category_ids) . ')';
+		}
 	
 		$this->Product->virtualFields['price'] = $this->Product->price;
 	
 		$products = $this->Product->find('all', array(
-			'conditions' => array(
-				'Product.manufacturer_id' => $id,
-				'Image.is_main' => true,
-				'Product.active' => true,
-				'CategoriesProduct.category_id NOT IN (' . implode(',', $present_category_ids) . ')'
-			),
+			'conditions' => $conditions,
 			'contain' => array(),
 			'fields' => array(
 				'Product.id',
@@ -198,6 +205,54 @@ class Manufacturer extends AppModel {
 		}
 	
 		return $redirect_url;
+	}
+	
+	function getSidebarMenu($opened_manufacturer_id, $min_product_count = 50) {
+		$customer_type_id = 2;
+		$manufacturers = $this->find('all', array(
+			'conditions' => array(
+				'Product.active' => true,
+				$this->Product->price . ' > 0'
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'LEFT',
+					'conditions' => array('Product.manufacturer_id = Manufacturer.id')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				)
+			),
+			'fields' => array('Manufacturer.id', 'Manufacturer.name', 'COUNT(Product.id) AS product_count'),
+			'order' => array('Manufacturer.name' => 'asc'),
+			'group' => array('Manufacturer.id HAVING product_count > ' . $min_product_count),
+		));
+
+		$res = array();
+		foreach ($manufacturers as $index => &$manufacturer) {
+			if ($this->Product->hasAny(array('Product.manufacturer_id' => $manufacturer['Manufacturer']['id'], 'Product.active' => true))) {
+				$url = $this->get_url($manufacturer['Manufacturer']['id']);
+				// musim prekladat data, abych mohl pouzit element pro vypis kategorii
+				$res[] = array(
+					'Category' => array(
+						'id' => $manufacturer['Manufacturer']['id'],
+						'url' => $url,
+						'name' => mb_convert_case(mb_strtolower($manufacturer['Manufacturer']['name']), MB_CASE_TITLE),
+						'children' => array()
+					)
+				);
+			}
+		}
+		$res['categories'] = $res;
+		$res['path_ids'] = array(0 => $opened_manufacturer_id);
+
+		return $res;
 	}
 }
 ?>

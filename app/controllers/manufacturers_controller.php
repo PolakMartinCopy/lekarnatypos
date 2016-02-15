@@ -100,83 +100,93 @@ class ManufacturersController extends AppController {
 	}
 
 	function view($id = null) {
-		// navolim si layout, ktery se pouzije
-		$this->layout = REDESIGN_PATH . 'category';
-		
-		// nastaveni formu pro vyber poctu produktu na strance
-		define('ALL_STRING', 'vše');
-		$paging_options = array(0 => 16, 24, 32, ALL_STRING);
-		$this->set('paging_options', $paging_options);
-		
-		$sorting_options = $this->Manufacturer->Product->sorting_options;
-		$this->set('sorting_options', $sorting_options);
-		
-		$sorting = 0;
-		if (isset($_GET['sorting'])) {
-			$sorting = $_GET['sorting'];
-		}
-		$this->data['Manufacturer']['sorting'] = $sorting;
-		
-		$paging = 0;
-		if (isset($_GET['paging'])) {
-			$paging = $_GET['paging'];
-		}
-		$this->data['Manufacturer']['paging'] = $paging;
-		
-		// nastavim si pro menu IDecko kategorie,
-		// kterou momentalne prohlizim
-		$this->set('opened_category_id', ROOT_CATEGORY_ID);
-		// nactu si info o vyrobci
-		$manufacturer = $this->Manufacturer->find('first', array(
-			'conditions' => array('Manufacturer.id' => $id, 'Manufacturer.active' => true),
-			'contain' => array(),
-			'fields' => array('Manufacturer.id', 'Manufacturer.name')
-		));
-		
-		if (empty($manufacturer)) {
-			$this->Session->setFlash('Neexistující výrobce.', REDESIGN_PATH . 'flash_failure');
+		if (!$id) {
+			$this->Session->setFlash('Není zadán výrobce, jehož produkty chcete vypsat', REDESIGN_PATH . 'flash_failure');
 			$this->redirect('/');
 		}
 		
+		if (isset($_GET['filter']['reset_filter'])) {
+			$url = $this->params['url']['url'];
+			$params = $this->params['url']['filter'];
+			switch ($_GET['filter']['reset_filter']) {
+				case 'brand':
+					unset($params['manufacturer_id']);
+					break;
+				case 'price':
+					unset($params['price']);
+					break;
+				case 'sorting':
+					unset($params['sorting']);
+					break;
+			}
+			unset($params['reset_filter']);
+			$params = array('filter' => $params);
+			$params = http_build_query($params);
+			$url = '/' . $url . '?' . $params;
+			$this->redirect($url);
+		}
+		
+		$manufacturer = $this->Manufacturer->find('first', array(
+			'conditions' => array(
+				'Manufacturer.id' => $id,
+				'Manufacturer.active' => true
+			),
+			'contain' => array(),
+		));
+		
+		if (empty($manufacturer)) {
+			$this->cakeError('error404');
+		}
+		
+		$manufacturer['Manufacturer']['url'] = $this->Manufacturer->get_url($manufacturer['Manufacturer']['id']);
 		$this->set('manufacturer', $manufacturer);
-		// nastavim breadcrumbs
-		$breadcrumbs[] = array('href' => '/' . $this->Manufacturer->get_url($id), 'anchor' => $manufacturer['Manufacturer']['name']);
+		$this->set('opened_manufacturer_id', $id);
+
+		$this->layout = REDESIGN_PATH . 'content';
+		$this->set('_title', $manufacturer['Manufacturer']['name']);
+		$this->set('_description', 'Léky, doplňky stravy a další produkty od výrobce ' . $manufacturer['Manufacturer']['name']);
+		
+		// sestavim breadcrumbs
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => $manufacturer['Manufacturer']['name'], 'href' => '/' . $manufacturer['Manufacturer']['url'])
+		);
 		$this->set('breadcrumbs', $breadcrumbs);
 		
-		// nastavim head tagy
-		$_title = $manufacturer['Manufacturer']['name'];
-		$this->set('_title', $_title);
-		$_description = $this->Manufacturer->get_description($id);
-		$this->set('_description', $_description);
-
-		// nastavim zobrazovany banner
-		$this->set('category_banner', unserialize(CATEGORY_BANNER));
-		
-		// nejprodavanejsi produkty
+		$conditions = array(
+			'Product.manufacturer_id' => $id,
+			// chci jen aktivni produkty
+			'Product.active' => true,
+			'Category.active' => true
+		);
+				
 		App::import('Model', 'CustomerType');
 		$this->CustomerType = new CustomerType;
 		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
-		
-		$manufacturer_most_sold = $this->Manufacturer->most_sold_products($id, $customer_type_id);
-		$this->set('manufacturer_most_sold', $manufacturer_most_sold);
-		
-		$limit = $paging_options[$this->data['Manufacturer']['paging']];
-		// idcka kategorii s darky, abych darky nezobrazoval ve vypisu
-		$present_category_ids = $this->Manufacturer->Product->CategoriesProduct->Category->subtree_ids($this->Manufacturer->Product->CategoriesProduct->Category->present_category_id);
-
-		$conditions = array(
-			'Product.manufacturer_id' => $id,
-			'Product.active' => true,
-			'Product.price >' => 0,
-			'CategoriesProduct.category_id NOT IN (' . implode(',', $present_category_ids) . ')' 
-		);
-		
-		if (isset($_GET['manufacturer_id']) && !empty($_GET['manufacturer_id'])) {
-			$manufacturer_id = $_GET['manufacturer_id'];
-			$conditions = array_merge($conditions, array('Product.manufacturer_id' => $manufacturer_id));
-			$this->data['Manufacturer']['manufacturer_id'] = $manufacturer_id;
+				
+		// musim tedy vybrat nejlevnejsi a nejdrazsi produkt v podle dosavadnich podminek, protoze jakmile tam prihodim podminky o cene, zkresli mi to hodnoty pro slider
+		// nejlevnejsi a nejdrazsi produkt pro ucely filtru podle ceny
+		$cheapest_product = $this->Manufacturer->Product->cheapest($conditions, $customer_type_id);
+		$cheapest_product_price = 0;
+		if (!empty($cheapest_product)) {
+			$cheapest_product_price = $cheapest_product['Product']['price'];
 		}
-		
+		$this->set('cheapest_price', $cheapest_product_price);
+				
+		$most_expensive_product = $this->Manufacturer->Product->most_expensive($conditions, $customer_type_id);
+		$most_expensive_product_price = 1000;
+		if (!empty($most_expensive_product)) {
+			$most_expensive_product_price = $most_expensive_product['Product']['price'];
+		}
+		$this->set('most_expensive_price', $most_expensive_product_price);
+				
+		if (isset($_GET['filter']['price']['min']) && !empty($_GET['filter']['price']['min'])) {
+			$conditions['Product.price >='] = $_GET['filter']['price']['min'];
+		}
+		if (isset($_GET['filter']['price']['max']) && !empty($_GET['filter']['price']['max'])) {
+			$conditions['Product.price <='] = $_GET['filter']['price']['max'];
+		}
+				
 		$joins = array(
 			array(
 				'table' => 'ordered_products',
@@ -187,8 +197,14 @@ class ManufacturersController extends AppController {
 			array(
 				'table' => 'categories_products',
 				'alias' => 'CategoriesProduct',
-				'type' => 'LEFT',
-				'conditions' => array('CategoriesProduct.product_id = Product.id')	
+				'type' => 'INNER',
+				'conditions' => array('Product.id = CategoriesProduct.product_id')
+			),
+			array(
+				'table' => 'categories',
+				'alias' => 'Category',
+				'type' => 'INNER',
+				'conditions' => array('Category.id = CategoriesProduct.category_id')
 			),
 			array(
 				'table' => 'images',
@@ -207,32 +223,15 @@ class ManufacturersController extends AppController {
 				'alias' => 'Availability',
 				'type' => 'INNER',
 				'conditions' => array('Availability.id = Product.availability_id')
+			),
+			array(
+				'table' => 'manufacturers',
+				'alias' => 'Manufacturer',
+				'type' => 'LEFT',
+				'conditions' => array('Manufacturer.id = Product.manufacturer_id')
 			)
 		);
 		
-		if (isset($_GET['attribute_id']) && !empty($_GET['attribute_id'])) {
-			$attribute_id = $_GET['attribute_id'];
-			$conditions = array_merge($conditions, array('AttributesSubproduct.attribute_id' => $attribute_id));
-			$this->data['Manufacrurer']['attribute_id'] = $attribute_id;
-			
-			$add_joins = array(
-				array(
-					'table' => 'subproducts',
-					'alias' => 'Subproduct',
-					'type' => 'LEFT',
-					'conditions' => array('Product.id = Subproduct.product_id'),
-				),
-				array(
-					'table' => 'attributes_subproducts',
-					'alias' => 'AttributesSubproduct',
-					'type' => 'LEFT',
-					'conditions' => array('Subproduct.id = AttributesSubproduct.subproduct_id')
-				)
-			);
-			
-			$joins = array_merge($joins, $add_joins);
-		}
-
 		$this->paginate['Product'] = array(
 			'conditions' => $conditions,
 			'contain' => array(),
@@ -243,61 +242,66 @@ class ManufacturersController extends AppController {
 				'Product.short_description',
 				'Product.retail_price_with_dph',
 				'Product.discount_common',
-				'Product.sold',
 				'Product.price',
+				'Product.discount',
 				'Product.rate',
-					
+				'Product.is_akce',
+				'Product.is_novinka',
+				'Product.is_doprodej',
+				'Product.is_bestseller',
+				'Product.is_darek_zdarma',
+		
 				'Image.id',
 				'Image.name',
-				
+		
 				'Availability.id',
 				'Availability.cart_allowed'
-
 			),
 			'joins' => $joins,
 			'group' => 'Product.id',
-			'limit' => $limit
+			'limit' => 15
 		);
-		// pokud je vybrano, ze se maji vypsat vsechny produkty
-		if ($limit == ALL_STRING) {
-			$this->paginate['Product']['show'] = 'all';
-		}
-		
+				
 		// sestavim podminku pro razeni podle toho, co je vybrano
 		$order = array('Availability.cart_allowed' => 'desc');
-		if (isset($this->data['Manufacturer']['sorting'])) {
-			switch ($this->data['Manufacturer']['sorting']) {
-				// vychozi razeni podle priority
-				case 0: $order = array_merge($order, array('Product.priority' => 'asc')); break;
-				// nastavim razeni podle prodejnosti
-				case 1: $order = array_merge($order, array('Product.sold' => 'desc')); break;
-				// nastavim razeni podle ceny
-				case 2: $order = array_merge($order, array('Product.price' => 'asc')); break;
-				case 3: $order = array_merge($order, array('Product.price' => 'desc')); break;
-				// nastavim razeni podle nazvu
-				case 4: $order = array_merge($order, array('Product.name' => 'asc')); break;
-				default: $order = array();
-			}
+		if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
+			$order = array_merge($order, $this->Manufacturer->Product->sorting_options[$_GET['filter']['sorting'][0]]['conditions']);
+		} else {
+			$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc', 'Product.price' => 'asc'));
+			$_GET['filter']['sorting'][0] = 0;
 		}
-		
+				
 		$this->paginate['Product']['order'] = $order;
-
+		
 		$this->Manufacturer->Product->virtualFields['sold'] = 'SUM(OrderedProduct.product_quantity)';
 		// cenu produktu urcim jako cenu podle typu zakaznika, pokud je nastavena, pokud neni nastavena cena podle typu zakaznika, vezmu za cenu beznou slevu, pokud ani ta neni nastavena
 		// vezmu jako cenu produktu obycejnou cenu
 		$this->Manufacturer->Product->virtualFields['price'] = $this->Manufacturer->Product->price;
+		// sleva
+		$this->Manufacturer->Product->virtualFields['discount'] = $this->Manufacturer->Product->discount;
+		
 		$products = $this->paginate('Product');
+		foreach ($products as &$product) {
+			$product['Product']['free_shipping_min_quantity'] = $this->Manufacturer->Product->minQuantityFreeShipping($product['Product']['id']);
+		}
+		
 		// opetovne vypnuti virtualnich poli, nastavenych za behu
 		unset($this->Manufacturer->Product->virtualFields['sold']);
 		unset($this->Manufacturer->Product->virtualFields['price']);
+		unset($this->Manufacturer->Product->virtualFields['discount']);
 
 		$this->set('products', $products);
-
-		$listing_style = 'products_listing_grid';
-		$this->set('listing_style', $listing_style);
 		
-		$action_products = $this->Manufacturer->Product->get_action_products($customer_type_id, 4);
-		$this->set('action_products', $action_products);
+		// nejprodavanejsi produkty
+		App::import('Model', 'CustomerType');
+		$this->CustomerType = new CustomerType;
+		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
+		$most_sold = $this->Manufacturer->most_sold_products($id, $customer_type_id);
+		$this->set('most_sold_products', $most_sold);
+		
+		$this->set('sorting_options', $this->Manufacturer->Product->sorting_options);
+		
+		$this->set('listing_style', 'products_listing_grid');
 	}
 	
 	function ajax_get_url() {

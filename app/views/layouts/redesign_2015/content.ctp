@@ -8,13 +8,13 @@
 	<div class="container main-content">
 		<?php echo $this->element(REDESIGN_PATH . 'header_row')?>
 		<?php echo $this->element(REDESIGN_PATH . 'benefits_row')?>
-
         <div class="content row">
             <div class="module-page">
                 <div class="aside" id="categories-navigation">
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation"<?php echo ($categories_bothers_tab == 'categories' ? ' class="active"' : '')?>><a href="#categories" aria-controls="categories" role="tab" data-toggle="tab" class="categories-bothers-switch">Kategorie</a></li>
-                        <li role="presentation"<?php echo ($categories_bothers_tab == 'bothers' ? ' class="active"' : '')?>><a href="#bothers" aria-controls="bothers" role="tab" data-toggle="tab" class="categories-bothers-switch">Co vás trápí</a></li>
+                        <li role="presentation"<?php echo ($categories_bothers_tab == 'bothers' ? ' class="active"' : '')?>><a href="#bothers" aria-controls="bothers" role="tab" data-toggle="tab" class="categories-bothers-switch">Nemoci</a></li>
+                        <li role="presentation"<?php echo ($categories_bothers_tab == 'manufacturers' ? ' class="active"' : '')?>><a href="#manufacturers" aria-controls="manufacturers" role="tab" data-toggle="tab" class="categories-bothers-switch">Výrobci</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane fade<?php echo ($categories_bothers_tab == 'categories' ? ' in active' : '')?>" id="categories">
@@ -25,6 +25,11 @@
                         <div role="tabpanel" class="tab-pane fade<?php echo ($categories_bothers_tab == 'bothers' ? ' in active' : '')?>" id="bothers">
                             <div id="bothersMenu">
                                 <?php echo $this->element(REDESIGN_PATH . 'content_categories', array('categories' => $bothers_menu))?>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade<?php echo ($categories_bothers_tab == 'manufacturers' ? ' in active' : '')?>" id="manufacturers">
+                            <div id="manufacturersMenu">
+                                <?php echo $this->element(REDESIGN_PATH . 'content_categories', array('categories' => $manufacturers_menu))?>
                             </div>
                         </div>
                     </div>

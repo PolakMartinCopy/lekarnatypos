@@ -75,6 +75,14 @@ if ( $_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz'){
 		array('slug' => '.*\-p', 'product_id' => '\d+', 'pass' => array('product_id'))
 	);
 	
+	// routovani vyrobcu
+	Router::connect(
+		'/:slug:manufacturer_id',
+		array('controller' => 'manufacturers', 'action' => 'view'),
+		array('slug' => '.*\-v', 'manufacturer_id' => '\d+', 'pass' => array('manufacturer_id'))
+	);
+	
+	
 	// routovani obsahovych stranek
 	App::import('Model', 'Content');
 	$this->Content = &new Content;

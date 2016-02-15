@@ -101,18 +101,14 @@
 				$opened_category_id = $this->viewVars['opened_category_id'];
 			}
 			
+			$opened_manufacturer_id = null;
+			if (isset($this->viewVars['opened_manufacturer_id'])) {
+				$opened_manufacturer_id = $this->viewVars['opened_manufacturer_id'];
+			}
+			
 			// data o kosiku
 			$this->set('carts_stats', $this->Product->CartsProduct->getStats($this->Product->CartsProduct->Cart->get_id()));
 
-/*			// submenu kategorii
-			$this->set('categories_submenu', $this->Product->CategoriesProduct->Category->getSubmenuCategories());
-*/
-/*			// vyrobci do selectu
-			$manufacturers_list = $this->Product->Manufacturer->find('list', array(
-				'conditions' => array('Manufacturer.active' => true)	
-			));
-			$this->set('manufacturers_list', $manufacturers_list);
-*/			
 			// nastaveni aktivniho tabu (kategorie / priznaky), defaultne kategorie
 			$categories_bothers_tab = 'categories';
 			if ($this->Session->check('categories_bothers_tab')) {
@@ -133,19 +129,23 @@
 			
 			$categories_menu = array();
 			$bothers_menu = array();
+			$manufacturers_menu = array();
 			if ($this->layout == REDESIGN_PATH . 'content') {
 				// na obsahove strance chci pouze seznam rootovych kategorii s otevrenym aktualnim podstromem
 				$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, $this->Product->CategoriesProduct->Category->category_subtree_root_id);
 				$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, true, $this->Product->CategoriesProduct->Category->bothers_subtree_root_id);
+				$manufacturers_menu = $this->Product->Manufacturer->getSidebarMenu($opened_manufacturer_id);
 			} elseif ($this->layout == REDESIGN_PATH . 'homepage') {
 				if ($this->params['controller'] == 'pages' && $this->params['action'] == 'home') {
 					// uplny strom kategorii - vypisuje se pouze na HP
 					$categories_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, $this->Product->CategoriesProduct->Category->category_subtree_root_id);
 					$bothers_menu = $this->Product->CategoriesProduct->Category->getSidebarMenu($opened_category_id, $this->Session->check('Customer'), false, false, false, $this->Product->CategoriesProduct->Category->bothers_subtree_root_id);
+					$manufacturers_menu = $this->Product->Manufacturer->getSidebarMenu($opened_manufacturer_id);
 				}
 			}
 			$this->set('categories_menu', $categories_menu);
 			$this->set('bothers_menu', $bothers_menu);
+			$this->set('manufacturers_menu', $manufacturers_menu);
 			
 			App::import('Model', 'News');
 			$this->News = &new News;

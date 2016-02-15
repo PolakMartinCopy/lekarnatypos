@@ -190,9 +190,11 @@ class ProductsController extends AppController {
 		}
 		
 		$product['Product']['free_shipping_min_quantity'] = $this->Product->minQuantityFreeShipping($product['Product']['id']);
+		$product['Manufacturer']['url'] = $this->Product->Manufacturer->get_url($product['Manufacturer']['id']);
 		
 		$this->set('product', $product);
-
+		$this->set('opened_manufacturer_id', $product['Manufacturer']['id']);
+		
 		// SPRAVA VARIANT PRODUKTU
 		$subproducts = array();
 		$subproduct_conditions = array('Subproduct.product_id' => $id, 'Subproduct.active' => true);
