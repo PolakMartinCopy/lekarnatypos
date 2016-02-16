@@ -108,26 +108,46 @@ class AbandonedCartAdMail extends AppModel {
 		return $products;
 	}
 	
-	function sendMail($subject, $body, $email, $customerName) {
-		App::import('Vendor', 'phpmailer', array('file' => 'phpmailer/class.phpmailer.php'));
-		$mail = new phpmailer();
-		// uvodni nastaveni
-		$mail->CharSet = 'utf-8';
-		$mail->Hostname = CUST_ROOT;
-		$mail->Sender = CUST_MAIL;
-		$mail->IsHtml(true);
+	function sendMail($subject, $body, $bodyAlternative, $email) {
+		App::import('Vendor', 'MailKomplet', array('file' => 'mail_komplet.php'));
+		$mailKomplet = &new MailKomplet;
 		
-		// nastavim adresu, od koho se poslal email
-		$mail->From     = CUST_MAIL;
-		$mail->FromName = CUST_NAME;
+		$mailKomplet->login();
 		
-		$mail->AddReplyTo(CUST_MAIL, CUST_NAME);
+		// dispatcherId je pevne dano
+		$dispatcherId = 1677;
+		return $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
+	}
+	
+	function buildConditions($type, $yesterdayDate) {
+		switch ($type) {
+			case 'a':
+				$start = $yesterdayDate . ' 00:00:00';
+				$end = $yesterdayDate . ' 11:59:59';
+				break;
+			case 'p':
+				$start = $yesterdayDate . ' 12:00:00';
+				$end = $yesterdayDate . ' 23:59:59';
+				break;
+		}
 		
-		$mail->AddAddress($email, $customerName);
-		$mail->AddBCC('brko11@gmail.com');
-		$mail->Subject = $subject;
-		$mail->Body = $body;
+		if (isset($start) && isset($end)) {
+			$conditions = array(
+				'Cart.created >= "' . $start . '"',
+				'Cart.created <= "' . $end . '"',
+				// ke kosiku neni objednavka
+				'Order.id IS NULL',
+				// kosik nevznikl navstevou z emailu o opustenem kosiku
+				'AbandonedCartAdMail.id IS NULL',
+				// znam uzivatele k danemu kosiku
+				'Customer.id IS NOT NULL',
+				// musi mit produkty
+				'CartsProduct.id IS NOT NULL'
+			);
 
-		return $mail->Send();
+			return $conditions;
+		}
+		return false;
+
 	}
 }

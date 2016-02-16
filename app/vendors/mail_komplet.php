@@ -122,6 +122,60 @@ class MailKomplet {
 		return false;
 	}
 	
+	function sendMail($recipientDisplayName, $recipientEmail, $email, $subject, $body, $bodyAlternative, $dispatcherId, $verbose = false) {
+		// TODO - odstranit v LIVE
+		$email = 'brko11@gmail.com';
+		
+		$request = array(
+			'recipientDisplayName' => $recipientDisplayName,
+			'recipientEmail' => $recipientEmail,
+			'email' => $email,
+			'subject' => $subject,
+			'body' => $body,
+			'bodyAlternative' => $bodyAlternative,
+			'dispatcherId' => $dispatcherId
+		);
+
+		$request = json_encode($request);
+		$url = 'http://staging.admin.webkomplet.cz/api/xtjv3opyJDo4W4vfVhnrD4a36efUhEy1/mails';
+		$header = array(
+			"Accept: application/json",
+			"Content-Type: application/json;charset=UTF-8",
+			"Accept-Encoding: gzip,deflate,sdch"
+		);
+		
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+
+		curl_setopt($ch, CURLOPT_POST,  TRUE);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch, CURLOPT_COOKIE, $this->getToken());
+		
+		if ($verbose) { 
+			$curl_log = fopen("curl.txt", 'a+');
+			curl_setopt($ch, CURLOPT_VERBOSE, true);
+			curl_setopt($ch, CURLOPT_STDERR, $curl_log);
+		}
+				
+		$response = curl_exec($ch);
+		
+		$res = true;
+		if (curl_getinfo($ch, CURLINFO_HTTP_CODE) != 200) {
+			debug(curl_getinfo($ch, CURLINFO_HTTP_CODE));
+			$res = false;
+		}
+		
+		if ($verbose) {
+			fclose($curl_log);
+		}
+		curl_close($ch);
+		return $res;
+	}
+	
 	function getBusinessUnits() {
 		$ch = curl_init();
 		$url = $this->getBaseURL() . '/' . $this->getCryptData() . '/businessUnits/get';
