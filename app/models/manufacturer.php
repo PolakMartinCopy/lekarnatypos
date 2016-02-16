@@ -371,5 +371,13 @@ class Manufacturer extends AppModel {
 	private static function buildDescription($name) {
 		return 'Produkty výrobce ' . $name . ' najdete v nabídce e-shopu LekarnaTypos CZ';
 	}
+	
+
+	static function sortByName($a, $b) {
+		if ($a['Manufacturer']['name'] == $b['Manufacturer']['name']) {
+			return 0;
+		}
+		return ($a['Manufacturer']['name'] < $b['Manufacturer']['name']) ? -1 : 1;
+	}
 }
 ?>

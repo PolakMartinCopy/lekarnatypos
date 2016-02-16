@@ -57,6 +57,7 @@ if ( $_SERVER['HTTP_HOST'] != 'www.lekarnatypos.cz'){
 	Router::connect('/obnova-hesla', array('controller' => 'customers', 'action' => 'password'));
 	Router::connect('/aktuality', array('controller' => 'news', 'action' => 'index'));
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+	Router::connect('/vyrobci', array('controller' => 'manufacturers', 'action' => 'index'));
 
 	$url = $_SERVER['REQUEST_URI'];
 	$url = ltrim($url, "/");

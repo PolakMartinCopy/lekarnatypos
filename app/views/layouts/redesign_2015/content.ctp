@@ -31,6 +31,7 @@
                             <div id="manufacturersMenu">
                                 <?php echo $this->element(REDESIGN_PATH . 'content_categories', array('categories' => $manufacturers_menu))?>
                             </div>
+                            <?php echo $this->Html->link('a spousta dalších...', array('controller' => 'manufacturers', 'action' => 'index'))?>
                         </div>
                     </div>
                     <div class="aside-links text-center">

@@ -99,6 +99,69 @@ class ManufacturersController extends AppController {
 		}
 		$this->redirect(array('action'=>'index'));
 	}
+	
+	// vypise rejstrik vyrobcu s poctem produktu
+	function index() {
+		$customer_type_id = $this->Manufacturer->Product->CustomerTypeProductPrice->CustomerType->get_id($this->Session->read());
+		
+		$this->Manufacturer->virtualFields['products_count'] = 'COUNT(Product.id)';
+		$manufacturers = $this->Manufacturer->find('all', array(
+			'conditions' => array(
+				'Product.active' => true,
+				'Category.active' => true,
+				$this->Manufacturer->Product->price . ' > 0',
+				'Manufacturer.name !=' => ''
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'LEFT',
+					'conditions' => array('Product.manufacturer_id = Manufacturer.id')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+				array(
+					'table' => 'categories_products',
+					'alias' => 'CategoriesProduct',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = CategoriesProduct.product_id')
+				),
+				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => array('Category.id = CategoriesProduct.category_id')
+				),
+			),
+			'fields' => array('Manufacturer.id', 'Manufacturer.name', 'Manufacturer.products_count'),
+			'group' => array('Manufacturer.id'),
+		));
+		
+		foreach ($manufacturers as $index => &$manufacturer) {
+			$manufacturer['Manufacturer']['url'] = $this->Manufacturer->get_url($manufacturer['Manufacturer']['id']);
+			$manufacturer['Manufacturer']['name'] = trim(mb_convert_case(mb_strtolower($manufacturer['Manufacturer']['name']), MB_CASE_TITLE));
+		}
+		usort($manufacturers, array('Manufacturer', 'sortByName'));
+
+		$this->set('manufacturers', $manufacturers);
+		
+		$this->layout = REDESIGN_PATH . 'content';
+		$this->set('_title', 'Výrobci');
+		$this->set('_description', 'LékárnaTypos CZ prodává zboží těchto výrobců');
+		
+		// sestavim breadcrumbs
+		$breadcrumbs = array(
+			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Výrobci', 'href' => '/vyrobci')
+		);
+		$this->set('breadcrumbs', $breadcrumbs);
+	}
 
 	function view($id = null) {
 		if (!$id) {
@@ -150,6 +213,7 @@ class ManufacturersController extends AppController {
 		// sestavim breadcrumbs
 		$breadcrumbs = array(
 			array('anchor' => 'Domů', 'href' => '/'),
+			array('anchor' => 'Výrobci', 'href' => '/vyrobci'),
 			array('anchor' => $manufacturer['Manufacturer']['name'], 'href' => '/' . $manufacturer['Manufacturer']['url'])
 		);
 		$this->set('breadcrumbs', $breadcrumbs);

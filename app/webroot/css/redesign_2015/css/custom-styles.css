@@ -78,3 +78,9 @@ h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
     width: 400px;
     height: 250px;
 }
+
+.three-columns {
+	-webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;
+}
