@@ -243,6 +243,12 @@ class SearchesController extends AppController {
 					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
 				),
 				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
+				array(
 					'table' => 'availabilities',
 					'alias' => 'Availability',
 					'type' => 'INNER',

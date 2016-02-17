@@ -76,7 +76,10 @@ class AbandonedCartAdMailsController extends AppController {
 		die('here');
 	}
 			
-	function send($cartId = 593830) { // XXX - jiny clovek, XXX - anonymni navsteva, 593830 - moje navsteva
+	function send($cartId = null) {
+		if (!$cartId) {
+			return false;
+		}
 		// nevznikl dany kosik tim, ze jsem ho vytvorit pomoci tohoto emailu? (nechci posilat zapomenuty kosik porad dokola...)
 		if (!$this->AbandonedCartAdMail->Cart->isBuiltFromAbandoned($cartId)) {
 			// zjistim uzivatele

@@ -106,7 +106,7 @@ class Product extends AppModel {
 		) */
 	);
 	
-	var $price = 'FLOOR(IF(CustomerTypeProductPrice.price, CustomerTypeProductPrice.price, IF(Product.discount_common, Product.discount_common, Product.retail_price_with_dph)))';
+	var $price = 'FLOOR(IF(CustomerTypeProductPrice.price, CustomerTypeProductPrice.price, IF(CustomerTypeProductPriceCommon.price, CustomerTypeProductPriceCommon.price, IF(Product.discount_common, Product.discount_common, Product.retail_price_with_dph))))';
 		
 	var $virtualFields = array(
 		'rate' => 'ROUND(COALESCE(Product.overall_rate / Product.voted_count))'	
@@ -580,7 +580,13 @@ class Product extends AppModel {
 						'alias' => 'CustomerTypeProductPrice',
 						'type' => 'LEFT',
 						'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
-					)
+					),
+					array(
+						'table' => 'customer_type_product_prices',
+						'alias' => 'CustomerTypeProductPriceCommon',
+						'type' => 'LEFT',
+						'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+					),
 				),
 				'fields' => array(
 					'Product.id',
@@ -883,7 +889,13 @@ class Product extends AppModel {
 					'alias' => 'CustomerTypeProductPrice',
 					'type' => 'LEFT',
 					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
-				)
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
 			),
 			'order' => array('RelatedProduct.order' => 'asc')
 		));
@@ -956,7 +968,13 @@ class Product extends AppModel {
 					'alias' => 'CustomerTypeProductPrice',
 					'type' => 'LEFT',
 					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
-				)
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
 			),
 			'group' => array('OtherOrderedProduct.product_id'),
 			'order' => array('ordered_quantity' => 'desc'),
@@ -990,6 +1008,12 @@ class Product extends AppModel {
 				'alias' => 'CustomerTypeProductPrice',
 				'type' => 'LEFT',
 				'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPriceCommon',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
 			),
 			array(
 				'table' => 'availabilities',
@@ -1049,6 +1073,12 @@ class Product extends AppModel {
 				'alias' => 'CustomerTypeProductPrice',
 				'type' => 'LEFT',
 				'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPriceCommon',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
 			),
 			array(
 				'table' => 'availabilities',
