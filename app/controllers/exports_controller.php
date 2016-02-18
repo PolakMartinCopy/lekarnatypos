@@ -289,9 +289,9 @@ class ExportsController extends AppController{
 		$categories_conditions = 'Category.id = CategoriesProduct.category_id';
 		// vytahnu si kategorie, ktere nejsou aktivni
 		$not_active_categories = $this->Export->Product->CategoriesProduct->Category->find('all', array(
-				'conditions' => array('Category.active' => false),
-				'contain' => array(),
-				'fields' => array('Category.id')
+			'conditions' => array('Category.active' => false),
+			'contain' => array(),
+			'fields' => array('Category.id')
 		));
 		// zjistim idcka podstromu neaktivnich kategorii
 		$not_active_categories_ids = array();
@@ -412,7 +412,7 @@ class ExportsController extends AppController{
 				}
 				
 				$product['Product']['type_text'] = $this->Export->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
-				if (!empty($Product['Product']['type_text'])) {
+				if (!empty($product['Product']['type_text'])) {
 					unset($product['Product']['type_text'][0]);
 					unset($product['Product']['type_text'][1]);
 				}
