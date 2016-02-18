@@ -35,9 +35,7 @@
                         </div>
                     </div>
                     <div class="aside-links text-center">
-                        <a href="http://obchody.heureka.cz/lekarnatypos-cz/recenze/" target="_blank">
-                            <img src="/img/<?php echo REDESIGN_PATH?>heureka-overeno-zakazniky.png" alt="Heureka.cz - Ověřeno zákazníky" />
-                        </a>
+						<div id="showHeurekaBadgeHere-12"></div>
                         <a href="https://www.sukl.cz/modules/apotheke/verify.php?kod=72995264000&verify_eu" target="_blank">
 		    				<img src="/images/<?php echo REDESIGN_PATH?>sukl-overeni.png" alt="Ověřit lékárnu" title="Ověřit lékárnu" width="234px" height="195px"/> 
 	    				</a>
@@ -65,6 +63,7 @@
 	<?php echo $this->element(REDESIGN_PATH . 'footer')?>
 	<?php echo $this->element(REDESIGN_PATH . 'default_js')?>
 	<?php echo $this->element(REDESIGN_PATH . 'modal-newsletter-subscribe')?>
+	<script type="text/javascript" src="/js/<?php echo REDESIGN_PATH?>heureka-content-widget.js"></script>
 	<div class="modal-order"><!-- Place at bottom of page --></div>
 </body>
 <?php echo $this->element('sql_dump')?>
