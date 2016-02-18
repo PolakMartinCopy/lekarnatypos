@@ -7,43 +7,49 @@ class ProductPropertiesProductsController extends AppController {
 	 * Touto metodou nastavim, ze u produktu Syncare nechci updatovat nikde nic
 	 */
 	function admin_init() {
-		$conditions = array('Product.supplier_id' => array(4, 5)); // Syncare a Topvet
+		$conditions = array('Product.supplier_id' => array(1)); // Syncare a Topvet
 		
-		// pro kazdy z vybranych produktu nastavim u vsech vlasnosti, ze ji nechci updatovat
+		// chci nastavit, ze chci updatovat active a dostupnost
 		$products = $this->ProductPropertiesProduct->Product->find('all', array(
 			'conditions' => $conditions,
 			'contain' => array(),
 			'fields' => array('Product.id')
 		));
-		$product_ids = Set::extract('/Product/id', $products);
-		// pokud mam neco pro dane produkty nadefinovane, tak to smazu
-		$this->ProductPropertiesProduct->deleteAll(array(
-			'ProductPropertiesProduct.product_id' =>  $product_ids 	
-		)); 
 		
-		// natahnu si vsechny sledovane vlastnosti
-		$properties = $this->ProductPropertiesProduct->ProductProperty->find('all', array(
-			'contain' => array(),
-			'fields' => array('ProductProperty.id')	
-		));
+		// active
+		// $property_id = 18;
+		//$availability;
+		$property_id = 13;
 		
-		// vygeneruju si pole pro ulozeni, ze u produktu chci feedem updatovat active a ceny
-		$properties_save = array();
+		$save = array();
+		
 		foreach ($products as $product) {
-			foreach ($properties as $property) {
-				$update = false;
-				if (in_array($property['ProductProperty']['id'], array(11, 18))) {
-					$update = true;
-				}
-				$properties_save[] = array(
+			$property = $this->ProductPropertiesProduct->find('first', array(
+				'conditions' => array(
+					'ProductPropertiesProduct.product_id' => $product['Product']['id'],
+					'ProductPropertiesProduct.product_property_id' => $property_id,
+					'ProductPropertiesProduct.update' => false
+				),
+				'contain' => array(),
+				'fields' => array('ProductPropertiesProduct.id')
+			));
+			if (empty($property)) {
+				$product_property = array(
 					'product_id' => $product['Product']['id'],
-					'product_property_id' => $property['ProductProperty']['id'],
-					'update' => $update
+					'product_property_id' => $property_id,
+				);
+			} else {
+				$product_property = array(
+					'id' => $property['ProductPropertiesProduct']['id'],
 				);
 			}
+			$product_property['update'] = true;
+			$save[] = $product_property;
 		}
+		
+//		debug($save); die();
 
-		$this->ProductPropertiesProduct->saveAll($properties_save);
+		$this->ProductPropertiesProduct->saveAll($save);
 		
 		die('hotovo');
 	}
