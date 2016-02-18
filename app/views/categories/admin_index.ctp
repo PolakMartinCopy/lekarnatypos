@@ -92,6 +92,7 @@
 					<th>&nbsp;</th>
 					<th>&nbsp;</th>
 					<th>&nbsp;</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -158,6 +159,10 @@ function draw_table($object, $categories, $prefix) {
 			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/down.png" alt="" />';
 			echo $object->Html->link($icon, array('controller' => 'categories', 'action' => 'movedown', $category['Category']['id']), array('escape' => false, 'title' => 'Posunout dolů'));
 		?></td>
+		<td><?php 
+			$icon = '<img src="/images/' . REDESIGN_PATH . 'icons/flag_red.png" alt="" />';
+			echo $object->Html->link($icon, array('controller' => 'categories', 'action' => 'comparators', $category['Category']['id']), array('escape' => false, 'title' => 'Přiřazení do taxonomií srovnávačů'));
+		?></td>
 	</tr>
 <?php	if (!empty($category['children'])) {
 			draw_table($object, $category['children'], $prefix . '&nbsp;-&nbsp;');
@@ -179,6 +184,7 @@ function draw_table($object, $categories, $prefix) {
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/link_external.png' width='16' height='16' /> ... přejít do kategorie v shopu<br />
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/up.png' width='16' height='16' /> ... změnit pořadí v rámci kategorie nahoru<br />
 			<img src='/images/<?php echo REDESIGN_PATH ?>icons/down.png' width='16' height='16' /> ... změnit pořadí v rámci kategorie dolů<br />
+			<img src="/images/<?php echo REDESIGN_PATH ?>icons/flag_red.png" width='16' height='16' /> ... přiřazení do taxonomií srovnávačů<br/>
 		</td>
 	</tr>
 </table>

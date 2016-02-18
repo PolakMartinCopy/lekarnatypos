@@ -484,6 +484,68 @@ class CategoriesController extends AppController {
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
+	
+	function admin_comparators($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Neznámá kategorie.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'categories', 'action' => 'index'));
+		}
+		
+		// nactu si produkt se zadanym idckem
+		$category = $this->Category->find('first', array(
+			'conditions' => array('Category.id' => $id),
+			'contain' => array(),
+			'fields' => array('Category.id', 'Category.name')
+		));
+		
+		if (empty($category)) {
+			$this->Session->setFlash('Neexistující kategorie.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'categories', 'action' => 'index'));
+		}
+		
+		$comparators = $this->Category->CategoriesComparator->Comparator->find('all', array(
+			'conditions' => array('Comparator.active' => true),
+			'contain' => array(),
+			'order' => array('Comparator.order' => 'asc'),
+			'fields' => array('Comparator.id', 'Comparator.name')
+		));
+		
+		$categories_comparators = $this->Category->CategoriesComparator->find('all', array(
+			'conditions' => array(
+				'CategoriesComparator.category_id' => $category['Category']['id']
+			),
+			'contain' => array()
+		));
+		
+		if (isset($this->data)) {
+			$save = array();
+			foreach ($this->data['CategoriesComparator'] as $index => &$cp) {
+				if (!empty($cp['path'])) {
+					if ($cp_id = $this->Category->CategoriesComparator->get_id($cp['category_id'], $cp['comparator_id'])) {
+						$cp['id'] = $cp_id;
+					}
+					$save[] = $cp;
+				}
+			}
+			if (empty($save)) {
+				$this->Session->setFlash('Není zadáno žádné přiřazení kategorie do taxonomií srovnávačů.', REDESIGN_PATH . 'flash_failure');
+			} else {
+				if ($this->Category->CategoriesComparator->saveAll($save)) {
+					$this->Session->setFlash('Přiřazení kategorií do taxonomií srovnánačů byly uloženy.', REDESIGN_PATH . 'flash_success');
+					$this->redirect($_SERVER['REQUEST_URI']);
+				} else {
+					$this->Session->setFlash('Přiřazení kategorií do taxonomií srovnánačů se nepodařilo uložit.', REDESIGN_PATH . 'flash_failure');
+				}
+			}
+		}	
+		
+		$this->set('category', $category);
+		$this->set('comparators', $comparators);
+		$this->set('categories_comparators', $categories_comparators);
+		$this->set('id', $id);
+		
+		$this->layout = REDESIGN_PATH . 'admin';
+	}
 
 	/**
 	 * Natahne data ze struktury tabulek

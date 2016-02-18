@@ -14,4 +14,18 @@ class CategoriesComparator extends AppModel {
 			)
 		)
 	);
+	
+	function get_id($category_id, $comparator_id) {
+		$cp = $this->find('first', array(
+			'conditions' => array('category_id' => $category_id, 'comparator_id' => $comparator_id),
+			'contain' => array(),
+			'fields' => array('id')
+		));
+	
+		if (empty($cp)) {
+			return false;
+		}
+	
+		return $cp['CategoriesComparator']['id'];
+	}
 }
