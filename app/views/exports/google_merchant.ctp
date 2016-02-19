@@ -5,8 +5,8 @@
 		$title = $product['Product']['name'];
 		$description = $product['Product']['short_description'];
 		$google_product_category = $product['CategoriesComparator']['path'];
-		$link = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $product['Product']['url'];
-		$image_link = 'http://' . $_SERVER['HTTP_HOST'] . '/product-images/' . (empty($product['Image']['name']) ? '' : str_replace(" ", "%20", $product['Image']['name']));
+		$link = 'http://www.lekarnatypos.cz/' . $product['Product']['url'];
+		$image_link = 'http://www.lekarnatypos.cz/product-images/' . (empty($product['Image']['name']) ? '' : str_replace(" ", "%20", $product['Image']['name']));
 		$price = $product['Product']['price'];
 		$brand = $product['Manufacturer']['name'];
 		$product_type = $product['Product']['type_text'];

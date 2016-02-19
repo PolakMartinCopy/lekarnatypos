@@ -416,6 +416,7 @@ class ExportsController extends AppController{
 					unset($product['Product']['type_text'][0]);
 					unset($product['Product']['type_text'][1]);
 				}
+				$product['Product']['type_text'] = array_values($product['Product']['type_text']);
 				$product['Product']['type_text'] = Set::extract('/Category/name', $product['Product']['type_text']);
 				$product['Product']['type_text'] = implode(' | ', $product['Product']['type_text']);
 				
