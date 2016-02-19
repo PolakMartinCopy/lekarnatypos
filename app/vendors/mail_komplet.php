@@ -122,18 +122,19 @@ class MailKomplet {
 		return false;
 	}
 	
-	function sendMail($recipientDisplayName, $recipientEmail, $email, $subject, $body, $bodyAlternative, $dispatcherId, $verbose = false) {
+	function sendMail($senderDisplayName, $senderEmail, $recipientEmail, $subject, $body, $bodyAlternative, $dispatcherId, $verbose = false, $insertUnsubscribeLink = false) {
 		// TODO - odstranit v LIVE
-		$email = 'brko11@gmail.com';
+		$recipientEmail = 'brko11@gmail.com';
 		
 		$request = array(
-			'recipientDisplayName' => $recipientDisplayName,
+			'senderDisplayName' => $senderDisplayName,
+			'senderEmail' => $senderEmail,
 			'recipientEmail' => $recipientEmail,
-			'email' => $email,
 			'subject' => $subject,
 			'body' => $body,
 			'bodyAlternative' => $bodyAlternative,
-			'dispatcherId' => $dispatcherId
+			'dispatcherId' => $dispatcherId,
+			'insertUnsubscribeLink' => $insertUnsubscribeLink
 		);
 
 		$request = json_encode($request);
