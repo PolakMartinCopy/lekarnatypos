@@ -216,6 +216,8 @@ class ManufacturersController extends AppController {
 		$this->set('_title', $manufacturer['Manufacturer']['title']);
 		$this->set('_description', $manufacturer['Manufacturer']['description']);
 		
+		$this->Session->write('categories_bothers_tab', 'manufacturers');
+		
 		// sestavim breadcrumbs
 		$breadcrumbs = array(
 			array('anchor' => 'Domů', 'href' => '/'),
