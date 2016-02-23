@@ -381,6 +381,32 @@ class Manufacturer extends AppModel {
 		return false;
 	}
 	
+	// zmeni dostupnost produktu daneho vyrobce
+	function changeAvailability($id, $nextAvailabilityId, $prevAvailabilityId = null) {
+		$conditions = array(
+			'Product.manufacturer_id' => $id,
+			'Product.active' => true
+		);
+		if ($prevAvailabilityId) {
+			$conditions['Product.availability_id'] = $prevAvailabilityId;
+		}
+
+		$products = $this->Product->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'fields' => array('Product.id')
+		));
+
+		$save = array();
+		foreach ($products as $product) {
+			$save[] = array(
+				'id' => $product['Product']['id'],
+				'availability_id' => $nextAvailabilityId
+			);
+		}
+		return $this->Product->saveAll($save);
+	}
+	
 	private static function buildDescription($name) {
 		return 'Produkty výrobce ' . $name . ' najdete v nabídce e-shopu LekarnaTypos CZ';
 	}

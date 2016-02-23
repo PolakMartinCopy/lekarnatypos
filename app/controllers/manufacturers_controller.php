@@ -442,5 +442,31 @@ class ManufacturersController extends AppController {
 		}
 		die('here');
 	}
+	
+	// fce, ktera mi vsechny produkty sante nastavi jako skladem
+	function sante_in_stock() {
+		die('manufacturers/sante_in_stock - odstranit po uprave nacasovani cronu');
+		$prev_availability_id = 9;
+		$next_availability_id = 1;
+		$manufacturer_id = 108;
+		
+		if (!$this->Manufacturer->changeAvailability($manufacturer_id, $next_availability_id, $prev_availability_id)) {
+			die('nepodarilo se nastavit sante produkty jako "skladem"');
+		}
+		die('odstranit po otestovani - sante_in_stock');
+	}
+	
+	// fce, ktera mi vsechny produkty sante nastavi jako skladem
+	function sante_in_2_days() {
+		die('manufacturers/sante_in_2_days - odstranit po uprave nacasovani cronu');
+		$prev_availability_id = 1;
+		$next_availability_id = 9;
+		$manufacturer_id = 108;
+	
+		if (!$this->Manufacturer->changeAvailability($manufacturer_id, $next_availability_id, $prev_availability_id)) {
+			die('nepodarilo se nastavit sante produkty jako "do 2 dnu"');
+		}
+		die('odstranit po otestovani - sante_in_2_days');
+	}	
 }
 ?>

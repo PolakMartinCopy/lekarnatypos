@@ -2122,40 +2122,27 @@ class ProductsController extends AppController {
 		$products = $this->Product->find('all', array(
 			'conditions' => array(
 				'Product.supplier_id' => array(4, 5),
-				'OR' => array(
-					array('Product.is_pd_description_downloaded' => false),
-					array('Product.is_pd_description_downloaded' => null)
-				)
-					
 			),
 			'contain' => array(),
 			'fields' => array('Product.id', 'Product.description')
 		));
-		$limit = 10000;
-		$counter = 1;
+
+
 		foreach ($products as $product) {
-			if ($image = download_url_like_browser($product['Product']['description'])) {
-				$image_name = $product['Product']['id'] . '.jpeg';
-				if (file_put_contents($folder . $image_name, $image)) {
-					$product['Product']['is_pd_description_downloaded'] = true;
-					if (!$this->Product->savE($product)) {
-						debug($product);
-						die('nepodarilo se ulozit produkt');
+			// mam pro dany produkt stazeny popis?
+			$image_name = $product['Product']['id'] . '.jpeg';
+			if (!file_exists($folder . $image_name)) {
+				if ($image = download_url_like_browser($product['Product']['description'])) {
+					if (!file_put_contents($folder . $image_name, $image)) {
+						$debug($folder . $image_name);
+						die('nepodarilo se nahrat obrazek na disk');
 					}
 				} else {
-					$debug($folder . $image_name);
-					die('nepodarilo se nahrat obrazek na disk');
+					debug($product['Product']['description'] . ' - ' . $product['Product']['id'] . ' - NEPODARILO SE STAHNOUT OBRAZEK');
 				}
-			} else {
-				debug($product['Product']['description'] . ' - ' . $product['Product']['id'] . ' - NEPODARILO SE STAHNOUT OBRAZEK');
-				
 			}
-			if ($counter == $limit) {
-				die('Zpracovano ' . $limit . ' produktu');
-			}
-			$counter += 1;
 		}
-		
+
 		die('OK');
 	}
 	
