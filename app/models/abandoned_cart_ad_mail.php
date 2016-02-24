@@ -122,7 +122,14 @@ class AbandonedCartAdMail extends AppModel {
 		
 		// dispatcherId je pevne dano
 		$dispatcherId = 1677;
-		return $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
+		// poslu uzivateli / zakaznikovi pres mail komplet
+		$mailKompletSent = $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
+		
+		// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
+		$admin_subject = 'Zapomenuty košík pro ' . $email;
+		notificate_admins($admin_subject, $body);
+
+		return $mailKompletSent;
 	}
 	
 	function buildConditions($type, $yesterdayDate) {
