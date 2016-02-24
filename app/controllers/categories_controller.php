@@ -555,7 +555,7 @@ class CategoriesController extends AppController {
 		die('here');
 	}
 	
-	function load_images() {
+	function admin_load_images() {
 		$unactive_categories = $this->Category->find('all', array(
 			'conditions' => array('Category.active' => false),
 			'contain' => array(),
@@ -585,7 +585,10 @@ class CategoriesController extends AppController {
 			$subtree_ids = $this->Category->subtree_ids($category['Category']['id']);
 			// najdu jeden produkt v podstromu kategorie
 			$product = $this->Category->CategoriesProduct->find('first', array(
-				'conditions' => array('CategoriesProduct.category_id' => $subtree_ids),
+				'conditions' => array(
+					'CategoriesProduct.category_id' => $subtree_ids,
+					'Product.active'
+				),
 				'contain' => array(
 					'Product' => array(
 						'Image' => array(
@@ -596,7 +599,7 @@ class CategoriesController extends AppController {
 				),
 				'fields' => array('CategoriesProduct.id', 'CategoriesProduct.product_id')
 			));
-
+				
 			if (isset($product['Product']['Image'][0]['name'])) {
 				$tmp_img_name = 'product-images/' . $product['Product']['Image'][0]['name'];
 				$tmp_img_name_arr = explode('.', $tmp_img_name);
