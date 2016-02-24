@@ -447,7 +447,6 @@ class ManufacturersController extends AppController {
 	
 	// fce, ktera mi vsechny produkty sante nastavi jako skladem
 	function sante_in_stock() {
-		die('manufacturers/sante_in_stock - odstranit po uprave nacasovani cronu');
 		$prev_availability_id = 9;
 		$next_availability_id = 1;
 		$manufacturer_id = 108;
@@ -460,7 +459,6 @@ class ManufacturersController extends AppController {
 	
 	// fce, ktera mi vsechny produkty sante nastavi jako skladem
 	function sante_in_2_days() {
-		die('manufacturers/sante_in_2_days - odstranit po uprave nacasovani cronu');
 		$prev_availability_id = 1;
 		$next_availability_id = 9;
 		$manufacturer_id = 108;
