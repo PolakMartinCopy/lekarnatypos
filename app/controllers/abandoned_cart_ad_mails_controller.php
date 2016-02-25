@@ -113,6 +113,9 @@ class AbandonedCartAdMailsController extends AppController {
 						$cryptMailId = urlencode(Security::cipher($this->AbandonedCartAdMail->id, Configure::read('Security.salt')));
 						$body = str_replace('%%crypt_mail_id%%', $cryptMailId, $body);
 						
+						$cryptEmail = urlencode(Security::cipher($customer['Customer']['email'], Configure::read('Security.salt')));
+						$body = str_replace('%%crypt_email%%', $cryptEmail, $body);
+
 						$bodyAlternative = 'Pokud se Vám tento email nezobrazuje správně, zkopírujte prosím následující internetovou adresu do Vašeho prohlížeče: http://www.lekarnatypos.cz/carts/re_build_abandoned_cart/' . $cryptCartId . '/' . $cryptMailId . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik&utm_content=bodyAlternative';
 						
 						// pokud poslu email
@@ -126,11 +129,23 @@ class AbandonedCartAdMailsController extends AppController {
 		return false;
 	}
 	
-	function is_opened($cryptId) {
+	function is_opened($cryptId, $cryptEmail = null) {
 		$url = 'http://' . $_SERVER['HTTP_HOST'] . '/files/ad_mail_templates_images/lekarnatypos-logo.png'; 
 		$image = download_url($url);
 		echo $image;
 		
+		if ($cryptEmail) {
+			$email = urldecode(Security::cipher($cryptEmail, Configure::read('Security.salt')));
+			$adminEmails = array(
+				'brko11@gmail.com',
+				'nejedly.lukyn@gmail.com',
+				'martin@drdla.eu'
+			);
+			// pokud jsem se sem dostal z administratorskeho emailu (notifikace), tak neoznacuju email jako otevreny
+			if (in_array($email, $adminEmails)) {
+				die();
+			}
+		}
 		$id = urldecode(Security::cipher($cryptId, Configure::read('Security.salt')));
 		$this->AbandonedCartAdMail->setOpened($id);
 		die();

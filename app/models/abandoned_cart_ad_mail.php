@@ -126,8 +126,8 @@ class AbandonedCartAdMail extends AppModel {
 		$mailKompletSent = $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
 		
 		// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
-		$admin_subject = 'Zapomenuty košík pro ' . $email;
-		notificate_admins($admin_subject, $body);
+		$adminSubject = 'Zapomenuty košík pro ' . $email;
+		notificate_admins($adminSubject, $body);
 
 		return $mailKompletSent;
 	}
