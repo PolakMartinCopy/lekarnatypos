@@ -70,8 +70,18 @@ class AbandonedCartAdMailsController extends AppController {
 			'fields' => array('DISTINCT Cart.id')
 		));
 
+		$to = date('Y-m-d H:i:s');
+
 		foreach ($carts as $cart) {
-			$this->send($cart['Cart']['id']);
+			// zakaznik
+			$customer = $this->AbandonedCartAdMail->Cart->getCustomer($cart['Cart']['id']);
+			// od kdy neudelal objednavku
+			$from = $this->AbandonedCartAdMail->Cart->getFieldValue($cart['Cart']['id'], 'created');
+			// pokud zakaznik neudelal objednavku v dobe od zalozeni kosiku do teto chvile
+			if (!$this->AbandonedCartAdMail->Cart->TSVisit->TSCustomerDevice->Customer->hasOrderInInterval($customer['Customer']['id'], $from, $to)) {
+				// poslu mu email o zapomenutem kosiku		
+				$this->send($cart['Cart']['id']);
+			}
 		}
 		die('here');
 	}

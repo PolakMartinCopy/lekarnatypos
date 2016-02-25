@@ -541,5 +541,15 @@ class Customer extends AppModel {
 		}
 		return $is_logged_in;
 	}
+	
+	// zjisti, jestli ma objednavku v danem intervalu
+	function hasOrderInInterval($id, $from, $to) {
+		$conditions = array(
+			'Order.created >' => $from,
+			'Order.created <' => $to,
+			'Order.customer_id' => $id
+		);
+		return $this->Order->hasAny($conditions);
+	}
 }
 ?>
