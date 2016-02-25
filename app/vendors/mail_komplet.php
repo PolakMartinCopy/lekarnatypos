@@ -123,8 +123,6 @@ class MailKomplet {
 	}
 	
 	function sendMail($senderDisplayName, $senderEmail, $recipientEmail, $subject, $body, $bodyAlternative, $dispatcherId, $verbose = false, $insertUnsubscribeLink = false) {
-		// TODO - odstranit v LIVE
-		$recipientEmail = 'brko11@gmail.com';
 		
 		$request = array(
 			'senderDisplayName' => $senderDisplayName,
