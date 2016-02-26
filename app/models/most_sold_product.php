@@ -12,7 +12,7 @@ class MostSoldProduct extends AppModel {
 	
 	var $belongsTo = array('Product');
 	
-	var $limit = 3;
+	var $limit = 15;
 	
 	var $image_path = 'images/most_sold_products';
 	

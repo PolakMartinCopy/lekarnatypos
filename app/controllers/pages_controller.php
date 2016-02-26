@@ -99,38 +99,198 @@ class PagesController extends AppController{
 	}
 	
 	function home() {
-		$this->layout = REDESIGN_PATH . 'homepage';
+		$params = array();
+		if (isset($this->params['url']['filter'])) {
+			$params = $this->params['url']['filter']; 
+		}
+
+		// odnastavuju nektery z filtru
+		if (isset($_GET['filter']['reset_filter'])) {
+			switch ($_GET['filter']['reset_filter']) {
+				case 'brand':
+					unset($params['manufacturer_id']);
+					break;
+				case 'price':
+					unset($params['price']);
+					break;
+				case 'sorting':
+					unset($params['sorting']);
+					break;
+			}
+		}
+		
+		App::import('Model', 'Product');
+		$this->Page->Product = &new Product;
+		$customer_type_id = $this->Page->Product->CustomerTypeProductPrice->CustomerType->get_id($this->Session->read());
+				
+		// potrebuju vybrat produkty pres paginate, aby mi fungovalo strankovani
+		// produkty budu vybirat na zaklade nekolika kriterii (customizovat vyber - nakoupil, navstivil, je navoleno atd.)
+		// nejdriv vyberu idecka produktu a pak k nim dotahnu potrebne info
+		$productIds = $this->Page->Product->homepageProductIds($customer_type_id);
+		$products = array();
+		if (!empty($productIds)) {
+			$conditions = array('Product.id' => $productIds);
+			
+			// DO TETO CHVILE MAM PODMINKY PRO VYBRANI PRODUKTU NEOMEZUJICI PODLE FILTRU
+			$filter_manufacturers_order = array('Manufacturer.name' => 'asc');
+			$filter_manufacturers_conditions = array_merge($conditions, array('Manufacturer.active' => true));
+			$filter_manufacturers = $this->Page->Product->Manufacturer->filter_manufacturers($filter_manufacturers_conditions, $filter_manufacturers_order);
+			$this->set('filter_manufacturers', $filter_manufacturers);
+			// musim tedy vybrat nejlevnejsi a nejdrazsi produkt v podle dosavadnich podminek, protoze jakmile tam prihodim podminky o cene, zkresli mi to hodnoty pro slider
+			// nejlevnejsi a nejdrazsi produkt pro ucely filtru podle ceny
+			$cheapest_product = $this->Page->Product->cheapest($conditions, $customer_type_id);
+			$cheapest_product_price = 0;
+			if (!empty($cheapest_product)) {
+				$cheapest_product_price = $cheapest_product['Product']['price'];
+			}
+			$this->set('cheapest_price', $cheapest_product_price);
+			
+			$most_expensive_product = $this->Page->Product->most_expensive($conditions, $customer_type_id);
+			$most_expensive_product_price = 1000;
+			if (!empty($most_expensive_product)) {
+				$most_expensive_product_price = $most_expensive_product['Product']['price'];
+			}
+			$this->set('most_expensive_price', $most_expensive_product_price);
+			
+			// pokud mam nastavene filtry jako defaultne, presmeruju, at se mi neduplikuje hp
+			if (!isset($params['manufacturer_id']) && (!isset($params['sorting']) || $params['sorting'][0] == 0) && (!isset($params['price']) || (isset($params['price']['min']) && $params['price']['min'] == $cheapest_product_price && isset($params['price']['max']) && $params['price']['max'] == $most_expensive_product_price)) && $_SERVER['REQUEST_URI'] != '/') {
+				$this->redirect('/');
+			}
+			
+			// pokud jsem zrusil vyber z nektereho z filtru, presmeruju na novou url
+			if (isset($params['reset_filter']) && $params['reset_filter']) {
+				$url = '/';
+				unset($params['reset_filter']);
+				$params = array('filter' => $params);
+				$params = http_build_query($params);
+				$url .= '?' . $params;					
+				$this->redirect($url);
+			}
+
+			if (isset($_GET['filter']['price']['min']) && !empty($_GET['filter']['price']['min'])) {
+				$conditions['Product.price >='] = $_GET['filter']['price']['min'];
+			}
+			if (isset($_GET['filter']['price']['max']) && !empty($_GET['filter']['price']['max'])) {
+				$conditions['Product.price <='] = $_GET['filter']['price']['max'];
+			}
+				
+			// filtr podle vyrobcu
+			if (isset($_GET['filter']['manufacturer_id']) && !empty($_GET['filter']['manufacturer_id'])) {
+				$manufacturer_id_arr = $_GET['filter']['manufacturer_id'];
+				$conditions = array_merge($conditions, array('Product.manufacturer_id' => $manufacturer_id_arr));
+			}
+			
+			$joins = array(
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OrderedProduct',
+					'type' => 'LEFT',
+					'conditions' => array('OrderedProduct.product_id = Product.id')
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Image.product_id = Product.id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
+				array(
+					'table' => 'manufacturers',
+					'alias' => 'Manufacturer',
+					'type' => 'LEFT',
+					'conditions' => array('Manufacturer.id = Product.manufacturer_id')
+				),
+				array(
+					'table' => 'most_sold_products',
+					'alias' => 'MostSoldProduct',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = MostSoldProduct.product_id')
+				),
+			);
+
+			$fields = array(
+				'Product.id',
+				'Product.name',
+				'Product.url',
+				'Product.short_description',
+				'Product.retail_price_with_dph',
+				'Product.discount_common',
+				'Product.sold',
+				'Product.price',
+				'Product.discount',
+				'Product.rate',
+				'Product.is_akce',
+				'Product.is_novinka',
+				'Product.is_doprodej',
+				'Product.is_bestseller',
+				'Product.is_darek_zdarma',
+								
+				'Image.id',
+				'Image.name',
+			);
+			
+			// sestavim podminku pro razeni podle toho, co je vybrano
+			$order = array();
+			$extended_order = array(
+				'ISNULL(MostSoldProduct.id)' => 'ASC',
+				'MostSoldProduct.order' => 'ASC'
+			);
+			$order = array_merge($order, array_merge($extended_order, $this->Page->Product->sorting_options[0]['conditions']));
+			if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
+				if ($_GET['filter']['sorting'][0] != 0) {
+					$order = $this->Page->Product->sorting_options[$_GET['filter']['sorting'][0]]['conditions'];
+				}
+			} else {
+				$_GET['filter']['sorting'][0] = 0;
+			}
+			
+			$this->Page->Product->virtualFields['sold'] = 'SUM(OrderedProduct.product_quantity)';
+			$this->Page->Product->virtualFields['price'] = $this->Page->Product->price;
+			$this->Page->Product->virtualFields['discount'] = $this->Page->Product->discount;
+			
+			$this->paginate['Product'] = array(
+				'conditions' => $conditions,
+				'contain' => array(),
+				'fields' => $fields,
+				'joins' => $joins,
+				'group' => 'Product.id',
+				'order' => $order
+			);
+			
+			$products = $this->paginate('Product');
+
+			foreach ($products as &$product) {
+				$product['Product']['free_shipping_min_quantity'] = $this->Page->Product->minQuantityFreeShipping($product['Product']['id']);
+			}
+			
+			unset($this->Page->Product->virtualFields['sold']);
+			unset($this->Page->Product->virtualFields['price']);
+			unset($this->Page->Product->virtualFields['discount']);
+			
+		}
+		
+		$this->set('products', $products);
+		
+		$this->set('sorting_options', $this->Page->Product->sorting_options);
+		
+		$this->layout = REDESIGN_PATH . 'content';
 		$title = 'Online lékárna Brno střed';
 		$description = 'Internetová lékárna přímo v centru Brna. Odborně vyškolený personál a široká nabídka produktů. Léky si můžete osobně vyzvednout ve středu Brna.';
 		
 		$this->set('_title', $title);
 		$this->set('_description', $description);
-		
-		App::import('Model', 'CustomerType');
-		$this->CustomerType = new CustomerType;
-		$customer_type_id = $this->CustomerType->get_id($this->Session->read());
-		
-		App::import('Model', 'MostSoldProduct');
-		$this->MostSoldProduct = new MostSoldProduct;
-		$hp_most_sold = $this->MostSoldProduct->hp_list($customer_type_id);
-		$this->set('hp_most_sold', $hp_most_sold);
-
-/*		App::import('Model', 'News');
-		$this->News = new News;
-		$hp_news = $this->News->hp_list();
-		$this->set('hp_news', $hp_news);
-		
-		App::import('Model', 'DiscountedProduct');
-		$this->DiscountedProduct = new DiscountedProduct;
-		$hp_discounted = $this->DiscountedProduct->hp_list($customer_type_id);
-		$this->set('hp_discounted', $hp_discounted);
-		
-		App::import('Model', 'RecommendedProduct');
-		$this->RecommendedProduct = new RecommendedProduct;
-		$hp_recommended = $this->RecommendedProduct->hp_list($customer_type_id);
-		$this->set('hp_recommended', $hp_recommended);		
-
-*/
+		$this->set('listing_style', 'products_listing_grid');
 	}
 }
 ?>

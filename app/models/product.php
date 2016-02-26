@@ -1159,5 +1159,135 @@ class Product extends AppModel {
 		
 		return $min;
 	}
+	
+	/*
+	 * IDcka produktu, ktere se budou vykreslovat na hlavni strance
+	 * vyber na zaklade definice uzivatelem + customizace na zaklade pouzivani webu zakaznikem
+	 */
+	function homepageProductIds($customerTypeId = 2) {
+		$this->virtualFields['price'] = $this->price;
+		$defLimit = 15;
+		
+		$productIds = array();
+		
+		$limit = $defLimit;
+		$commonConditions = array(
+			'Product.active' => true,
+			'Category.active' => true,
+			'Product.price >' => 0,
+			'Availability.cart_allowed' => true
+		);
+		
+		$commonJoins = array(
+			array(
+				'table' => 'categories_products',
+				'alias' => 'CategoriesProduct',
+				'type' => 'INNER',
+				'conditions' => array('CategoriesProduct.product_id = Product.id')
+			),
+			array(
+				'table' => 'categories',
+				'alias' => 'Category',
+				'type' => 'INNER',
+				'conditions' => array('Category.id = CategoriesProduct.category_id')
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPrice',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customerTypeId)
+			),
+			array(
+				'table' => 'customer_type_product_prices',
+				'alias' => 'CustomerTypeProductPriceCommon',
+				'type' => 'LEFT',
+				'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+			),
+			array(
+				'table' => 'availabilities',
+				'alias' => 'Availability',
+				'type' => 'INNER',
+				'conditions' => array('Availability.id = Product.availability_id')
+			),
+		);
+		
+		$commonContain = array();
+		$commonFields = array('DISTINCT Product.id');
+		
+		// nejdriv tam dam produkty, ktere mam definovane v administraci
+		$definedJoins = array(
+			array(
+				'table' => 'most_sold_products',
+				'alias' => 'MostSoldProduct',
+				'type' => 'INNER',
+				'conditions' => array('Product.id = MostSoldProduct.product_id')
+			),
+		);
+		$definedJoins = array_merge($commonJoins, $definedJoins);
+		
+		$definedProductIds = $this->find('all', array(
+			'conditions' => $commonConditions,
+			'contain' => $commonContain,
+			'fields' => $commonFields,
+			'joins' => $definedJoins,
+			'order' => array('MostSoldProduct.order' => 'asc'),
+			'limit' => $limit
+		));
+
+		$definedProductIds = Set::extract('/Product/id', $definedProductIds);
+		$productIds = array_merge($productIds, $definedProductIds);
+
+		// pak tam dam produkty, ktere zakaznik koupil
+		//$limit -= count($productIds);
+		
+		// pak tam dam produkty, ktere zakaznik navstivil
+		//$limit -= count($productIds);
+		
+		// pak tam dam nejvice prodavane produkty
+		$limit -= count($productIds);
+		if ($limit > 0) {
+
+			$mostSoldIdsHlp = $this->OrderedProduct->find('all', array(
+				// doplnit omezeni na datum?
+				'conditions' => array(),
+				'contain' => array(),
+				'fields' => array('OrderedProduct.product_id'),
+				'order' => array('SUM(OrderedProduct.product_quantity)' => 'desc'),
+				'group' => 'OrderedProduct.product_id',
+			));
+			
+			if (!empty($mostSoldIdsHlp)) {
+				$mostSoldIdsHlp = Set::extract('/OrderedProduct/product_id', $mostSoldIdsHlp);
+				
+				// vyberu jen nejprodavanejsi produkty podle idcek
+				$mostSoldConditions = array('Product.id IN (' . implode(',', $mostSoldIdsHlp) . ')');
+				// a nechci tam ty, ktere uz mam vybrane
+				$excludeChosenConditions = array();
+				if (!empty($productIds)) {
+					$excludeChosenConditions[] = 'Product.id NOT IN (' . implode(',', $productIds) . ')';
+				}
+
+				$mostSoldConditions = array_merge($commonConditions, $excludeChosenConditions, $mostSoldConditions);
+				$mostSoldOrder = array('FIELD(Product.id, ' . implode(',', $mostSoldIdsHlp) . ' )');
+
+				$mostSoldIds = $this->find('all', array(
+					'conditions' => $mostSoldConditions,
+					'contain' => $commonContain,
+					'joins' => $commonJoins,
+					'fields' => $commonFields,
+					'order' => $mostSoldOrder,
+					'limit' => $limit,
+				));
+				$mostSoldIds = Set::extract('/Product/id', $mostSoldIds);
+				$productIds = array_merge($productIds, $mostSoldIds);
+			}
+			
+		
+		}
+		
+		unset($this->virtualFields['price']);
+
+		return $productIds;
+	}
 }
 ?>
