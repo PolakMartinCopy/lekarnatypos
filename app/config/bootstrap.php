@@ -469,13 +469,17 @@ function notificate_admins($subject, $body) {
 			'name' => 'Martin Polák'
 		),
 		array(
+			'email' => 'quilly@centrum.cz',
+			'name' => 'Martin Polak - centrum'
+		)
+/*		array(
 			'email' => 'nejedly.lukyn@gmail.com',
 			'name' => 'Lukáš Nejedlý'
 		),
 		array(
 			'email' => 'martin@drdla.eu',
 			'name' => 'Martin Drdla'
-		)
+		)*/
 	);
 	$success = true;
 	foreach ($adminNotifications as $adminNotification) {

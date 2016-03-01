@@ -89,47 +89,57 @@ class MostSoldProduct extends AppModel {
 		return $most_sold;
 	}
 	
-	/*
-	 * Natahne sportnutrition data
-	 */
-	function import() {
-		// vyprazdnim tabulku
-		$this->truncate();
-		$condition = null;
-		$snProducts = $this->findAllSn();
-		foreach ($snProducts as $snProduct) {
-			if ($product = $this->transformSn($snProduct)) {
-				$this->create();
-				if (!$this->save($product)) {
-					debug($product);
-					debug($this->validationErrors);
-					$this->save($product, false);
-				}
-			}
-		}
-	}
-	
-	function findAllSn($condition = null) {
-		$this->setDataSource('admin');
-		$query = '
-			SELECT *
-			FROM products AS SnProduct
-			WHERE SnProduct.most_sold = 1
-		';
-	
-		$snProducts = $this->query($query);
-		$this->setDataSource('default');
-		return $snProducts;
-	}
-	
-	function transformSn($snProduct) {
-		$product = array(
-			'MostSoldProduct' => array(
-				'product_id' => $snProduct['SnProduct']['id'],
-			)
+	function mostSoldProductIds($customerId, $customerTypeId, $productIds, $limit = 3) {
+
+		$this->virtualFields['ordered_quantity'] = 'SUM(OrderedProduct.product_quantity)';
+		
+		$conditions = array(
+			'Availability.cart_allowed' => true,
+			'Product.active' => true,
+			$this->Product->price . ' >' => 0
 		);
-	
-		return $product;
+		
+		if (!empty($productIds)) {
+			$conditions[] = 'MostSoldProduct.product_id NOT IN (' . implode(',', $productIds) . ')';
+		}
+
+		$productIds = $this->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 'products',
+					'alias' => 'Product',
+					'type' => 'INNER',
+					'conditions' => array('MostSoldProduct.product_id = Product.id')
+				),
+				array(
+					'table' => 'availabilities',
+					'alias' => 'Availability',
+					'type' => 'INNER',
+					'conditions' => array('Product.availability_id = Availability.id')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customerTypeId)
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
+			),
+			'group' => 'MostSoldProduct.product_id',
+			'fields' => array('MostSoldProduct.product_id'),
+			'order' => array('MostSoldProduct.order' => 'ASC'),
+			'limit' => $limit
+		));
+
+		$productIds = Set::extract('/MostSoldProduct/product_id', $productIds);
+		return $productIds;
 	}
 	
 	function getImage($id = null) {
