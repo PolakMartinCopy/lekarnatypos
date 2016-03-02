@@ -6,6 +6,21 @@ class AdMail extends AppModel {
 	
 	var $belongsTo = array('AdMailTemplate', 'Customer');
 	
+	function init($customerId) {
+		$adMailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
+		$save = array(
+			$this->name => array(
+				'sent' => false,
+				'opened' => false,
+				'ad_mail_template_id' => $adMailTemplate['AdMailTemplate']['id'],
+				'customer_id' => $customerId
+			)
+		);
+
+		$this->create();
+		return $this->save($save);
+	}
+	
 	function setSent($id) {
 		return $this->setAttribute($id, 'sent', true);
 	}

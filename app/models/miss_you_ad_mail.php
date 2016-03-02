@@ -15,20 +15,6 @@ class MissYouAdMail extends AdMail {
 		parent::__construct($id, $table, $ds);
 	}
 	
-	function init($customerId) {
-		$adMailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
-		$save = array(
-			'MissYouAdMail' => array(
-				'sent' => false,
-				'opened' => false,
-				'ad_mail_template_id' => $adMailTemplate['AdMailTemplate']['id'],
-				'customer_id' => $customerId
-			)
-		);
-		$this->create();
-		return $this->save($save);
-	}
-	
 	// seznam lidi, kterym chci v ramci davky newsletter poslat (pokud byl uzivatel naposled na webu v den pred intervalem)
 	function getRecipients() {
 		$theDay = date('Y-m-d', strtotime($this->interval));
