@@ -21,6 +21,19 @@ class AdMail extends AppModel {
 		return $this->save($save);
 	}
 	
+	function subject() {
+		$mailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
+	
+		if (empty($mailTemplate)) {
+			return false;
+		}
+		return $mailTemplate['AdMailTemplate']['subject'];
+	}
+	
+	function bodyAlternative() {
+		return 'http://www.lekarnatypos.cz/';
+	}
+	
 	function setSent($id) {
 		return $this->setAttribute($id, 'sent', true);
 	}
@@ -52,10 +65,6 @@ class AdMail extends AppModel {
 		$dispatcherId = 1677;
 		// poslu uzivateli / zakaznikovi pres mail komplet
 		$mailKompletSent = $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
-	
-		// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
-		$adminSubject = 'Newsletter pro ' . $email;
-		notificate_admins($adminSubject, $body);
 	
 		return $mailKompletSent;
 	}

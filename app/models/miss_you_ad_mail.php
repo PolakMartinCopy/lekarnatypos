@@ -49,15 +49,6 @@ class MissYouAdMail extends AdMail {
 		return $res;
 	}
 	
-	function subject($customerId) {
-		$mailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
-		
-		if (empty($mailTemplate)) {
-			return false;
-		}
-		return $mailTemplate['AdMailTemplate']['subject'];
-	}
-	
 	function body($customerId) {
 		$mailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
 		
@@ -84,10 +75,6 @@ class MissYouAdMail extends AdMail {
 		$body = str_replace('%%crypt_email%%', $cryptEmail, $body);
 
 		return $body;
-	}
-	
-	function bodyAlternative($customerId) {
-		return 'http://www.lekarnatypos.cz/';
 	}
 	
 	function getProduct($productId, $customerTypeId) {
