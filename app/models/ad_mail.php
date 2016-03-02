@@ -55,6 +55,66 @@ class AdMail extends AppModel {
 		return $res;
 	}
 	
+
+	function getProduct($productId, $customerTypeId) {
+		$productIds = array(0 => $productId);
+		$product = $this->getProducts($productIds, $customerTypeId);
+		if (!empty($product)) {
+			$product = $product[0];
+		}
+	
+		return $product;
+	}
+	
+	// produkty do newsletteru
+	function getProducts($productIds, $customerTypeId) {
+		$this->Customer->Order->OrderedProduct->Product->virtualFields['price'] = $this->Customer->Order->OrderedProduct->Product->price;
+		$products = $this->Customer->Order->OrderedProduct->Product->find('all', array(
+			'conditions' => array(
+				'Product.id' => $productIds,
+			),
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'LEFT',
+					'conditions' => array('Image.product_id = Product.id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customerTypeId)
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
+				array(
+					'table' => 'availabilities',
+					'alias' => 'Availability',
+					'type' => 'INNER',
+					'conditions' => array('Availability.id = Product.availability_id')
+				)
+			),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.url',
+				'Product.price',
+							
+				'Image.id',
+				'Image.name',
+			),
+			'order' => array('FIELD(Product.id, ' . implode(',', $productIds) . ')')
+		));
+	
+		return $products;
+	}
+	
 	function sendMail($subject, $body, $bodyAlternative, $email) {
 		App::import('Vendor', 'MailKomplet', array('file' => 'mail_komplet.php'));
 		$mailKomplet = &new MailKomplet;
