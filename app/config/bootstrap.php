@@ -489,6 +489,6 @@ function sendMail($subject, $body, $email, $name = null, $isHtml = true, $sender
 	$mail->Subject = $subject;
 	$mail->Body = $body;
 
-	return !$mail->Send();
+	return $mail->Send();
 }
 ?>

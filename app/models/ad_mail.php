@@ -166,10 +166,6 @@ class AdMail extends AppModel {
 	function notificateAdmins($subject, $body) {
 		$adminNotifications = array(
 			array(
-				'email' => 'quilly@seznam.cz',
-				'name' => 'Martin Polak - seznam'
-			),
-			array(
 				'email' => 'brko11@gmail.com',
 				'name' => 'Martin Polák'
 			),
@@ -184,7 +180,7 @@ class AdMail extends AppModel {
 		);
 		$success = true;
 		foreach ($adminNotifications as $adminNotification) {
-			$success = $success && sendMail($subject, $body, $adminNotification['email'], $adminNotification['name'], true, 'no-reply@lekarnatypos.cz', false);
+			$success = sendMail($subject, $body, $adminNotification['email'], $adminNotification['name'], true, 'no-reply@lekarnatypos.cz', false) && $success;
 		}
 		return $success;
 	}

@@ -2,7 +2,7 @@
 class AdMailsController extends AppController {
 	var $name = 'AdMails';
 	
-	function send_batch($notificateAdmins = true, $test = true, $date = null) {
+	function send_batch($notificateAdmins = false, $test = true, $date = null) {
 		if (!$date) {
 			$date = date('Y-m-d');
 		}
