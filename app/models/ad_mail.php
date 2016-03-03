@@ -155,6 +155,7 @@ class AdMail extends AppModel {
 	
 		// dispatcherId je pevne dano
 		$dispatcherId = 1677;
+
 		// poslu uzivateli / zakaznikovi pres mail komplet
 		$mailKompletSent = $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
 	
@@ -165,13 +166,13 @@ class AdMail extends AppModel {
 	function notificateAdmins($subject, $body) {
 		$adminNotifications = array(
 			array(
+				'email' => 'quilly@seznam.cz',
+				'name' => 'Martin Polak - seznam'
+			),
+			array(
 				'email' => 'brko11@gmail.com',
 				'name' => 'Martin Polák'
 			),
-			array(
-				'email' => 'quilly@seznam.cz',
-				'name' => 'Martin Polak - seznam'
-			)
 			/*		array(
 				 'email' => 'nejedly.lukyn@gmail.com',
 				'name' => 'Lukáš Nejedlý'
