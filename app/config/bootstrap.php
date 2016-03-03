@@ -462,32 +462,6 @@ function utm_parameters_string($getParams) {
 	return implode('&', $res);
 }
 
-function notificate_admins($subject, $body) {
-	$adminNotifications = array(
-		array(
-			'email' => 'brko11@gmail.com',
-			'name' => 'Martin Polák'
-		),
-		array(
-			'email' => 'quilly@centrum.cz',
-			'name' => 'Martin Polak - centrum'
-		)
-/*		array(
-			'email' => 'nejedly.lukyn@gmail.com',
-			'name' => 'Lukáš Nejedlý'
-		),
-		array(
-			'email' => 'martin@drdla.eu',
-			'name' => 'Martin Drdla'
-		)*/
-	);
-	$success = true;
-	foreach ($adminNotifications as $adminNotification) {
-		$success = $success && sendMail($subject, $body, $adminNotification['email'], $adminNotification['name'], true, 'no-reply@lekarnatypos.cz', false);
-	}
-	return $success;
-}
-
 function sendMail($subject, $body, $email, $name = null, $isHtml = true, $senderEmail = null, $reply = true) {
 	App::import('Vendor', 'PHPMailer', array('file' => 'class.phpmailer.php'));
 	$mail = &new PHPMailer;

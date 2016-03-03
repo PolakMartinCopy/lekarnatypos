@@ -17,8 +17,7 @@ class AdMailsController extends AppController {
 				if (!$body = $this->$model->body($customer['Customer']['id'], $date, $this->$model->campaignName)) {
 					continue;
 				}
-debug($customer);
-debug($body);continue;
+
 				$bodyAlternative = $this->$model->bodyAlternative();
 				
 				if ($test) {
@@ -30,8 +29,8 @@ debug($body);continue;
 					// posilam notifikace administratorum?
 					if ($notificateAdmins) {
 						// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
-						$adminSubject = 'Newsletter pro ' . $email;
-						notificate_admins($adminSubject, $body);
+						$adminSubject = $this->$model->campaignName . ' pro ' . $customer['Customer']['email'];
+						$this->$model->notificateAdmins($adminSubject, $body);
 					}
 				}
 			}

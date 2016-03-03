@@ -161,6 +161,33 @@ class AdMail extends AppModel {
 		return $mailKompletSent;
 	}
 	
+
+	function notificateAdmins($subject, $body) {
+		$adminNotifications = array(
+			array(
+				'email' => 'brko11@gmail.com',
+				'name' => 'Martin Polák'
+			),
+			array(
+				'email' => 'quilly@seznam.cz',
+				'name' => 'Martin Polak - seznam'
+			)
+			/*		array(
+				 'email' => 'nejedly.lukyn@gmail.com',
+				'name' => 'Lukáš Nejedlý'
+			),
+			array(
+				'email' => 'martin@drdla.eu',
+				'name' => 'Martin Drdla'
+			)*/
+		);
+		$success = true;
+		foreach ($adminNotifications as $adminNotification) {
+			$success = $success && sendMail($subject, $body, $adminNotification['email'], $adminNotification['name'], true, 'no-reply@lekarnatypos.cz', false);
+		}
+		return $success;
+	}
+	
 	function isOpened($cryptId, $cryptEmail = null) {
 		$url = 'http://www.lekarnatypos.cz/files/ad_mail_templates_images/lekarnatypos-logo.png';
 		$image = download_url($url);

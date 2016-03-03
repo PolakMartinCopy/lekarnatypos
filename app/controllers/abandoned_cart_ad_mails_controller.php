@@ -1,6 +1,11 @@
 <?php
-class AbandonedCartAdMailsController extends AppController {
+App::import('Controller', 'AdMails');
+class AbandonedCartAdMailsController extends AdMailsController {
 	var $name = 'AbandonedCartAdMails';
+	
+	function beforeFilter() {
+		parent::beforeFilter();
+	}
 	
 	// odesle davku emailu s informaci o zapomenutem kosiku
 	// chci volat 2x denne, o pulnoci odeslu zapomenute kosiky z rana predesleho dne, v poledne pak zapomenute kosiky z odpoledne predesleho dne
@@ -86,7 +91,7 @@ class AbandonedCartAdMailsController extends AppController {
 		die('here');
 	}
 			
-	function send($cartId = null) {
+	function send($cartId = null, $notificateAdmins = true) {
 		if (!$cartId) {
 			return false;
 		}
@@ -116,11 +121,17 @@ class AbandonedCartAdMailsController extends AppController {
 						$cryptEmail = urlencode(Security::cipher($customer['Customer']['email'], Configure::read('Security.salt')));
 						$body = str_replace('%%crypt_email%%', $cryptEmail, $body);
 
-						$bodyAlternative = 'Pokud se Vám tento email nezobrazuje správně, zkopírujte prosím následující internetovou adresu do Vašeho prohlížeče: http://www.lekarnatypos.cz/carts/re_build_abandoned_cart/' . $cryptCartId . '/' . $cryptMailId . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik&utm_content=bodyAlternative';
-						
+						$bodyAlternative = 'Pokud se Vám tento email nezobrazuje správně, zkopírujte prosím následující internetovou adresu do Vašeho prohlížeče: http://www.lekarnatypos.cz/carts/re_build_abandoned_cart/' . $cryptCartId . '/' . $cryptMailId . '?utm_source=newsletter&utm_medium=email&utm_campaing=' . $this->AbandonedCartAdMail->campaignName . '&utm_content=bodyAlternative';
 						// pokud poslu email
 						if ($this->AbandonedCartAdMail->sendMail($adMailTemplate['AdMailTemplate']['subject'], $body, $bodyAlternative, $customer['Customer']['email'])) {
 							$this->AbandonedCartAdMail->setSent($this->AbandonedCartAdMail->id);
+							// posilam notifikace administratorum?
+							if ($notificateAdmins) {
+								// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
+								$adminSubject = $this->AbandonedCartAdMail->campaignName . ' pro ' . $customer['Customer']['email'];
+								debug($adminSubject); die();
+								$this->AbandonedCartAdMail->notificateAdmins($adminSubject, $body);
+							}
 						}
 					}
 				}
@@ -128,27 +139,4 @@ class AbandonedCartAdMailsController extends AppController {
 		}
 		return false;
 	}
-	
-	function is_opened($cryptId, $cryptEmail = null) {
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . '/files/ad_mail_templates_images/lekarnatypos-logo.png'; 
-		$image = download_url($url);
-		echo $image;
-		
-		if ($cryptEmail) {
-			$email = urldecode(Security::cipher($cryptEmail, Configure::read('Security.salt')));
-			$adminEmails = array(
-				'brko11@gmail.com',
-				'nejedly.lukyn@gmail.com',
-				'martin@drdla.eu'
-			);
-			// pokud jsem se sem dostal z administratorskeho emailu (notifikace), tak neoznacuju email jako otevreny
-			if (in_array($email, $adminEmails)) {
-				die();
-			}
-		}
-		$id = urldecode(Security::cipher($cryptId, Configure::read('Security.salt')));
-		$this->AbandonedCartAdMail->setOpened($id);
-		die();
-	}
-	
 }

@@ -1,10 +1,13 @@
 <?php
-class AbandonedCartAdMail extends AppModel {
+App::import('Model', 'AdMail');
+class AbandonedCartAdMail extends AdMail {
 	var $name = 'AbandonedCartAdMail';
 	
 	var $actsAs = array('Containable');
 	
 	var $belongsTo = array('Cart', 'AdMailTemplate');
+	
+	var $campaignName = 'OpustenyKosik';
 	
 	function init($cartId, $adMailTemplateId) {
 		$save = array(
@@ -17,14 +20,6 @@ class AbandonedCartAdMail extends AppModel {
 		);
 		$this->create();
 		return $this->save($save);
-	}
-	
-	function setSent($id) {
-		return $this->setAttribute($id, 'sent', true);
-	}
-	
-	function setOpened($id) {
-		return $this->setAttribute($id, 'opened', true);
 	}
 	
 	function getProductsBox($cartId) {
@@ -43,8 +38,8 @@ class AbandonedCartAdMail extends AppModel {
 			
 				$res .= '
 	<tr>
-	    <td valign="middle" style="padding: 3px 5px 3px 5px"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik" target="_blank"><img src="http://www.lekarnatypos.cz/product-images/' . $product['Image']['name'] . '" width="70" /></a></td>
-	    <td valign="middle" style="padding:3px 5px 3px 0"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=OpustenyKosik" style="color: #63af29;" target="_blank">' . $product['Product']['name'] . '</a></td>
+	    <td valign="middle" style="padding: 3px 5px 3px 5px"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=' . $this->campaignName . '" target="_blank"><img src="http://www.lekarnatypos.cz/product-images/small/' . $product['Image']['name'] . '" width="70"/></a></td>
+	    <td valign="middle" style="padding:3px 5px 3px 0"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=' . $this->campaignName . '" style="color: #63af29;" target="_blank">' . $product['Product']['name'] . '</a></td>
 	    <td align="right" valign="middle" style="padding:3px 5px 3px 5px">' . $cart_product['CartsProduct']['quantity'] . '&nbsp;×</td>
 	    <td align="right" valign="middle" style="padding:3px 5px">' . $product['Product']['price'] . '&nbsp;Kč</td>
 	</tr>';
@@ -53,16 +48,6 @@ class AbandonedCartAdMail extends AppModel {
 			return $res;
 		}
 		return false;
-	}
-	
-	function getProduct($productId, $customerTypeId) {
-		$productIds = array(0 => $productId);
-		$product = $this->getProducts($productIds, $customerTypeId);
-		if (!empty($product)) {
-			$product = $product[0];
-		}
-
-		return $product;
 	}
 	
 	function getProducts($productIds, $customerTypeId) {
@@ -112,24 +97,6 @@ class AbandonedCartAdMail extends AppModel {
 		));
 
 		return $products;
-	}
-	
-	function sendMail($subject, $body, $bodyAlternative, $email) {
-		App::import('Vendor', 'MailKomplet', array('file' => 'mail_komplet.php'));
-		$mailKomplet = &new MailKomplet;
-		
-		$mailKomplet->login();
-		
-		// dispatcherId je pevne dano
-		$dispatcherId = 1677;
-		// poslu uzivateli / zakaznikovi pres mail komplet
-		$mailKompletSent = $mailKomplet->sendMail(CUST_NAME, CUST_MAIL, $email, $subject, $body, $bodyAlternative, $dispatcherId);
-		
-		// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
-		$adminSubject = 'Zapomenuty košík pro ' . $email;
-		notificate_admins($adminSubject, $body);
-
-		return $mailKompletSent;
 	}
 	
 	function buildConditions($type, $yesterdayDate) {
