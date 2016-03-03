@@ -129,7 +129,6 @@ class AbandonedCartAdMailsController extends AdMailsController {
 							if ($notificateAdmins) {
 								// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
 								$adminSubject = $this->AbandonedCartAdMail->campaignName . ' pro ' . $customer['Customer']['email'];
-								debug($adminSubject); die();
 								$this->AbandonedCartAdMail->notificateAdmins($adminSubject, $body);
 							}
 						}
