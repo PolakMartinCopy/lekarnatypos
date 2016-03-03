@@ -14,7 +14,7 @@ class AdMailsController extends AppController {
 			if ($this->$model->init($customer['Customer']['id'])) {
 				$email = $customer['Customer']['email'];
 				$subject = $this->$model->subject();
-				if (!$body = $this->$model->body($customer['Customer']['id'], $date)) {
+				if (!$body = $this->$model->body($customer['Customer']['id'], $date, $this->$model->campaignName)) {
 					continue;
 				}
 debug($customer);

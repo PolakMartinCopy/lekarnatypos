@@ -11,6 +11,8 @@ class SimilarProductsAdMail extends AdMail {
 	
 	var $mailTemplateType = 'similar_products';
 	
+	var $campaignName = 'SouvisejiciProdukty';
+	
 	function __construct($id = null, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 	}

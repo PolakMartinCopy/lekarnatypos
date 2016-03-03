@@ -42,7 +42,7 @@ class AdMail extends AppModel {
 		return $this->setAttribute($id, 'opened', true);
 	}
 	
-	function body($customerId, $date) {
+	function body($customerId, $date, $campaign) {
 		$mailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
 	
 		if (empty($mailTemplate)) {
@@ -57,7 +57,7 @@ class AdMail extends AppModel {
 			return false;
 		}
 		$products = $this->getProducts($productIds, $customerTypeId);
-		$productsBox = $this->getProductsBox($products, 'ChybiteNam');
+		$productsBox = $this->getProductsBox($products, $campaign);
 	
 		// do sablony vlozim produkty
 		$body = str_replace('%%products_box%%', $productsBox, $body);
