@@ -1243,7 +1243,7 @@ class Product extends AppModel {
 		// pak tam dam produkty, ktere zakaznik navstivil
 		//$limit -= count($productIds);
 		
-		// pak tam dam nejvice prodavane produkty
+		// pak tam dam nejvice prodavane produkty, ktere stoji alespon 300
 		$limit -= count($productIds);
 		if ($limit > 0) {
 
@@ -1254,13 +1254,17 @@ class Product extends AppModel {
 				'fields' => array('OrderedProduct.product_id'),
 				'order' => array('SUM(OrderedProduct.product_quantity)' => 'desc'),
 				'group' => 'OrderedProduct.product_id',
+				'limit' => 100
 			));
-			
+	
 			if (!empty($mostSoldIdsHlp)) {
 				$mostSoldIdsHlp = Set::extract('/OrderedProduct/product_id', $mostSoldIdsHlp);
 				
-				// vyberu jen nejprodavanejsi produkty podle idcek
-				$mostSoldConditions = array('Product.id IN (' . implode(',', $mostSoldIdsHlp) . ')');
+				// vyberu jen nejprodavanejsi produkty podle idcek, ale s cenou vyssi nez dana mez
+				$mostSoldConditions = array(
+					'Product.id IN (' . implode(',', $mostSoldIdsHlp) . ')',
+					'Product.price >=' => 300
+				);
 				// a nechci tam ty, ktere uz mam vybrane
 				$excludeChosenConditions = array();
 				if (!empty($productIds)) {
@@ -1281,8 +1285,6 @@ class Product extends AppModel {
 				$mostSoldIds = Set::extract('/Product/id', $mostSoldIds);
 				$productIds = array_merge($productIds, $mostSoldIds);
 			}
-			
-		
 		}
 		
 		unset($this->virtualFields['price']);
