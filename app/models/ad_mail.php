@@ -42,6 +42,38 @@ class AdMail extends AppModel {
 		return $this->setAttribute($id, 'opened', true);
 	}
 	
+	function body($customerId, $date) {
+		$mailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
+	
+		if (empty($mailTemplate)) {
+			return false;
+		}
+		$body = $mailTemplate['AdMailTemplate']['content'];
+	
+		$customerTypeId = $this->Customer->getFieldValue($customerId, 'customer_type_id');
+	
+		$productIds = $this->getProductIds($customerId, $customerTypeId, $date);
+		if (empty($productIds)) {
+			return false;
+		}
+		$products = $this->getProducts($productIds, $customerTypeId);
+		$productsBox = $this->getProductsBox($products, 'ChybiteNam');
+	
+		// do sablony vlozim produkty
+		$body = str_replace('%%products_box%%', $productsBox, $body);
+			
+		// kryptovane id emailu v db
+		$cryptMailId = urlencode(Security::cipher($this->id, Configure::read('Security.salt')));
+		$body = str_replace('%%crypt_mail_id%%', $cryptMailId, $body);
+	
+		$email = $this->Customer->getFieldValue($customerId, 'email');
+	
+		$cryptEmail = urlencode(Security::cipher($email, Configure::read('Security.salt')));
+		$body = str_replace('%%crypt_email%%', $cryptEmail, $body);
+	
+		return $body;
+	}
+	
 	function getProductsBox($products, $campaignName) {
 		$res = '';
 		foreach ($products as $product) {

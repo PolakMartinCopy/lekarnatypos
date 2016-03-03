@@ -1289,5 +1289,51 @@ class Product extends AppModel {
 
 		return $productIds;
 	}
+	
+	/*
+	 * vybere mnozinu $limit produktu, ktere jsou nejprodavanejsi spolu s mnozinou produktu, definovanych podle IDcek
+	 */
+	function similarProductIds($productIds, $customerTypeId, $limit) {
+		$range = '-2 months';
+		$options = array(
+			'excluded_ids' => $productIds,
+			'range' => $range,
+			'limit' => $limit
+		);
+		
+		$products = array(
+			'ids' => array(),
+			'values' => array()
+		);
+		foreach ($productIds as $id) {
+			$mostSoldProducts = $this->most_sold_with_products($id, $customerTypeId, $options);
+			foreach ($mostSoldProducts as $mostSoldProduct) {
+				$mostSoldProduct['Product']['ordered_quantity'] = $mostSoldProduct[0]['ordered_quantity'];
+				if (in_array($mostSoldProduct['Product']['id'], $products['ids'])) {
+					$key = array_search($mostSoldProduct['Product']['id'], $products['ids']);
+					$products['values'][$key]['Product']['ordered_quantity'] += $mostSoldProduct['Product']['ordered_quantity'];
+				} else {
+					$products['ids'][] = $mostSoldProduct['Product']['id'];
+					$products['values'][] = $mostSoldProduct;
+				}
+			}
+		}
+		// vyfiltruju produkty, ktere byly objenany mene nez je zadana mez
+		$products = $this->filterMinQuantity($products['values']);
+		$products = array_slice($products, 0, $limit);
+		$productIds = Set::extract('/Product/id', $products);
+		return $productIds;
+	}
+	
+	// ziska z pole pouze produkty, ktere maji nastaveny dany atribut na vice nez je pozadavek 
+	function filterMinQuantity($products, $fieldName = 'ordered_quantity', $minQuantity = 2) {
+		$res = array();
+		foreach ($products as $product) {
+			if ($product['Product'][$fieldName] >= $minQuantity) {
+				$res[] = $product;
+			}
+		}
+		return $res;
+	}
 }
 ?>

@@ -2,24 +2,32 @@
 class AdMailsController extends AppController {
 	var $name = 'AdMails';
 	
-	function send_batch($notificateAdmins = true) {
+	function send_batch($notificateAdmins = true, $test = true, $date = null) {
+		if (!$date) {
+			$date = date('Y-m-d');
+		}
 		$model = $this->modelNames[0];
-		// zjistim uzivatele, kterym chci poslat email (nebyli u nas dele nez definovany interval a neposlal se jim po danem intervalu email
-		$customers = $this->$model->getRecipients();
+		// zjistim uzivatele, kterym chci poslat email
+		$customers = $this->$model->getRecipients($date);
 		foreach ($customers as $customer) {
 			// ulozim odeslani emailu
 			if ($this->$model->init($customer['Customer']['id'])) {
 				$email = $customer['Customer']['email'];
 				$subject = $this->$model->subject();
-				$body = $this->$model->body($customer['Customer']['id']);
+				if (!$body = $this->$model->body($customer['Customer']['id'], $date)) {
+					continue;
+				}
+debug($customer);
+debug($body);continue;
 				$bodyAlternative = $this->$model->bodyAlternative();
-	
-				// TODO - odstranit moji emailovou adresu
-				$email = 'brko11@gmail.com';
+				
+				if ($test) {
+					$email = 'brko11@gmail.com';
+				}
 
 				if ($this->$model->sendMail($subject, $body, $bodyAlternative, $email)) {
 					$this->$model->setSent($this->$model->id);
-					
+					// posilam notifikace administratorum?
 					if ($notificateAdmins) {
 						// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
 						$adminSubject = 'Newsletter pro ' . $email;
