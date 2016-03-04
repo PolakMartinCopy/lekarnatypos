@@ -31,29 +31,34 @@ class MissYouAdMail extends AdMail {
 			'fields' => array('DISTINCT TSCustomerDevice.customer_id')
 		));
 
-		$res = array();
+		$res = array(
+			'ids' => array(),
+			'values' => array()
+		);
 		// do vystupu dam jen ty uzivatele, u kterych byla navsteva v dany den posledni
 		foreach ($visits as $visit) {
-			$futureVisit = $this->Customer->TSCustomerDevice->TSVisit->find('first', array(
-				'conditions' => array(
-					'DATE(TSVisit.created) >' => $theDay,
-					'TSCustomerDevice.customer_id' => $visit['TSCustomerDevice']['customer_id']
-				),
-				'contain' => array('TSCustomerDevice'),
-				'fields' => array('TSVisit.id')
-			));
-			// navsteva je posledni (neni zadna novejsi)
-			if (!$futureVisit) {
-				// uzivatele dam do vystupu
-				$customer = $this->Customer->find('first', array(
-					'conditions' => array('Customer.id' => $visit['TSCustomerDevice']['customer_id']),
-					'contain' => array()
+			if (!in_array($visit['TSCustomerDevice']['customer_id'], $res['ids'])) {
+				$futureVisit = $this->Customer->TSCustomerDevice->TSVisit->find('first', array(
+					'conditions' => array(
+						'DATE(TSVisit.created) >' => $theDay,
+						'TSCustomerDevice.customer_id' => $visit['TSCustomerDevice']['customer_id']
+					),
+					'contain' => array('TSCustomerDevice'),
+					'fields' => array('TSVisit.id')
 				));
-				$res[] = $customer;
+				// navsteva je posledni (neni zadna novejsi)
+				if (!$futureVisit) {
+					// uzivatele dam do vystupu
+					$customer = $this->Customer->find('first', array(
+						'conditions' => array('Customer.id' => $visit['TSCustomerDevice']['customer_id']),
+						'contain' => array()
+					));
+					$res['ids'][] = $customer['Customer']['id'];
+					$res['values'][] = $customer;
+				}
 			}
 		}
-		
-		return $res;
+		return $res['values'];
 	}
 	
 	// chci max 3 produkty, ktere si mesic pred posledni navstevou prohlizel doplnene o produkty, ktere jsou v soucasne dobe v akcni nabidce na hlavni strance
