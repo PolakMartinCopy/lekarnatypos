@@ -87,6 +87,8 @@ if ($this->Session->check('Message.flash')) {
 	
 	<?php echo $this->Html->link('Zpět do obchodu', '/', array('class' =>  'btn btn-sm btn-default'))?>
 	<?php echo $this->Html->link('Přejít k objednání', '#OrderDetails', array('style' => 'float:right', 'class' => 'btn btn-primary'))?>
+	
+	<?php echo $this->element(REDESIGN_PATH . 'product_carousel', array('module_class' => 'module-related', 'element_id' => 'related-products', 'title' => 'Mohlo by Vás zajímat', 'products' => $similarProducts))?>
 
 	<div style="clear:both"></div>
 <h2 id="OrderDetails">Objednávka</h2>

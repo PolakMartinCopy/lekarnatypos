@@ -1295,7 +1295,7 @@ class Product extends AppModel {
 	/*
 	 * vybere mnozinu $limit produktu, ktere jsou nejprodavanejsi spolu s mnozinou produktu, definovanych podle IDcek
 	 */
-	function similarProductIds($productIds, $customerTypeId, $limit) {
+	function similarProductIds($productIds, $customerTypeId, $limit, $minQuantity = 2) {
 		$range = '-2 months';
 		$options = array(
 			'excluded_ids' => $productIds,
@@ -1321,7 +1321,7 @@ class Product extends AppModel {
 			}
 		}
 		// vyfiltruju produkty, ktere byly objenany mene nez je zadana mez
-		$products = $this->filterMinQuantity($products['values']);
+		$products = $this->filterMinQuantity($products['values'], 'ordered_quantity', $minQuantity);
 		$products = array_slice($products, 0, $limit);
 		$productIds = Set::extract('/Product/id', $products);
 		return $productIds;

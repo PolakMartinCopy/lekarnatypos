@@ -1209,6 +1209,15 @@ class OrdersController extends AppController {
 			$this->data['Order']['comments'] = $this->Session->read('Order.comments');
 		}
 		
+		// souvisejici produkty k tem, co ma v kosiku
+		$customerTypeId = 2;
+		if ($this->Session->check('Customer.customer_type_id')) {
+			$customerTypeId = $this->Session->read('Customer.customer_type_id');
+		}
+		$similarProductIds = $this->Order->Cart->similarProductIds(null, $customerTypeId);
+		$similarProducts = $this->Order->Cart->similarProducts($similarProductIds, $customerTypeId);
+		$this->set('similarProducts', $similarProducts);
+		
 		// nastavim si titulek stranky
 		$this->set('page_heading', 'Objednávka');
 		$this->set('_title', 'Objednávka');

@@ -234,5 +234,66 @@ class Cart extends AppModel {
 	function isBuiltFromAbandoned($id) {
 		return $this->AbandonedCartAdMail->hasAny(array('AbandonedCartAdMail.new_cart_id' => $id));
 	}
+	
+	// idcka souvisejicich produktu k tem, co m8 v kosiku
+	function similarProductIds($id = null, $customerTypeId, $limit = 15) {
+		if (!$id) {
+			$id = $this->get_id();
+		}
+		$cartProducts = $this->getProducts($id);
+		$cartProductIds = Set::extract('/Product/id', $cartProducts);
+		// idcka souvisejicich produktu k produktum v objednavce
+		$productIds = $this->CartsProduct->Product->similarProductIds($cartProductIds, $customerTypeId, $limit, 1);
+		return $productIds;
+	}
+	
+	function similarProducts($productIds, $customerTypeId) {
+		$products = array();
+		if (!empty($productIds)) {
+			$products = $this->CartsProduct->Product->find('all', array(
+				'conditions' => array('Product.id' => $productIds),
+				'contain' => array(),
+				'fields' => array(
+					'Product.id',
+					'Product.name',
+					'Product.related_name',
+					'Product.url',
+					$this->CartsProduct->Product->price . ' AS price',
+					$this->CartsProduct->Product->discount . ' AS discount',
+					'Product.retail_price_with_dph',
+					'Image.id',
+					'Image.name'
+				),
+				'joins' => array(
+					array(
+						'table' => 'images',
+						'alias' => 'Image',
+						'type' => 'LEFT',
+						'conditions' => array('Product.id = Image.product_id AND Image.is_main = "1"')
+					),
+					array(
+						'table' => 'customer_type_product_prices',
+						'alias' => 'CustomerTypeProductPrice',
+						'type' => 'LEFT',
+						'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customerTypeId)
+					),
+					array(
+						'table' => 'customer_type_product_prices',
+						'alias' => 'CustomerTypeProductPriceCommon',
+						'type' => 'LEFT',
+						'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+					),
+				),
+				'order' => array('FIELD (Product.id, ' . implode(',', $productIds) . ')'),
+			));
+
+			foreach ($products as &$product) {
+				$product['Product']['price'] = $product[0]['price'];
+				$product['Product']['discount'] = $product[0]['discount'];
+			}
+		}
+		
+		return $products;
+	}
 }
 ?>
