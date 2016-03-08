@@ -24,7 +24,8 @@ class Category extends AppModel {
 		'TSVisitCategory',
 		'CategoriesComparator' => array(
 			'dependent' => true
-		)
+		),
+		'DiscountCouponsCategory'
 	);
 	
 	// id kategorii, ktere se nebudou brat v potaz pri generovani souvisejicich produktu

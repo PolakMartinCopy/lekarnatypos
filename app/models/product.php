@@ -58,7 +58,8 @@ class Product extends AppModel {
 			'dependent' => true
 		),
 		'TSVisitProduct',
-		'TSCartAddition'
+		'TSCartAddition',
+		'DiscountCouponsProduct'
 	);
 
 	var $belongsTo = array(

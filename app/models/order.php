@@ -14,6 +14,8 @@ class Order extends AppModel {
 		)
 	);
 	var $belongsTo = array('Customer', 'Shipping', 'Payment', 'Status', 'TSVisit');
+	
+	var $hasOne = array('DiscountCoupon');
 
 	function afterFind($results){
 		if ( isset( $results[0]['Order']) && isset($results[0]['Order']['subtotal_with_dph']) && isset($results[0]['Order']['shipping_cost'])  ){
