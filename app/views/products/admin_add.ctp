@@ -89,7 +89,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 				<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
 			</a>
 		</td>
-		<td><?php echo $this->Form->input('Product.manufacturer_id', array('label' => false, 'empty' => true))?></td>
+		<td><?php echo $this->element(REDESIGN_PATH . 'admin/combobox', array('name' => 'Product.manufacturer_id', 'options' => $manufacturers, 'empty' => true)); ?></td>
 	</tr>
 	<tr valign="top">
 		<td>Dostupnost:</td>

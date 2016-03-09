@@ -831,7 +831,11 @@ class ProductsController extends AppController {
 			}
 		}
 
-		$manufacturers = $this->Product->Manufacturer->find('list', array('order' => array('Manufacturer.name' => 'asc')));
+		$manufacturers = $this->Product->Manufacturer->find('list', array(
+			'conditions' => array('Manufacturer.active' => true),
+			'fields' => array('Manufacturer.id', 'Manufacturer.name'),
+			'order' => array('Manufacturer.name' => 'asc')
+		));
 		$taxClasses = $this->Product->TaxClass->find('list');
 		$availabilities = $this->Product->Availability->find('list', array(
 			'conditions' => array('Availability.active' => true),
@@ -1020,7 +1024,9 @@ class ProductsController extends AppController {
 		
 		$productTypes = $this->Product->ProductType->find('list');
 		$manufacturers = $this->Product->Manufacturer->find('list', array(
-			'conditions' => array('Manufacturer.active' => true)
+			'conditions' => array('Manufacturer.active' => true),
+			'fields' => array('Manufacturer.id', 'Manufacturer.name'),
+			'order' => array('Manufacturer.name' => 'asc')
 		));
 		$taxClasses = $this->Product->TaxClass->find('list');
 		$availabilities = $this->Product->Availability->find('list', array(
