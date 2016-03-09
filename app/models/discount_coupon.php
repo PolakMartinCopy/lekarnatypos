@@ -43,14 +43,18 @@ class DiscountCoupon extends AppModel {
 		$cartId = $this->Order->OrderedProduct->Product->CartsProduct->Cart->get_id();
 		
 		// zjistim produkty v kosiku
-		$cartProductIds = $this->DiscountCouponsProduct->Product->CartsProduct->Cart->getProducts($cartId);
-		$cartProductIds = Set::extract('/CartsProduct/product_id', $cartProductIds);
+		$cartProducts = $this->DiscountCouponsProduct->Product->CartsProduct->Cart->getProducts($cartId);
+		$amount = 0;
+		foreach ($cartProducts as $cartProduct) {
+			$amount += $cartProduct['CartsProduct']['price_with_dph'] * $cartProduct['CartsProduct']['quantity'];
+		}
+		$productIds = Set::extract('/CartsProduct/product_id', $cartProducts);
 			
-		return $this->check($id, $customerId, $cartProductIds);
+		return $this->check($id, $customerId, $productIds, $amount);
 	}
 	
-	function check($id, $customerId, $productIds) {
-		return $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $productIds);
+	function check($id, $customerId, $productIds, $amount) {
+		return $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $productIds) && $this->checkMinAmount($id, $amount);
 	}
 	
 	function checkCustomer($id, $customerId) {
@@ -130,6 +134,21 @@ class DiscountCoupon extends AppModel {
 				return false;
 			}
 			// kupon nebyl dosud pouzit
+			return true;
+		}
+		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
+		return false;
+	}
+	
+	function checkMinAmount($id, $amount) {
+		// mam kupon?
+		if ($coupon = $this->getItemById($id)) {
+			// je hodnota vyšší než požadovaná mez?
+			if ($coupon['DiscountCoupon']['min_amount'] && $coupon['DiscountCoupon']['min_amount'] > $amount) {
+				$this->checkError = 'Minimální hodnota pro uplatnění kupónu je ' . front_end_display_price($coupon['DiscountCoupon']['min_amount']) . '&nbsp;Kč, přidejte prosím další zboží do objednávky.';
+				return false;
+			}
+			// kupon nema danou minimalni mez nebo je hodnota vyšší než požadovaná mez
 			return true;
 		}
 		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
