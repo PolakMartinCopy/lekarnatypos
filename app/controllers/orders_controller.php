@@ -158,7 +158,8 @@ class OrdersController extends AppController {
 			'Payment',
 			'Customer' => array(
 				'CustomerType'
-			)
+			),
+			'DiscountCoupon'
 		);
 		$this->paginate['page'] = $page;
 		if ($sort && $direction) {
@@ -241,13 +242,14 @@ class OrdersController extends AppController {
 					'Administrator' => array(
 						'fields' => array('Administrator.id', 'Administrator.first_name', 'Administrator.last_name')
 					)
-				)	
+				),
+				'DiscountCoupon'
 			),
 		));
 
 		// pokud je zadano spatne id, nic se nenacte,
 		// osetrim presmerovanim
-		if ( empty( $order ) ){
+		if (empty($order)){
 			$this->Session->setFlash('Neexistující objednávka!', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action' => 'index'), null, true);
 		}
@@ -350,12 +352,15 @@ class OrdersController extends AppController {
 				'Payment' => array(
 					'fields' => array('Payment.id', 'Payment.name')
 				),
+				'DiscountCoupon' => array(
+					'fields' => array('DiscountCoupon.id', 'DiscountCoupon.value')
+				)
 			)
 		));
 		
 		// pokud je zadano spatne id, nic se nenacte,
 		// osetrim presmerovanim
-		if ( empty( $order ) ){
+		if (empty($order)){
 			$this->Session->setFlash('Neexistující objednávka!');
 			$this->redirect(array('action' => 'index'), null, true);
 		}
@@ -859,7 +864,10 @@ class OrdersController extends AppController {
 					)
 				),
 				'Shipping' => array(
-						'fields' => array('Shipping.id', 'Shipping.name')
+					'fields' => array('Shipping.id', 'Shipping.name')
+				),
+				'DiscountCoupon' => array(
+					'fields' => array('DiscountCoupon.id', 'DiscountCoupon.value')
 				)
 			),
 			'joins' => array(
@@ -886,7 +894,7 @@ class OrdersController extends AppController {
 				'PaymentType.name'
 			),
 		));
-		
+
 		$date = explode(' ', $order['Order']['created']);
 		$order['Order']['date'] = $date[0];
 		
@@ -1059,7 +1067,6 @@ class OrdersController extends AppController {
 							
 							$address_data = $this->data['Address'];
 						}
-						
 						$customer_data['Customer'] = $this->data['Customer'];
 						if ($address_data) {
 							$customer_data['Address'] = $address_data;
@@ -1087,7 +1094,7 @@ class OrdersController extends AppController {
 								// pres customer id v sesne a to je mi ted na nic
 								$this->data['Customer']['noreg'] = true;
 							}
-								
+
 							$this->Session->write('Customer', $this->data['Customer']);
 							if (isset($this->data['Address'][0])) {
 								$this->Session->write('Address', $this->data['Address'][0]);
@@ -1096,31 +1103,55 @@ class OrdersController extends AppController {
 								$this->Session->write('Address_payment', $this->data['Address'][1]);
 							}
 							
-							$this->data['Order']['payment_id'] =  $this->Order->Shipping->get_payment_id($this->data['Order']['shipping_id']);
-							$this->Session->write('Order', $this->data['Order']);
-							// pokud je jako zpusob dopravy vybrano Geis Point (doruceni na odberne misto), presmeruju na plugin pro vyber odberneho
-							// mista s tim, aby se po navratu presmeroval na ulozeni informaci o vyberu odberneho mista
-							if ($this->Order->Shipping->isGeisPoint($shipping_id)) {
-								if ($service_url = $this->Order->Shipping->geis_point_url($this->Session, true)) {
-									$this->redirect($service_url);
-								} else {
-									$this->Session->setFlash('Zadejte prosím Vaši doručovací adresu');
-									$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order', '#' => 'OrderDetailsCustomer'));
+							$couponUse = false;
+							if (isset($this->data['DiscountCoupon']['name']) && !empty($this->data['DiscountCoupon']['name'])) {
+								$couponUse = true;
+								$couponCheck = false;
+								if ($couponId = $this->Order->DiscountCoupon->getIdByField($this->data['DiscountCoupon']['name'], 'name')) {
+									$customerId = null;
+									if (isset($this->data['Customer']['id'])) {
+										$customerId = $this->data['Customer']['id'];
+									}
+									$couponCheck = $this->Order->DiscountCoupon->check($couponId, $customerId);
 								}
 							}
+							
+							if (!$couponUse || ($couponUse && $couponCheck)) {
+								$this->data['Order']['payment_id'] =  $this->Order->Shipping->get_payment_id($this->data['Order']['shipping_id']);
+								$this->Session->write('Order', $this->data['Order']);
+								if ($couponUse) {
+									$this->Session->write('Order.discount_coupon_id', $couponId);
+								}
+								// pokud je jako zpusob dopravy vybrano Geis Point (doruceni na odberne misto), presmeruju na plugin pro vyber odberneho
+								// mista s tim, aby se po navratu presmeroval na ulozeni informaci o vyberu odberneho mista
+								if ($this->Order->Shipping->isGeisPoint($shipping_id)) {
+									if ($service_url = $this->Order->Shipping->geis_point_url($this->Session, true)) {
+										$this->redirect($service_url);
+									} else {
+										$this->Session->setFlash('Zadejte prosím Vaši doručovací adresu');
+										$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order', '#' => 'OrderDetailsCustomer'));
+									}
+								}
 								
-							// presmeruju do finalizace objednavky, kde se data ulozena v sesne ulozi do systemu
-							$this->redirect(array('controller' => 'orders', 'action' => 'finalize'));
-	
+								// presmeruju do finalizace objednavky, kde se data ulozena v sesne ulozi do systemu
+								$this->redirect(array('controller' => 'orders', 'action' => 'finalize'));
+							} else {
+								if ($this->Session->check('Customer.noreg')) {
+									$this->Session->delete('Customer.id');
+									$this->Session->delete('Customer.noreg');
+									unset($this->data['Customer']['id']);
+								}
+								if ($couponUse) {
+									$this->Session->setFlash($this->Order->DiscountCoupon->checkError, REDESIGN_PATH . 'flash_failure', array('type' => 'customer_info'));
+								}
+							}
 						} else {
 							// pokud jsem nakopiroval dorucovaci adresu pred ulozenim, protoze zakaznik nerekl, ze je jina, nez fakturacni, tak ji zase vynuluju
 							if (!$this->data['Customer']['is_delivery_address_different']) {
 								unset($this->data['Address'][1]);
 							}
 							$this->Session->setFlash('Údaje o zákazníkovi obsahují chybu, opravte ji prosím a formulář uložte znovu.', REDESIGN_PATH . 'flash_failure', array('type' => 'customer_info'));
-							//$this->redirect(array('controller' => 'orders', 'action' => 'one_step_order', '#' => 'OrderDetailsCustomer'));
 						}
-	
 	
 						break;
 				}
@@ -1357,6 +1388,20 @@ class OrdersController extends AppController {
 			foreach ($order[1] as $ordered_product) {
 				$ordered_product['OrderedProduct']['order_id'] = $this->Order->id;
 				if (!$this->Order->OrderedProduct->saveAll($ordered_product)) {
+					$dataSource->rollback($this->Order);
+					debug($this->Order->OrderedProduct->validationErrors);
+					trigger_error('Produkty na objednavce se nepodařilo uložit', E_USER_ERROR);
+					die();
+				}
+			}
+			if (isset($order[0]['Order']['discount_coupon_id'])) {
+				$discountCouponSave = array(
+					'DiscountCoupon' => array(
+						'id' => $order[0]['Order']['discount_coupon_id'],
+						'order_id' => $this->Order->id
+					)
+				);
+				if (!$this->Order->DiscountCoupon->save($discountCouponSave)) {
 					$dataSource->rollback($this->Order);
 					debug($this->Order->OrderedProduct->validationErrors);
 					trigger_error('Produkty na objednavce se nepodařilo uložit', E_USER_ERROR);

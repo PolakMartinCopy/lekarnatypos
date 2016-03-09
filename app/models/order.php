@@ -33,7 +33,7 @@ class Order extends AppModel {
 		return $results;
 	}
 
-	function reCount($id = null){
+	function reCount($id = null) {
 		// predpokladam, ze postovne bude za 0 Kc
 		$order['Order']['shipping_cost'] = 0;
 
@@ -45,14 +45,15 @@ class Order extends AppModel {
 					'fields' => array('Product.id', 'name'),
 					'FlagsProduct'
 				)
-			)
+			),
+			'DiscountCoupon'
 		);
 		
 		$conditions = array('Order.id' => $id);
 		
 		$fields = array('Order.id', 'customer_ico', 'customer_dic', 'subtotal_with_dph', 'shipping_cost', 'shipping_id');
 		
-		$products = $this->find('first', array(
+		$order = $this->find('first', array(
 			'conditions' => $conditions,
 			'contain' => $contain,
 			'fields' => $fields
@@ -60,10 +61,13 @@ class Order extends AppModel {
 	
 		$order_total = 0;
 		$free_shipping = false;
-		foreach ( $products['OrderedProduct'] as $product ){
+		foreach ($order['OrderedProduct'] as $product) {
 			$order_total = $order_total + $product['product_price_with_dph'] * $product['product_quantity'];
 		}
 		$order['Order']['subtotal_with_dph'] = $order_total;
+		if (!empty($order['DiscountCoupon']['id'])) {
+			$order['Order']['subtotal_with_dph'] -= $order['DiscountCoupon']['value'];
+		}
 		
 		// musim zjistit, jestli zakaznik, ktery sestavil objednavku, byl voc, protoze podle toho se pocita cena dopravy
 		$customer = $this->find('first', array(
@@ -72,7 +76,7 @@ class Order extends AppModel {
 			'fields' => array('Customer.id')
 		));
 		$is_voc = $this->Customer->is_voc($customer['Customer']['id']);
-		$order['Order']['shipping_cost'] = $this->Shipping->get_cost($products['Order']['shipping_id'], $order_total, $is_voc);
+		$order['Order']['shipping_cost'] = $this->Shipping->get_cost($order['Order']['shipping_id'], $order_total, $is_voc);
 		$this->id = $id;
 		$this->save($order, false, array('subtotal_with_dph', 'shipping_cost'));
 	}
@@ -558,6 +562,11 @@ class Order extends AppModel {
 		$order['Order']['shipping_tax_class'] = $this->Shipping->get_tax_class_description($order['Order']['shipping_id']);
 		// cena produktu v kosiku, bez dopravneho
 		$order['Order']['subtotal_with_dph'] = $order_total_with_dph;
+		// pokud pouzil zakaznik slevovy kupon, zmensim o jeho hodnotu cenu bez dane
+		if (isset($order['Order']['discount_coupon_id'])) {
+			$discountCoupon = $this->DiscountCoupon->getItemById($order['Order']['discount_coupon_id']);
+			$order['Order']['subtotal_with_dph'] -= $discountCoupon['DiscountCoupon']['value'];
+		}
 		$order['Order']['subtotal_wout_dph'] = $order_total_wout_dph;
 
 		return array($order, $ordered_products);
@@ -755,7 +764,8 @@ class Order extends AppModel {
 						),
 						'fields' => array('OrderedProductsAttribute.id')
 					)
-				)
+				),
+				'DiscountCoupon'
 			)
 		));
 		
@@ -819,6 +829,9 @@ class Order extends AppModel {
 				}
 				
 				$customer_mail .= '<tr><td>' . $ordered_product['product_quantity'] . '</td><td><a href="http://www.' . CUST_ROOT . '/' . $ordered_product['Product']['url'] . '">' . $ordered_product['product_name'] . '</a>' . (!empty($attributes) ? ', ' . $attributes : '') . '</td><td>' . round($ordered_product['product_price_with_dph']) . '&nbsp;Kč</td><td>' . ($ordered_product['product_quantity'] * round($ordered_product['product_price_with_dph'])) . '&nbsp;Kč</td></tr>' . "\n";
+			}
+			if (!empty($order['DiscountCoupon']['id'])) {
+				$customer_mail .= '<tr><td>1</td><td>Slevový kupón</td><td>-' . round($order['DiscountCoupon']['value']) . '&nbsp;Kč</td><td>-' . round($order['DiscountCoupon']['value']) . '&nbsp;Kč</td></tr>' . "\n";
 			}
 			$customer_mail .= '<tr><td>1</td><td>' . $order['Shipping']['name'] . '</td><td>' . round($order['Order']['shipping_cost']) . '&nbsp;Kč</td><td>' . round($order['Order']['shipping_cost']) . '&nbsp;Kč</td></tr>' . "\n";
 			$customer_mail .= '<tr><td>1</td><td>' . $order['Payment']['name'] . '</td><td>0&nbsp;Kč</td><td>0&nbsp;Kč</td></tr>' . "\n";

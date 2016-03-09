@@ -19,6 +19,9 @@
     ?>
     <orderItem quantity="<?php echo $ordered_product['product_quantity']?>" code="<?php echo $ordered_product['Product']['pohoda_id']?>" payVAT="yes" price="<?php echo $ordered_product['product_price_with_dph']?>" rateVAT="<?php echo ($ordered_product['Product']['tax_class_id'] == 1 ? 'high' : 'low')?>"><?php echo $ordered_product_name?></orderItem>
     <?php } ?>
+    <?php if (!empty($order['DiscountCoupon']['id'])) { ?>
+    <orderItem quantity="1" code="" payVAT="no" price="-<?php echo $order['DiscountCoupon']['value']?>" rateVAT="none">Slevový kupón</orderItem>
+    <?php }?>
 	<orderItem quantity="1" code="" payVAT="yes" price="<?php echo $order['Order']['shipping_cost']?>" rateVAT="<?php echo $order['Order']['shipping_tax_class']?>"><?php echo $order['Shipping']['name']?></orderItem>
 	<orderItem quantity="1" code="" payVAT="yes" price="0" rateVAT="none"><?php echo $order['Payment']['name']?></orderItem>
 

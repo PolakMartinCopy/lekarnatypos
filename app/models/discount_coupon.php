@@ -36,5 +36,99 @@ class DiscountCoupon extends AppModel {
 			)
 		)
 	);
+	
+	var $checkError = 'Slevový kupón neexistuje.';
+	
+	function check($id, $customerId) {
+		$cartId = $this->Order->OrderedProduct->Product->CartsProduct->Cart->get_id();
+			
+		return $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $cartId);
+	}
+	
+	function checkCustomer($id, $customerId) {
+		// mam kupon?
+		if ($coupon = $this->getItemById($id)) {
+			// je kupon omezeny na konkretniho zakaznika?
+			// ANO
+			if (!empty($coupon['DiscountCoupon']['customer_id'])) {
+				// sedi mi omezeni na zakaznika?
+				// NE
+				if ($coupon['DiscountCoupon']['customer_id'] != $customerId) {
+					// nastavim chybovou hlasku
+					$this->checkError = 'Slevový kupón je určen pro jiného zákazníka a nemůžete jej proto použít.';
+					return false;
+				}
+			}
+			// kupon neni omezen na zakaznika nebo omezeni sedi
+			return true;
+		}
+		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
+		return false;
+	}
+	
+	function checkProducts($id, $cartId) {
+		// mam kupon?
+		if ($coupon = $this->getItemById($id)) {
+			// je kupon omezeny na konkretni produkty?
+			// ANO
+			if ($this->DiscountCouponsProduct->hasAny(array('DiscountCouponsProduct.discount_coupon_id' => $id)) || $this->DiscountCouponsCategory->hasAny(array('DiscountCouponsCategory.discount_coupon_id' => $id))) {
+				// zjistim vsechny produkty s vazbou na dany kupon
+				// nejdriv prime vazby na produkt
+				$productProductIds = $this->DiscountCouponsProduct->getProductIds($id);
+				// pridam navazane pres kategorie
+				$categoryProductIds = $this->DiscountCouponsCategory->getProductIds($id);
+				$couponProductIds = array_unique(array_merge($productProductIds, $categoryProductIds));
+				// zjistim produkty v kosiku
+				$cartProductIds = $this->DiscountCouponsProduct->Product->CartsProduct->Cart->getProducts($cartId);
+				$cartProductIds = Set::extract('/CartsProduct/product_id', $cartProductIds);
+				// vratim, jestli mam v kosiku aspon jeden produkt z tech, co jsou navazane na kupon
+				$intersect = array_intersect($couponProductIds, $cartProductIds);
+				if (empty($intersect)) {
+					$this->checkError = 'Slevový kupón je určen pro nákup jiných produktů a nemůžete jej proto použít.';
+					return false;
+				}
+			}
+			// kupon neni omezen na produkty nebo omezeni sedi
+			return true;
+		}
+		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit.
+		return false;
+	}
+	
+	function checkValidity($id) {
+		// mam kupon?
+		if ($coupon = $this->getItemById($id)) {
+			// je kupon omezeny na datum?
+			// ANO
+			if ($coupon['DiscountCoupon']['valid_until']) {
+				$today = date('Y-m-d');
+				// uplynula doba platnosti kuponu?
+				// ANO
+				if ($coupon['DiscountCoupon']['valid_until'] < $today) {
+					$this->checkError = 'Doba platnosti kupónu vypršela a nemůžete jej proto použít.';
+					return false;
+				}
+			}
+			// kupon neni omezen datem nebo omezeni sedi
+			return true;
+		}
+		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
+		return false;
+	}
+	
+	function checkUsed($id) {
+		// mam kupon?
+		if ($coupon = $this->getItemById($id)) {
+			// byl uz kupon pouzity?
+			if ($coupon['DiscountCoupon']['order_id']) {
+				$this->checkError = 'Kupón už byl využit dříve a nemůžete jej proto použít znovu.';
+				return false;
+			}
+			// kupon nebyl dosud pouzit
+			return true;
+		}
+		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
+		return false;
+	}
 }
 ?>

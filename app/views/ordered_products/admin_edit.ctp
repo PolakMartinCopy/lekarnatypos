@@ -2,11 +2,11 @@
 <p><?=$html->link('zpět na objednávku', array('controller' => 'orders', 'action' => 'view', $order['Order']['id'])) ?></p>
 <table id="productList" class="tabulka">
 	<tr>
-		<th>Objednaný produkt</th>
-		<th>Změna atributů</th>
-		<th>Množství</th>
-		<th>Cena<br />za kus</th>
-		<th>&nbsp;</th>
+		<th style="width:35%">Objednaný produkt</th>
+		<th style="width:15%">Změna atributů</th>
+		<th style="width:15%">Množství</th>
+		<th style="width:25%">Cena<br />za kus</th>
+		<th style="width:10%">&nbsp;</th>
 	</tr>
 	<?
 	foreach ( $products as $product ){
@@ -53,7 +53,7 @@
 				} ?>
 				<tr>
 					<th>&nbsp;</th>
-					<td><?=$form->submit('změnit atributy') ?></td>
+					<td><?=$form->submit('změnit atributy', array('div' => false, 'style' => 'margin-left:5px')) ?></td>
 				</tr>
 			</table>
 			<?
@@ -69,15 +69,14 @@
 			echo $form->input('OrderedProduct.product_quantity', array('value' => $product['OrderedProduct']['product_quantity'], 'label' => false, 'div' => false, 'size' => 3)) . ' ks';
 			echo $form->input('OrderedProduct.id', array('value' => $product['OrderedProduct']['id']));
 			echo $form->hidden('OrderedProduct.change_switch', array('value' => 'quantity_change'));
-		?><br /><?
-			echo $form->submit('změnit počet');
+			echo $form->submit('změnit počet', array('div' => false, 'style' => 'margin-left:5px'));
 			echo $form->end();
 		?>
 		</td>
 		<td><?
 			echo $form->create('OrderedProduct', array('url' => array('action' => 'edit', $order['Order']['id'])));
 		?>
-			<select name="data[OrderedProduct][product_price_with_dph]">
+			<select name="data[OrderedProduct][product_price_with_dph]" style="margin-bottom:5px">
 				<option value="<?=$product['Product']['retail_price_with_dph'] ?>"<?=( $product['Product']['retail_price_with_dph'] == $product['OrderedProduct']['product_price_with_dph'] ? ' selected="selected"' : "" ) ?>>
 					základní cena: <?=$product['Product']['retail_price_with_dph'] ?> Kč
 				</option>
@@ -91,13 +90,12 @@
 					členská sleva: <?php echo $product['Product']['discount_member']?> Kč
 				</option>
 			<?php } ?>
-			</select>
-			<br />
-			<span style="font-size:10px">ručně:</span> <?=$form->input('OrderedProduct.custom_price', array('label' => false, 'size' => 5)); ?>
+			</select><br/>
+			<span style="font-size:10px">ručně:</span> <?=$form->input('OrderedProduct.custom_price', array('label' => false, 'size' => 5, 'div' => false)); ?>
 			<?
 				echo $form->input('OrderedProduct.id', array('value' => $product['OrderedProduct']['id']));
 				echo $form->hidden('OrderedProduct.change_switch', array('value' => 'price_change'));
-				echo $form->submit('změnit cenu');
+				echo $form->submit('změnit cenu', array('div' => false, 'style' => 'margin-left:5px'));
 				echo $form->end();
 		?></td>
 		<td>
@@ -105,13 +103,33 @@
 		</td>
 	</tr>
 <? } ?>
+</table>
+<br/>
+
+<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
+<table id="discountCoupon"  class="tabulka">
 	<tr>
-		<th colspan="2" align="right">cena za zboží celkem:</th>
-		<td colspan="2" align="right"><?=$order['Order']['subtotal_with_dph']?> Kč</td>
+		<th style="width:65%">Slevový kupón</th>
+		<th style="width:25%">ID</th>
+		<th style="width:10%">hodnota</th>
 	</tr>
 	<tr>
-		<td colspan="2" align="right">způsob doručení:</td>
-		<td colspan="2" align="right">
+		<td><?php echo $order['DiscountCoupon']['name']?></td>
+		<td><?php echo $order['DiscountCoupon']['id']?></td>
+		<td align="right"><?php echo $order['DiscountCoupon']['value']?>&nbsp;Kč</td>
+	</tr>
+</table>
+<br/>
+<?php } ?>
+
+<table id="orderParameters"  class="tabulka">
+	<tr>
+		<th style="width:65%" align="right">cena za zboží celkem:</th>
+		<td style="width:35%" align="right"><?=$order['Order']['subtotal_with_dph']?> Kč</td>
+	</tr>
+	<tr>
+		<td align="right">způsob doručení:</td>
+		<td align="right">
 			<?=$form->create('Order', array('url' => array('action' => 'edit_shipping', $order['Order']['id'])));?>
 			<?=$form->select('Order.shipping_id', $shipping_choices, $order['Order']['shipping_id'], array('empty' => false));?>
 			<?=$form->submit('změnit');?>
@@ -119,8 +137,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2" align="right">způsob platby:</td>
-		<td colspan="2" align="right">
+		<td align="right">způsob platby:</td>
+		<td align="right">
 			<?=$form->create('Order', array('url' => array('action' => 'edit_payment', $order['Order']['id'])));?>
 			<?=$form->select('Order.payment_id', $payment_choices, $order['Order']['payment_id'], array('empty' => false));?>
 			<?=$form->submit('změnit');?>
@@ -128,8 +146,8 @@
 		</td>
 	</tr>
 	<tr>
-		<th colspan="2" align="right">celková cena objednávky:</th>
-		<td colspan="2" align="right"><?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?> Kč</td>
+		<th align="right">celková cena objednávky:</th>
+		<td align="right"><?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?> Kč</td>
 	</tr>
 </table>
 

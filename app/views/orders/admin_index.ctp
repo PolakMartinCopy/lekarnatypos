@@ -241,6 +241,15 @@ $(function() {
 					<td><?php echo round($ordered_product['product_price_with_dph'] * $ordered_product['product_quantity'], 2)?></td>
 				</tr>
 				<?php } ?>
+				<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
+				<tr>
+					<td>1x</td>
+					<td>Slevový kupón</td>
+					<td>&nbsp;</td>
+					<td>-<?php echo round($order['DiscountCoupon']['value'], 2)?></td>
+					<td>-<?php echo round($order['DiscountCoupon']['value'], 2)?></td>
+				</tr>
+				<?php } ?>
 				<tr>
 					<td>1x</td>
 					<td><?php echo $order['Shipping']['name']?></td>

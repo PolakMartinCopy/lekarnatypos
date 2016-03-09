@@ -31,6 +31,26 @@ class AppModel extends Model {
 		return $item[$this->name][$field];
 	}
 	
+	function getIdByField($value, $field) {
+		$item = $this->find('first', array(
+			'conditions' => array($field => $value),
+			'contain' => array(),
+			'fields' => array('id')
+		));
+		if (empty($item)) {
+			return false;
+		}
+		return $item[$this->name]['id'];
+	}
+	
+	function getItemById($id) {
+		$item = $this->find('first', array(
+			'conditions' => array('id' => $id),
+			'contain' => array()
+		));
+		return $item;
+	}
+	
 	function setAttribute($id, $attName, $attValue) {
 		$save = array(
 			$this->name => array(

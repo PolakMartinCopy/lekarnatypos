@@ -388,6 +388,17 @@ if ($this->Session->check('Message.flash')) {
 	</fieldset>
 </div>
 
+<fieldset>
+	<legend>Slevový kupón</legend>
+	<div class="row">
+		<div class="col-xs-12 col-md-12">
+			<div class="form-group">
+				<?php echo $this->Form->input('DiscountCoupon.name', array('label' => false, 'div' => false, 'class' => 'form-control'))?>
+			</div>
+		</div>
+	</div>
+</fieldset>
+
 <?php 
 	echo $this->Form->hidden('Customer.id');
 	echo $this->Form->hidden('Customer.newsletter', array('value' => true));

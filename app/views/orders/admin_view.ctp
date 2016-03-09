@@ -15,10 +15,10 @@
 
 		<table id="productList"  class="tabulka">
 			<tr>
-				<th>Název produktu</th>
-				<th>Množství</th>
-				<th>Cena<br />za kus</th>
-				<th>Cena<br />celkem</th>
+				<th style="width:70%">Název produktu</th>
+				<th style="width:10%">Množství</th>
+				<th style="width:10%">Cena<br />za kus</th>
+				<th style="width:10%">Cena<br />celkem</th>
 			</tr>
 			<? foreach ( $order['OrderedProduct'] as $product ){
 				// celkova cena za pocet kusu krat jednotkova cena
@@ -39,21 +39,39 @@
 						echo '</div>';
 				} ?></td>
 				<td><?php echo $product['product_quantity'] ?>&nbsp;ks</td>
-				<td><?php echo $product['product_price_with_dph'] ?>&nbsp;Kč</td>
-				<td><?php echo $total_products_price ?>&nbsp;Kč</td>
+				<td align="right"><?php echo $product['product_price_with_dph'] ?>&nbsp;Kč</td>
+				<td align="right"><?php echo $total_products_price ?>&nbsp;Kč</td>
 			</tr>
-			<?php } ?>		
+			<?php } ?>
+		</table>
+		<br/>
+		<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
+		<table id="discountCoupon"  class="tabulka">
 			<tr>
-				<th colspan="2" align="right">cena za zboží celkem:</th>
-				<td colspan="2" align="right"><?=$order['Order']['subtotal_with_dph']?>&nbsp;Kč</td>
+				<th style="width:80%">Slevový kupón</th>
+				<th style="width:10%">ID</th>
+				<th style="width:10%">hodnota</th>
 			</tr>
 			<tr>
-				<td colspan="2" align="right">způsob doručení: <?=$order['Shipping']['name']?></td>
-				<td colspan="2" align="right"><?=$order['Order']['shipping_cost']?>&nbsp;Kč</td>
+				<td><?php echo $order['DiscountCoupon']['name']?></td>
+				<td><?php echo $order['DiscountCoupon']['id']?></td>
+				<td align="right"><?php echo $order['DiscountCoupon']['value']?>&nbsp;Kč</td>
+			</tr>
+		</table>
+		<br/>
+		<?php } ?>
+		<table id="orderParameters"  class="tabulka">
+			<tr>
+				<th style="width:80%" align="right">cena za zboží celkem:</th>
+				<td style="width:20%" align="right"><?=$order['Order']['subtotal_with_dph']?>&nbsp;Kč</td>
 			</tr>
 			<tr>
-				<th colspan="2" align="right">celková cena objednávky:</th>
-				<td colspan="2" align="right"><?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?>&nbsp;Kč</td>
+				<td align="right">způsob doručení: <?=$order['Shipping']['name']?></td>
+				<td align="right"><?=$order['Order']['shipping_cost']?>&nbsp;Kč</td>
+			</tr>
+			<tr>
+				<th align="right">celková cena objednávky:</th>
+				<td align="right"><?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?>&nbsp;Kč</td>
 			</tr>
 		</table>
 <?

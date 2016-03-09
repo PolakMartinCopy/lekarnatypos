@@ -73,6 +73,14 @@
 		<td align='right'><?php echo round($ordered_product['product_price_with_dph'] * $ordered_product['product_quantity'])?>&nbsp;Kč</td>
 	</tr>
 	<?php } ?>
+	<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
+	<tr>
+		<td align='right'>1</td>
+		<td>Slevový kupón</td>
+		<td align='right'>-<?php echo round($order['DiscountCoupon']['value'], 2)?>&nbsp;Kč</td>
+		<td align='right'>-<?php echo round($order['DiscountCoupon']['value'], 2)?>&nbsp;Kč</td>
+	</tr>
+	<?php } ?>
 	<tr valign='top'>
 		<td align='right'>1</td>
 		<td><?php echo $order['Shipping']['name']?></td>

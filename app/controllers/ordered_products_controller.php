@@ -183,14 +183,9 @@ class OrderedProductsController extends AppController {
 				usort($product['OrderedProductsAttribute'], array('OrderedProductsController', 'sort_by_option_id'));
 				$products[$key] = $product;
 			}
+			$products[$key]['Subs'] = $this->OrderedProduct->Product->get_subproducts($products[$key]['Product']['id']);
 		}
 		
-		$count = count($products);
-		for ( $i = 0; $i < $count; $i++ ){
-			// produktum pridelim jejich mozne varianty
-			$products[$i]['Subs'] = $this->OrderedProduct->Product->get_subproducts($products[$i]['Product']['id']);
-		}
-
 		// vytahnu si list pro select shippings
 		$shipping_choices = $this->OrderedProduct->Order->Shipping->find('list', array(
 			'conditions' => array('Shipping.active' => true)
