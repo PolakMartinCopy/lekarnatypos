@@ -186,6 +186,7 @@ class ExportsController extends AppController{
 			'Heureka.cz | Oblečení a móda | Obuv | Dámská obuv' => array(833, 836, 837, 838, 839, 840),
 			'Heureka.cz | Oblečení a móda | Obuv | Dětská obuv' => array(834, 841, 842),
 			'Heureka.cz | Oblečení a móda | Obuv | Pánská obuv' => array(835),
+			'Heureka.cz | Oblečení a móda | Dámské oblečení | Dámské spodní prádlo | Punčochy' => array(869)
 		);
 		
 		App::import('Model', 'Category');
