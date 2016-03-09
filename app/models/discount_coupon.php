@@ -39,10 +39,18 @@ class DiscountCoupon extends AppModel {
 	
 	var $checkError = 'Slevový kupón neexistuje.';
 	
-	function check($id, $customerId) {
+	function checkCart($id, $customerId) {
 		$cartId = $this->Order->OrderedProduct->Product->CartsProduct->Cart->get_id();
+		
+		// zjistim produkty v kosiku
+		$cartProductIds = $this->DiscountCouponsProduct->Product->CartsProduct->Cart->getProducts($cartId);
+		$cartProductIds = Set::extract('/CartsProduct/product_id', $cartProductIds);
 			
-		return $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $cartId);
+		return $this->check($id, $customerId, $cartProductIds);
+	}
+	
+	function check($id, $customerId, $productIds) {
+		return $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $productIds);
 	}
 	
 	function checkCustomer($id, $customerId) {
@@ -66,7 +74,7 @@ class DiscountCoupon extends AppModel {
 		return false;
 	}
 	
-	function checkProducts($id, $cartId) {
+	function checkProducts($id, $productIds) {
 		// mam kupon?
 		if ($coupon = $this->getItemById($id)) {
 			// je kupon omezeny na konkretni produkty?
@@ -78,11 +86,8 @@ class DiscountCoupon extends AppModel {
 				// pridam navazane pres kategorie
 				$categoryProductIds = $this->DiscountCouponsCategory->getProductIds($id);
 				$couponProductIds = array_unique(array_merge($productProductIds, $categoryProductIds));
-				// zjistim produkty v kosiku
-				$cartProductIds = $this->DiscountCouponsProduct->Product->CartsProduct->Cart->getProducts($cartId);
-				$cartProductIds = Set::extract('/CartsProduct/product_id', $cartProductIds);
-				// vratim, jestli mam v kosiku aspon jeden produkt z tech, co jsou navazane na kupon
-				$intersect = array_intersect($couponProductIds, $cartProductIds);
+				// vratim, jestli mam v seznamu aspon jeden produkt z tech, co jsou navazane na kupon
+				$intersect = array_intersect($couponProductIds, $productIds);
 				if (empty($intersect)) {
 					$this->checkError = 'Slevový kupón je určen pro nákup jiných produktů a nemůžete jej proto použít.';
 					return false;

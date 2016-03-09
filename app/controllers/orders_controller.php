@@ -1112,7 +1112,7 @@ class OrdersController extends AppController {
 									if (isset($this->data['Customer']['id'])) {
 										$customerId = $this->data['Customer']['id'];
 									}
-									$couponCheck = $this->Order->DiscountCoupon->check($couponId, $customerId);
+									$couponCheck = $this->Order->DiscountCoupon->checkCart($couponId, $customerId);
 								}
 							}
 							
