@@ -41,14 +41,17 @@ class Manufacturer extends AppModel {
 	function afterFind($results) {
 		if (!isset($results['Manufacturer'])) {
 			foreach ($results as &$result) {
-				if (isset($result['Manufacturer']) && array_key_exists('heading', $result['Manufacturer']) && empty($result['Manufacturer']['heading']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
-					$result['Manufacturer']['heading'] = $result['Manufacturer']['name'];
-				}
-				if (isset($result['Manufacturer']) && array_key_exists('title', $result['Manufacturer']) && empty($result['Manufacturer']['title']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
-					$result['Manufacturer']['title'] = $result['Manufacturer']['name'];
-				}
-				if (isset($result['Manufacturer']) && array_key_exists('description', $result['Manufacturer']) && empty($result['Manufacturer']['description']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
-					$result['Manufacturer']['description'] = $this->buildDescription($result['Manufacturer']['name']);
+				// pokud je vysledek pole vyrobcu
+				if (is_array($result) && array_key_exists('Manufacturer', $result)) {
+					if (array_key_exists('heading', $result['Manufacturer']) && empty($result['Manufacturer']['heading']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
+						$result['Manufacturer']['heading'] = $result['Manufacturer']['name'];
+					}
+					if (array_key_exists('title', $result['Manufacturer']) && empty($result['Manufacturer']['title']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
+						$result['Manufacturer']['title'] = $result['Manufacturer']['name'];
+					}
+					if (array_key_exists('description', $result['Manufacturer']) && empty($result['Manufacturer']['description']) && array_key_exists('name', $result['Manufacturer']) && !empty($result['Manufacturer']['name'])) {
+						$result['Manufacturer']['description'] = $this->buildDescription($result['Manufacturer']['name']);
+					}
 				}
 			}
 		}
