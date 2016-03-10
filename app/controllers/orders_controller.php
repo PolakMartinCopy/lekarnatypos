@@ -422,16 +422,26 @@ class OrdersController extends AppController {
 			// zalozim si idecko, abych updatoval
 			$this->Order->id = $this->data['Order']['id'];
 			unset($this->data['Order']['id']);
-				
+
+			// zjistim si id stavu, ve kterem byla objednavka pred zmenou
+			$prev_status_id = $this->Order->getFieldValue($this->Order->id, 'status_id');
+			
 			// zmena stavu			
 			// ulozim bez validace
 			$this->Order->save($this->data, false);
 
 			// odeslat na mail notifikaci zakaznikovi
-			$mail_result = $this->Order->Status->change_notification($this->Order->id, $this->data['Order']['status_id']);
-
+			// notifikaci chci poslat pouze v pripade, ze se stavy lisi
+			if ($prev_status_id != $this->data['Order']['status_id']) {
+				if ($this->Order->Status->change_notification($this->Order->id, $this->data['Order']['status_id'])) {
+					$this->Session->setFlash('Objednávka byla změněna!', REDESIGN_PATH . 'flash_success');
+				} else {
+					$this->Session->setFlash('Stav objednávky ' . $id . ' byl úspěšně upraven, ale nepodařilo se odeslat informační email zákazníkovi.', REDESIGN_PATH . 'flash_success');					
+				}
+			} else {
+				$this->Session->setFlash('Objednávka byla změněna!', REDESIGN_PATH . 'flash_success');
+			}
 			
-			$this->Session->setFlash('Objednávka byla změněna!', REDESIGN_PATH . 'flash_success');
 			$this->redirect(array('action' => 'view', $this->Order->id), null, true);
 		} else {
 			$message = implode("<br />", $valid_requested_fields);
