@@ -176,11 +176,7 @@ class AdMail extends AppModel {
 			/*		array(
 				 'email' => 'nejedly.lukyn@gmail.com',
 				'name' => 'Lukáš Nejedlý'
-			),
-			array(
-				'email' => 'martin@drdla.eu',
-				'name' => 'Martin Drdla'
-			)*/
+			),*/
 		);
 		$success = true;
 		foreach ($adminNotifications as $adminNotification) {
