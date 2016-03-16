@@ -6,5 +6,9 @@ class MissYouAdMailsController extends AdMailsController {
 	function beforeFilter() {
 		parent::beforeFilter();
 	}
+	
+	function send_batch($notificateAdmins = true, $test = false, $date = null) {
+		parent::send_batch($notificateAdmins, $test, $date);
+	}
 }
 ?>
