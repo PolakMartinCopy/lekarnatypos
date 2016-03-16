@@ -22,6 +22,7 @@ class MissYouAdMail extends AdMail {
 		$theDay = date('Y-m-d', strtotime($this->interval, strtotime($date)));
 		// kvuli optimalizaci vykonu vyberu nejdriv uzivatele, kteri meli navstevu v dany den a pak vyfiltruju ty, pro ktere nebyla posledni
 		// vyberu uzivatele, kteri maji posledni navstevu v den pred intervalem
+		// navstevy v dany den u lidi, ke kterym znam email
 		$visits = $this->Customer->TSCustomerDevice->TSVisit->find('all', array(
 			'conditions' => array(
 				'DATE(TSVisit.created)' => $theDay,
