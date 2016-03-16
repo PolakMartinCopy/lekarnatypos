@@ -48,12 +48,12 @@
 		<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
 		<tr>
 			<th colspan="2" style="text-align:right;font-size:18px">slevový kupón:</th>
-			<td colspan="3" align="right" style="vertical-align:middle"><?=front_end_display_price($order['DiscountCoupon']['value'])?> Kč</td>
+			<td colspan="3" align="right" style="vertical-align:middle">-<?=front_end_display_price($order['DiscountCoupon']['value'])?> Kč</td>
 		</tr>
 		<?php } ?>
 		<tr>
 			<th colspan="2" style="text-align:right;font-size:18px">celkem:</th>
-			<td colspan="3" align="right" style="vertical-align:middle">-<?=front_end_display_price($order['Order']['subtotal_with_dph'])?> Kč</td>
+			<td colspan="3" align="right" style="vertical-align:middle"><?=front_end_display_price($order['Order']['subtotal_with_dph'])?> Kč</td>
 		</tr>
 		<tr>
 			<th colspan="2" style="text-align:right;font-size:18px">způsob dopravy:</th>
