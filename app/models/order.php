@@ -722,7 +722,7 @@ class Order extends AppModel {
 
 		$mail->AddReplyTo($this->Setting->findValue('CUST_MAIL'), $this->Setting->findValue('CUST_NAME'));
 
-		$mail->AddAddress($this->Setting->findValue('CUST_MAIL'), $this->Setting->findValue('CUST_NAME'));
+		$mail->AddAddress('eshop@lekarnatypos.cz', $this->Setting->findValue('CUST_NAME'));
 //		$mail->AddAddress("vlado.tovarnak@gmail.com", "Vlado Tovarnak");
 		$mail->AddAddress('brko11@gmail.com', 'Martin Polák');
 		$mail->AddAddress('martin@drdla.eu', 'Martin Drdla');

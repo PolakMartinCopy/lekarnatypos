@@ -94,16 +94,16 @@ class Comment extends AppModel {
 		// uvodni nastaveni
 		$mail->CharSet = 'utf-8';
 		$mail->Hostname = CUST_ROOT;
-		$mail->Sender = 'no-reply@sportnutrition.cz';
+		$mail->Sender = 'no-reply@lekarnatypos.cz';
 		
 		// nastavim adresu, od koho se poslal email
-		$mail->From     = 'no-reply@sportnutrition.cz';
-		$mail->FromName = "sportnutrition.cz";
+		$mail->From     = 'no-reply@lekarnatypos.cz';
+		$mail->FromName = "lekarnatypos.cz";
 		
 //		$mail->AddReplyTo(CUST_MAIL, CUST_NAME);
 
-		$mail->AddAddress(CUST_MAIL, CUST_NAME);
-//		$mail->AddBCC("vlado@tovarnak.com", "Vlado Tovarnak");
+		$mail->AddAddress('dotazy@lekarnatypos.cz', CUST_NAME);
+		$mail->AddBCC("admin@lekarnatypos.cz", "Martin Polák");
 		
 		$mail->Subject = 'E-SHOP (' . CUST_ROOT . ') - NOVÝ DOTAZ';
 		$mail->Body = 'Právě byl položen nový dotaz.' . "\n\n";
