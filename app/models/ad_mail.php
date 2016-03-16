@@ -169,6 +169,10 @@ class AdMail extends AppModel {
 				'email' => 'brko11@gmail.com',
 				'name' => 'Martin Polák'
 			),
+			array(
+				'email' => 'martin@drdla.eu',
+				'name' => 'Martin Drdla'
+			),
 			/*		array(
 				 'email' => 'nejedly.lukyn@gmail.com',
 				'name' => 'Lukáš Nejedlý'
