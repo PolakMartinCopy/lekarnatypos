@@ -913,6 +913,9 @@ class CustomersController extends AppController {
 				),
 				'Payment' => array(
 					'fields' => array('Payment.id', 'Payment.name')
+				),
+				'DiscountCoupon' => array(
+					'fields' => array('DiscountCoupon.id', 'DiscountCoupon.value')
 				)
 			)
 		));
