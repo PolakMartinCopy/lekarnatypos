@@ -551,5 +551,36 @@ class Customer extends AppModel {
 		);
 		return $this->Order->hasAny($conditions);
 	}
+	
+	// vrati seznam zakazniku do autocompletu napr pri zakladani slevovych kuponu
+	function autocompleteList($term = null) {
+		$autocomplete_list = array();
+		if ($term) {
+			$conditions = array(
+				'Customer.active' => true,
+				'OR' => array(
+					$this->virtualFields['name'] . ' LIKE "%' . $term . '%"',
+					'Customer.email LIKE "%' . $term . '%"'
+				)
+			);
+
+			// do autocomplete chci vratit jmeno zakaznika spolu s jeho emailem
+			$this->virtualFields['info'] = 'CONCAT(' . $this->virtualFields['name'] . ', ", ", Customer.email)';
+			$customers = $this->find('all', array(
+				'conditions' => $conditions,
+				'contain' => array(),
+				'fields' => array('Customer.id', 'Customer.info')
+			));
+			unset($this->virtualFields['info']);
+
+			foreach ($customers as $customer) {
+				$autocomplete_list[] = array(
+					'label' => trim($customer['Customer']['info']),
+					'value' => $customer['Customer']['id']
+				);
+			}
+		}
+		return $autocomplete_list;
+	}
 }
 ?>

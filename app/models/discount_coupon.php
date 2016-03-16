@@ -39,6 +39,23 @@ class DiscountCoupon extends AppModel {
 	
 	var $checkError = 'Slevový kupón neexistuje.';
 	
+	function beforeSave() {
+		if (array_key_exists('valid_until', $this->data['DiscountCoupon']) && !empty($this->data['DiscountCoupon']['valid_until'])) {
+			$this->data['DiscountCoupon']['valid_until'] = cz2db_date($this->data['DiscountCoupon']['valid_until']);
+		}
+		return true;
+	}
+	
+	function delete($id) {
+		$save = array(
+			'DiscountCoupon' => array(
+				'id' => $id,
+				'active' => false
+			)
+		);
+		return $this->save($save);
+	}
+	
 	function checkCart($id, $customerId) {
 		$cartId = $this->Order->OrderedProduct->Product->CartsProduct->Cart->get_id();
 		
@@ -54,7 +71,24 @@ class DiscountCoupon extends AppModel {
 	}
 	
 	function check($id, $customerId, $productIds, $amount) {
-		return $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $productIds) && $this->checkMinAmount($id, $amount);
+		return $this->checkActive($id) && $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $productIds) && $this->checkMinAmount($id, $amount);
+	}
+	
+	function checkActive($id) {
+		// mam kupon?
+		if ($coupon = $this->getItemById($id)) {
+			// je kupon aktivni? (neni smazany...)
+			// NE
+			if (!$coupon['DiscountCoupon']['active']) {
+				// nastavim chybovou hlasku
+				$this->checkError = 'Slevový kupón neexistuje.';
+				return false;
+			}
+			// kupon je aktivni
+			return true;
+		}
+		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
+		return false;
 	}
 	
 	function checkCustomer($id, $customerId) {
@@ -153,6 +187,54 @@ class DiscountCoupon extends AppModel {
 		}
 		// nenasel jsem kupon s danym IDckem, kupon nelze pouzit
 		return false;
+	}
+	
+	// generovani kuponu
+	function generateName($length = 10) {
+		$base = md5(time() . Configure::read('Security.salt'));
+		$startMax = strlen($base) - $length;
+		$start = rand(1, $startMax);
+		$name = substr($base, $start, $length);
+		if ($this->hasAny(array('DiscountCoupon.name' => $name))) {
+			return $this->generateName();
+		}
+		return $name;
+	}
+	
+	function filterCustomersData($data) {
+		return $this->filterRelatedModelData('customer_id', $data);
+	}
+	
+	function filterProductsData($data) {
+		return $this->filterRelatedModelData('product_id', $data);
+	}
+	
+	function filterCategoriesData($data) {
+		return $this->filterRelatedModelData('category_id', $data);
+	}
+	
+	static function filterRelatedModelData($field, $data) {
+		$res = array();
+		foreach ($data as $item) {
+			if (!empty($item[$field])) {
+				$res[] = $item;
+			}
+		}
+		return $res;
+	}
+	
+	function do_form_search($conditions, $data) {
+		$conditions[] = array(
+			'OR' => array(
+				'(' . $this->Customer->virtualFields['name'] . ' LIKE "%%' . $data['DiscountCoupon']['query'] . '%%")',
+				'(Customer.email LIKE "%%' . $data['DiscountCoupon']['query'] . '%%")',
+				'(Customer.phone LIKE "%%' . $data['DiscountCoupon']['query'] . '%%")',
+				'(Product.name LIKE "%%' . $data['DiscountCoupon']['query'] . '%%")',
+				'(Category.name LIKE "%%' . $data['DiscountCoupon']['query'] . '%%")',
+				'(DiscountCoupon.name LIKE "%%' . $data['DiscountCoupon']['query'] . '%%")'
+			)
+		);
+		return $conditions;
 	}
 }
 ?>

@@ -407,5 +407,24 @@
 			}
 		}
 	}
+	
+	function autocomplete_list() {
+		$model = $this->modelNames[0];
+		$term = null;
+		if (isset($_GET['term'])) {
+			$term = $_GET['term'];
+		}
+
+		$autocomplete_list = $this->$model->autocompleteList($term);
+		if (!function_exists('json_encode')) {
+			App::import('Vendor', 'Services_JSON', array('file' => 'JSON.php'));
+			$json = &new Services_JSON();
+			echo $json->encode($autocomplete_list);
+		} else {
+			echo json_encode($autocomplete_list);
+		}
+	
+		die();
+	}
 } // konec tridy
 ?>

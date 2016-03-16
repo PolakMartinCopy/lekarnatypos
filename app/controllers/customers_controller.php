@@ -17,7 +17,8 @@ class CustomersController extends AppController {
 			'password',
 			'confirm_hash',
 			'repair',
-			'cancel_registration'
+			'cancel_registration',
+			'autocomplete_list'
 		);
 		
 		if ( !$this->Session->check('Customer') && !in_array($this->params['action'], $allowed_actions) && !eregi("admin_", $this->params['action'])  ){
@@ -1107,11 +1108,6 @@ class CustomersController extends AppController {
 		}
 		echo json_encode($data);
 		die();
-	}
-	
-	function admin_import() {
-		$this->Customer->import();
-		die('here');
 	}
 }
 ?>

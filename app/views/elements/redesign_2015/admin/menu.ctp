@@ -22,6 +22,7 @@
 				<li><?php echo $this->Html->link('Výrobci', array('controller' => 'manufacturers', 'action' => 'index'))?></li>
 			</ul>
 		</li>
+		<li><?php echo $this->Html->link('Slevové kupóny', array('controller' => 'discount_coupons', 'action' => 'index'))?></li>
 		<li>
 			<a href="#">Texty</a>
 			<ul>

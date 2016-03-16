@@ -731,6 +731,7 @@ class Category extends AppModel {
 		return $categories;
 	}
 	
+	// vrati ve stringu cestu ke kategorii zadane pomoci ID
 	function pathToString($id, $separator = ' > ') {
 		if ($path = $this->getPath($id)) {
 			$path = Set::extract('/Category/name', $path);
@@ -805,6 +806,39 @@ class Category extends AppModel {
 			return 0;
 		}
 		return ($a['Category']['name'] < $b['Category']['name']) ? -1 : 1;
+	}
+	
+	// vrati seznam zakazniku do autocompletu napr pri zakladani slevovych kuponu
+	function autocompleteList($term = null) {
+		$autocomplete_list = array();
+		if ($term) {
+			$conditions = array(
+				'Category.active' => true,
+				'Category.name LIKE "%' . $term . '%"'
+			);
+			
+			$unwanted_categories_ids = $this->unwanted_subtree_ids($this->unactive_categories_ids);
+			if (!empty($unwanted_categories_ids)) {
+				$conditions[] = 'Category.id NOT IN (' . implode(',', $unwanted_categories_ids) . ')';
+			}
+	
+			// do autocomplete chci vratit cestu ke kategorii
+			$categories = $this->find('all', array(
+				'conditions' => $conditions,
+				'contain' => array(),
+				'fields' => array('Category.id', 'Category.name'),
+				'order' => array('Category.lft' => 'asc')
+			));
+	
+			foreach ($categories as $category) {
+				$path = $this->pathToString($category['Category']['id']);
+				$autocomplete_list[] = array(
+					'label' => $path,
+					'value' => $category['Category']['id']
+				);
+			}
+		}
+		return $autocomplete_list;
 	}
 }
 ?>
