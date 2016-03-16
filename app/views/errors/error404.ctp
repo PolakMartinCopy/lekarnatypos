@@ -1,9 +1,3 @@
-﻿<h2><span>Stránka nenalezena</span></h2>
-<p class="error">
-	<strong>chyba: </strong>
-	<?php echo sprintf(__("Požadovaná stránka %s nebyla nalezena.", true), "<strong>'{$message}'</strong>")?>
-</p>
-<p>
-	Chyba byla zaznamenána a bude co nejdříve odstraněna. Pokračovat v prohlížení můžete na <a href="/">domovské stránce</a>.
-	<br />Na <a href="/">domovskou stránku</a> se dostanete kliknutím <a href="/">zde</a>.
-</p>
+﻿<h2><span>Jejda, sem jste asi nechtěli</span></h2>
+<p>Stránka, kterou hledáte, byla nejspíš z našeho webu vytržena. Zkuste třeba naše vyhledávání produktů nebo nás <a href="/kontakty">kontaktujte</a>.
+<?php echo $this->element(REDESIGN_PATH . 'module_we_call_you'); ?>

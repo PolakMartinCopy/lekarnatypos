@@ -54,7 +54,6 @@
 		 			?>
                 </div>
             </div>
-			<?php echo $this->element(REDESIGN_PATH . 'module_we_call_you'); ?>
             <?php echo $this->element(REDESIGN_PATH . 'module_newsletter')?>
 			<?php echo $this->element(REDESIGN_PATH . 'facebook_news')?>
         </div>
