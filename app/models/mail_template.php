@@ -144,7 +144,8 @@ class MailTemplate extends AppModel{
 	 							),
 	 							'Product',
  							),
- 							'Shipping'
+ 							'Shipping',
+ 							'DiscountCoupon'
  						)
  					));
  					if (!empty($order['OrderedProduct'])) {
@@ -178,6 +179,16 @@ class MailTemplate extends AppModel{
 			<td align="right" valign="top" style="padding:3px 5px">' . front_end_display_price($ordered_product['product_price_with_dph']) . '&nbsp;Kč</td>
 		</tr>';
  						}
+ 						// slevovy kupon
+ 						if (!empty($order['DiscountCoupon']['id'])) {
+ 							$table .= '
+		<tr>
+			<td>&nbsp;</td>
+			<td style="padding:6px 5px 3px 0">Slevový kupón</td>
+			<td align="right" style="padding:3px 5px">-' . front_end_display_price($order['DiscountCoupon']['value']) . '&nbsp;Kč</td>
+		</tr>';
+ 						}
+ 						
  						$table .= '
 		<tr>
 			<td>&nbsp;</td>
