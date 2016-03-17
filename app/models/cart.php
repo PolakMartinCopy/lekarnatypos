@@ -174,6 +174,15 @@ class Cart extends AppModel {
 		return $cart_products;
 	}
 	
+	function getPriceVat($id) {
+		$products = $this->getProducts($id);
+		$value = 0;
+		foreach ($products as $product) {
+			$value += $product['CartsProduct']['price_with_dph'];
+		}
+		return $value;
+	}
+	
 	function getCustomer($id) {
 		$customer = $this->find('first', array(
 			'conditions' => array('Cart.id' => $id),

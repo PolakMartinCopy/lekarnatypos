@@ -76,8 +76,32 @@ class AbandonedCartAdMailsController extends AdMailsController {
 		));
 
 		$to = date('Y-m-d H:i:s');
-
+		
+		// proberu kosiky a pokud najdu nejake 2, kde mam stejneho zakaznika, necham v seznamu jen ten s vyssi hodnotou
+		$res = array(
+			'carts' => array(),
+			'customer_ids' => array()
+		);
 		foreach ($carts as $cart) {
+			// zakaznik
+			$customer = $this->AbandonedCartAdMail->Cart->getCustomer($cart['Cart']['id']);
+			// hodnota kosiku
+			$cart['Cart']['value'] = $this->AbandonedCartAdMail->Cart->getPriceVat($cart['Cart']['id']);
+			// pokud mam ve vystupu pro daneho zakaznika nejaky kosik
+			if (in_array($customer['Customer']['id'], $res['customer_ids'])) {
+				// podivam se, jestli tento nema vyssi hodnotu, nez ten drivejsi
+				$index = array_search($customer['Customer']['id'], $res['customer_ids']);
+				// a pokud ano, zapamatuju si ten s vyssi hodnotou
+				if ($cart['Cart']['value'] > $res['carts'][$index]['Cart']['value']) {
+					$res['carts'][$index] = $cart;
+				}
+			} else {
+				$res['carts'][] = $cart;
+				$res['customer_ids'][] = $customer['Customer']['id'];
+			}
+		}
+
+		foreach ($res['carts'] as $cart) {
 			// zakaznik
 			$customer = $this->AbandonedCartAdMail->Cart->getCustomer($cart['Cart']['id']);
 			// od kdy neudelal objednavku
