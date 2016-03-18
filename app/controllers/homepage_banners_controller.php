@@ -7,7 +7,6 @@ class HomepageBannersController extends AppController {
 		$image = $this->HomepageBanner->findValue('HOMEPAGE_BANNER_IMAGE');
 		$url = $this->HomepageBanner->findValue('HOMEPAGE_BANNER_URL');
 		if (isset($this->data)) {
-			//debug($this->data); die();
 			$dataSource = $this->HomepageBanner->getDataSource();
 			$dataSource->begin($this->HomepageBanner);
 			$success = true;
@@ -60,7 +59,12 @@ class HomepageBannersController extends AppController {
 			}
 			// pokud jsem zmenil cil banneru
 			if ($this->data['HomepageBanner']['url'] != $url) {
-				$success = $success && $this->HomepageBanner->updateValue('HOMEPAGE_BANNER_URL', $this->data['HomepageBanner']['url']);
+				// hodnota URL banneru muze byt prazdna
+				unset($this->HomepageBanner->validate['value']['notEmpty']);
+				if (!$this->HomepageBanner->updateValue('HOMEPAGE_BANNER_URL', $this->data['HomepageBanner']['url'])) {
+					$success = false;
+					$this->Session->setFlash('Nepodařilo se upravit URL banneru', REDESIGN_PATH . 'flash_failure');
+				}
 			}
 			if ($success) {
 				$this->Session->setFlash('Údaje o banneru byly upraveny', REDESIGN_PATH . 'flash_success');
