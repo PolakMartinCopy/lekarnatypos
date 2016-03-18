@@ -36,29 +36,29 @@ class Setting extends AppModel {
 	
 	function findValue($name) {
 		$setting = $this->find('first', array(
-			'conditions' => array('Setting.name' => $name),
+			'conditions' => array($this->name . '.name' => $name),
 			'contain' => array(),
-			'fields' => array('Setting.value')
+			'fields' => array($this->name . '.value')
 		));
-		
+
 		if (empty($setting)) {
 			return false;
 		}
-		return $setting['Setting']['value'];
+		return $setting[$this->name]['value'];
 	}
 	
 	function updateValue($name, $value) {
 		$setting = $this->find('first', array(
-			'conditions' => array('Setting.name' => $name),
+			'conditions' => array($this->name . '.name' => $name),
 			'contain' => array(),
-			'fields' => array('Setting.id')
+			'fields' => array($this->name . '.id')
 		));
 		
 		if (empty($setting)) {
 			return false;
 		}
 		
-		$setting['Setting']['value'] = $value;
+		$setting[$this->name]['value'] = $value;
 		return $this->save($setting);
 	}
 	

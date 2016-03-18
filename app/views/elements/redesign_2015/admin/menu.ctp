@@ -28,6 +28,7 @@
 			<ul>
 				<li><?php echo $this->Html->link('Webstránky', array('controller' => 'contents', 'action' => 'index'))?></li>
 				<li><?php echo $this->Html->link('Aktuality', array('controller' => 'news', 'action' => 'index'))?></li>
+				<li><?php echo $this->Html->link('Banner na HP', array('controller' => 'homepage_banners', 'action' => 'index'))?></li>
 			</ul>
 		</li>
 		<li><?php echo $this->Html->link('Uživatelé', array('controller' => 'customers', 'action' => 'index'))?></li>
