@@ -119,6 +119,14 @@ class PagesController extends AppController{
 			}
 		}
 		
+		 App::import('Model', 'HomepageBanner');
+		 $this->Page->HomepageBanner = &new HomepageBanner;
+		 $banner_image = $this->Page->HomepageBanner->getImage();
+		 if ($this->Page->HomepageBanner->isActive() && $banner_image) {
+		 	$banner_url = $this->Page->HomepageBanner->getUrl();
+		 	$this->set(compact('banner_image', 'banner_url'));
+		 }
+		
 		App::import('Model', 'Product');
 		$this->Page->Product = &new Product;
 		$customer_type_id = $this->Page->Product->CustomerTypeProductPrice->CustomerType->get_id($this->Session->read());

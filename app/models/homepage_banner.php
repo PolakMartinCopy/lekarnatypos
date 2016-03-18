@@ -7,5 +7,17 @@ class HomepageBanner extends Setting {
 
 	var $width = 668;
 	var $height = 150;
+	
+	function isActive() {
+		return $this->findValue('HOMEPAGE_BANNER_ACTIVE');
+	}
+	
+	function getImage() {
+		return $this->findValue('HOMEPAGE_BANNER_IMAGE');
+	}
+	
+	function getUrl() {
+		return $this->findValue('HOMEPAGE_BANNER_URL');
+	}
 }
 ?>

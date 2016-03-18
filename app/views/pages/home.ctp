@@ -1,9 +1,14 @@
 <h1>Vaše oblíbená lékárna v centru Brna</h1>
-<!-- 
+<?php if (isset($banner_image)) { ?>
 <div class="homepage-banner" style="text-align:center">
-	<a href="/vichy-300kc-c887" title="Hýčkejte se s námi a kosmetikou Vichy">
-		<img src="/files/banners/vichy.jpg" alt="Únorové hýčkání s Vichy"/>
-	</a>
+<?php
+$img = '<img src="/' . $banner_image . '" />';
+if (isset($banner_url)) {
+	echo $this->Html->link($img, $banner_url, array('escape' => false));
+} else {
+	echo $img;
+} ?>
 </div>
- -->
+<?php } ?>
+
 <?php echo $this->element(REDESIGN_PATH . $listing_style); ?>
