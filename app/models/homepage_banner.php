@@ -5,7 +5,7 @@ class HomepageBanner extends Setting {
 	
 	var $useTable = 'settings';
 
-	var $width = 668;
+	var $width = 820;
 	var $height = 150;
 	
 	function isActive() {
