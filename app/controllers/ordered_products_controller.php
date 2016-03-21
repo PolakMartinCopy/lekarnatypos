@@ -23,6 +23,9 @@ class OrderedProductsController extends AppController {
 		
 		// nactu si objednavku
 		$order = $this->OrderedProduct->Order->read(null, $id);
+		if (isset($_GET['discount_coupon_name'])) {
+			$order['DiscountCoupon']['name'] = $_GET['discount_coupon_name'];
+		}
 		
 		if (isset($this->data)) {
 			switch( $this->data['OrderedProduct']['change_switch'] ){

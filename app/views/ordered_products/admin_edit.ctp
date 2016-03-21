@@ -106,21 +106,24 @@
 </table>
 <br/>
 
-<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
+
 <table id="discountCoupon"  class="tabulka">
 	<tr>
 		<th style="width:65%">Slevový kupón</th>
-		<th style="width:25%">ID</th>
 		<th style="width:10%">hodnota</th>
 	</tr>
 	<tr>
-		<td><?php echo $order['DiscountCoupon']['name']?></td>
-		<td><?php echo $order['DiscountCoupon']['id']?></td>
-		<td align="right"><?php echo $order['DiscountCoupon']['value']?>&nbsp;Kč</td>
+		<td><?php
+		echo $this->Form->create('DiscountCoupon', array('controller' => 'orders', 'action' => 'edit_order'));
+		echo $this->Form->input('DiscountCoupon.name', array('label' => false, 'div' => false, 'before' => 'Kód:&nbsp;', 'value' => $order['DiscountCoupon']['name']));
+		echo $this->Form->hidden('DiscountCoupon.order_id', array('value' => $order['Order']['id']));
+		echo $this->Form->submit('Upravit', array('div' => false));
+		echo $this->Form->end();
+		?></td>
+		<td align="right"><?php echo (!empty($order['DiscountCoupon']['value']) ? $order['DiscountCoupon']['value'] . '&nbsp;Kč' : '')?></td>
 	</tr>
 </table>
 <br/>
-<?php } ?>
 
 <table id="orderParameters"  class="tabulka">
 	<tr>

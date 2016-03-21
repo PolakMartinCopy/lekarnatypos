@@ -220,6 +220,19 @@ class DiscountCouponsController extends AppController {
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
+	function admin_edit_order() {
+		if (isset($this->data)) {
+			if ($this->DiscountCoupon->editOrder($this->data['DiscountCoupon']['name'], $this->data['DiscountCoupon']['order_id'])) {
+				$this->Session->setFlash('Kupón byl upraven', REDESIGN_PATH . 'flash_success');
+			} else {
+				$this->Session->setFlash($this->DiscountCoupon->checkError, REDESIGN_PATH . 'flash_failure');
+			}
+			$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $this->data['DiscountCoupon']['order_id'], '?' => 'discount_coupon_name=' . $this->data['DiscountCoupon']['name']));
+		}
+		$this->Session->setFlash('Nejsou zadana data pro správu kupónu', REDESIGN_PATH . 'flash_failure');
+		$this->redirect(array('controller' => 'orders', 'action' => 'index'));
+	}
+	
 	//upravit muzu jen neuplatneny kupon
 	function admin_edit($id = null) {
 		if (!$id) {

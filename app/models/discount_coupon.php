@@ -70,6 +70,21 @@ class DiscountCoupon extends AppModel {
 		return $this->check($id, $customerId, $productIds, $amount);
 	}
 	
+	function checkOrder($id, $orderId) {
+		$order = $this->Order->getItemById($orderId);
+		$orderedProducts = $this->Order->getProducts($orderId);
+		$productIds = Set::extract('/OrderedProduct/id', $orderedProducts);
+		$amount = $order['Order']['subtotal_with_dph'];
+		if ($oldDiscountCouponId = $this->getIdByField($orderId, 'order_id')) {
+			$oldDiscountCoupon = $this->getItemById($oldDiscountCouponId);
+			if (!empty($oldDiscountCoupon)) {
+				$amount = $order['Order']['subtotal_with_dph'] + $oldDiscountCoupon['DiscountCoupon']['value'];
+			}
+		}
+
+		return $this->check($id, $order['Order']['customer_id'], $productIds, $amount);
+	}
+	
 	function check($id, $customerId, $productIds, $amount) {
 		return $this->checkActive($id) && $this->checkCustomer($id, $customerId) && $this->checkValidity($id) && $this->checkUsed($id) && $this->checkProducts($id,  $productIds) && $this->checkMinAmount($id, $amount);
 	}
@@ -235,6 +250,88 @@ class DiscountCoupon extends AppModel {
 			)
 		);
 		return $conditions;
+	}
+	
+	function editOrder($name, $orderId) {
+		// transakce
+		$dataSource = $this->getDataSource();
+		$dataSource->begin($this);
+		// kod kuponu je prazdny
+		if (empty($name)) {
+			// odnastavim kupon od objednavky
+			if ($this->removeCouponFromOrder($orderId)) {
+				$dataSource->commit($this);
+				return true;
+			}
+		} else {
+			if ($couponId = $this->getIdByField($name, 'name')) {
+				// otestuju, jestli kupon muzu pro danou objednavku vubec pouzit
+				if ($this->checkOrder($couponId, $orderId)) {
+					// pokud je k objednavce pouzit kupon, zrusim jeho prirazeni (upravim cenu objednavky, upravit kupon)
+					if (!$this->removeCouponFromOrder($orderId)) {
+						return false;
+					}
+					// objednavka
+					$order = $this->getItemById($orderId);
+					// novy kupon
+					$newCoupon = $this->getItemById($couponId);
+					// priradim novy kupon (upravim cenu objednavky, upravit kupon)
+					$newCouponSave = array(
+						'DiscountCoupon' => array(
+							'id' => $newCoupon['DiscountCoupon']['id'],
+							'order_id' => $orderId
+						)
+					);
+					if ($this->save($newCouponSave)) {
+						$orderSave = array(
+							'Order' => array(
+								'id' => $order['Order']['id'],
+								'subtotal_with_dph' => $order['Order']['subtotal_with_dph'] - $newCoupon['DiscountCoupon']['value']
+							)
+						);
+						if ($this->save($orderSave)) {
+							$dataSource->commit($this);
+							return true;
+						} else {
+							$this->checkError = 'Nepodařilo se upravit cenu objednávky';
+							return false;						
+						}
+					} else {
+						$this->checkError = 'Nepodařilo se přiřadit nový kupón';
+						return false;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	// pouzivat v transakci
+	function removeCouponFromOrder($orderId) {
+		if ($oldCouponId = $this->getIdByField($orderId, 'order_id')) {
+			$order = $this->getItemById($orderId);
+			$oldCouponSave = array(
+				'DiscountCoupon' => array(
+					'id' => $oldCouponId,
+					'order_id' => null
+				)
+			);
+			if (!$this->save($oldCouponSave)) {
+				$this->checkError = 'Nepodařilo se odnastavit starý kupón';
+				return false;
+			}
+			$orderSave = array(
+				'Order' => array(
+					'id' => $orderId,
+					'subtotal_with_dph' => $order['Order']['subtotal_with_dph'] + $oldCoupon['DiscountCoupon']['value']
+				)
+			);
+			if (!$this->Order->save($orderSave)) {
+				$this->checkError = 'Nepodařilo se odečíst starý kupón';
+				return false;
+			}
+		}
+		return true;
 	}
 }
 ?>

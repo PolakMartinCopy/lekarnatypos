@@ -1156,5 +1156,14 @@ class Order extends AppModel {
 		return $free_shipping;
 	
 	}
+	
+	function getProducts($id) {
+		$orderedProducts = $this->OrderedProduct->find('all', array(
+			'conditions' => array('OrderedProduct.order_id' => $id),
+			'contain' => array('Product')	
+		));
+		
+		return $orderedProducts;
+	}
 } // konec tridy
 ?>
