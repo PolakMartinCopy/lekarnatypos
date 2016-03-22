@@ -6,6 +6,43 @@ class AdMail extends AppModel {
 	
 	var $belongsTo = array('AdMailTemplate', 'Customer');
 	
+	function sendBatch($notificateAdmins = false, $test = true, $date = null) {
+		if (!$date) {
+			$date = date('Y-m-d');
+		}
+
+		// zjistim uzivatele, kterym chci poslat email
+		$customers = $this->getRecipients($date);
+	
+		foreach ($customers as $customer) {
+			// ulozim odeslani emailu
+			if ($this->init($customer['Customer']['id'])) {
+				$email = $customer['Customer']['email'];
+				$subject = $this->subject();
+				if (!$body = $this->body($customer['Customer']['id'], $date, $this->campaignName)) {
+					continue;
+				}
+
+				$bodyAlternative = $this->bodyAlternative();
+	
+				if ($test) {
+					$email = 'brko11@gmail.com';
+				}
+	
+				if ($this->sendMail($subject, $body, $bodyAlternative, $email)) {
+					$this->setSent($this->id);
+					// posilam notifikace administratorum?
+					if ($notificateAdmins) {
+						// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
+						$adminSubject = $this->campaignName . ' pro ' . $customer['Customer']['email'];
+						$this->notificateAdmins($adminSubject, $body);
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	function init($customerId) {
 		$adMailTemplate = $this->AdMailTemplate->findByType($this->mailTemplateType);
 		$save = array(

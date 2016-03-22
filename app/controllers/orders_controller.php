@@ -1427,6 +1427,7 @@ class OrdersController extends AppController {
 		$dataSource->commit($this->Order);
 		
 		$this->Order->notifyCustomer($customer['Customer']);
+		$this->Order->Customer->SimilarProductsAdMail->sendBatch(false, true, $this->Order->id);
 
 		$this->Order->notifyAdmin();
 

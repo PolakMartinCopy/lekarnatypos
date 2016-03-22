@@ -19,8 +19,20 @@ class SimilarProductsAdMail extends AdMail {
 	
 	// seznam lidi, kterym chci v ramci davky newsletter poslat
 	// lidi, kteri nakoupili naposled v den pred intervalem???
-	function getRecipients($date) {
-		$theDay = date('Y-m-d', strtotime($this->interval, strtotime($date)));
+	function getRecipients($condition) {
+		// pokud je podminka int, pak chci poslat souvisejici podle cisla objednavky
+		if (is_numeric($condition)) {
+			// ziskam objednavku
+			$orders = $this->Customer->Order->find('all', array(
+				'conditions' => array('Order.id' => $condition),
+				'contain' => array('Customer'),
+				'fields' => array('Customer.*')
+			));
+			return $orders;
+		}
+		
+		// podminka neni int (mela by byt DATE)
+		$theDay = date('Y-m-d', strtotime($this->interval, strtotime($condition)));
 		// kvuli optimalizaci vykonu vyberu nejdriv uzivatele, kteri meli objednavku v dany den a pak vyfiltruju ty, pro ktere nebyla posledni
 		// vyberu uzivatele, kteri maji objednavku v den pred intervalem
 		$orders = $this->Customer->Order->find('all', array(
@@ -54,14 +66,19 @@ class SimilarProductsAdMail extends AdMail {
 	
 	// IDcka produktu do emailu
 	// idcka souvisejicich produktu k tem, co mel v objednavce (den pred intervalem)
-	function getProductIds($customerId, $customerTypeId, $date, $limit = 6) {
-		$theDay = date('Y-m-d', strtotime($this->interval, strtotime($date)));
-		// IDcka produkty, ktere si v dany den dany uzivatel objednal
-		$orderedProductIds = $this->Customer->Order->find('all', array(
-			'conditions' => array(
+	function getProductIds($customerId, $customerTypeId, $condition, $limit = 6) {
+		if (is_numeric($condition)) {
+			$conditions = array('Order.id' => $condition);
+		} else {
+			$theDay = date('Y-m-d', strtotime($this->interval, strtotime($condition)));			
+			$conditions = array(
 				'DATE(Order.created)' => $theDay,
 				'Order.customer_id' => $customerId
-			),
+			);
+		}
+		// IDcka produkty, ktere si v dany den dany uzivatel objednal
+		$orderedProductIds = $this->Customer->Order->find('all', array(
+			'conditions' => $conditions,
 			'contain' => array(),
 			'joins' => array(
 				array(

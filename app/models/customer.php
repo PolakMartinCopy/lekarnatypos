@@ -14,7 +14,8 @@ class Customer extends AppModel {
 		'CustomerLogin' => array(
 			'dependent' => true
 		),
-		'TSCustomerDevice'
+		'TSCustomerDevice',
+		'SimilarProductsAdMail'
 	);
 
  	var $validate = array(

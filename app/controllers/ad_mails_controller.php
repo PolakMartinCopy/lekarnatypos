@@ -3,38 +3,8 @@ class AdMailsController extends AppController {
 	var $name = 'AdMails';
 	
 	function send_batch($notificateAdmins = false, $test = true, $date = null) {
-		if (!$date) {
-			$date = date('Y-m-d');
-		}
 		$model = $this->modelNames[0];
-		// zjistim uzivatele, kterym chci poslat email
-		$customers = $this->$model->getRecipients($date);
-		foreach ($customers as $customer) {
-			// ulozim odeslani emailu
-			if ($this->$model->init($customer['Customer']['id'])) {
-				$email = $customer['Customer']['email'];
-				$subject = $this->$model->subject();
-				if (!$body = $this->$model->body($customer['Customer']['id'], $date, $this->$model->campaignName)) {
-					continue;
-				}
-
-				$bodyAlternative = $this->$model->bodyAlternative();
-				
-				if ($test) {
-					$email = 'brko11@gmail.com';
-				}
-
-				if ($this->$model->sendMail($subject, $body, $bodyAlternative, $email)) {
-					$this->$model->setSent($this->$model->id);
-					// posilam notifikace administratorum?
-					if ($notificateAdmins) {
-						// a pro kontrolu jeste sobe, MD a LN (adresy adminu definovane v metode v bootstrapu)
-						$adminSubject = $this->$model->campaignName . ' pro ' . $customer['Customer']['email'];
-						$this->$model->notificateAdmins($adminSubject, $body);
-					}
-				}
-			}
-		}
+		$this->$model->sendBatch($notificateAdmins, $test, $date);
 		die('here');
 	}
 	
