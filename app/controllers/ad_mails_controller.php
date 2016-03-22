@@ -39,6 +39,7 @@ class AdMailsController extends AppController {
 	}
 	
 	function is_opened($cryptId, $cryptEmail = null) {
+		$model = $this->modelNames[0];
 		echo $this->$model->isOpened($cryptId, $cryptEmail);
 		die();
 	}
