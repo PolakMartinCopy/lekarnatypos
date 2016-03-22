@@ -11,7 +11,7 @@ class MissYouAdMail extends AdMail {
 	
 	var $mailTemplateType = 'miss_you';
 	
-	var $campaignName = 'ChybiteName';
+	var $campaignName = 'ChybiteNam';
 	
 	function __construct($id = null, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
