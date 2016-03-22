@@ -38,8 +38,8 @@ class AbandonedCartAdMail extends AdMail {
 			
 				$res .= '
 	<tr>
-	    <td valign="middle" style="padding: 3px 5px 3px 5px"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=' . $this->campaignName . '" target="_blank"><img src="http://www.lekarnatypos.cz/product-images/small/' . $product['Image']['name'] . '" width="70"/></a></td>
-	    <td valign="middle" style="padding:3px 5px 3px 0"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaing=' . $this->campaignName . '" style="color: #63af29;" target="_blank">' . $product['Product']['name'] . '</a></td>
+	    <td valign="middle" style="padding: 3px 5px 3px 5px"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaign=' . $this->campaignName . '" target="_blank"><img src="http://www.lekarnatypos.cz/product-images/small/' . $product['Image']['name'] . '" width="70"/></a></td>
+	    <td valign="middle" style="padding:3px 5px 3px 0"><a href="http://www.lekarnatypos.cz/' . $product['Product']['url'] . '?utm_source=newsletter&utm_medium=email&utm_campaign=' . $this->campaignName . '" style="color: #63af29;" target="_blank">' . $product['Product']['name'] . '</a></td>
 	    <td align="right" valign="middle" style="padding:3px 5px 3px 5px">' . $cart_product['CartsProduct']['quantity'] . '&nbsp;×</td>
 	    <td align="right" valign="middle" style="padding:3px 5px">' . $product['Product']['price'] . '&nbsp;Kč</td>
 	</tr>';
