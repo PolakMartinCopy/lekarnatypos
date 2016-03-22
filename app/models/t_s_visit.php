@@ -102,6 +102,7 @@ class TSVisit extends AppModel {
 		$visit = $this->find('first', array(
 			'conditions' => array('TSVisit.id' => $id),
 			'contain' => array(),
+			'fields' => array('TSVisit.id', 'TSVisit.created')
 		));
 		
 		if (empty($visit)) {
