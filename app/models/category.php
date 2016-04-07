@@ -486,7 +486,7 @@ class Category extends AppModel {
 		// zjistim idcka daneho podstromu kategorii
 		$subtree_categories = $this->subtree_ids($id);
 		//	najdu nejvice prodavane aktivni produkty za posledni mesic
-		$from = date('Y-m-d', strtotime('-1 month'));
+		$from = date('Y-m-d', strtotime('-3 months'));
 		$to = date('Y-m-d');
 		$products = $this->CategoriesProduct->find('all', array(
 			'conditions' => array(
