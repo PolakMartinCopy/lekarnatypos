@@ -1762,19 +1762,27 @@ class ProductsController extends AppController {
 	*/
 	function admin_delete($id = null, $opened_category_id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Neexistující produkt.');
+			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'), null, true);
 		}
 
 		// nactu si info o produktu, ktery budu mazat
-		$this->Product->contain('CategoriesProduct');
-		$product = $this->Product->read(null, $id);
+		$product = $this->Product->find('first', array(
+			'conditions' => array('Product.id' => $id),
+			'contain' => array(),
+			'fields' => array('Product.id')
+		));
+		
+		if (empty($product)) {
+			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action'=>'index'), null, true);
+		}
 
 		$product['Product']['active'] = false;
 		if ($this->Product->save($product)) {
-			$this->Session->setFlash('Produkt byl vymazán');
+			$this->Session->setFlash('Produkt byl vymazán', REDESIGN_PATH . 'flash_success');
 		} else {
-			$this->Session->setFlash('Produkt se nepodařilo vymazat, opakujte prosím akci');
+			$this->Session->setFlash('Produkt se nepodařilo vymazat, opakujte prosím akci', REDESIGN_PATH . 'flash_failure');
 		}
 		$redirect = array('controller' => 'products', 'action' => 'index');
 		if (isset($opened_category_id)) {
@@ -1788,19 +1796,27 @@ class ProductsController extends AppController {
 	 */
 	function admin_activate($id = null, $opened_category_id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Neexistující produkt.');
+			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'), null, true);
 		}
 
-		// nactu si info o produktu, ktery budu mazat
-		$this->Product->contain('CategoriesProduct');
-		$product = $this->Product->read(null, $id);
+			// nactu si info o produktu, ktery budu mazat
+		$product = $this->Product->find('first', array(
+			'conditions' => array('Product.id' => $id),
+			'contain' => array(),
+			'fields' => array('Product.id')
+		));
+		
+		if (empty($product)) {
+			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('action'=>'index'), null, true);
+		}
 
 		$product['Product']['active'] = true;
 		if ($this->Product->save($product)) {
-			$this->Session->setFlash('Produkt byl aktivován');
+			$this->Session->setFlash('Produkt byl aktivován', REDESIGN_PATH . 'flash_success');
 		} else {
-			$this->Session->setFlash('Produkt se nepodařilo aktivovat, opakujte prosím akci');
+			$this->Session->setFlash('Produkt se nepodařilo aktivovat, opakujte prosím akci', REDESIGN_PATH . 'flash_failure');
 		}
 		
 		$redirect = array('controller' => 'products', 'action' => 'index');
@@ -1842,7 +1858,7 @@ class ProductsController extends AppController {
 		$this->Product->ProductDocument->deleteAllDocuments($id);
 
 		if ($this->Product->delete($id)) {
-			$this->Session->setFlash('Produkt byl vymazán z databáze.');
+			$this->Session->setFlash('Produkt byl vymazán z databáze.', REDESIGN_PATH . 'flash_success');
 		}
 		
 		$this->redirect($redirect);
