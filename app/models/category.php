@@ -116,19 +116,10 @@ class Category extends AppModel {
 		// pokud chci vypisovat menu na HP, podivam se nejdriv do kese, jestli nemam data tam a pokud ne, natahnu si je cely znova (a ulozim do kese)
 		$file_name = md5(md5($opened_category_id) . md5($logged) . md5($order_by_opened) . md5($show_all) . md5($only_active_subtree) . md5($root_category_id));
 		$file_path = 'tmp/cache/' . $file_name;
-		// existuje pozadovany soubor se zakesovanymi daty?
-		if (file_exists($file_path)) {
-			// cas, kdy byl modifikovan
-			$mtime = filemtime($file_path);
-			$nowtime = time();
-			// soubory chci kesovat hodinu
-			$cacheLength = 60*60;
-
-			if ($cacheLength >= ($nowtime - $mtime)) {
-				$res = file_get_contents($file_path);
-				$res = unserialize($res);
-				return $res;
-			}
+		// soubory chci kesovat hodinu
+		$cacheLength = 60*60;
+		if ($res = getCache($file_path, $cacheLength)) {
+			return $res;
 		}
 		
 		$horizontal_categories_tree_ids = $this->get_horizontal_categories_tree_ids();
@@ -198,7 +189,8 @@ class Category extends AppModel {
 			'categories' => $categories, 'path_ids' => $path_ids, 'opened_category_id' => $opened_category_id
 		);
 		
-		file_put_contents($file_path, serialize($res));
+		// zapisu do kese
+		writeCache($file_path, $res);
 
 		return $res;
 	}

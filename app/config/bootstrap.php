@@ -491,4 +491,22 @@ function sendMail($subject, $body, $email, $name = null, $isHtml = true, $sender
 
 	return $mail->Send();
 }
+
+function getCache($fileName, $cacheLength) {
+	if (file_exists($fileName)) {
+		// cas, kdy byl modifikovan
+		$mtime = filemtime($fileName);
+		$nowtime = time();
+	
+		if ($cacheLength >= ($nowtime - $mtime)) {
+			$res = file_get_contents($fileName);
+			$res = unserialize($res);
+			return $res;
+		}
+	}
+}
+
+function writeCache($fileName, $content) {
+	return file_put_contents($fileName, serialize($content));
+}
 ?>
