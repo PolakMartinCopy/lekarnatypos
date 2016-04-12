@@ -55,6 +55,17 @@ class Customer extends AppModel {
  	
  	var $export_file = 'files/customers.csv';
  	
+ 	function beforeSave($options) {
+ 		if (!isset($this->data['Customer']['id'])) {
+ 			if (array_key_exists('first_name', $this->data['Customer']) && !empty($this->data['Customer']['first_name'])) {
+ 				App::import('Model', 'FirstName');
+ 				$this->FirstName = &new FirstName;
+ 				$this->data['Customer']['gender'] = $this->FirstName->recognizeGender($this->data['Customer']['first_name']);
+ 			}
+ 		}
+		return true;
+ 	}
+ 	
  	function paginateCount($conditions = null, $recursive = 0, $extra = array()) {
  		return count($this->customFind($conditions, null, null, null, $extra['having']));
  	}
