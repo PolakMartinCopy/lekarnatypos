@@ -97,7 +97,6 @@ class MostSoldProduct extends AppModel {
 	}
 	
 	function mostSoldProductIds($customerId, $customerTypeId, $productIds, $limit = 3) {
-
 		$this->virtualFields['ordered_quantity'] = 'SUM(OrderedProduct.product_quantity)';
 		
 		$conditions = array(
@@ -108,6 +107,13 @@ class MostSoldProduct extends AppModel {
 		
 		if (!empty($productIds)) {
 			$conditions[] = 'MostSoldProduct.product_id NOT IN (' . implode(',', $productIds) . ')';
+		}
+		
+		App::import('Model', 'Customer');
+		$this->Customer = &new Customer;
+		$gender = $this->Customer->getFieldValue($customerId, 'gender');
+		if (isset($gender)) {
+			$conditions['MostSoldProduct.gender'] = $gender;
 		}
 
 		$productIds = $this->find('all', array(
