@@ -648,7 +648,7 @@ class Order extends AppModel {
 
 		// notifikace na telefon
 		if (isset($customer['phone']) && !empty($customer['phone']) && defined('NEW_ORDER_SMS_TEMPLATE_ID')) {
-			// jen pro *@seznam.cz, *@atlas.cz a osobni odbery
+			// chci poslat sms notifikaci?
 			if ($this->sendSMSNotification($this->id)) {
 				$order = $this->find('first', array(
 					'conditions' => array('Order.id' => $this->id),
@@ -1069,6 +1069,10 @@ class Order extends AppModel {
 	
 	// chci u dane objednavky posilat notifikace pomoci SMS?
 	function sendSMSNotification($id) {
+		// neposilat sms k objednavkam z lokalu
+		if ($_SERVER['HTTP_HOST'] == 'localhost') {
+			return false;
+		}
 		// nejprve jsem chtel posilat sms notifikace jen nekterym zakaznikum, ale ted chceme vsem
 		// necham tady tuto funkci, kdybysme to v budoucnu na neco chteli, ale ted vraci vsude true
 		// zaroven to tady muzu jednoduse vypnout
