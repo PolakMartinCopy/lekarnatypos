@@ -500,7 +500,7 @@ class ProductsController extends AppController {
 			array(
 				'table' => 'availabilities',
 				'alias' => 'Availability',
-				'type' => 'INNER',
+				'type' => 'LEFT',
 				'conditions' => array('Product.availability_id = Availability.id')
 			)
 		);
@@ -526,6 +526,7 @@ class ProductsController extends AppController {
 			'Availability.cart_allowed',
 		);
 		$products = $this->paginate();
+debug($products);
 		// zjistim, jestli jsou produkty prirazeny do kategorii			
 		foreach ($products as &$product) {
 			$categories_product = $this->Product->CategoriesProduct->find('first', array(
