@@ -136,6 +136,19 @@ class PagesController extends AppController{
 		// nejdriv vyberu idecka produktu a pak k nim dotahnu potrebne info
 		// znam pohlavi zakaznika?
 		$gender = null;
+		App::import('Model', 'TSCustomerDevice');
+		$this->Page->TSCustomerDevice = &new TSCustomerDevice;
+		if ($key = $this->Page->TSCustomerDevice->getKey($this->Cookie, $this->Session)) {
+			$customer = $this->Page->TSCustomerDevice->find('first', array(
+				'conditions' => array('TSCustomerDevice.id' => $key),
+				'contain' => array('Customer'),
+				'fields' => array('Customer.gender')
+			));
+			
+			if (!empty($customer) && array_key_exists('gender', $customer['Customer'])) {
+				$gender = $customer['Customer']['gender'];
+			}
+		}
 		if ($this->Session->check('Customer.gender')) {
 			$gender = $this->Session->read('Customer.gender');
 		}
