@@ -280,7 +280,7 @@ class CategoriesProductsController extends AppController {
 		if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
 			$order = array_merge($order, $this->CategoriesProduct->Product->sorting_options[$_GET['filter']['sorting'][0]]['conditions']);
 		} else {
-			$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc', 'Product.sold DESC'));
+			$order = array_merge($order, array('Product.is_akce' => 'desc', 'Product.priority' => 'asc', 'Product.sold' => 'DESC', 'Product.price' => 'ASC'));
 			$_GET['filter']['sorting'][0] = 0;
 		}
 
