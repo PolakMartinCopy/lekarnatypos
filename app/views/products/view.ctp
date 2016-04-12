@@ -49,7 +49,7 @@ if (isset($product['Image'][0]) && !empty($product['Image'][0])) {
             <?php if (isset($product['Manufacturer']['name']) && !empty($product['Manufacturer']['name'])) { ?>
             <div class="param-horizontal">
                 <span>Výrobce:</span>
-                <span><?php echo $this->Html->link($product['Manufacturer']['name'], $product['Manufacturer']['url'])?></span>
+                <span><?php echo $this->Html->link($product['Manufacturer']['name'], '/' . $product['Manufacturer']['url'])?></span>
             </div>
             <?php } ?>
             <div class="param-horizontal">
