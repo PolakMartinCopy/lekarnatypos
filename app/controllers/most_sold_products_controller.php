@@ -33,13 +33,14 @@ class MostSoldProductsController extends AppController {
 					$this->redirect(array('controller' => 'most_sold_products', 'action' => 'index'));
 					break;
 				case 'change_gender':
-					if ($this->MostSoldProduct->save($this->data)) {
+					if ($this->MostSoldProduct->isMaxReached($this->data['MostSoldProduct']['gender'])) {
+						$this->Session->setFlash('Produkt se nepodařilo přidat do seznamu. V seznamu může být maximálně ' . $this->MostSoldProduct->limit . ' produktů pro dané pohlaví.', REDESIGN_PATH . 'flash_failure');
+					} elseif ($this->MostSoldProduct->save($this->data)) {
 						$this->Session->setFlash('Pohlaví u produktu bylo upraveno', REDESIGN_PATH . 'flash_success');
 						$this->redirect(array('controller' => 'most_sold_products', 'action' => 'index'));
 					} else {
 						$this->Session->setFlash('Pohlaví u produktu se nepodařilo upravit', REDESIGN_PATH . 'flash_failure');
 					}
-					debug($this->data); die();
 					break;
 			}
 
