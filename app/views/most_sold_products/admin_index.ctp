@@ -8,11 +8,13 @@
 			source: '/products/autocomplete_list', 
 			select: function(event, ui) {
 				var selectedObj = ui.item;
+				var gender = parseInt($('input[name="data[Product][gender]"]:checked').val());
 				$.ajax({
 					url: '/admin/most_sold_products/add',
 					type: 'POST',
 					data: {
-						product_id: selectedObj.value
+						product_id: selectedObj.value,
+						gender: gender
 					},
 					dataType: 'json',
 					success: function(data) {
@@ -70,13 +72,22 @@
 
 <div class="ui-widget">
 	<?php echo $form->create('Product', array('url' => '#'))?>
-	Nový produkt <a href='/administrace/help.php?width=500&id=104' class='jTip' id='104' name='Vložení produktu do seznamu (104)'>
-		<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
-	</a>
-	<?php echo $form->input('Product.name', array('label' => false, 'type' => 'text', 'class' => 'ProductName', 'size' => 70, 'div' => false))?>
+	<div style="width:10%;float:left;line-height:50px"">
+		Nový produkt <a href='/administrace/help.php?width=500&id=104' class='jTip' id='104' name='Vložení produktu do seznamu (104)'>
+			<img src='/images/<?php echo REDESIGN_PATH?>icons/help.png' width='16' height='16' />
+		</a>
+	</div>
+	<div style="width:25%;float:left">
+
+		<?php echo $this->Form->input('Product.gender', array('label' => false, 'type' => 'radio', 'options' => array(0 => 'žena', 1 => 'muž'), 'legend' => 'Pohlaví', 'div' => false, 'value' => $defaultGender));?>
+	</div>
+	<div style="width:65%;float:left;height:50px;display:flex;align-items:center">
+		<?php echo $form->input('Product.name', array('label' => false, 'type' => 'text', 'class' => 'ProductName', 'size' => 70, 'div' => false))?>
+	</div>
 	<?php echo $form->end() ?>
 </div>
-<p><small>Pozn: V systému může být <?php echo $limit?> oblíbených produktů.</small></p>
+<div style="clear:both"></div>
+<p><small>Pozn: V systému může být <?php echo $limit?> oblíbených produktů pro každé pohlaví.</small></p>
 
 <?php if (empty($most_sold)) { ?>
 <p><em>Nejsou zvoleny žádné produkty jako oblíbené.</em></p>
@@ -93,6 +104,7 @@
 			<th>Název</th>
 			<th>Aktivní?</th>
 			<th>MO cena s DPH</th>
+			<th>Pohlaví</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -112,6 +124,9 @@
 		?></td>
 		<td><?=$product['Product']['id']?></td>
 		<td nowrap>
+			<img src="/<?php echo $product['MostSoldProduct']['image']?>" />
+<?php // OBRAZKY NEVYBIRAM, PROTO ZAKOMENTUJU
+if (false) { ?>
 			<div style="float:left;width:150px">
 				<img src="/<?php echo $product['MostSoldProduct']['image']?>" />
 				<?php if (!$product['MostSoldProduct']['has_image']) {?>
@@ -124,13 +139,23 @@
 			echo $this->Form->create('MostSoldProduct', array('type' => 'file'));
 			echo $this->Form->input('MostSoldProduct.image', array('label' => false, 'type' => 'file', 'div' => false));
 			echo $this->Form->hidden('MostSoldProduct.id', array('value' => $product['MostSoldProduct']['id']));
+			echo $this->Form->hidden('MostSoldProduct.action', array('value' => 'change_image'));
 			echo $this->Form->submit('Změnit', array('div' => false));
 			echo $this->Form->end();
 		?></div>
+<?php } // end of if (false)?>
 		</td>
 		<td><?=$product['Product']['name']?></td>
 		<td><?php echo ($product['Product']['active'] ? 'ano' : 'ne') ?></td>
 		<td><?=$product['Product']['retail_price_with_dph']?></td>
+		<td><?php 
+			echo $this->Form->create('MostSoldProduct');
+			echo $this->Form->input('MostSoldProduct.gender', array('label' => false, 'type' => 'radio', 'options' => array(0 => 'žena', 1 => 'muž'), 'legend' => 'Pohlaví', 'div' => false, 'value' => $product['MostSoldProduct']['gender']));
+			echo $this->Form->hidden('MostSoldProduct.id', array('value' => $product['MostSoldProduct']['id']));
+			echo $this->Form->hidden('MostSoldProduct.action', array('value' => 'change_gender'));
+			echo $this->Form->submit('Změnit', array('div' => false));
+			echo $this->Form->end();
+		?></td>
 	</tr>
 <?
 	}

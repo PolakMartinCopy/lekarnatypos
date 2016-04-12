@@ -16,8 +16,10 @@ class MostSoldProduct extends AppModel {
 	
 	var $image_path = 'images/most_sold_products';
 	
-	function isMaxReached() {
-		$count = $this->find('count');
+	function isMaxReached($gender) {
+		$count = $this->find('count', array(
+			'conditions' => array('MostSoldProduct.gender' => $gender)
+		));
 		return ($count >= $this->limit);
 	}
 	
@@ -28,9 +30,14 @@ class MostSoldProduct extends AppModel {
 	/**
 	 * Vrati seznam nejprodavanejsich produktu pro zobrazeni na HP
 	 */
-	function hp_list($customer_type_id) {
+	function hp_list($customer_type_i, $gender = null) {
 		$this->Product->virtualFields['price'] = $this->Product->price;
 		$this->Product->virtualFields['discount'] = $this->Product->discount;
+		$order = array('MostSoldProduct.gender' => 'ASC');
+		if (!$gender) {
+			$order = array('MostSoldProduct.gender' => 'DESC');
+		}
+		$order = array_merge($order, array('MostSoldProduct.order' => 'asc'));
 		$most_sold = $this->Product->find('all', array(
 			'conditions' => array('Product.active' => true),
 			'contain' => array(),
@@ -76,7 +83,7 @@ class MostSoldProduct extends AppModel {
 					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
 				),
 			),
-			'order' => array('MostSoldProduct.order' => 'asc'),
+			'order' => $order,
 			'limit' => 3
 		));
 		unset($this->Product->virtualFields['price']);

@@ -4,31 +4,46 @@ class MostSoldProductsController extends AppController {
 	
 	function admin_index() {
 		if (isset($this->data)) {
-			$this->data['MostSoldProduct']['image'] = $this->MostSoldProduct->loadImage($this->data['MostSoldProduct']['image']);
-			if ($this->data['MostSoldProduct']['image'] !== false) {
-				$old_image = $this->MostSoldProduct->find('first', array(
-					'conditions' => array('MostSoldProduct.id' => $this->data['MostSoldProduct']['id']),
-					'contain' => array(),
-					'fields' => array('MostSoldProduct.id', 'MostSoldProduct.image')
-				));
-				$old_image = $old_image['MostSoldProduct']['image'];
-				if ($this->MostSoldProduct->save($this->data)) {
-					// smazu puvodni obrazek
-					if ($old_image) {
-						$old_image = $this->MostSoldProduct->image_path . '/' . $old_image;
-						if (file_exists($old_image)) {
-							unlink($this->MostSoldProduct->image_path . '/' . $old_image);
+			switch ($this->data['MostSoldProduct']['action']) {
+				case 'change_image':
+					$this->data['MostSoldProduct']['image'] = $this->MostSoldProduct->loadImage($this->data['MostSoldProduct']['image']);
+					if ($this->data['MostSoldProduct']['image'] !== false) {
+						$old_image = $this->MostSoldProduct->find('first', array(
+							'conditions' => array('MostSoldProduct.id' => $this->data['MostSoldProduct']['id']),
+							'contain' => array(),
+							'fields' => array('MostSoldProduct.id', 'MostSoldProduct.image')
+						));
+						$old_image = $old_image['MostSoldProduct']['image'];
+						if ($this->MostSoldProduct->save($this->data)) {
+							// smazu puvodni obrazek
+							if ($old_image) {
+								$old_image = $this->MostSoldProduct->image_path . '/' . $old_image;
+								if (file_exists($old_image)) {
+									unlink($this->MostSoldProduct->image_path . '/' . $old_image);
+								}
+							}
+								
+							$this->Session->setFlash('Obrázek byl úspěšně nahrán', REDESIGN_PATH . 'flash_success');
+						} else {
+							$this->Session->setFlash('Obrázek se nepodařilo uložit do systému', REDESIGN_PATH . 'flash_failure');
 						}
+					} else {
+						$this->Session->setFlash('Nepodařilo se nahrát obrázek', REDESIGN_PATH . 'flash_failure');
 					}
-					
-					$this->Session->setFlash('Obrázek byl úspěšně nahrán', REDESIGN_PATH . 'flash_success');
-				} else {
-					$this->Session->setFlash('Obrázek se nepodařilo uložit do systému', REDESIGN_PATH . 'flash_success');
-				}
-			} else {
-				$this->Session->setFlash('Nepodařilo se nahrát obrázek', REDESIGN_PATH . 'flash_failure');
+					$this->redirect(array('controller' => 'most_sold_products', 'action' => 'index'));
+					break;
+				case 'change_gender':
+					if ($this->MostSoldProduct->save($this->data)) {
+						$this->Session->setFlash('Pohlaví u produktu bylo upraveno', REDESIGN_PATH . 'flash_success');
+						$this->redirect(array('controller' => 'most_sold_products', 'action' => 'index'));
+					} else {
+						$this->Session->setFlash('Pohlaví u produktu se nepodařilo upravit', REDESIGN_PATH . 'flash_failure');
+					}
+					debug($this->data); die();
+					break;
 			}
-			$this->redirect(array('controller' => 'most_sold_products', 'action' => 'index'));
+
+			
 		}
 		
 		$most_sold = $this->MostSoldProduct->find('all', array(
@@ -56,6 +71,12 @@ class MostSoldProductsController extends AppController {
 		$this->set('most_sold', $most_sold);
 		$this->set('limit', $this->MostSoldProduct->limit);
 		
+		$defaultGender = 0;
+		if ($this->Session->check('MostSoldProduct.default_gender')) {
+			$defaultGender = $this->Session->read('MostSoldProduct.default_gender');
+		}
+		$this->set('defaultGender',  $defaultGender);
+		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	
@@ -65,26 +86,34 @@ class MostSoldProductsController extends AppController {
 			'message' => ''
 		);
 		
-		if (!empty($_POST) && isset($_POST['product_id'])) {
-			$product_id = $_POST['product_id'];
-			if ($this->MostSoldProduct->isMaxReached()) {
-				$result['message'] = 'Produkt se nepodařilo přidat do seznamu. V seznamu může být maximálně ' . $this->MostSoldProduct->limit . ' produktů.';
-			} elseif ($this->MostSoldProduct->isIncluded($product_id)) {
-				$result['message'] = 'Produkt se nepodařilo přidat do seznamu, protože už tam je.';
-			} else {
-				$data = array(
-					'MostSoldProduct' => array(
-						'product_id' => $product_id
-					)
-				);
-				if ($this->MostSoldProduct->save($data)) {
-					$result['success'] = true;
+		if (isset($_POST['gender'])) {
+			$gender = $_POST['gender'];
+			$this->Session->write('MostSoldProduct.default_gender', $gender);
+		
+			if (!empty($_POST) && isset($_POST['product_id'])) {
+				$product_id = $_POST['product_id'];
+				if ($this->MostSoldProduct->isMaxReached($gender)) {
+					$result['message'] = 'Produkt se nepodařilo přidat do seznamu. V seznamu může být maximálně ' . $this->MostSoldProduct->limit . ' produktů pro dané pohlaví.';
+				} elseif ($this->MostSoldProduct->isIncluded($product_id)) {
+					$result['message'] = 'Produkt se nepodařilo přidat do seznamu, protože už tam je.';
 				} else {
-					$result['message'] = 'Produkt se nepodařilo  přidat do seznamu.';
+					$data = array(
+						'MostSoldProduct' => array(
+							'product_id' => $product_id,
+							'gender' => $gender
+						)
+					);
+					if ($this->MostSoldProduct->save($data)) {
+						$result['success'] = true;
+					} else {
+						$result['message'] = 'Produkt se nepodařilo  přidat do seznamu.';
+					}
 				}
+			} else {
+				$result['message'] = 'POST data nejsou správně nastavena';
 			}
 		} else {
-			$result['message'] = 'POST data nejsou správně nastavena';
+			$result['message'] = 'Není zadáno pohlaví';
 		}
 		
 		echo json_encode_result($result);
@@ -144,11 +173,6 @@ class MostSoldProductsController extends AppController {
 		}
 		echo json_encode_result($result);
 		die();
-	}
-	
-	function admin_import() {
-		$this->MostSoldProduct->import();
-		die('here');
 	}
 }
 ?>

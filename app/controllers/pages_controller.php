@@ -134,7 +134,12 @@ class PagesController extends AppController{
 		// potrebuju vybrat produkty pres paginate, aby mi fungovalo strankovani
 		// produkty budu vybirat na zaklade nekolika kriterii (customizovat vyber - nakoupil, navstivil, je navoleno atd.)
 		// nejdriv vyberu idecka produktu a pak k nim dotahnu potrebne info
-		$productIds = $this->Page->Product->homepageProductIds($customer_type_id);
+		// znam pohlavi zakaznika?
+		$gender = null;
+		if ($this->Session->check('Customer.gender')) {
+			$gender = $this->Session->read('Customer.gender');
+		}
+		$productIds = $this->Page->Product->homepageProductIds($customer_type_id, $gender);
 		$products = array();
 		if (!empty($productIds)) {
 			$conditions = array('Product.id' => $productIds);
@@ -250,10 +255,7 @@ class PagesController extends AppController{
 			
 			// sestavim podminku pro razeni podle toho, co je vybrano
 			$order = array();
-			$extended_order = array(
-				'ISNULL(MostSoldProduct.id)' => 'ASC',
-				'MostSoldProduct.order' => 'ASC'
-			);
+			$extended_order = array('FIELD (Product.id, ' . implode(',', $productIds) . ')');
 			$order = array_merge($order, array_merge($extended_order, $this->Page->Product->sorting_options[0]['conditions']));
 			if (isset($_GET['filter']['sorting']) && !empty($_GET['filter']['sorting'])) {
 				if ($_GET['filter']['sorting'][0] != 0) {
@@ -266,7 +268,6 @@ class PagesController extends AppController{
 			$this->Page->Product->virtualFields['sold'] = 'SUM(OrderedProduct.product_quantity)';
 			$this->Page->Product->virtualFields['price'] = $this->Page->Product->price;
 			$this->Page->Product->virtualFields['discount'] = $this->Page->Product->discount;
-			
 			$this->paginate['Product'] = array(
 				'conditions' => $conditions,
 				'contain' => array(),

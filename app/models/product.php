@@ -1165,7 +1165,7 @@ class Product extends AppModel {
 	 * IDcka produktu, ktere se budou vykreslovat na hlavni strance
 	 * vyber na zaklade definice uzivatelem + customizace na zaklade pouzivani webu zakaznikem
 	 */
-	function homepageProductIds($customerTypeId = 2) {
+	function homepageProductIds($customerTypeId = 2, $gender = null) {
 		$this->virtualFields['price'] = $this->price;
 		$defLimit = 15;
 		
@@ -1216,6 +1216,11 @@ class Product extends AppModel {
 		$commonFields = array('DISTINCT Product.id');
 		
 		// nejdriv tam dam produkty, ktere mam definovane v administraci
+		$definedConditions = $commonConditions;
+		if (isset($gender)) {
+			$definedConditions['MostSoldProduct.gender'] = $gender;
+		}
+		
 		$definedJoins = array(
 			array(
 				'table' => 'most_sold_products',
@@ -1227,7 +1232,7 @@ class Product extends AppModel {
 		$definedJoins = array_merge($commonJoins, $definedJoins);
 		
 		$definedProductIds = $this->find('all', array(
-			'conditions' => $commonConditions,
+			'conditions' => $definedConditions,
 			'contain' => $commonContain,
 			'fields' => $commonFields,
 			'joins' => $definedJoins,
@@ -1247,16 +1252,8 @@ class Product extends AppModel {
 		// pak tam dam nejvice prodavane produkty, ktere stoji alespon 300
 		$limit -= count($productIds);
 		if ($limit > 0) {
-
-			$mostSoldIdsHlp = $this->OrderedProduct->find('all', array(
-				// doplnit omezeni na datum?
-				'conditions' => array(),
-				'contain' => array(),
-				'fields' => array('OrderedProduct.product_id'),
-				'order' => array('SUM(OrderedProduct.product_quantity)' => 'desc'),
-				'group' => 'OrderedProduct.product_id',
-				'limit' => 100
-			));
+			// vytahnu si X nejprodavanejsich produktu
+			$mostSoldIdsHlp = $this->__mostSoldIdsHlp($gender);
 	
 			if (!empty($mostSoldIdsHlp)) {
 				$mostSoldIdsHlp = Set::extract('/OrderedProduct/product_id', $mostSoldIdsHlp);
@@ -1291,6 +1288,51 @@ class Product extends AppModel {
 		unset($this->virtualFields['price']);
 
 		return $productIds;
+	}
+	
+	function __mostSoldIdsHlp($gender) {
+		// dodelat kesovani
+		$fileName = 'tmp/cache/most_sold_products_hlp' . $gender . '.tmp';
+		// existuje pozadovany soubor se zakesovanymi daty?
+		// chci kesovat den
+		$cacheLength = 60*60*24;
+		if ($res = getCache($fileName, $cacheLength)) {
+			return $res;
+		}
+		// pokud mam zadano pohlavi, tak chci, aby to byly produkty pro nej
+		$conditions = array();
+		if (isset($gender)) {
+			// je to chlap, chci produkty, ktere kupovali chlapi
+			$conditions = array('Customer.gender' => $gender);
+		}
+			
+		$mostSoldIdsHlp = $this->OrderedProduct->find('all', array(
+			// doplnit omezeni na datum?
+			'conditions' => $conditions,
+			'contain' => array(),
+			'joins' => array(
+				array(
+					'table' => 'orders',
+					'alias' => 'Order',
+					'type' => 'LEFT',
+					'conditions' => array('Order.id = OrderedProduct.order_id')
+				),
+				array(
+					'table' => 'customers',
+					'alias' => 'Customer',
+					'type' => 'LEFT',
+					'conditions' => array('Order.customer_id = Customer.id')
+				)
+			),
+			'fields' => array('OrderedProduct.product_id'),
+			'order' => array('SUM(OrderedProduct.product_quantity)' => 'desc'),
+			'group' => 'OrderedProduct.product_id',
+			'limit' => 200
+		));
+		
+		writeCache($fileName, $mostSoldIdsHlp);
+		
+		return $mostSoldIdsHlp;
 	}
 	
 	/*
