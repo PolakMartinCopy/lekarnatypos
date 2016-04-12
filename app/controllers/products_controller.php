@@ -185,7 +185,7 @@ class ProductsController extends AppController {
 		unset($this->Product->virtualFields['discount']);
 
 		if (empty($product)) {
-			$this->Session->setFlash('Neexistující produkt.');
+			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->cakeError('error404');
 		}
 		

@@ -17,7 +17,7 @@ class RedirectsController extends AppController {
 			$this->data['Redirect']['target_uri'] = str_replace('http://www.' . CUST_ROOT, '', $this->data['Redirect']['target_uri']);
 			
 			if ($this->data['Redirect']['request_uri'] == $this->data['Redirect']['target_uri']) {
-				$this->Session->setFlash('Zdrojová a cílová adresa přesměrování jsou stejné, přesměrování nelze uložit');
+				$this->Session->setFlash('Zdrojová a cílová adresa přesměrování jsou stejné, přesměrování nelze uložit', REDESIGN_PATH . 'flash_failure');
 				$this->redirect(array('controller' => 'redirects', 'action' => 'index'), null, true);
 			}
 			
@@ -29,7 +29,7 @@ class RedirectsController extends AppController {
 				)
 			));
 			if ( !empty($r) ){
-				$this->Session->setFlash('Presmerovani z <em>' . $this->data['Redirect']['request_uri'] . '</em> už existuje, nelze jej proto zavést znovu.');
+				$this->Session->setFlash('Presmerovani z <em>' . $this->data['Redirect']['request_uri'] . '</em> už existuje, nelze jej proto zavést znovu.', REDESIGN_PATH . 'flash_failure');
 				$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 			}
 			
@@ -42,7 +42,7 @@ class RedirectsController extends AppController {
 				)
 			));
 			if ( !empty($r) ){
-				$this->Session->setFlash('Cilova stranka presmerovani <em>' . $this->data['Redirect']['target_uri'] . '</em> je jiz presmerovana na jinou stranku, je potreba upravit skript, aby se s tim umel vyporadat.');
+				$this->Session->setFlash('Cilova stranka presmerovani <em>' . $this->data['Redirect']['target_uri'] . '</em> je jiz presmerovana na jinou stranku, je potreba upravit skript, aby se s tim umel vyporadat.', REDESIGN_PATH . 'flash_failure');
 				$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 			} 
 			
@@ -62,7 +62,7 @@ class RedirectsController extends AppController {
 			}
 			
 			if ( $this->Redirect->save($this->data) ){
-				$this->Session->setFlash('Přesměrování bylo uloženo.');
+				$this->Session->setFlash('Přesměrování bylo uloženo.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 			}
 		}
@@ -75,7 +75,7 @@ class RedirectsController extends AppController {
 			$this->data['Redirect']['request_uri'] = str_replace('http://www.' . CUST_ROOT, '', $this->data['Redirect']['request_uri']);
 			$this->data['Redirect']['target_uri'] = str_replace('http://www.' . CUST_ROOT, '', $this->data['Redirect']['target_uri']);
 			if ( $this->Redirect->save($this->data) ){
-				$this->Session->setFlash('Přesměrování bylo upraveno.');
+				$this->Session->setFlash('Přesměrování bylo upraveno.', REDESIGN_PATH . 'flash_success');
 				$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 			}
 		}
@@ -86,10 +86,10 @@ class RedirectsController extends AppController {
 	
 	function admin_delete($id){
 		if ( $this->Redirect->delete($id) ){
-			$this->Session->setFlash('Přesměrování bylo vymazáno.');
+			$this->Session->setFlash('Přesměrování bylo vymazáno.', REDESIGN_PATH . 'flash_success');
 			$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 		}
-		$this->Session->setFlash('Přesměrování se nezdařilo vymazat, zkuste to prosím znovu.');
+		$this->Session->setFlash('Přesměrování se nezdařilo vymazat, zkuste to prosím znovu.', REDESIGN_PATH . 'flash_failure');
 		$this->redirect(array('controller' => 'redirects', 'action' => 'index', 'admin' => true), null, true);
 	}
 	
