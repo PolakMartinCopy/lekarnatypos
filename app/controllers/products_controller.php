@@ -519,6 +519,7 @@ class ProductsController extends AppController {
 		$this->paginate['fields'] = array(
 			'DISTINCT Product.id',
 			'Product.name',
+			'Product.url',
 			'Product.active',
 			'Product.priority',
 			'Manufacturer.name',

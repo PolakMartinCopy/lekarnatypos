@@ -39,7 +39,7 @@
 	<?php foreach ($products as $product) { ?>
 	<tr>
 		<td style="text-align:center"><?php echo $this->Form->input('Product.check.' . $product['Product']['id'], array('label' => false, 'type' => 'checkbox', 'value' => $product['Product']['id'], 'class' => 'bulk-operations-checkbox'))?></td>
-		<td><?php echo $this->Html->link($product['Product']['id'], array('controller' => 'products', 'action' => 'view', 'admin' => false, $product['Product']['id'], (isset($category_id) ? $category_id : null)))?></td>
+		<td><?php echo $this->Html->link($product['Product']['id'], '/' . $product['Product']['url'], array('target' => '_blank'))?></td>
 		<td><?php
 			$style = '';
 			// neaktivni produkty vypisuju sede
