@@ -526,7 +526,6 @@ class ProductsController extends AppController {
 			'Availability.cart_allowed',
 		);
 		$products = $this->paginate();
-debug($products);
 		// zjistim, jestli jsou produkty prirazeny do kategorii			
 		foreach ($products as &$product) {
 			$categories_product = $this->Product->CategoriesProduct->find('first', array(
