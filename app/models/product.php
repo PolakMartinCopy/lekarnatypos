@@ -915,7 +915,7 @@ class Product extends AppModel {
 			$limit = $options['limit'];
 		}
 		
-		$conditions = array('OrderedProduct.product_id' => $id);
+		$conditions = array('OrderedProduct.product_id' => $id, 'Order.status_id' => 4);
 		if (isset($options['excluded_ids']) && !empty($options['excluded_ids'])) {
 			$conditions[] = 'OtherOrderedProduct.product_id NOT IN (' . implode(',', $options['excluded_ids']) . ')';
 		}
@@ -1338,8 +1338,8 @@ class Product extends AppModel {
 	/*
 	 * vybere mnozinu $limit produktu, ktere jsou nejprodavanejsi spolu s mnozinou produktu, definovanych podle IDcek
 	 */
-	function similarProductIds($productIds, $customerTypeId, $limit, $minQuantity = 2) {
-		$range = '-2 months';
+	function similarProductIds($productIds, $customerTypeId, $limit, $minQuantity = 3) {
+		$range = '-1 year';
 		$options = array(
 			'excluded_ids' => $productIds,
 			'range' => $range,
