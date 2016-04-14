@@ -61,6 +61,7 @@ class Order extends AppModel {
 	
 		$order_total = 0;
 		$free_shipping = false;
+		
 		foreach ($order['OrderedProduct'] as $product) {
 			$order_total = $order_total + $product['product_price_with_dph'] * $product['product_quantity'];
 		}
@@ -586,14 +587,6 @@ class Order extends AppModel {
 		$cp_count = 0;
 		// mam dopravu zdarma, protoze objednavka obsahuje produkt, ktery toto umoznuje?
 		foreach ($cart_products as $cart_product) {
-			// projdu vsechny priznaky
-			foreach ( $cart_product['Product']['Flag'] as $flags_product ){
-				// priznak pro dopravu zdarma je "1"
-				if ( $flags_product['FlagsProduct']['flag_id'] == 1 && $cart_product['CartsProduct']['quantity'] >= $flags_product['FlagsProduct']['quantity'] ){
-					$free_shipping = true;
-				}
-			}
-				
 			$order_total_with_dph = $order_total_with_dph + ($cart_product['CartsProduct']['quantity'] * $cart_product['CartsProduct']['price_with_dph']);
 			$order_total_wout_dph = $order_total_wout_dph + ($cart_product['CartsProduct']['quantity'] * $cart_product['CartsProduct']['price_wout_dph']);
 			$cp_count++;
@@ -1136,29 +1129,21 @@ class Order extends AppModel {
 	function cart_product_count_free_shipping($shipping_id) {
 		$free_shipping = false;
 		
-		// doprava je mozna zdarma pro:
-		//  -- GEIS balik platbu predem - ID 32
-		//  -- GEIS POINT s platbou predem - ID 35
-		$manufacturer_free_shipping_ids = array(32, 35);
-		if (in_array($shipping_id, $manufacturer_free_shipping_ids)) {
-			// data pro produkty objednavky
-			App::import('Model', 'CartsProduct');
-			$this->CartsProduct = &new CartsProduct;
+		// data pro produkty objednavky
+		App::import('Model', 'CartsProduct');
+		$this->CartsProduct = &new CartsProduct;
 			
-			$cart_products = $this->CartsProduct->getProducts();
-			$i = 0;
-			while (!$free_shipping && $i < count($cart_products)) {
-				$cart_product = $cart_products[$i];
-				$free_shipping_product = $this->CartsProduct->Product->FreeShippingProduct->getByProductShipping($cart_product['Product']['id'], $shipping_id);
-				if (!empty($free_shipping_product)) {
-					$free_shipping = $free_shipping || ($cart_product['CartsProduct']['quantity'] >= $free_shipping_product['FreeShippingProduct']['quantity']);					
-				}
-
-				$i++;
+		$cart_products = $this->CartsProduct->getProducts();
+		$i = 0;
+		while (!$free_shipping && $i < count($cart_products)) {
+			$cart_product = $cart_products[$i];
+			$free_shipping_product = $this->CartsProduct->Product->FreeShippingProduct->getByProductShipping($cart_product['Product']['id'], $shipping_id);
+			if (!empty($free_shipping_product)) {
+				$free_shipping = $free_shipping || ($cart_product['CartsProduct']['quantity'] >= $free_shipping_product['FreeShippingProduct']['quantity']);					
 			}
+			$i++;
 		}
 		return $free_shipping;
-	
 	}
 	
 	function getProducts($id) {
