@@ -7,15 +7,21 @@ class CategoriesController extends AppController {
 	function admin_index() {
 		$main_categories_ids = $this->Category->pseudo_root_categories_ids();
 		// natahnu hlavni kategorie (parent je root)
+		$this->Category->virtualFields['is_main'] = 'Category.id IN (' . $this->Category->category_subtree_root_id . ', ' . $this->Category->bothers_subtree_root_id . ')';
+		$order = array(
+			'Category.is_main' => 'desc',
+			'FIELD(Category.id, ' . $this->Category->category_subtree_root_id . ', ' . $this->Category->bothers_subtree_root_id . ')'
+		);
 		$main_categories = $this->Category->find('all', array(
 			'conditions' => array(
 				'Category.id' => $main_categories_ids,
 			),
 			'contain' => array(),
 			'fields' => array('Category.id', 'Category.name', 'Category.lft', 'Category.rght'),
-			'order' => array('Category.lft' => 'asc')
+			'order' => $order
 		));
-
+		unset($this->Category->virtualFields['is_main']);
+		
 		foreach ($main_categories as &$main_category) {
 			$subcategories = $this->Category->find('threaded', array(
 				'conditions' => array(
@@ -23,7 +29,8 @@ class CategoriesController extends AppController {
 					'Category.rght <' => $main_category['Category']['rght']
 				),
 				'contain' => array(),
-				'order' => array('Category.lft' => 'asc')
+				'order' => array('Category.lft' => 'asc'),
+				'fields' => array('Category.id', 'Category.name', 'Category.active', 'Category.url', 'Category.parent_id'),
 			));
 			$subcategories = $this->Category->countProducts($subcategories);
 			$main_category['categories'] = $subcategories;
