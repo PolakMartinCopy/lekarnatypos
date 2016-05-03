@@ -7,10 +7,10 @@ class CategoriesController extends AppController {
 	function admin_index() {
 		$main_categories_ids = $this->Category->pseudo_root_categories_ids();
 		// natahnu hlavni kategorie (parent je root)
-		$this->Category->virtualFields['is_main'] = 'Category.id IN (' . $this->Category->category_subtree_root_id . ', ' . $this->Category->bothers_subtree_root_id . ')';
+		$this->Category->virtualFields['is_main'] = 'Category.id IN (' . $this->Category->category_subtree_root_id . ', ' . $this->Category->bothers_subtree_root_id . ', ' . $this->Category->ad_subtree_root_id . ')';
 		$order = array(
 			'Category.is_main' => 'desc',
-			'FIELD(Category.id, ' . $this->Category->category_subtree_root_id . ', ' . $this->Category->bothers_subtree_root_id . ')'
+			'FIELD(Category.id, ' . $this->Category->category_subtree_root_id . ', ' . $this->Category->bothers_subtree_root_id . ', ' . $this->Category->ad_subtree_root_id . ')'
 		);
 		$main_categories = $this->Category->find('all', array(
 			'conditions' => array(

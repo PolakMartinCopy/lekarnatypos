@@ -40,6 +40,8 @@ class Category extends AppModel {
 	var $category_subtree_root_id = 408;
 	// IDcko kategorie, ktera se pouzite jako rootova pro podstrom CO VAS TRAPI
 	var $bothers_subtree_root_id = 398;
+	// IDcko kategorie, ktera se pouzije jako rootova pro podstrom INZERCE
+	var $ad_subtree_root_id = 913;
 	
 	function afterSave($created) {
 		if ($created) {
