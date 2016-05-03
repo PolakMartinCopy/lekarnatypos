@@ -452,7 +452,7 @@ if ($r = $this->Redirect->check($_SERVER['REQUEST_URI'])) {
 
 function utm_parameters_string($getParams) {
 	$res = array();
-	$utmTags = array('source', 'medium', 'campaing', 'content');
+	$utmTags = array('source', 'medium', 'campaign', 'content');
 	foreach ($utmTags as $tag) {
 		$tagName = 'utm_' . $tag;
 		if (isset($getParams[$tagName])) {
