@@ -525,11 +525,11 @@ class Order extends AppModel {
 
 		$cp_count = 0;
 		foreach ($cart_products as $cart_product) {
-			// nactu produkt, abych si zapamatoval jeho jmeno
+			// nactu produkt, abych si zapamatoval jeho data
 			$product = $this->OrderedProduct->Product->find('first', array(
 				'conditions' => array('Product.id' => $cart_product['CartsProduct']['product_id']),
 				'contain' => array('Manufacturer', 'TaxClass'),
-				'fields' => array('Product.id', 'Product.name', 'Manufacturer.id', 'Manufacturer.name', 'TaxClass.id', 'TaxClass.value')	
+				'fields' => array('Product.id', 'Product.name', 'Product.wholesale_price_vat', 'Manufacturer.id', 'Manufacturer.name', 'TaxClass.id', 'TaxClass.value')	
 			));
 			// data pro produkt
 			$ordered_products[$cp_count]['OrderedProduct']['product_id'] = $cart_product['CartsProduct']['product_id'];
@@ -541,6 +541,7 @@ class Order extends AppModel {
 				$price_wout_dph = round($cart_product['CartsProduct']['price_with_dph'] / $percentage * 100, 2);
 			}
 			$ordered_products[$cp_count]['OrderedProduct']['product_price_wout_dph'] = $price_wout_dph;
+			$ordered_products[$cp_count]['OrderedProduct']['product_wholesale_price_vat'] = $product['Product']['wholesale_price_vat'];
 			$ordered_products[$cp_count]['OrderedProduct']['product_quantity'] = $cart_product['CartsProduct']['quantity'];
 			$ordered_products[$cp_count]['OrderedProduct']['product_name'] = $this->OrderedProduct->generate_product_name($product['Product']['id']);
 			
