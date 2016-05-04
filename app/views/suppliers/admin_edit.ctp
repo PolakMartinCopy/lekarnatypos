@@ -72,6 +72,10 @@
 			<td><?php echo $this->Form->input('Supplier.price_field', array('label' => false, 'size' => 70))?></td>
 		</tr>
 		<tr>
+			<th><abbr title="Název tagu, ve kterém je v XML feedu nákupní cena produktu">Pole s nákupní cenou</abbr></th>
+			<td><?php echo $this->Form->input('Supplier.wholesale_price_field', array('label' => false, 'size' => 70))?></td>
+		</tr>
+		<tr>
 			<th><abbr title="Název tagu, ve kterém je v XML feedu obrázek produktu">Pole s obrázkem</abbr></th>
 			<td><?php echo $this->Form->input('Supplier.image_field', array('label' => false, 'size' => 70))?></td>
 		</tr>

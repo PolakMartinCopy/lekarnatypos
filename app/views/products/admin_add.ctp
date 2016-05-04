@@ -131,6 +131,10 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>Skupina</td>
 		<td><?php echo $this->Form->input('Product.group', array('label' => false))?></td>
 	</tr>
+	<tr valign="top">
+		<td>Nákupní cena</td>
+		<td><?php echo $this->Form->input('Product.wholesale_price_vat', array('label' => false, 'after' => '&nbsp;Kč'))?></td>
+	</tr>
 	<tr class="nutne" valign="top">
 		<td>Základní cena:</td>
 		<td><?php echo $this->Form->input('Product.retail_price_with_dph', array('label' => false, 'after' => '&nbspKč'))?></td>

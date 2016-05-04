@@ -896,6 +896,7 @@ class ProductsController extends AppController {
 				'Product.availability_id',
 				'Product.product_type_id',
 				'Product.tax_class_id',
+				'Product.wholesale_price_vat',
 				'Product.recycle_fees',
 				'Product.discount',
 				'Product.guarantee',
