@@ -407,7 +407,7 @@ class SuppliersController extends AppController {
 							);
 							
 							$db_unlogged_customer_price = $this->Supplier->Product->CustomerTypeProductPrice->find('first', array(
-								'conditions' => array($customer_type_product_price),
+								'conditions' => $customer_type_product_price,
 								'contain' => array(),	
 								'fields' => array('CustomerTypeProductPrice.id')
 							));
