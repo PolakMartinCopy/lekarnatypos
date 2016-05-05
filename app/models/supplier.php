@@ -176,7 +176,7 @@ class Supplier extends AppModel {
 				$discount_common = str_replace(' CZK', '', $discount_common);
 			}
 			//		- nakupni cena
-			$wholesale_price_vat = $this->product_wholesale_price_vat($feed_product, $supplier['Supplier']['wholesale_price_field']);
+			$wholesale_price = $this->product_wholesale_price($feed_product, $supplier['Supplier']['wholesale_price_field']);
 			//		- ean
 			$ean = $this->product_ean($feed_product, $supplier['Supplier']['ean_field']);
 			//		- supplier product id - id produktu ve feedu dodavatele
@@ -230,7 +230,7 @@ class Supplier extends AppModel {
 				'description' => $description,
 				'retail_price_with_dph' => $retail_price_with_dph,
 				'discount_common' => $discount_common,
-				'wholesale_price_vat' => $wholesale_price_vat,
+				'wholesale_price' => $wholesale_price,
 				'ean' => $ean,
 				'supplier_product_id' => $supplier_product_id,
 				'supplier_category_id' => $supplier_category_id,
@@ -331,7 +331,7 @@ class Supplier extends AppModel {
 		return $discount_price;
 	}
 	
-	function product_wholesale_price_vat($feed_product, $wholesale_price_field) {
+	function product_wholesale_price($feed_product, $wholesale_price_field) {
 		return simpleXMLChildValue($feed_product, $wholesale_price_field);
 	}
 	
@@ -665,9 +665,9 @@ class Supplier extends AppModel {
 							unset($product['Product']['description']);
 						}
 						break;
-					case 'Product.wholesale_price_vat':
+					case 'Product.wholesale_price':
 						if (!$property['ProductPropertiesProduct']['update']) {
-							unset($product['Product']['wholesale_price_vat']);
+							unset($product['Product']['wholesale_price']);
 						}
 						break;
 					case 'Product.ean':
