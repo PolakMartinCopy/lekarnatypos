@@ -6,6 +6,7 @@
 		<HTML_DESCRIPTION><![CDATA[<?php echo $product['AllianceProduct']['pd_description']?>]]></HTML_DESCRIPTION>
 		<IMGURL><![CDATA[<?php echo $product['AllianceProduct']['pd_image']?>]]></IMGURL>
 		<PRICE_VAT><![CDATA[<?php echo $product['AllianceProduct']['all_price']?>]]></PRICE_VAT>
+		<PRICE><![CDATA[<?php echo $product['AllianceProduct']['all_price_no_vat']?>]]></PRICE>
 		<VAT><![CDATA[<?php echo $product['AllianceProduct']['vat'] ?>]]></VAT>
 		<MANUFACTURER><![CDATA[<?php echo $product['AllianceProduct']['manufacturer']?>]]></MANUFACTURER>
 		<ITEM_TYPE><![CDATA[new]]></ITEM_TYPE>
