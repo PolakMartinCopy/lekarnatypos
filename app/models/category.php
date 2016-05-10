@@ -25,7 +25,10 @@ class Category extends AppModel {
 		'CategoriesComparator' => array(
 			'dependent' => true
 		),
-		'DiscountCouponsCategory'
+		'DiscountCouponsCategory',
+		'AdministratorsCategory' => array(
+			'dependent' => true
+		)
 	);
 	
 	// id kategorii, ktere se nebudou brat v potaz pri generovani souvisejicich produktu

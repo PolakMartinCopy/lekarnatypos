@@ -2,7 +2,7 @@
 class Administrator extends AppModel{
 	var $name = 'Administrator';
 
-	var $hasMany = array('Ordernote');
+	var $hasMany = array('Ordernote', 'AdministratorsCategory');
 	
 	function isHost($id) {
 		return $id == HOST_ID;

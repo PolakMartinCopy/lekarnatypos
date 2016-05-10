@@ -210,7 +210,8 @@ $(function() {
 		<?php } ?></td>
 		<td>
 			<table class="tabulka" style="width:100%">
-				<?php foreach ($order['OrderedProduct'] as $ordered_product) { ?>
+				<?php foreach ($order['OrderedProduct'] as $ordered_product) {
+					if ($ordered_product['show']) { ?>
 				<tr>
 					<td><?php
 						$quantity_info = $ordered_product['product_quantity'];
@@ -240,6 +241,7 @@ $(function() {
 					<td><?php echo round($ordered_product['product_price_with_dph'], 2)?></td>
 					<td><?php echo round($ordered_product['product_price_with_dph'] * $ordered_product['product_quantity'], 2)?></td>
 				</tr>
+				<?php } // end if ordered_product show?>
 				<?php } ?>
 				<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
 				<tr>

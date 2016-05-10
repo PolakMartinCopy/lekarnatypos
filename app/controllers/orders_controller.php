@@ -75,7 +75,7 @@ class OrdersController extends AppController {
 			$this->data['AdminOrderForm'] = $this->Session->read('Search.AdminOrderForm');
 			$conditions = $this->Order->do_form_search($conditions, $this->data['AdminOrderForm']);
 		}
-
+		
 		$page = 1;
 		if (isset($this->params['named']['page'])) {
 			$page = $this->params['named']['page'];
@@ -127,8 +127,21 @@ class OrdersController extends AppController {
 			)
 		);
 		
+		// pokud se jedna o specifickeho uzivatele, omezim zobrazene objednavky a zbozi v nich
+		// viz definice v Administrator->adminDefinedCategories
+		$admin = $this->Session->read('Administrator');
+		// pokud se jedna o administratora, ktery ma mit pristup jen k nekterym kategoriim shopu
+		if ($this->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->hasAny(array('administrator_id' => $admin['id']))) {
+			$categoryConditions = $this->Order->getAdminConditions($admin['id']);
+			$categoryJoins = $this->Order->getAdminJoins();
+			
+			$conditions = array_merge($conditions, $categoryConditions);
+			// nastavim si idcka kategorii, jejichz produkty chci vypisovat v objednavkach
+			$categoryIds = $categoryConditions['CategoriesProduct.category_id'];
+			$joins = array_merge($joins, $categoryJoins);
+		}
 		$fields = array('Order.id');
-		
+
 		$orders = $this->Order->find('all', array(
 			'conditions' => $conditions,
 			'contain' => array(),
@@ -174,12 +187,20 @@ class OrdersController extends AppController {
 
 		foreach ($orders as &$order) {
 			$order['Customer']['orders_count'] = $this->Order->Customer->orders_count($order['Customer']['id']);
+			$orderedProducts = array();
 			foreach ($order['OrderedProduct'] as &$ordered_product) {
+				// nastavim, jestli chci produkt zobrazit nebo ne
+				// pouzivam to v pripade, ze v administraci mam cloveka, ktery ma na starost je cast eshopu (sportovni vyziva, drogerie)
+				$ordered_product['show'] = false;				
+				if ((empty($categoryIds)) || $this->Order->OrderedProduct->Product->CategoriesProduct->hasAny(array('category_id' => $categoryIds, 'product_id' => $ordered_product['product_id']))) {
+					$ordered_product['show'] = true;
+				}
 				if ((!isset($ordered_product['product_name']) || (empty($ordered_product['product_name']))) && isset($ordered_product['Product']['name'])) {
 					$ordered_product['product_name'] = $ordered_product['Product']['name'];
 				}
 			}
 		}
+
 		$this->set('orders', $orders);
 		
 		$this->Order->virtualFields['total_vat'] = 'SUM(Order.subtotal_with_dph + Order.shipping_cost)';	

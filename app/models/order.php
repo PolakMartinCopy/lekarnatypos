@@ -1155,5 +1155,36 @@ class Order extends AppModel {
 		
 		return $orderedProducts;
 	}
+	
+	function getAdminConditions($adminId) {
+		$categoryRootIds = $this->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->find('all', array(
+			'conditions' => array('AdministratorsCategory.administrator_id' => $adminId),
+			'contain' => array(),
+			'fields' => array('AdministratorsCategory.category_id')
+		));
+		$categoryRootIds = Set::extract('/AdministratorsCategory/category_id', $categoryRootIds);
+		$categoryIds = array();
+		foreach ($categoryRootIds as $categoryRootId) {
+			$categoryIds = array_merge($categoryIds, $this->OrderedProduct->Product->CategoriesProduct->Category->subtree_ids($categoryRootId));
+		}
+		
+		$categoryConditions = array(
+			'CategoriesProduct.category_id' => $categoryIds
+		);
+		
+		return $categoryConditions;
+	}
+	
+	function getAdminJoins() {
+		$categoryJoins = array(
+			array(
+				'table' => 'categories_products',
+				'alias' => 'CategoriesProduct',
+				'type' => 'LEFT',
+				'conditions' => array('CategoriesProduct.product_id = OrderedProduct.product_id')
+			)
+		);
+		return $categoryJoins;
+	}
 } // konec tridy
 ?>
