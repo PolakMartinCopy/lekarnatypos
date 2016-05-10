@@ -237,7 +237,6 @@ class Supplier extends AppModel {
 				'availability_id' => $availability_id,
 				'manufacturer_id' => $manufacturer_id,
 				'tax_class_id' => $tax_class_id,
-				'feed' => true
 			)	
 		);
 		return $product;

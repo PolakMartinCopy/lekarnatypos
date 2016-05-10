@@ -295,6 +295,7 @@ class SuppliersController extends AppController {
 						
 						// pokud vytvarim produkt z alliance, chci si zapamatovat, ze u nej zadny spravce neupravoval popis
 						$product['Product']['is_alliance_rewritten'] = false;
+						$product['Product']['feed'] = true;
 					}
 					
 					if (array_key_exists('short_description', $product['Product']) && empty($product['Product']['short_description']) && isset($product['Product']['name'])) {
