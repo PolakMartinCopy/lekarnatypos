@@ -611,7 +611,7 @@ class Supplier extends AppModel {
 		));
 
 		// pokud nemam zadano jinak, u produktu SynCare a TopVet a Boneco nechci updatovat nic
-		if (empty($properties) && ($product['Product']['supplier_id'] == 2 || $product['Product']['supplier_id'] == 1) || $product['Product']['supplier_id'] == 3) {
+		if (empty($properties) && ($product['Product']['supplier_id'] == 2 || $product['Product']['supplier_id'] == 1 || $product['Product']['supplier_id'] == 3)) {
 			foreach ($product['Product'] as $key => $value) {
 				if ($key != 'id') {
 					unset($product['Product'][$key]);
