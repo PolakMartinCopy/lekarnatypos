@@ -91,11 +91,5 @@ class AdministratorsController extends AppController {
 		$this->Session->setFlash('Byl jste úspěšně odhlášen ze systému.', REDESIGN_PATH . 'flash_success');
 		$this->redirect(array('controller' => 'administrators', 'action' => 'login'), null, true);
 	}
-	
-	function admin_import() {
-		$this->Administrator->import();
-		die('here');
-	}
-
 }
 ?>
