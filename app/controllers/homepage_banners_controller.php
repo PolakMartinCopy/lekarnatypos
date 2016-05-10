@@ -24,9 +24,9 @@ class HomepageBannersController extends AppController {
 					$image_width = $imagesize[0];
 					$image_height = $imagesize[1];
 //					if ($image_width != $required_width || $image_height != $required_height) {
-					if ($image_width != $required_width) {
+					if ($image_width > $required_width) {
 //						$this->Session->setFlash('Obrázek se nepodařilo změnit, musí mít rozměry ' . $required_width . ' x ' . $required_height . ' px!', REDESIGN_PATH . 'flash_failure');
-						$this->Session->setFlash('Obrázek se nepodařilo změnit, musí mít šířku ' . $required_width . ' px!', REDESIGN_PATH . 'flash_failure');
+						$this->Session->setFlash('Obrázek se nepodařilo změnit, musí mít šířku maximálně ' . $required_width . ' px!', REDESIGN_PATH . 'flash_failure');
 						$success = false;
 					} else {
 						$this->data['HomepageBanner']['image']['name'] = strip_diacritic($this->data['HomepageBanner']['image']['name'], false);
