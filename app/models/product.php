@@ -165,6 +165,16 @@ class Product extends AppModel {
 		array(
 			'id' => 6,
 			'name' => 'Duplicitní podle EAN'
+		),
+		array(
+			'id' => 7,
+			'name' => 'Je z feedů dodavatelů',
+			'conditions' => array('Product.supplier_id IS NOT NULL')
+		),
+		array(
+			'id' => 8,
+			'name' => 'Není z feedů dodavatelů',
+			'conditions' => array('Product.supplier_id IS NULL')
 		)
 	);
 	
