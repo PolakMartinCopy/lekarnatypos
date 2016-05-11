@@ -29,26 +29,32 @@
 	<tr>
 		<th>ID objednávky</th>
 		<th>Zákazník</th>
-		<th>Datum objednávky</th>
-		<th>Produktů na objednávce</th>
+		<th>Datum</th>
+		<th>Produktů</th>
 		<th>Cena bez dopravy</th>
 		<th>Cena bez DPH<br/>a bez dopravy</th>
+		<th>Nákupní cena</th>
+		<th>Marže</th>
 		<th>Celková cena</th>
 	</tr>
 	<?php if (empty($orders)) { ?>
 	<tr>
-		<td colspan="5">V daném intervalu nejsou žádné objednávky.</td>
+		<td colspan="9">V daném intervalu nejsou žádné objednávky.</td>
 	</tr>
 	<?php } else {
 		$total_products_count = 0;
 		$total_subtotal_wout_dph = 0;
 		$total_subtotal_with_dph = 0;
 		$total_price = 0;
+		$total_wholesale_price = 0;
+		$total_margin = 0;
 		foreach ($orders as $order) {
 			$total_products_count += $order[0]['Order__products_count'];
 			$total_subtotal_wout_dph += $order['Order']['subtotal_wout_dph'];
 			$total_subtotal_with_dph += $order['Order']['subtotal_with_dph'];
 			$total_price += $order[0]['Order__price'];
+//			$total_wholesale_price += $order[0]['Order__wholesale_price'];
+//			$total_margin += $order[0]['Order__margin'];
 	?>
 	<tr>
 		<td><?php echo $this->Html->link($order['Order']['id'], array('controller' => 'orders', 'action' => 'view', $order['Order']['id']), array('target' => '_blank'))?></td>
@@ -57,6 +63,8 @@
 		<td align="right"><?php echo $order[0]['Order__products_count']?></td>
 		<td align="right"><?php echo format_price($order['Order']['subtotal_with_dph']) ?></td>
 		<td align="right"><?php echo format_price($order['Order']['subtotal_wout_dph'])?></td>
+		<td align="right"><?php echo format_price($order[0]['Order__wholesale_price'])?></td>
+		<td align="right"><?php echo format_price($order[0]['Order__margin'])?></td>
 		<td align="right"><?php echo format_price($order[0]['Order__price']) ?></td>
 	</tr>
 <?php 	} ?>
@@ -67,6 +75,8 @@
 		<th align="right"><?php echo $total_products_count ?></th>
 		<th align="right"><?php echo format_price($total_subtotal_with_dph) ?></th>
 		<th align="right"><?php echo format_price($total_subtotal_wout_dph) ?></th>
+		<th align="right">&nbsp;<?php //echo format_price($total_wholesale_price) ?></th>
+		<th align="right">&nbsp;<?php //echo format_price($total_margin) ?></th>
 		<th align="right"><?php echo format_price($total_price) ?></th>
 	</tr>
 <?php } ?>

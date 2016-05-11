@@ -29,9 +29,18 @@ class CategoriesController extends AppController {
 					'Category.rght <' => $main_category['Category']['rght']
 				),
 				'contain' => array(),
+/*				'joins' => array(
+					array(
+						'table' => 'categories_products',
+						'alias' => 'CategoriesProduct',
+						'type' => 'LEFT',
+						'conditions' => array('CategoriesProduct.category_id = Category.id')
+					)
+				),*/
 				'order' => array('Category.lft' => 'asc'),
 				'fields' => array('Category.id', 'Category.name', 'Category.active', 'Category.url', 'Category.parent_id'),
 			));
+			debug($subcategories); die();
 			$subcategories = $this->Category->countProducts($subcategories);
 			$main_category['categories'] = $subcategories;
 		}

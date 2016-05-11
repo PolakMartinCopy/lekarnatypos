@@ -50,6 +50,9 @@ class StatisticsController extends AppController {
 			$this->Statistic->Order->virtualFields['products_count'] = 'SUM(OrderedProduct.product_quantity)';
 			$this->Statistic->Order->virtualFields['price'] = 'Order.subtotal_with_dph + Order.shipping_cost';
 			$this->Statistic->Order->virtualFields['date'] = 'CONCAT(DATE_FORMAT(DATE(Order.created), "%d.%m.%Y"), " ", TIME(Order.created))';
+			$this->Statistic->Order->virtualFields['has_every_wholesale_price'] = 'SUM(NOT(OrderedProduct.product_wholesale_price > 0)) = 0';
+			$this->Statistic->Order->virtualFields['wholesale_price'] = 'IF( ' . $this->Statistic->Order->virtualFields['has_every_wholesale_price'] . ', SUM(OrderedProduct.product_wholesale_price * OrderedProduct.product_quantity), 0)';
+			$this->Statistic->Order->virtualFields['margin'] = 'IF( ' . $this->Statistic->Order->virtualFields['has_every_wholesale_price'] . ', Order.subtotal_wout_dph - ' . $this->Statistic->Order->virtualFields['wholesale_price'] . ', 0)';
 			$orders = $this->Statistic->Order->find('all', array(
 				'conditions' => $conditions,
 				'contain' => array(),
@@ -61,6 +64,9 @@ class StatisticsController extends AppController {
 						'Order.subtotal_wout_dph',
 						'Order.shipping_cost',
 						'Order.price',
+						'Order.has_every_wholesale_price',
+						'Order.wholesale_price',
+						'Order.margin',
 						'Order.customer_id',
 						'Order.customer_name'
 				),
@@ -79,6 +85,9 @@ class StatisticsController extends AppController {
 			unset($this->Statistic->Order->virtualFields['products_count']);
 			unset($this->Statistic->Order->virtualFields['price']);
 			unset($this->Statistic->Order->virtualFields['date']);
+			unset($this->Statistic->Order->virtualFields['has_every_wholesale_price']);
+			unset($this->Statistic->Order->virtualFields['wholesale_price']);
+			unset($this->Statistic->Order->virtualFields['margin']);
 
 			$this->set('orders', $orders);
 
