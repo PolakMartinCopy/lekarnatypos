@@ -1,4 +1,4 @@
-<h2><span><?php echo $manufacturer['Manufacturer']['heading']?></span></h2>
+<h1><?php echo $manufacturer['Manufacturer']['heading']?></h1>
 <?php if (isset($manufacturer['Manufacturer']['content']) && !empty($manufacturer['Manufacturer']['content'])) { ?>
 <div class="category-desc">
     <p><?php echo $manufacturer['Manufacturer']['content']?></p>
