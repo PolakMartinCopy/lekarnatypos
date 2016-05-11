@@ -28,6 +28,9 @@
   google.maps.event.addDomListener(window, 'load', initialize);
 </script>
 
+<script type="text/javascript" src="/plugins/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+<script type="text/javascript" src="/plugins/fancybox/source/jquery.fancybox.pack.js"></script>
+
  <?php if ($this->params['controller'] == 'orders' && $this->params['action'] == 'one_step_order') { ?>
  <script type="text/javascript">
  $(document).ready(function() {

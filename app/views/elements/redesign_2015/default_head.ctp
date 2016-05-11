@@ -52,3 +52,5 @@ fbq('track', "PageView");</script>
 src="https://www.facebook.com/tr?id=1163921323618771&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Facebook Pixel Code -->
+
+<link rel="stylesheet" href="/plugins/fancybox/source/jquery.fancybox.css" type="text/css" media="screen" />
