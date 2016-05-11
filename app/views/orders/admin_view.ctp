@@ -9,7 +9,9 @@
 	
 		<h3>Objednávka č. <?=$order['Order']['id']?> (<?=strftime("%d.%m.%Y %H:%M", strtotime($order['Order']['created']))?>)</h3>
 		<ul>
+			<?php if (!$adminIsRestricted) { ?>
 			<li><?=$html->link('Editovat objednávku', array('controller' => 'ordered_products', 'action' => 'edit', $order['Order']['id'])) ?></li>
+			<?php } ?>
 			<li><?php echo $this->Html->link('Zpět na seznam objednávek', array('controller' => 'orders', 'action' => 'index'))?></li>
 		</ul>
 
@@ -20,9 +22,10 @@
 				<th style="width:10%">Cena<br />za kus</th>
 				<th style="width:10%">Cena<br />celkem</th>
 			</tr>
-			<? foreach ( $order['OrderedProduct'] as $product ){
-				// celkova cena za pocet kusu krat jednotkova cena
-				$total_products_price = $product['product_quantity'] * $product['product_price_with_dph']; ?>
+			<? foreach ($order['OrderedProduct'] as $product) {
+					if ($product['show']) {
+						// celkova cena za pocet kusu krat jednotkova cena
+						$total_products_price = $product['product_quantity'] * $product['product_price_with_dph']; ?>
 			<tr>
 				<td><?php 
 					if (!empty($product['Product'])) { 
@@ -31,18 +34,19 @@
 						echo $product['product_name'];
 					}
 					// musim vyhodit atributy, pokud nejake produkt ma
-					if ( !empty( $product['OrderedProductsAttribute'] ) ){
+					if (!empty( $product['OrderedProductsAttribute'])) {
 						echo '<div class="orderedProductsAttributes">';
-						foreach( $product['OrderedProductsAttribute'] as $attribute ){
+						foreach( $product['OrderedProductsAttribute'] as $attribute ) {
 							echo '<span>- <strong>' . $attribute['Attribute']['Option']['name'] . '</strong>: ' . $attribute['Attribute']['value'] . '</span><br />';
 						}
 						echo '</div>';
-				} ?></td>
+					} ?></td>
 				<td><?php echo $product['product_quantity'] ?>&nbsp;ks</td>
 				<td align="right"><?php echo $product['product_price_with_dph'] ?>&nbsp;Kč</td>
 				<td align="right"><?php echo $total_products_price ?>&nbsp;Kč</td>
 			</tr>
-			<?php } ?>
+			<?php }
+			} ?>
 		</table>
 		<br/>
 		<?php if (!empty($order['DiscountCoupon']['id'])) { ?>
@@ -61,18 +65,22 @@
 		<br/>
 		<?php } ?>
 		<table id="orderParameters"  class="tabulka">
+			<?php if (!$adminIsRestricted) { ?>
 			<tr>
 				<th style="width:80%" align="right">cena za zboží celkem:</th>
 				<td style="width:20%" align="right"><?=$order['Order']['subtotal_with_dph']?>&nbsp;Kč</td>
 			</tr>
+			<?php } ?>
 			<tr>
 				<td align="right">způsob doručení: <?=$order['Shipping']['name']?></td>
 				<td align="right"><?=$order['Order']['shipping_cost']?>&nbsp;Kč</td>
 			</tr>
+			<?php if (!$adminIsRestricted) { ?>
 			<tr>
 				<th align="right">celková cena objednávky:</th>
 				<td align="right"><?=( $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'])?>&nbsp;Kč</td>
 			</tr>
+			<?php } ?>
 		</table>
 <?
 			$color = '';

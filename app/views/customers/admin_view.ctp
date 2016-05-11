@@ -99,7 +99,7 @@
 	<?php foreach ($customer['Order'] as $o) { ?>
 		<tr>
 			<th><?php echo $html->link($o['id'], array('controller' => 'orders', 'action' => 'view', $o['id']))?></th>
-			<td><?php echo $o['orderfinaltotal']?>&nbsp;Kč</td>
+			<td><?php echo (!$adminIsRestricted ? $o['orderfinaltotal'] . '&nbsp;Kč' : '')?></td>
 		</tr>
 	<?php }
 		} else { ?>

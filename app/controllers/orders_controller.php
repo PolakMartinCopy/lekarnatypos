@@ -131,7 +131,7 @@ class OrdersController extends AppController {
 		// viz definice v Administrator->adminDefinedCategories
 		$admin = $this->Session->read('Administrator');
 		// pokud se jedna o administratora, ktery ma mit pristup jen k nekterym kategoriim shopu
-		if ($this->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->hasAny(array('administrator_id' => $admin['id']))) {
+		if ($this->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($admin['id'])) {
 			$categoryConditions = $this->Order->getAdminConditions($admin['id']);
 			$categoryJoins = $this->Order->getAdminJoins();
 			
@@ -216,6 +216,8 @@ class OrdersController extends AppController {
 		
 		$statuses_options = $this->Order->Status->find('list');
 		$this->set('statuses_options', $statuses_options);
+		
+		$this->set('adminIsRestricted', $this->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($this->Session->read('Administrator.id')));
 
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
@@ -274,12 +276,31 @@ class OrdersController extends AppController {
 			$this->Session->setFlash('Neexistující objednávka!', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action' => 'index'), null, true);
 		}
+		
+		// omezenemu adminovi vyfiltruju jen ty produkty, ktere tam ma mit
+		$adminId = $this->Session->read('Administrator.id');
+		$adminIsRestricted = $this->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($adminId);
+		$allowedCategories = array();
+		if ($adminIsRestricted) {
+			$allowedCategories = $this->Order->getAdminConditions($adminId);
+			$allowedCategories = $allowedCategories['CategoriesProduct.category_id'];
+		}
+		
+		foreach ($order['OrderedProduct'] as &$orderedProduct) {
+			$orderedProduct['show'] = false;
+			if ((empty($allowedCategories)) || $this->Order->OrderedProduct->Product->CategoriesProduct->hasAny(array('category_id' => $allowedCategories, 'product_id' => $orderedProduct['product_id']))) {
+				$orderedProduct['show'] = true;
+			}
+		}
+		
 
 		// potrebuju vytahnout mozne statusy
 		$statuses = $this->Order->Status->find('list');
 
 		// predam data do view
 		$this->set(compact(array('order', 'statuses', 'notes', 'manufacturers')));
+		
+		$this->set('adminIsRestricted', $adminIsRestricted);
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
@@ -397,7 +418,7 @@ class OrdersController extends AppController {
 		$this->redirect(array('action' => 'index'), null, true);
 	}
 
-	function admin_edit(){
+	function admin_edit() {
 		// kontrola, zda jsou pro dany status vyzadovana nejake pole
 		$valid_requested_fields = array();
 		$requested_fields = $this->Order->Status->has_requested($this->data['Order']['status_id']);

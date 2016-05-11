@@ -18,7 +18,12 @@ class OrderedProductsController extends AppController {
 		$this->redirect(array('controller' => 'ordered_products', 'action' => 'edit', $order['OrderedProduct']['order_id']));
 	}
    
-	function admin_edit($id = null){
+	function admin_edit($id = null) {
+		if ($this->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($this->Session->read('Administrator.id'))) {
+			$this->Session->setFlash('Nemáte právo upravovat objednávky', REDESIGN_PATH . 'flash_failure');
+			$this->redirect(array('controller' => 'orders', 'action' => 'view', $id));
+		}
+		
 		$this->OrderedProduct->Order->reCount($id);
 		
 		// nactu si objednavku

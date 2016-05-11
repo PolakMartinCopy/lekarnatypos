@@ -140,6 +140,8 @@ class CustomersController extends AppController {
 	
 		$this->set('customer', $customer);
 		
+		$this->set('adminIsRestricted', $this->Customer->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($this->Session->read('Administrator.id')));
+		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
 	

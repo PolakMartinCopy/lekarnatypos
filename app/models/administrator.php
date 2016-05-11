@@ -8,6 +8,10 @@ class Administrator extends AppModel{
 		return $id == HOST_ID;
 	}
 	
+	function isRestricted($id) {
+		return $this->AdministratorsCategory->hasAny(array('administrator_id' => $id));
+	}
+	
 	function hasAccess($id, $controller, $action) {
 		// je uzivatel host?
 		if ($this->isHost($id)) {

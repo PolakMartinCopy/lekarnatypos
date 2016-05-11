@@ -117,7 +117,12 @@ $(function() {
 			<img src="/images/<?php echo REDESIGN_PATH?>icons/cz.gif" width="18" height="12" alt="" />
 		</td>
 		<td><?php 
-			echo $order['Customer']['first_name'] . ' ' . $order['Customer']['last_name'] . ' <strong>(' . $order['Customer']['orders_count'] . ')</strong> - ' . $order['Customer']['CustomerType']['name'] . '';
+			$customerName = $order['Customer']['first_name'] . ' ' . $order['Customer']['last_name'];
+			$customerInfo = $this->Html->link($customerName, array('controller' => 'customers', 'action' => 'view', $order['Customer']['id'])) . ' <strong>(' . $order['Customer']['orders_count'] . ')</strong>';
+			if (isset($order['Customer']['CustomerType'])) {
+				$customerInfo .= ' - ' . $order['Customer']['CustomerType']['name'] . '';
+			}
+			echo $customerInfo;	
 			echo '<br/>';
 			// dorucovaci adresa
 			$delivery_address_info = '<br/>';
@@ -269,9 +274,11 @@ $(function() {
 			</table>
 		</td>
 		<td><?php
-			echo format_price(round($order['Order']['orderfinaltotal'], 2));
-			if ($order['Order']['invoice']) {
-				echo '<br/><strong>FAKTUROVÁNO</strong>';
+			if (!$adminIsRestricted) { 
+				echo format_price(round($order['Order']['orderfinaltotal'], 2));
+				if ($order['Order']['invoice']) {
+					echo '<br/><strong>FAKTUROVÁNO</strong>';
+				}
 			}
 		?></td>
 		<td><?
