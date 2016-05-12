@@ -10,6 +10,7 @@ class ZasilkovnaBranchesController extends AppController {
 					$elementName = $child->getName();
 					if ($elementName == 'branches') {
 						$save = array();
+						$activeIds = array();
 						foreach ($child->children() as $xmlBranch) {
 							$country = $xmlBranch->country->__toString();
 							$branch = array();
@@ -25,11 +26,20 @@ class ZasilkovnaBranchesController extends AppController {
 									'zip' => $xmlBranch->zip->__toString()
 								);
 								if ($dbBranchId = $this->ZasilkovnaBranch->getIdByField($branch['zasilkovna_id'], 'zasilkovna_id')) {
-									$branch['id'] = $dbBranchId;
+									$activeIds[] = $branch['id'] = $dbBranchId;
 								}
 								$save[] = $branch;
 							}
 						}
+						// smazu ty, ktere jsou navic oproti aktualnimu importu
+						$uselessBranchIds = $this->ZasilkovnaBranch->find('all', array(
+							'conditions' => array('ZasilkovnaBranch.id NOT IN (' . implode(', ', $activeIds) . ')'),
+							'contain' => array(),
+							'fields' => array('ZasilkovnaBranch.id')
+						));
+						$uselessBranchIds = Set::extract('/ZasilkovnaBranch/id', $uselessBranchIds);
+						$this->ZasilkovnaBranch->deleteAll(array('ZasilkovnaBranch.id' => $uselessBranchIds));
+						// ulozim update
 						if (!$this->ZasilkovnaBranch->saveAll($save)) {
 							debug($save);
 							trigger_error('Nepodarilo se ulozit pobocky', E_USER_NOTICE);
