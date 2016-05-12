@@ -70,8 +70,8 @@ class Setting extends AppModel {
 			$constant = $setting['Setting']['name'];
 			if (!defined($constant)) {
 				$value = $this->findValue($constant);
-				// pokud definuju GEIS_POINT_SHIPPING_IDS, je to pole a musim ho pregenerovat a definovat jako json array
-				if ($constant == 'GEIS_POINT_SHIPPING_IDS') {
+				// pokud definuju pole, musim ho pregenerovat a definovat jako json array
+				if ($constant == 'GEIS_POINT_SHIPPING_IDS' || $constant == 'ZASILKOVNA_SHIPPING_IDS') {
 					$value = explode('|', $value);
 					$value = json_encode($value);
 				}
