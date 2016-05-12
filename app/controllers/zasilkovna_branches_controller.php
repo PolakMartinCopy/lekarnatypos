@@ -23,7 +23,10 @@ class ZasilkovnaBranchesController extends AppController {
 									'place' => $xmlBranch->place->__toString(),
 									'street' => $xmlBranch->street->__toString(),
 									'city' => $xmlBranch->city->__toString(),
-									'zip' => $xmlBranch->zip->__toString()
+									'zip' => $xmlBranch->zip->__toString(),
+									'thumb' => $xmlBranch->photos->photo->thumbnail->__toString(),
+									'image' => $xmlBranch->photos->photo->normal->__toString(),
+									'opening_hours' => $xmlBranch->openingHours->tableLong->__toString(),
 								);
 								if ($dbBranchId = $this->ZasilkovnaBranch->getIdByField($branch['zasilkovna_id'], 'zasilkovna_id')) {
 									$activeIds[] = $branch['id'] = $dbBranchId;
@@ -56,5 +59,27 @@ class ZasilkovnaBranchesController extends AppController {
 		die('here');
 	}
 	
-	function ajax_search() {}
+	function ajax_get() {
+		$result = array(
+			'success' => false,
+			'message' => '',
+			'data' => array()
+		);
+		
+		if (!isset($_POST['id'])) {
+			$result['message'] = 'Neznám všechny atributy pro vyhledání pošty';
+		} else {
+			// vytahnu si pobocky podle podminek
+			$branch = $this->ZasilkovnaBranch->find('first', array(
+				'conditions' => array('ZasilkovnaBranch.id' => $_POST['id']),
+				'contain' => array(),
+			));
+				
+			$result['data'] = $branch;
+			$result['success'] = true;
+		}
+		
+		echo json_encode($result);
+		die();
+	}
 }
