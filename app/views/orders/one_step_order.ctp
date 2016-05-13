@@ -173,8 +173,16 @@ if ($this->Session->check('Message.flash')) {
 			<?php
 				$show_provider_row = false; 
 			} ?>
-			<td style="width:5%;padding:3px<?php echo $border_top?>"><input name="data[Order][shipping_id]" type="radio" value="<?php echo $shipping['Shipping']['id']?>" id="OrderShippingId<?php echo $shipping['Shipping']['id']?>"<?php echo $checked?>/></td>
-			<td style="width:70%;padding:3px<?php echo $border_top?>"><?php echo $shipping['Shipping']['name']?></td>
+			<td style="width:5%;padding:3px<?php echo $border_top?>">
+				<input name="data[Order][shipping_id]" type="radio" value="<?php echo $shipping['Shipping']['id']?>" id="OrderShippingId<?php echo $shipping['Shipping']['id']?>"<?php echo $checked?>/>
+			</td>
+			<td style="width:70%;padding:3px<?php echo $border_top?>"><?php
+				$shippingInfo = $shipping['Shipping']['name'];
+				if (in_array($shipping['Shipping']['id'], json_decode(ZASILKOVNA_SHIPPING_IDS))) {
+					$shippingInfo .= ' - ' . $this->Html->link('vyberte pobočku', '#', array('class' => 'zasilkovna-choice-link', 'data-shipping-id' => $shipping['Shipping']['id']));
+				}
+				echo $shippingInfo;
+			?></td>
 			<td style="width:10%;padding:3px<?php echo $border_top?>" align="right"><?php echo round($shipping['Shipping']['price'])?>&nbsp;Kč</td> 
 		</tr>
 	<?php		$first = false;
@@ -414,4 +422,20 @@ if ($this->Session->check('Message.flash')) {
 	echo $this->Form->end();
 ?>
 <? } ?>
+</div>
+
+<div id="ZasilkovnaChoice" style="display:none">
+	<h3>Vybrat pobočku</h3>
+	<p>Vyberte pobočku, kde si přejete zásilku vyzvednout.</p>
+	<form class="form-inline">
+		<div class="form-group">
+			<select id="ZasilkovnaChoiceSelect" class="form-control">
+				<option selected disabled="disabled">Vyberte pobočku</option>
+				<?php foreach ($zasilkovnaBranches as $index => $branch) { ?>
+				<option value="<?php echo $index?>"><?php echo $branch?></option>
+				<?php } ?>
+			</select>
+		</div>
+	</form>
+	<div class="zasilkovna-detail"></div>
 </div>

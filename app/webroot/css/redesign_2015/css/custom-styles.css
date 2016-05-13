@@ -6,7 +6,7 @@
 .modal-order {
     display:    none;
     position:   fixed;
-    z-index:    1000;
+    z-index:    11000;
     top:        0;
     left:       0;
     height:     100%;
@@ -83,4 +83,29 @@ h2.content-subheading {font-size:18px;font-weight:normal;padding-bottom:15px}
 	-webkit-column-count: 3; /* Chrome, Safari, Opera */
     -moz-column-count: 3; /* Firefox */
     column-count: 3;
+}
+
+.branch-choice-table {
+	border-collapse: collapse;
+    width: 100%;
+    margin: 0 0 10px;
+}
+
+.branch-choice-table th{
+    background: #F0F0F0;
+    font-weight: normal;
+    padding: 7px 10px;
+    border: 1px solid #E7E7E7;
+    font-size: 18px;
+}
+
+.branch-choice-table td{
+    padding: 15px 10px;
+}
+
+.branch-choice-table input[type=text] {
+    height: 25px;
+    width: 70px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }

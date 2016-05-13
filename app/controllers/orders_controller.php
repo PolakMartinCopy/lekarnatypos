@@ -1301,6 +1301,14 @@ class OrdersController extends AppController {
 		$similarProducts = $this->Order->Cart->similarProducts($similarProductIds, $customerTypeId);
 		$this->set('similarProducts', $similarProducts);
 		
+		App::import('Model', 'ZasilkovnaBranch');
+		$this->Order->ZasilkovnaBranch = &new ZasilkovnaBranch;
+		$this->set('zasilkovnaBranches', $this->Order->ZasilkovnaBranch->find('list'));
+		
+		if (!defined('ZASILKOVNA_SHIPPING_IDS')) {
+			define('ZASILKOVNA_SHIPPING_IDS', json_encode(array()));
+		}
+		
 		// nastavim si titulek stranky
 		$this->set('page_heading', 'Objednávka');
 		$this->set('_title', 'Objednávka');
