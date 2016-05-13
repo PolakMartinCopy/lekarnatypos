@@ -94,7 +94,6 @@
  	$('input[name="data[Order][shipping_id]"]').focus(function() {
 		prevShippingId = shippingId;
  	}).change(function(e) {
- 	 	console.log(prevShippingId);
  	 	shippingId = this.value;
  		// pokud jsem mel vybranou zasilkovnu a ted jsem to zmenil na neco jineho, musim vycistit pole pro dorucovaci adresu
  		if ($.inArray(prevShippingId, ZASILKOVNA_SHIPPING_IDS) != -1 && $.inArray(shippingId, ZASILKOVNA_SHIPPING_IDS) == -1) {
@@ -207,7 +206,7 @@
 	// odeslani formulare pro vyber pobocky posty
 	$(document).on('change', '#ZasilkovnaChoiceSelect', function(e) {
 		e.preventDefault();
-		$('.Zasilkovna-detail').empty();
+		$('.zasilkovna-detail').empty();
 
 		var id = $(this).val()
 
