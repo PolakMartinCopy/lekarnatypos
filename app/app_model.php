@@ -60,6 +60,14 @@ class AppModel extends Model {
 		);
 		return $this->save($save);
 	}
+	
+	function getAllByField($value, $field) {
+		$item = $this->find('all', array(
+			'conditions' => array($field => $value),
+			'contain' => array(),
+		));
+		return $item;
+	}
 
 }
 ?>

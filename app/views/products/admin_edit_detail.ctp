@@ -215,6 +215,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td>&nbsp;</td>
 		<td><?php echo $this->Form->input('Product.group', array('label' => false))?></td>
 	</tr>
+<?php if ($product['Product']['show_wholesale_price']) { ?>
 	<tr valign="top">
 		<td>Nákupní cena<br/>bez DPH</td>
 		<td style="width:5%"><?php
@@ -224,6 +225,7 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		?></td>
 		<td><?php echo $this->Form->input('Product.wholesale_price', array('label' => false, 'after' => '&nbsp;Kč'))?></td>
 	</tr>
+<?php } ?>
 	<tr valign="top" class='nutne'>
 		<td>Daňová skupina
 			<a href='/administrace/help.php?width=500&id=24' class='jTip' id='24' name='DPH (24)'>

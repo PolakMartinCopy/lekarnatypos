@@ -1162,11 +1162,9 @@ class Order extends AppModel {
 			'contain' => array(),
 			'fields' => array('AdministratorsCategory.category_id')
 		));
+		
 		$categoryRootIds = Set::extract('/AdministratorsCategory/category_id', $categoryRootIds);
-		$categoryIds = array();
-		foreach ($categoryRootIds as $categoryRootId) {
-			$categoryIds = array_merge($categoryIds, $this->OrderedProduct->Product->CategoriesProduct->Category->subtree_ids($categoryRootId));
-		}
+		$categoryIds = $this->OrderedProduct->Product->CategoriesProduct->Category->getSubtreesIds($categoryRootIds);
 		
 		$categoryConditions = array(
 			'CategoriesProduct.category_id' => $categoryIds

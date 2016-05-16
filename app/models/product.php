@@ -1390,5 +1390,24 @@ class Product extends AppModel {
 		}
 		return $res;
 	}
+	
+
+	// zejmena pro administratory s omezenim (sportovni vyziva, drogerie) - ma admin pravo zobrazit si VOC?
+	function showWholesalePrice($id, $adminId) {
+		// zobrazit VOC pouze v pripade, ze se jedna o admina nejvyssi urovne nebo je to produkt z jeho kategorie
+		$adminCategoryIds = $this->CategoriesProduct->Category->AdministratorsCategory->getAllByField($adminId, 'administrator_id');
+		// admin nema definovany zadne vztahy ke kategoriim (jedna se o admina bez omezeni)
+		if (empty($adminCategoryIds)) {
+			return true;
+		}
+		$adminCategoryIds = Set::extract('/AdministratorsCategory/category_id', $adminCategoryIds);
+		$adminCategoryIds = $this->CategoriesProduct->Category->getSubtreesIds($adminCategoryIds);
+
+		$productCategoryIds = $this->CategoriesProduct->getAllByField($id, 'product_id');
+		$productCategoryIds = Set::extract('/CategoriesProduct/category_id', $productCategoryIds);
+
+		$intersect = array_intersect($adminCategoryIds, $productCategoryIds);
+		return !empty($intersect);
+	}
 }
 ?>

@@ -922,8 +922,10 @@ class ProductsController extends AppController {
 		if (empty($product)) {
 			$this->Session->setFlash('Neexistující produkt.', REDESIGN_PATH . 'flash_failure');
 			$this->redirect(array('action'=>'index'));
-			
 		}
+		
+		$adminId = $this->Session->read('Administrator.id');
+		$product['Product']['show_wholesale_price'] = $this->Product->showWholesalePrice($id, $adminId);
 		$this->set('product', $product);
 		
 		if (isset($opened_category_id)) {

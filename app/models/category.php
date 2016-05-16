@@ -348,99 +348,6 @@ class Category extends AppModel {
 		return $redirect_url;
 	}
 	
-	/*
-	 * Natahne sportnutrition data
-	 */
-	function import() {
-		// vyprazdnim tabulku
-		if ($this->truncate()) {
-			// nejdriv natahnu deti rootove kategorie
-			$condition = 'parent_id = 0';
-			$this->Behaviors->detach('Tree');
-			// vytahnu si kategorie ze sportnutritionu
-			while ($snCategories = $this->findAllSn($condition)) {
-				foreach ($snCategories as $snCategory) {
-					// transformuju do tvaru pro nas shop
-					$category = $this->transformSn($snCategory);
-					$this->create();
-					if (!$this->save($category)) {
-						debug($category);
-						trigger_error('Nepodarilo se ulozit kategorii', E_USER_WARNING);
-					}
-				}
-				// posunu se stromem o uroven niz
-				$condition = Set::extract('/SnCategory/id', $snCategories);
-				$condition = 'parent_id IN (' . implode(',', $condition) . ')';
-			}
-		}
-		return true;
-	}
-	
-	function findAllSn($condition = null) {
-		$this->setDataSource('admin');
-		$query = '
-			SELECT *
-			FROM categories AS SnCategory
-		';
-		if ($condition) {
-			$query .= '
-				WHERE ' . $condition . '
-			';
-		}
-		$query .= '
-			ORDER BY parent_id ASC, lft ASC
-		';
-		$snCategories = $this->query($query);
-		$this->setDataSource('default');
-		return $snCategories;
-	}
-	
-	function findBySnId($snId) {
-		$category = $this->find('first', array(
-			'conditions' => array('Category.id' => $snId),
-			'contain' => array()
-		));
-		
-		if (empty($category)) {
-			trigger_error('Kategorie se sportnutrition_id ' . $snId . ' neexistuje.', E_USER_ERROR);
-		}
-		
-		return $category;
-	}
-	
-	function transformSn($snCategory) {
-		$category = array(
-			'Category' => array(
-				'id' => $snCategory['SnCategory']['id'],
-				'name' => $snCategory['SnCategory']['name'],
-				'title' => $snCategory['SnCategory']['title'],
-				'description' => $snCategory['SnCategory']['description'],
-				'heading' => $snCategory['SnCategory']['heading'],
-				'breadcrumb' => $snCategory['SnCategory']['breadcrumb'],
-				'content' => $snCategory['SnCategory']['content'],
-				'url' => $snCategory['SnCategory']['url'],
-				'parent_id' => intval($snCategory['SnCategory']['parent_id']),
-				'lft' => $snCategory['SnCategory']['lft'],
-				'rght' => $snCategory['SnCategory']['rght'],
-				'active' => 1,
-				'public' => 1
-			)	
-		);
-
-		return $category;
-	}
-	
-	function getParentId($snCategory) {
-		$parentId = ROOT_CATEGORY_ID;
-		if ($snCategory['SnCategory']['parent_id']) {
-			$parent = $this->findBySnId($snCategory['SnCategory']['parent_id']);
-			if ($parent) {
-				$parentId = $parent['Category']['id'];
-			}
-		}
-		return $parentId;
-	}
-	
 	function loadImage($image_data) {
 		// pokud neni zadan obrazek, nahraje se bez nej
 		if (empty($image_data['name']) && empty($image_data['tmp_name'])) {
@@ -836,6 +743,14 @@ class Category extends AppModel {
 			}
 		}
 		return $autocomplete_list;
+	}
+	
+	function getSubtreesIds($categoryRootIds) {
+		$categoryIds = array();
+		foreach ($categoryRootIds as $categoryRootId) {
+			$categoryIds = array_merge($categoryIds, $this->subtree_ids($categoryRootId));
+		}
+		return $categoryIds;
 	}
 }
 ?>
