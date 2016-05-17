@@ -40,7 +40,7 @@ class Order extends AppModel {
 		// nactu si produkty z objednavky a data o ni
 		$contain = array(
 			'OrderedProduct' => array(
-				'fields' => array('OrderedProduct.id', 'product_id', 'product_quantity', 'product_price_with_dph'),
+				'fields' => array('OrderedProduct.id', 'product_id', 'product_quantity', 'product_price_with_dph', 'product_price_wout_dph'),
 				'Product' => array(
 					'fields' => array('Product.id', 'name'),
 					'FlagsProduct'
@@ -60,12 +60,15 @@ class Order extends AppModel {
 		));
 	
 		$order_total = 0;
+		$order_total_vat = 0;
 		$free_shipping = false;
 		
 		foreach ($order['OrderedProduct'] as $product) {
-			$order_total = $order_total + $product['product_price_with_dph'] * $product['product_quantity'];
+			$order_total_vat = $order_total_vat + $product['product_price_with_dph'] * $product['product_quantity'];
+			$order_total += ($product['product_price_wout_dph'] * $product['product_quantity']);
 		}
-		$order['Order']['subtotal_with_dph'] = $order_total;
+		$order['Order']['subtotal_with_dph'] = $order_total_vat;
+		$order['Order']['subtotal_wout_dph'] = $order_total;
 		if (!empty($order['DiscountCoupon']['id'])) {
 			$order['Order']['subtotal_with_dph'] -= $order['DiscountCoupon']['value'];
 		}
@@ -77,9 +80,9 @@ class Order extends AppModel {
 			'fields' => array('Customer.id')
 		));
 		$is_voc = $this->Customer->is_voc($customer['Customer']['id']);
-		$order['Order']['shipping_cost'] = $this->Shipping->get_cost($order['Order']['shipping_id'], $order_total, $is_voc);
+		$order['Order']['shipping_cost'] = $this->Shipping->get_cost($order['Order']['shipping_id'], $order_total_vat, $is_voc);
 		$this->id = $id;
-		$this->save($order, false, array('subtotal_with_dph', 'shipping_cost'));
+		$this->save($order, false, array('subtotal_with_dph', 'subtotal_wout_dph', 'shipping_cost'));
 	}
 
 	/**

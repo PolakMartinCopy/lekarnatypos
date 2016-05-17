@@ -44,52 +44,93 @@ class StatisticsController extends AppController {
 			if (isset($status_id) && !empty($status_id)) {
 				$conditions['Order.status_id'] = $status_id;
 			}
+			
+			$joins = array(
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OrderedProduct',
+					'type' => 'LEFT',
+					'conditions' => array('OrderedProduct.order_id = Order.id')
+				)
+			);
 
 			App::import('Model', 'Order');
 			$this->Statistic->Order = &new Order;
+			// pokud se jedna o specifickeho uzivatele, omezim zobrazene objednavky a zbozi v nich
+			// viz definice v Administrator->adminDefinedCategories
+			$admin = $this->Session->read('Administrator');
+			// pokud se jedna o administratora, ktery ma mit pristup jen k nekterym kategoriim shopu
+			if ($this->Statistic->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($admin['id'])) {
+				$categoryConditions = $this->Statistic->Order->getAdminConditions($admin['id']);
+				$categoryJoins = $this->Statistic->Order->getAdminJoins();
+					
+				$conditions = array_merge($conditions, $categoryConditions);
+				$joins = array_merge($joins, $categoryJoins);
+			}
 			$this->Statistic->Order->virtualFields['products_count'] = 'SUM(OrderedProduct.product_quantity)';
-			$this->Statistic->Order->virtualFields['price'] = 'Order.subtotal_with_dph + Order.shipping_cost';
+			$this->Statistic->Order->virtualFields['product_price_vat'] = 'SUM(OrderedProduct.product_quantity * OrderedProduct.product_price_with_dph)';
+			$this->Statistic->Order->virtualFields['product_price'] = 'SUM(OrderedProduct.product_quantity * OrderedProduct.product_price_wout_dph)';
+			$this->Statistic->Order->virtualFields['price'] = $this->Statistic->Order->virtualFields['product_price_vat'] . ' + Order.shipping_cost';
 			$this->Statistic->Order->virtualFields['date'] = 'CONCAT(DATE_FORMAT(DATE(Order.created), "%d.%m.%Y"), " ", TIME(Order.created))';
 			$orders = $this->Statistic->Order->find('all', array(
 				'conditions' => $conditions,
 				'contain' => array(),
 				'fields' => array(
-						'Order.id',
-						'Order.date',
-						'Order.products_count',
-						'Order.subtotal_with_dph',
-						'Order.subtotal_wout_dph',
-						'Order.shipping_cost',
-						'Order.price',
-						'Order.customer_id',
-						'Order.customer_name'
+					'Order.id',
+					'Order.date',
+					'Order.products_count',
+					'Order.product_price',
+					'Order.product_price_vat',
+					'Order.shipping_cost',
+					'Order.price',
+					'Order.customer_id',
+					'Order.customer_name'
 				),
-				'joins' => array(
-					array(
-						'table' => 'ordered_products',
-						'alias' => 'OrderedProduct',
-						'type' => 'LEFT',
-						'conditions' => array('OrderedProduct.order_id = Order.id')
-					),
-				),
+				'joins' => $joins,
 				'group' => array('Order.id'),
 				'order' => array('Order.products_count' => 'desc'),
 			));
 
 			unset($this->Statistic->Order->virtualFields['products_count']);
+			unset($this->Statistic->Order->virtualFields['product_price']);
+			unset($this->Statistic->Order->virtualFields['product_price_vat']);
 			unset($this->Statistic->Order->virtualFields['price']);
 			unset($this->Statistic->Order->virtualFields['date']);
-
-			$this->set('orders', $orders);
-
+			
 			$orders_income = 0;
-			foreach ($orders as $order) {
+			foreach ($orders as &$order) {
+				$order['Order']['subtotal_wout_dph'] = $order[0]['Order__product_price'];
+				$order['Order']['subtotal_with_dph'] = $order[0]['Order__product_price_vat'];
 				$orders_income += $order['Order']['subtotal_with_dph'] + $order['Order']['shipping_cost'];
 			}
+			$this->set('orders', $orders);
 			$this->set('orders_income', $orders_income);
+			
 			
 			App::import('Model', 'Product');
 			$this->Statistic->Product = &new Product;
+			
+			$joins = array(
+				array(
+					'table' => 'ordered_products',
+					'alias' => 'OrderedProduct',
+					'type' => 'INNER',
+					'conditions' => array('OrderedProduct.product_id = Product.id')
+				),
+				array(
+					'table' => 'orders',
+					'alias' => 'Order',
+					'type' => 'INNER',
+					'conditions' => array('OrderedProduct.order_id = Order.id')
+				),
+			);
+			
+			// pokud se jedna o administratora, ktery ma mit pristup jen k nekterym kategoriim shopu
+			if ($this->Statistic->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($admin['id'])) {
+				$categoryJoins = $this->Statistic->Order->getAdminJoins();
+				$joins = array_merge($joins, $categoryJoins);
+			}
+
 			$this->Statistic->Product->virtualFields['ordered_count'] = 'SUM(OrderedProduct.product_quantity)';
 			$this->paginate['Product'] = array(
 				'conditions' => $conditions,
@@ -100,25 +141,13 @@ class StatisticsController extends AppController {
 					'Product.ordered_count',
 					'Product.url'
 				),
-				'joins' => array(
-					array(
-						'table' => 'ordered_products',
-						'alias' => 'OrderedProduct',
-						'type' => 'INNER',
-						'conditions' => array('OrderedProduct.product_id = Product.id')
-					),
-					array(
-						'table' => 'orders',
-						'alias' => 'Order',
-						'type' => 'INNER',
-						'conditions' => array('OrderedProduct.order_id = Order.id')
-					),
-				),
+				'joins' => $joins,
 				'group' => array('Product.id'),
 				'order' => array('Products.ordered_count' => 'desc'),
 				'show' => 'all'
 			);
 			$products = $this->paginate('Product');
+
 			unset($this->Statistic->Product->virtualFields['ordered_count']);
 			$this->set('products', $products);
 		}
@@ -136,6 +165,8 @@ class StatisticsController extends AppController {
 			'order' => array('Status.order' => 'asc')
 		));
 		$this->set('states', $states);
+		
+		$this->set('adminIsRestricted', $this->Statistic->Order->OrderedProduct->Product->CategoriesProduct->Category->AdministratorsCategory->Administrator->isRestricted($this->Session->read('Administrator.id')));
 		
 		$this->layout = REDESIGN_PATH . 'admin';
 	}
