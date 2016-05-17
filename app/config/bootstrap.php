@@ -193,7 +193,9 @@ function format_price($price) {
 }
 
 function front_end_display_price($price, $decimals = 0) {
-	return number_format($price, $decimals, ',', ' ');
+	$price = number_format($price, $decimals, ',', ' ');
+	$price = str_replace(' ', '&nbsp;', $price);
+	return $price;
 }
 
 function download_url($url = null) {
