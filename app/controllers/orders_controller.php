@@ -877,6 +877,114 @@ class OrdersController extends AppController {
 		$this->redirect($backtrace_url);
 	}
 	
+	function zasilkovna($ids = null) {
+		if (!empty($ids) && $ids != base64_encode(serialize(array()))) {
+			$ids = unserialize(base64_decode($ids));
+			$orders = $this->Order->find('all', array(
+				'conditions' => array('Order.id' => $ids, 'Shipping.provider_name' => 'Zásilkovna'),
+				'contain' => array('Shipping'),
+				'fields' => array('Order.*')
+			));
+			
+			foreach ($orders as &$order) {
+				// doplnim chybejici atributy, kde treba
+				// krestni jmeno
+				if (empty($order['Order']['customer_first_name'])) {
+					$name = explode(' ', $order['Order']['customer_name']);
+					if (!empty($name)) {
+						$order['Order']['customer_first_name'] = $name[0];
+					}
+				}
+				// prijmeni
+				if (empty($order['Order']['customer_last_name'])) {
+					$name = explode(' ', $order['Order']['customer_name']);
+					if (!empty($name)) {
+						unset($name[0]);
+						$name = implode(' ', $name);
+						$order['Order']['customer_last_name'] = $name;
+					}
+				}
+				// nazev spolecnosti
+				$order['Order']['company_name'] = '';
+				if (!empty($order['Order']['ico'])) {
+					$order['Order']['company_name'] = $order['Order']['customer_name'];
+				}
+				// telefon
+				$phone = $order['Order']['customer_phone'];
+				$order['Order']['customer_phone'] = '';
+				$removes = array(' ', '/');
+				$phone = str_replace($removes, '', $phone);
+				if (strlen($phone) == 9) {
+					$order['Order']['customer_phone'] = '+420' . $phone;
+				} elseif (strlen($phone) == 12) {
+					$order['Order']['customer_phone'] = '+' . $phone;
+				} elseif (strlen($phone) == 13) {
+					$order['Order']['customer_phone'] = $phone;
+				}
+				// dobirka
+				$order['Order']['cash_on_delivery'] = 0;
+				if ($order['Order']['payment_id'] == 1) {
+					$order['Order']['cash_on_delivery'] = $order['Order']['orderfinaltotal'];
+				}
+				// ID pobocky zasilkovny
+				$branch = explode(' || ', $order['Order']['delivery_name']);
+				if (empty($branch)) {
+					die('nepodarilo se ziskat id zasilkovny');
+				}
+				$order['Order']['zasilkovna_branch_id'] = $branch[count($branch)-1];
+			}
+	
+			$this->set('orders', $orders);
+			
+			$this->layout = 'empty';
+		}
+	}
+	
+	function admin_zasilkovna_export() {
+		$backtrace_url = array('controller' => 'orders', 'action' => 'index');
+		$flash_messages = array();
+		$flash_element = 'flash_failure';
+	
+		if (isset($this->data)) {
+			// je nastavena adresa, na kterou se bude po zpracovani pozadavku presmerovavat
+			if (isset($this->data['Order']['backtrace_url'])) {
+				$backtrace_url = $this->data['Order']['backtrace_url'];
+			}
+			// hledam objednavky, ktere jsem chtel exportovat
+			$export_ids = array();
+			foreach ($this->data['Order'] as $order_id => $export) {
+				if (isset($export['export']) && $export['export'] && is_int($order_id)) {
+					// mam opravdu v systemu objednavky s timto ideckem
+					if ($this->Order->hasAny(array('Order.id' => $order_id))) {
+						// pridam ji do exportu
+						$export_ids[] = $order_id;
+					} else {
+						$flash_messages[] = 'Objednávka č. ' . $order_id . ' není v systému nebo ji nedopravuje společnost Zásilkovna, není součástí exportu.';
+					}
+				}
+			}
+	
+			$url = 'http://' . $_SERVER['HTTP_HOST'] . '/orders/zasilkovna/' . base64_encode(serialize($export_ids));
+
+			$content = download_url($url);
+	
+			header('Content-Type: text/csv');
+			header('Content-Transfer-Encoding: Binary');
+			header('Content-disposition: attachment; filename="' . basename('zasilkovna.csv') . '"');
+			echo $content;
+	
+			die();
+		}
+	
+		if (empty($flash_messages)) {
+			$flash_messages = array(0 => 'Objednávky byly exportovány');
+			$flash_element = 'flash_success';
+		}
+		$flash_messages = implode('<br/>', $flash_messages);
+		$this->Session->setFlash($flash_messages, REDESIGN_PATH . $flash_element);
+		$this->redirect($backtrace_url);
+	}
+	
 	function admin_notify_admin($id = null) {
 		if (!$id) {
 			$this->Session->setFlash('Není zadáno ID objednávky, u které chcete odeslat email.', REDESIGN_PATH . 'flash_failure');
