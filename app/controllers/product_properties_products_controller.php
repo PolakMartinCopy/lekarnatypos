@@ -7,7 +7,7 @@ class ProductPropertiesProductsController extends AppController {
 	 * Touto metodou nastavim, ze u produktu Syncare nechci updatovat nikde nic
 	 */
 	function admin_init() {
-		$conditions = array('Product.supplier_id' => 3); // Boneco - updatovat vse krom popisu
+		$conditions = array('Product.supplier_id' => array(4, 5)); // Alliance - updatovat sukl a pdk
 		
 		// chci nastavit, ze chci updatovat active a dostupnost
 		$products = $this->ProductPropertiesProduct->Product->find('all', array(
@@ -17,24 +17,23 @@ class ProductPropertiesProductsController extends AppController {
 		));
 
 		$productIds = Set::extract('/Product/id', $products);
-		// smazu dosavadni nastaveni
-		$this->ProductPropertiesProduct->deleteAll(array('product_id' => $productIds));
 
 		$properties = $this->ProductPropertiesProduct->ProductProperty->find('all', array(
+			'conditions' => array(
+				'OR' => array(
+					array('ProductProperty.name' => 'Product.sukl'),
+					array('ProductProperty.name' => 'Product.pdk_code')
+				)
+			),
 			'contain' => array(),
 			'fields' => array('ProductProperty.id')
 		));
-		
+
 		$save = array();
 		
 		foreach ($products as $product) {
 			foreach ($properties as $property) {
-				// updatuju jen ceny (11), obrazky (16) a active (18)
-				$toUpdate = array(11, 16, 18);
-				$update = false;
-				if (in_array($property['ProductProperty']['id'], $toUpdate)) {
-					$update = true;
-				}
+				$update = true;
 				$save[] = array(
 					'product_id' => $product['Product']['id'],
 					'product_property_id' => $property['ProductProperty']['id'],
