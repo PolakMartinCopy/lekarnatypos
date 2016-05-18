@@ -13,5 +13,7 @@
 		<CATEGORYTEXT><![CDATA[<?php echo $product['AllianceProduct']['nomen'] ?>]]></CATEGORYTEXT>
 		<DELIVERY_DATE><![CDATA[0]]></DELIVERY_DATE>
 		<EAN><![CDATA[<?php echo $product['AllianceProduct']['ean']?>]]></EAN>
+		<PDK><![CDATA[<?php echo $product['AllianceProduct']['all_code_pdk']?>]]></PDK>
+		<SUKL><![CDATA[<?php echo $product['AllianceProduct']['all_code_sukl']?>]]></SUKL>
 	</SHOPITEM>
 <? } ?>
