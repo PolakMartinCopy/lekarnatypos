@@ -120,12 +120,16 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td><?php echo $this->Form->input('Product.ean', array('label' => false))?></td>
 	</tr>
 	<tr>
-		<td>Kód</td>
-		<td><?php echo $this->Form->input('Product.code', array('label' => false))?></td>
+		<td>PDK kód</td>
+		<td><?php echo $this->Form->input('Product.pdk_code', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>SUKL</td>
 		<td><?php echo $this->Form->input('Product.sukl', array('label' => false))?></td>
+	</tr>
+	<tr>
+		<td>Kód</td>
+		<td><?php echo $this->Form->input('Product.code', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>Skupina</td>

@@ -913,6 +913,8 @@ class ProductsController extends AppController {
 				'Product.keywords',
 				'Product.pohoda_id',
 				'Product.ean',
+				'Product.sukl',
+				'Product.pdk_code',
 				'Product.supplier_id',
 				'Product.alliance_description',
 				'Product.is_alliance_rewritten'
@@ -2245,5 +2247,6 @@ class ProductsController extends AppController {
 		}
 		die('OK');
 	}
+
 } // konec tridy
 ?>

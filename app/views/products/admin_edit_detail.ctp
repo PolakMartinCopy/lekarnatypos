@@ -201,14 +201,27 @@ echo $this->Html->link('ZPĚT NA SEZNAM PRODUKTŮ', $back_link)?>
 		<td><?php echo $this->Form->input('Product.ean', array('label' => false))?></td>
 	</tr>
 	<tr>
-		<td>Kód</td>
-		<td>&nbsp;</td>
-		<td><?php echo $this->Form->input('Product.code', array('label' => false))?></td>
+		<td>PDK kód</td>
+		<td style="width:5%"><?php
+			$product_property_id = 21;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
+		<td><?php echo $this->Form->input('Product.pdk_code', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>SUKL</td>
-		<td>&nbsp;</td>
+		<td style="width:5%"><?php
+			$product_property_id = 20;
+			echo $this->Form->hidden('ProductProperty.' . $product_property_id . '.id', array('value' => $product_property_id));
+			echo $this->Form->input('ProductProperty.' . $product_property_id . '.update', array('label' => false, 'type' => 'checkbox'));
+		?></td>
 		<td><?php echo $this->Form->input('Product.sukl', array('label' => false))?></td>
+	</tr>
+	<tr>
+		<td>Kód</td>
+		<td>&nbsp;</td>
+		<td><?php echo $this->Form->input('Product.code', array('label' => false))?></td>
 	</tr>
 	<tr>
 		<td>Skupina</td>
