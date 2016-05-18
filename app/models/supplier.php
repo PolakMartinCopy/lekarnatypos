@@ -179,6 +179,10 @@ class Supplier extends AppModel {
 			$wholesale_price = $this->product_wholesale_price($feed_product, $supplier['Supplier']['wholesale_price_field']);
 			//		- ean
 			$ean = $this->product_ean($feed_product, $supplier['Supplier']['ean_field']);
+			//		- pdk kod
+			$pdkCode = $this->product_pdk_code($feed_product, $supplier['Supplier']['pdk_code_field']);
+			//		- sukl kod
+			$suklCode = $this->product_sukl_code($feed_product, $supplier['Supplier']['sukl_code_field']);
 			//		- supplier product id - id produktu ve feedu dodavatele
 			$supplier_product_id = $this->product_supplier_product_id($feed_product, $supplier['Supplier']['id_field']);
 			//		- supplier_category_id - id kategorie dodavatele u nas v systemu
@@ -232,6 +236,8 @@ class Supplier extends AppModel {
 				'discount_common' => $discount_common,
 				'wholesale_price' => $wholesale_price,
 				'ean' => $ean,
+				'pdk_code' => $pdkCode,
+				'sukl' => $suklCode,
 				'supplier_product_id' => $supplier_product_id,
 				'supplier_category_id' => $supplier_category_id,
 				'availability_id' => $availability_id,
@@ -336,6 +342,14 @@ class Supplier extends AppModel {
 	
 	function product_ean($feed_product, $ean_field) {
 		return simpleXMLChildValue($feed_product, $ean_field);
+	}
+	
+	function product_pdk_code($feed_product, $pdk_code_field) {
+		return simpleXMLChildValue($feed_product, $pdk_code_field);
+	}
+	
+	function product_sukl_code($feed_product, $sukl_code_field) {
+		return simpleXMLChildValue($feed_product, $sukl_code_field);
 	}
 	
 	function product_supplier_product_id($feed_product, $id_field) {

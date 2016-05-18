@@ -92,6 +92,14 @@
 			<td><?php echo $this->Form->input('Supplier.ean_field', array('label' => false, 'size' => 70))?></td>
 		</tr>
 		<tr>
+			<th><abbr title="Název tagu, ve kterém je v XML feedu PDK kód produktu">Pole s PDK</abbr></th>
+			<td><?php echo $this->Form->input('Supplier.pdk_code_field', array('label' => false, 'size' => 70))?></td>
+		</tr>
+		<tr>
+			<th><abbr title="Název tagu, ve kterém je v XML feedu SUKL kód produktu">Pole s SUKL</abbr></th>
+			<td><?php echo $this->Form->input('Supplier.sukl_code_field', array('label' => false, 'size' => 70))?></td>
+		</tr>
+		<tr>
 			<th><abbr title="Název tagu, ve kterém je v XML feedu kategorie produktu">Pole s kategorií</abbr></th>
 			<td><?php echo $this->Form->input('Supplier.category_field', array('label' => false, 'size' => 70))?></td>
 		</tr>
