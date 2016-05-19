@@ -279,11 +279,11 @@ class ExportsController extends AppController{
 		$comparator_id = 3;
 		// podminky pro vyhledani produktu
 		$conditions = array(
-				"Product.short_description != ''",
-				'Availability.cart_allowed' => true,
-				'Product.active' => true,
-				'Product.feed' => true,
-				'Product.price >' => 0
+			"Product.short_description != ''",
+			'Availability.cart_allowed' => true,
+			'Product.active' => true,
+			'Product.feed' => true,
+			'Product.price >' => 0
 		);
 		
 		// podminky pro vyhledani kategorii
@@ -429,6 +429,179 @@ class ExportsController extends AppController{
 		}
 
 		$this->set('products', $res);
+	}
+	
+	function save_gm_manufacturer_restricted() {
+		$file_name = 'files/xml/gm_manufaturer_restricted.xml';
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . '/exports/gm_manufacturer_restricted';
+		$this->Export->saveFeed($file_name, $url);
+		die('here');
+	}
+	
+	function gm_manufacturer_restricted() {
+		// bez layoutu
+		$this->autoLayout = false;
+		
+		// natahnu si model Product
+		$this->Export->Product = ClassRegistry::init('Product');
+		// typ uzivatele - neprihlaseny
+		$customer_type_id = 2;
+		// srovnavac - Google Merchant Center
+		$comparator_id = 3;
+		// podminky pro vyhledani produktu
+		$conditions = array(
+			"Product.short_description != ''",
+			'Availability.cart_allowed' => true,
+			'Product.active' => true,
+			'Product.feed' => true,
+			'Product.price >' => 0,
+			// jen produkty vyrobcu SynCare (127), NeoStrata (174), Vichy (117183), Topvet (159), Bioderma(3), Santé(108)
+			'Product.manufacturer_id' => array(127, 174, 117183, 159, 3, 108)
+		);
+		
+		// podminky pro vyhledani kategorii
+		$categories_conditions = 'Category.id = CategoriesProduct.category_id';
+		// vytahnu si kategorie, ktere nejsou aktivni
+		$not_active_categories = $this->Export->Product->CategoriesProduct->Category->find('all', array(
+			'conditions' => array('Category.active' => false),
+			'contain' => array(),
+			'fields' => array('Category.id')
+		));
+		// zjistim idcka podstromu neaktivnich kategorii
+		$not_active_categories_ids = array();
+		if (!empty($not_active_categories)) {
+			foreach ($not_active_categories as $not_active_category) {
+				$not_active_categories_ids = array_merge($not_active_categories_ids, $this->Export->Product->CategoriesProduct->Category->subtree_ids($not_active_category['Category']['id']));
+			}
+		}
+		// nechci do zdroje produkty z neaktivnich kategorii
+		if (!empty($not_active_categories_ids)) {
+			$categories_conditions .= ' AND Category.id NOT IN (' . implode(',', $not_active_categories_ids) . ')';
+		}
+		$categories_conditions_arr[] = $categories_conditions;
+		
+		$this->Export->Product->virtualFields['price'] = $this->Export->Product->price;
+		$products = $this->Export->Product->find('all', array(
+			'conditions' => $conditions,
+			'contain' => array(
+				'Manufacturer' => array(
+					'fields' => array('id', 'name')
+				),
+			),
+			'joins' => array(
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPrice',
+					'type' => 'INNER',
+					'conditions' => array('Product.id = CustomerTypeProductPrice.product_id AND CustomerTypeProductPrice.customer_type_id = ' . $customer_type_id)
+				),
+				array(
+					'table' => 'customer_type_product_prices',
+					'alias' => 'CustomerTypeProductPriceCommon',
+					'type' => 'LEFT',
+					'conditions' => array('Product.id = CustomerTypeProductPriceCommon.product_id AND CustomerTypeProductPriceCommon.customer_type_id = 2')
+				),
+				array(
+					'table' => 'images',
+					'alias' => 'Image',
+					'type' => 'INNER',
+					'conditions' => array('Image.product_id = Product.id AND Image.is_main = "1"')
+				),
+				array(
+					'table' => 'availabilities',
+					'alias' => 'Availability',
+					'type' => 'INNER',
+					'conditions' => array('Availability.id = Product.availability_id AND Availability.cart_allowed = 1')
+				),
+				array(
+					'table' => 'categories_products',
+					'alias' => 'CategoriesProduct',
+					'type' => 'INNER',
+					'conditions' => array('CategoriesProduct.product_id = Product.id')
+				),
+				array(
+					'table' => 'categories',
+					'alias' => 'Category',
+					'type' => 'INNER',
+					'conditions' => $categories_conditions_arr
+				),
+				array(
+					'table' => 'categories_comparators',
+					'alias' => 'CategoriesComparator',
+					'type' => 'LEFT',
+					'conditions' => array('Category.id = CategoriesComparator.category_id AND CategoriesComparator.comparator_id = ' . $comparator_id)
+				)
+			),
+			'fields' => array(
+				'Product.id',
+				'Product.name',
+				'Product.short_description',
+				'Product.url',
+				'Product.zbozi_name',
+				'Product.heureka_name',
+				'Product.heureka_extended_name',
+				'Product.heureka_category',
+				'Product.price',
+				'Product.ean',
+				'Product.supplier_id',
+		
+				'Image.id',
+				'Image.name',
+					
+				'Availability.id',
+				'Availability.name',
+					
+				'CategoriesProduct.id',
+				'CategoriesProduct.product_id',
+				'CategoriesProduct.category_id',
+					
+				'Category.id',
+				'Category.name',
+					
+				'CategoriesComparator.id',
+				'CategoriesComparator.path',
+		
+				'Manufacturer.id',
+				'Manufacturer.name',
+			),
+//			'limit' => 1000
+		));
+		unset($this->Export->Product->virtualFields['price']);
+
+		$res = array();
+		$res_ids = array();
+		foreach ($products as $i => &$product) {
+			if (!in_array($product['Product']['id'], $res_ids)) {
+		
+				$subproducts = $this->Export->Product->Subproduct->find('all', array(
+					'conditions' => array('Subproduct.product_id' => $product['Product']['id']),
+					'contain' => array(),
+					'fields' => array('Subproduct.id')
+				));
+				if (!empty($subproducts)) {
+					foreach ($subproducts as &$subproduct) {
+						$subproduct = $this->Export->Product->Subproduct->getById($subproduct['Subproduct']['id'], true);
+						$product['Subproduct'][] = $subproduct['Subproduct'];
+					}
+				}
+		
+				$product['Product']['type_text'] = $this->Export->Product->CategoriesProduct->Category->getPath($product['CategoriesProduct']['category_id']);
+				if (!empty($product['Product']['type_text'])) {
+					unset($product['Product']['type_text'][0]);
+					unset($product['Product']['type_text'][1]);
+				}
+				$product['Product']['type_text'] = array_values($product['Product']['type_text']);
+				$product['Product']['type_text'] = Set::extract('/Category/name', $product['Product']['type_text']);
+				$product['Product']['type_text'] = implode(' | ', $product['Product']['type_text']);
+		
+				$product['Product']['name'] = str_replace('&times;', 'x', $product['Product']['name']);
+				$product['Product']['short_description'] = str_replace('&times;', 'x', $product['Product']['short_description']);
+				$res[] = $product;
+				$res_ids[] = $product['Product']['id'];
+			}
+		}
+		$this->set('products', $res);
+		$this->render('/exports/google_merchant');
 	}
 }
 ?>
