@@ -1409,5 +1409,55 @@ class Product extends AppModel {
 		$intersect = array_intersect($adminCategoryIds, $productCategoryIds);
 		return !empty($intersect);
 	}
+	
+	function lekisFind($lekisId, $suklCode = null, $pdkCode = null) {
+		// mam naprimo sparovane s kartou v lekisu
+		if ($id = $this->getIdByField($lekisId, 'lekis_id')) {
+			return $id;
+		}
+		if ($pdkCode) {
+			if ($product = $this->pairByPDKCode($pdkCode, $lekisId)) {
+				return $product['Product']['id'];
+			} else {
+				if ($suklCode) {
+					if ($product = $this->pairBySuklCode($suklCode, $lekisId)) {
+						return $product['Product']['id'];
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+	
+	function pairBySuklCode($suklCode, $lekisId) {
+		if ($id = $this->getIdByField($suklCode, 'sukl')) {
+			$save = array(
+				'Product' => array(
+					'id' => $id,
+					'lekis_id' => $lekisId
+				)
+			);
+			if ($this->save($save)) {
+				return $save;
+			}
+		}
+		return false;
+	}
+	
+	function pairByPDKCode($pdkCode, $lekisId) {
+		if ($id = $this->getIdByField($pdkCode, 'pdk_code')) {
+			$save = array(
+				'Product' => array(
+					'id' => $id,
+					'lekis_id' => $lekisId
+				)
+			);
+			if ($this->save($save)) {
+				return $save;
+			}
+		}
+		return false;
+	}
 }
 ?>

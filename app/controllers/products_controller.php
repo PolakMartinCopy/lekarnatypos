@@ -2247,6 +2247,52 @@ class ProductsController extends AppController {
 		}
 		die('OK');
 	}
+	
 
+	function lekis_parse() {
+		$filePath = 'http://' . $_SERVER['HTTP_HOST'] . '/files/lekis/stock';
+		$fileName = 'products.xml';
+		$fileURI = $filePath . '/' . $fileName;
+		$wholesalePriceAttributeName = 'name';
+	
+		// natahnu soubor
+		// stahnu feed (je tam vubec)
+		if (!$xml = download_url_like_browser($fileURI)) {
+			trigger_error('Chyba při stahování URL ' . $fileURI, E_USER_ERROR);
+			die();
+		}
+
+		$cards = new SimpleXMLElement($xml);
+		$save = array();
+		// projdu skladove karty
+		foreach ($cards->eshopCards->eshopCard as $card) {
+			$linkCode = null;
+			$pdkCode = null;
+			$suklCode = null;
+			$wholesalePrice = null;
+			foreach ($card->attributes() as $attributeName => $attributeValue) {
+				if ($attributeName == 'linkCode') {
+					$linkCode = $attributeValue->__toString();
+				} elseif ($attributeName == 'pdkCode') {
+					$pdkCode = $attributeValue->__toString();
+				} elseif ($attributeName == 'suklCode') {
+					$suklCode = $attributeValue->__toString();
+				} elseif ($attributeName == $wholesalePriceAttributeName) {
+					$wholesalePrice = $attributeValue->__toString();
+				}
+			}
+			
+			if ($linkCode && $id = $this->Product->lekisFind($linkCode, $suklCode, $pdkCode)) {
+				$product = array(
+					'Product' => array(
+						'id' => $id,
+						'wholesale_price' => $wholesalePrice
+					)
+				);
+				$save[] = $product;
+			}
+		}
+		debug($save); die();
+	}
 } // konec tridy
 ?>
