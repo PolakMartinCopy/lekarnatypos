@@ -374,8 +374,70 @@ class CategoriesProductsController extends AppController {
 		}
 	}
 	
-	function admin_import($truncate = true) {
-		$this->CategoriesProduct->import($truncate);
+	// dogeneruje produkty do kategorii na zaklade toho, jestli podle fulltextoveho vyhledavani obsahuji vzory zadane v souboru
+	function pair_by_expressions() {
+		$fileName = 'files/kategorie-nemoci-doparovani.csv';
+		if ($fileHandler = fopen($fileName, 'r')) {
+			while ($line = fgetcsv($fileHandler, 0, ';')) {
+				// na prvni pozici v radku mam id kategorie
+				$categoryId = $line[0];
+				unset($line[0]);
+				$conditions = array();
+				// pole, ve kterych chci vyhledavat
+				$conditionFields = array(
+					'Product.name',
+					'Product.description',
+					'Product.alliance_description'
+				);
+				// sestavim podminky vyhledavani
+				foreach ($line as $expression) {
+					// viceslovne vyrazy rozsekat
+					$exprParts = explode(' ', $expression);
+					foreach ($conditionFields as $conditionField) {
+						$condition = array();
+						// u viceslovnych vyrazu chci vsechny slova v jednom atributu
+						foreach ($exprParts as $exprPart) {
+							$condition[] = $conditionField . ' LIKE "%%' . $exprPart . '%%"';
+						}
+						// vsechny podminky zORuju
+						$conditions['OR'][] = $condition;
+					}
+				}
+				// pridam podminku, ze nechci produkty, ktere uz jsou v te kategorii prirazene
+				$categoriesProducts = $this->CategoriesProduct->find('all', array(
+					'conditions' => array('CategoriesProduct.category_id' => $categoryId),
+					'contain' => array(),
+					'fields' => array('CategoriesProduct.product_id')
+				));
+				$excludedProductIds = Set::extract('/CategoriesProduct/product_id', $categoriesProducts);
+				if (!empty($excludedProductIds)) {
+					$excludedProductIds = array_unique($excludedProductIds);
+					$conditions[] = 'Product.id NOT IN (' . implode(',', $excludedProductIds) . ')';
+				}
+				//debug($conditions);
+				//$fields = array_merge($conditionFields, array('Product.id'));
+				$fields = array('Product.id');
+				$products = $this->CategoriesProduct->Product->find('all', array(
+					'conditions' => $conditions,
+					'contain' => array(),
+					'fields' => $fields
+				));
+				//debug($products); die();
+				$save = array();
+				foreach ($products as $product) {
+					$save[] = array(
+						'product_id' => $product['Product']['id'],
+						'category_id' => $categoryId,
+						'genereated' => true
+					);
+				}
+				if (!empty($save) && !$this->CategoriesProduct->saveAll($save)) {
+					debug($save);
+					die();
+				}
+//				die('afty');
+			}
+		}
 		die('here');
 	}
 }
