@@ -1187,5 +1187,11 @@ class Order extends AppModel {
 		);
 		return $categoryJoins;
 	}
+	
+	function logMessage($message) {
+		$file = 'files/orders.log';
+		$data = date('Y-m-d H:i:s') . "\t" . $message . "\n";
+		file_put_contents($file, $data, FILE_APPEND);
+	}
 } // konec tridy
 ?>

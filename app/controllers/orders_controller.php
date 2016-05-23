@@ -1546,23 +1546,33 @@ class OrdersController extends AppController {
 		$dataSource = $this->Order->getDataSource();
 		$dataSource->begin($this->Order);
 		try {
+			$this->Order->logMessage('Ukládám objednávku');
+			$this->Order->logMessage(json_encode($order[0]));
 			if (!$this->Order->save($order[0])) {
 				$dataSource->rollback($this->Order);
+				$this->Order->logMessage('Objednávku se nepodařilo uložit');
 				debug($this->Order->validationErrors);
 				trigger_error('Objednávku se nepodařilo uložit', E_USER_ERROR);
 				die();
 			}
+			$this->Order->logMessage('Objednávka ' . $this->Order->id . ' byla uložena');
 			// musim ulozit objednavku a smazat produkty z kosiku
+			$this->Order->logMessage('Ukládám produkty objednávky');
 			foreach ($order[1] as $ordered_product) {
+				$this->Order->logMessage(json_encode($ordered_product));
 				$ordered_product['OrderedProduct']['order_id'] = $this->Order->id;
 				if (!$this->Order->OrderedProduct->saveAll($ordered_product)) {
 					$dataSource->rollback($this->Order);
+					$this->Order->logMessage('Produkt objednavky se nepodařilo uložit');
 					debug($this->Order->OrderedProduct->validationErrors);
 					trigger_error('Produkty na objednavce se nepodařilo uložit', E_USER_ERROR);
 					die();
 				}
+				$this->Order->logMessage('Produkt objednavky ' . $this->Order->OrderedProduct->id . ' byl uložen');
 			}
+			$this->Order->logMessage('Všechny produkty objednávky ' . $this->Order->id . ' byly uloženy');
 			if (isset($order[0]['Order']['discount_coupon_id'])) {
+				$this->Order->logMessage('Ukládám slevový kupon');
 				$discountCouponSave = array(
 					'DiscountCoupon' => array(
 						'id' => $order[0]['Order']['discount_coupon_id'],
@@ -1571,10 +1581,12 @@ class OrdersController extends AppController {
 				);
 				if (!$this->Order->DiscountCoupon->save($discountCouponSave)) {
 					$dataSource->rollback($this->Order);
+					$this->Order->logMessage('Slevový kupón se nepodařilo uložit');
 					debug($this->Order->OrderedProduct->validationErrors);
 					trigger_error('Produkty na objednavce se nepodařilo uložit', E_USER_ERROR);
 					die();
 				}
+				$this->Order->logMessage('Slevový kupon byl uložen');
 			}
 		} catch (Exception $e) {
 			$dataSource->rollback($this->Order);
@@ -1582,6 +1594,7 @@ class OrdersController extends AppController {
 			$this->redirect(array('controller' => 'orders', 'action' => 'recapitulation'));
 		}
 		$this->Order->cleanCartsProducts();
+		$this->Order->logMessage('Uložení objednávky ' . $this->Order->id . ' bylo úspěšně dokončeno');
 		$dataSource->commit($this->Order);
 		
 		$this->Order->notifyCustomer($customer['Customer']);
