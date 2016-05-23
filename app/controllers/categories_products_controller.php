@@ -428,7 +428,7 @@ class CategoriesProductsController extends AppController {
 					$save[] = array(
 						'product_id' => $product['Product']['id'],
 						'category_id' => $categoryId,
-						'genereated' => true
+						'generated' => true
 					);
 				}
 				if (!empty($save) && !$this->CategoriesProduct->saveAll($save)) {
